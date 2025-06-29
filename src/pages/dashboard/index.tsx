@@ -1,6 +1,7 @@
 import { lazy } from 'react';
 import { Outlet, type RouteObject } from 'react-router-dom';
 import { studentRouter } from './students';
+import { instructorRouter } from './instructor';
 
 const DashboardPage = lazy(() => import('@/pages/dashboard/dashboard-page'));
 export const dashboardRouter: RouteObject = {
@@ -12,5 +13,6 @@ export const dashboardRouter: RouteObject = {
 			element: <DashboardPage />,
 		},
 		...studentRouter,
+		...instructorRouter,
 	],
 };

@@ -80,11 +80,11 @@ interface AuthActions {
 
 type AuthStore = AuthState & AuthActions;
 const checkRole = (email: string): UserRole =>
-	email.includes('@admin.com')
+	email.includes('admin')
 		? 'admin'
-		: email.includes('@instructor.com')
+		: email.includes('instructor')
 			? 'instructor'
-			: email.includes('@student.com')
+			: email.includes('student')
 				? 'student'
 				: 'guest';
 // Mock API functions
