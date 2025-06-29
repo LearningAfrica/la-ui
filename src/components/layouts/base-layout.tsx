@@ -1,17 +1,16 @@
-import React from 'react'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import {
-    QueryClient,
-    QueryClientProvider,
-} from '@tanstack/react-query'
-import { QueryProvider } from '@/providers/query-provider'
-type QueryClientProviderProps = {
-    children: React.ReactNode
-}
-const queryClient = new QueryClient()
-export default function BaseLayout({ children }: QueryClientProviderProps) {
-    <QueryProvider>
-        {children}
-    </QueryProvider>
+import React from 'react';
+import { QueryProvider } from '@/providers/query-provider';
+import { ThemeProvider } from '@/providers/theme-provider';
+import { Toaster } from '@/components/ui/sonner';
 
+type QueryClientProviderProps = {
+	children: React.ReactNode;
+};
+export default function BaseLayout({ children }: QueryClientProviderProps) {
+	return (
+		<QueryProvider>
+			<ThemeProvider defaultTheme="light">{children}</ThemeProvider>
+			<Toaster />
+		</QueryProvider>
+	);
 }
