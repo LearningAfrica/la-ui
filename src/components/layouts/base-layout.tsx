@@ -8,6 +8,7 @@ type QueryClientProviderProps = {
 };
 export default function BaseLayout({ children }: QueryClientProviderProps) {
 	return (
+		
 		<QueryProvider>
 			<ThemeProvider defaultTheme="light">{children}</ThemeProvider>
 			<Toaster />

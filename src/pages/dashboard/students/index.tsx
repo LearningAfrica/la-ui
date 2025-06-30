@@ -1,26 +1,32 @@
 import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
-
+const NotFoundPage = lazy(() => import('@/components/error/not-found-page'));
 const StudentDashboardPage = lazy(
 	() => import('@/pages/dashboard/students/dashboard/student-dashboard-page'),
 );
 const StudentAchievementsPage = lazy(
-	() => import('@/pages/dashboard/students/achievements/student-achievements-page'),
+	() =>
+		import('@/pages/dashboard/students/achievements/student-achievements-page'),
 );
 const StudentCalendarPage = lazy(
 	() => import('@/pages/dashboard/students/calendar/student-calendar-page'),
 );
 const StudentCertificatesPage = lazy(
-	() => import('@/pages/dashboard/students/certificate/student-certificates-page'),
+	() =>
+		import('@/pages/dashboard/students/certificate/student-certificates-page'),
 );
 const StudentCertificateDetailPage = lazy(
-	() => import('@/pages/dashboard/students/certificate/student-certificate-detail-page'),
+	() =>
+		import(
+			'@/pages/dashboard/students/certificate/student-certificate-detail-page'
+		),
 );
 const StudentCoursesPage = lazy(
 	() => import('@/pages/dashboard/students/courses/student-courses-page'),
 );
 const StudentCourseDetailPage = lazy(
-	() => import('@/pages/dashboard/students/courses/student-course-details-page'),
+	() =>
+		import('@/pages/dashboard/students/courses/student-course-details-page'),
 );
 const StudentCourseLessonPage = lazy(
 	() => import('@/pages/dashboard/students/courses/student-course-lesson'),
@@ -33,14 +39,20 @@ const StudentSupportPage = lazy(
 	() => import('@/pages/dashboard/students/support/student-support-page'),
 );
 const StudentSupportTicketsPage = lazy(
-	() => import('@/pages/dashboard/students/support/student-support-tickets-page'),
+	() =>
+		import('@/pages/dashboard/students/support/student-support-tickets-page'),
 );
 const StudentSupportTicketCreatePage = lazy(
 	() =>
-		import('@/pages/dashboard/students/support/student-support-tickets-create-page'),
+		import(
+			'@/pages/dashboard/students/support/student-support-tickets-create-page'
+		),
 );
 const StudentSupportTicketDetailPage = lazy(
-	() => import('@/pages/dashboard/students/support/student-support-ticket-detail-page'),
+	() =>
+		import(
+			'@/pages/dashboard/students/support/student-support-ticket-detail-page'
+		),
 );
 /**
  * Student dashboard routes
@@ -100,5 +112,9 @@ export const studentRouter: RouteObject[] = [
 	{
 		path: '/dashboard/student/support/tickets/:id',
 		element: <StudentSupportTicketDetailPage />,
+	},
+	{
+		path: '/dashboard/student/*',
+		element: <NotFoundPage />,
 	},
 ];

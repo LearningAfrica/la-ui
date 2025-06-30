@@ -1,14 +1,18 @@
 import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
-
+const NotFoundPage = lazy(() => import('@/components/error/not-found-page'));
 const InstructorDashboardPage = lazy(
 	() => import('./dashboard/instructor-dashboard-page'),
 );
-const InstructorCalendarPage = lazy(() => import('./calendar/instructor-calendar-page'));
+const InstructorCalendarPage = lazy(
+	() => import('./calendar/instructor-calendar-page'),
+);
 const InstructorCertificatesPage = lazy(
 	() => import('./certificates/instructor-certificates-page'),
 );
-const InstructorCoursesPage = lazy(() => import('./courses/instructor-courses-page'));
+const InstructorCoursesPage = lazy(
+	() => import('./courses/instructor-courses-page'),
+);
 const InstructorCreateCoursePage = lazy(
 	() => import('./courses/instructor-create-course-page'),
 );
@@ -39,14 +43,18 @@ const InstructorDiscussionsPage = lazy(
 const InstructorDiscussionDetailsPage = lazy(
 	() => import('./discussions/instructor-discussion-details-page'),
 );
-const InstructorEarningsPage = lazy(() => import('./earnings/instructor-earnings-page'));
+const InstructorEarningsPage = lazy(
+	() => import('./earnings/instructor-earnings-page'),
+);
 const InstructorEarningsSettingsPage = lazy(
 	() => import('./earnings/instructor-earnings-settings-page'),
 );
 const InstructorEarningsTaxInfoPage = lazy(
 	() => import('./earnings/instructor-earnings-tax-info-page'),
 );
-const InstructorStudentsPage = lazy(() => import('./students/instructor-students-page'));
+const InstructorStudentsPage = lazy(
+	() => import('./students/instructor-students-page'),
+);
 const InstructorStudentDetailsPage = lazy(
 	() => import('./students/instructor-student-details-page'),
 );
@@ -136,7 +144,7 @@ export const instructorRouter: RouteObject[] = [
 	},
 	{
 		path: '/dashboard/instructor/*',
-		element: <h1>404</h1>,
+		element: <NotFoundPage />,
 	},
 	// Catch-all route for instructor dashboard
 ];

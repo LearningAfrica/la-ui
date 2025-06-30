@@ -1,5 +1,6 @@
+'use client';
+
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { CalendarIcon, Check, ChevronsUpDown, Search, X } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
@@ -52,7 +53,8 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 // Sample data for courses and users
 const courses = [
@@ -134,7 +136,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export function AdvancedSearchDialog() {
-	const router = useRouter();
+	const navigate = useNavigate();
 	const [open, setOpen] = useState(false);
 	const [activeTab, setActiveTab] = useState('criteria');
 	const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
@@ -164,10 +166,11 @@ export function AdvancedSearchDialog() {
 			form.reset(preset.criteria as any);
 			setSelectedPreset(presetId);
 			setActiveTab('criteria');
-			toast({
-				title: 'Search preset loaded',
-				description: `"${preset.name}" has been loaded.`,
-			});
+			//   toast({
+			//     title: "Search preset loaded",
+			//     description: `"${preset.name}" has been loaded.`,
+			//   })
+			toast.success(`"${preset.name}" has been loaded.`);
 		}
 	};
 
@@ -198,13 +201,15 @@ export function AdvancedSearchDialog() {
 		if (data.hasFlaggedContent) params.append('hasFlagged', 'true');
 
 		// Navigate to the discussions page with the search parameters
-		router.push(`/dashboard/admin/discussions?${params.toString()}`);
+		navigate(`/dashboard/admin/discussions?${params.toString()}`);
 
-		toast({
-			title: 'Search applied',
-			description:
-				'The discussions list has been filtered according to your criteria.',
-		});
+		// toast({
+		//   title: "Search applied",
+		//   description: "The discussions list has been filtered according to your criteria.",
+		// })
+		toast.success(
+			'The discussions list has been filtered according to your criteria.',
+		);
 
 		setOpen(false);
 	};
@@ -230,16 +235,17 @@ export function AdvancedSearchDialog() {
 
 	// Save current search as a new preset (this would typically save to a database)
 	const saveCurrentSearch = () => {
-		toast({
-			title: 'Search preset saved',
-			description: 'Your search criteria have been saved for future use.',
-		});
+		// toast({
+		//   title: "Search preset saved",
+		//   description: "Your search criteria have been saved for future use.",
+		// })
+		toast.success('Your search criteria have been saved for future use.');
 	};
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
-				<Button variant="outline" className="gap-2">
+				<Button variant="outline" className="gap-2 bg-transparent">
 					<Search className="h-4 w-4" />
 					Advanced Search
 				</Button>
@@ -415,7 +421,7 @@ export function AdvancedSearchDialog() {
 															<Button
 																variant="outline"
 																role="combobox"
-																className="w-full justify-between"
+																className="w-full justify-between bg-transparent"
 															>
 																{field.value?.length
 																	? `${field.value.length} course${field.value.length > 1 ? 's' : ''} selected`
@@ -510,7 +516,7 @@ export function AdvancedSearchDialog() {
 															<Button
 																variant="outline"
 																role="combobox"
-																className="w-full justify-between"
+																className="w-full justify-between bg-transparent"
 															>
 																{field.value?.length
 																	? `${field.value.length} participant${field.value.length > 1 ? 's' : ''} selected`

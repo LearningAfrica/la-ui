@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,7 +16,6 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { toast } from '@/hooks/use-toast';
 import {
 	Card,
 	CardContent,
@@ -26,6 +24,8 @@ import {
 	CardTitle,
 } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const reviewSchema = z.object({
 	decision: z.enum(['approve', 'reject']),
@@ -47,11 +47,11 @@ interface CourseReviewFormProps {
 }
 
 export function CourseReviewForm({
-	courseId,
+	courseId: _,
 	courseName,
 }: CourseReviewFormProps) {
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const router = useRouter();
+	const navigate = useNavigate();
 
 	const form = useForm<ReviewFormValues>({
 		resolver: zodResolver(reviewSchema),
@@ -75,23 +75,20 @@ export function CourseReviewForm({
 			// In a real app, this would be an API call
 			await new Promise((resolve) => setTimeout(resolve, 1000));
 
-			toast({
-				title:
-					values.decision === 'approve'
-						? 'Course approved'
-						: 'Changes requested',
-				description:
-					values.decision === 'approve'
-						? 'The instructor has been notified that their course is approved.'
-						: 'The instructor has been notified about the requested changes.',
-			});
+			toast.success(
+				`Course review submitted successfully! Decision: ${values.decision === 'approve' ? 'Approved' : 'Changes requested'}`,
+				{
+					description:
+						values.decision === 'approve'
+							? 'The instructor has been notified that their course is approved.'
+							: 'The instructor has been notified about the requested changes.',
+				},
+			);
 
-			router.push('/dashboard/admin/reviews');
+			navigate('/dashboard/admin/reviews');
 		} catch (error) {
-			toast({
-				title: 'Something went wrong',
-				description: 'The review could not be submitted. Please try again.',
-				variant: 'destructive',
+			toast.error('The review could not be submitted. Please try again.', {
+				description: 'An error occurred while submitting the review.',
 			});
 		} finally {
 			setIsSubmitting(false);
@@ -280,7 +277,7 @@ export function CourseReviewForm({
 							<Button
 								variant="outline"
 								type="button"
-								onClick={() => router.back()}
+								onClick={() => navigate(-1)}
 							>
 								Cancel
 							</Button>

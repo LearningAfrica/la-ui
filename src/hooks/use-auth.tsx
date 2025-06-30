@@ -1,67 +1,19 @@
+import { MOCK_USER_WITH_ORGS } from '@/lib/data/mock-org';
+import type {
+	AuthState,
+	IAuthUser,
+	ILoginUser,
+	IRegisterUser,
+	UserRole,
+} from '@/lib/types/auth';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 // Types
-export type UserRole =
-	| 'student'
-	| 'instructor'
-	| 'admin'
-	| 'superAdmin'
-	| 'guest';
-interface Organization {
-	id: string;
-	name: string;
-	role: UserRole;
-}
-export interface IAuthUser {
-	id: string;
-	email: string;
-	name: string;
-	avatar?: string;
-	role?: UserRole;
-	organizations: Organization[];
-	currentOrganization?: Organization;
-}
 
-interface AuthState {
-	user: IAuthUser | null;
-	token: string | null;
-	isAuthenticated: boolean;
-	isLoading: boolean;
-	error: string | null;
-}
-
-interface ILoginUser {
-	email: string;
-	password: string;
-	// role?: UserRole; // Optional role for login
-}
-interface IRegisterUser {
-	email: string;
-	password: string;
-	name: string;
-}
 type RegisterOrLoginCallbackProps = {
 	onSuccess?: (user: IAuthUser, token: string) => void;
 	onError?: (error: string) => void;
-};
-
-const MOCK_USER: IAuthUser = {
-	id: 'user-1',
-	name: 'John Doe',
-	email: 'john@example.com',
-	avatar: '/vibrant-street-market.png',
-	role: 'instructor',
-	organizations: [
-		{ id: 'org-1', name: 'LearnHub Academy', role: 'instructor' },
-		{ id: 'org-2', name: 'Tech Training Co', role: 'student' },
-		{ id: 'org-3', name: 'Design School', role: 'admin' },
-	],
-	currentOrganization: {
-		id: 'org-1',
-		name: 'LearnHub Academy',
-		role: 'instructor',
-	},
 };
 
 interface AuthActions {
@@ -76,6 +28,7 @@ interface AuthActions {
 	logout: () => void;
 	clearError: () => void;
 	setLoading: (loading: boolean) => void;
+	setUser: (user: IAuthUser) => void;
 }
 
 type AuthStore = AuthState & AuthActions;
@@ -96,7 +49,7 @@ const mockLogin = async ({
 		setTimeout(() => {
 			if (email && password) {
 				resolve({
-					user: { ...MOCK_USER, email, role: checkRole(email) },
+					user: { ...MOCK_USER_WITH_ORGS, email, role: checkRole(email) },
 					token: 'test-token',
 				});
 			} else {
@@ -114,7 +67,7 @@ const mockRegister = async (
 		setTimeout(() => {
 			if (email && password && name) {
 				resolve({
-					user: { ...MOCK_USER, email, name },
+					user: { ...MOCK_USER_WITH_ORGS, email, name },
 					token: 'mock-jwt-token-new-user',
 				});
 			} else {
@@ -137,7 +90,6 @@ export const useAuth = create<AuthStore>()(
 				set({ isLoading: true, error: null });
 
 				try {
-					debugger;
 					const { user, token } = await mockLogin(payload);
 
 					// Use functional update to ensure all state changes are applied together
@@ -229,6 +181,12 @@ export const useAuth = create<AuthStore>()(
 
 			setLoading: (loading: boolean) => {
 				set((state) => ({ ...state, isLoading: loading }));
+			},
+			setUser: (user: IAuthUser) => {
+				set((state) => ({
+					...state,
+					user: { ...state.user, ...user },
+				}));
 			},
 		}),
 		{

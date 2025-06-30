@@ -1,117 +1,12 @@
-import {
-	BookOpen,
-	LayoutDashboard,
-	Users,
-	GraduationCap,
-	MessageSquare,
-	Calendar,
-	HelpCircle,
-	DollarSign,
-	Award,
-	FileCheck,
-} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
-
-const navItems = [
-	{
-		href: '/dashboard',
-		label: 'Overview',
-		icon: LayoutDashboard,
-		roles: ['student', 'instructor', 'admin', 'superAdmin'],
-	},
-	{
-		href: '/dashboard/student/courses',
-		label: 'My Courses',
-		icon: BookOpen,
-		roles: ['student'],
-	},
-	{
-		href: '/dashboard/student/learning',
-		label: 'My Learning',
-		icon: GraduationCap,
-		roles: ['student'],
-	},
-	{
-		href: '/dashboard/student/achievements',
-		label: 'Achievements',
-		icon: Award,
-		roles: ['student'],
-	},
-	{
-		href: '/dashboard/student/certificates',
-		label: 'Certificates',
-		icon: FileCheck,
-		roles: ['student'],
-	},
-	{
-		href: '/dashboard/student/calendar',
-		label: 'Calendar',
-		icon: Calendar,
-		roles: ['student'],
-	},
-	{
-		href: '/dashboard/student/support',
-		label: 'Support',
-		icon: HelpCircle,
-		roles: ['student'],
-	},
-	{
-		href: '/dashboard/instructor/courses',
-		label: 'Courses',
-		icon: BookOpen,
-		roles: ['instructor', 'admin', 'superAdmin'],
-	},
-	{
-		href: '/dashboard/instructor/students',
-		label: 'Students',
-		icon: Users,
-		roles: ['instructor', 'admin', 'superAdmin'],
-	},
-	{
-		href: '/dashboard/instructor/messages',
-		label: 'Messages',
-		icon: MessageSquare,
-		roles: ['instructor'],
-	},
-	{
-		href: '/dashboard/instructor/earnings',
-		label: 'Earnings',
-		icon: DollarSign,
-		roles: ['instructor'],
-	},
-	{
-		href: '/dashboard/admin/students',
-		label: 'Students',
-		icon: Users,
-		roles: ['admin', 'superAdmin'],
-	},
-	{
-		href: '/dashboard/admin/instructors',
-		label: 'Instructors',
-		icon: GraduationCap,
-		roles: ['admin', 'superAdmin'],
-	},
-	{
-		href: '/dashboard/admin/courses',
-		label: 'Courses',
-		icon: BookOpen,
-		roles: ['admin', 'superAdmin'],
-	},
-	{
-		href: '/dashboard/admin/support',
-		label: 'Support',
-		icon: HelpCircle,
-		roles: ['admin', 'superAdmin'],
-	},
-	{
-		href: '/dashboard/admin/calendar',
-		label: 'Calendar',
-		icon: Calendar,
-		roles: ['admin', 'superAdmin'],
-	},
-];
+import { ScrollArea } from './ui/scroll-area';
+import { OrganizationSwitcher } from './organization-switcher';
+import { DASHBOARD_SIDEBAR_NAV_LINKS } from '@/lib/data/sidebar-nav-links';
+import { GraduationCap } from 'lucide-react';
+import { Separator } from './ui/separator';
+import { UserNav } from './user-nav';
 
 interface DashboardSidebarProps {
 	className?: string;
@@ -122,37 +17,49 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
 	const { user } = useAuth();
 	const userRole = user?.role || 'student';
 
-	const filteredNavItems = navItems.filter((item) =>
+	const filteredNavItems = DASHBOARD_SIDEBAR_NAV_LINKS.filter((item) =>
 		item.roles.includes(userRole),
 	);
 
 	return (
 		<div className={cn('flex w-64 flex-col border-r', className)}>
-			<div className="px-6 py-4">
+			<div className="flex items-center justify-between p-6">
 				<Link to="/" className="flex items-center gap-2">
+					<div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-lg">
+						<GraduationCap className="h-4 w-4" />
+					</div>
 					<span className="text-xl font-bold">LearnHub</span>
 				</Link>
+				<UserNav />
 			</div>
-			<nav className="flex-1 px-6 py-4">
-				<ul className="space-y-0.5">
-					{filteredNavItems.map((item) => (
-						<li key={item.href}>
-							<Link
-								to={item.href}
-								className={cn(
-									'group hover:bg-accent hover:text-accent-foreground flex rounded-md p-2 text-sm font-medium',
-									pathname === item.href
-										? 'bg-accent text-accent-foreground'
-										: 'text-muted-foreground',
-								)}
-							>
-								<item.icon className="mr-2 h-4 w-4" />
-								{item.label}
-							</Link>
-						</li>
-					))}
-				</ul>
-			</nav>
+
+			<div className="px-6 pb-4">
+				<OrganizationSwitcher />
+			</div>
+
+			<Separator />
+			<ScrollArea className='className="flex-1 space-y-4"'>
+				<nav className="flex-1 px-6 py-4">
+					<ul className="space-y-0.5">
+						{filteredNavItems.map((item) => (
+							<li key={item.href}>
+								<Link
+									to={item.href}
+									className={cn(
+										'group hover:bg-accent hover:text-accent-foreground flex rounded-md p-2 text-sm font-medium',
+										pathname === item.href
+											? 'bg-accent text-accent-foreground'
+											: 'text-muted-foreground',
+									)}
+								>
+									<item.icon className="mr-2 h-4 w-4" />
+									{item.label}
+								</Link>
+							</li>
+						))}
+					</ul>
+				</nav>
+			</ScrollArea>
 		</div>
 	);
 }
