@@ -9,20 +9,20 @@ import NotFoundPage from '@/components/error/not-found-page';
 
 const DashboardPage = lazy(() => import('@/pages/dashboard/dashboard-page'));
 export const dashboardRouter: RouteObject = {
-	path: '/dashboard',
-	element: <DashboardLayout />,
-	errorElement: <ErrorPage />,
-	children: [
-		{
-			index: true,
-			element: <DashboardPage />,
-		},
-		...studentRouter,
-		...instructorRouter,
-		...adminRouter,
-		{
-			path: '*',
-			element: <NotFoundPage />,
-		},
-	],
+  path: '/dashboard',
+  element: <DashboardLayout />,
+  errorElement: <ErrorPage />,
+  children: [
+    {
+      index: true,
+      element: <DashboardPage />,
+    },
+    ...studentRouter,
+    ...instructorRouter,
+    ...adminRouter,
+    {
+      path: '*',
+      element: <NotFoundPage />,
+    },
+  ],
 };

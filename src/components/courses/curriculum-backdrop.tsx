@@ -1,22 +1,22 @@
 import { cn } from '@/lib/utils';
 
 interface CurriculumBackdropProps {
-	isOpen: boolean;
-	onClose: () => void;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 export function CurriculumBackdrop({
-	isOpen,
-	onClose,
+  isOpen,
+  onClose,
 }: CurriculumBackdropProps) {
-	return (
-		<div
-			className={cn(
-				'bg-background/80 fixed inset-0 z-40 backdrop-blur-sm transition-opacity lg:hidden',
-				isOpen ? 'opacity-100' : 'pointer-events-none opacity-0',
-			)}
-			onClick={onClose}
-			aria-hidden="true"
-		/>
-	);
+  return (
+    <div
+      className={cn(
+        'bg-background/80 fixed inset-0 z-40 backdrop-blur-sm transition-opacity lg:hidden',
+        isOpen ? 'opacity-100' : 'pointer-events-none opacity-0',
+      )}
+      onClick={onClose}
+      aria-hidden="true"
+    />
+  );
 }

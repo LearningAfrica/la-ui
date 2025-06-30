@@ -14,67 +14,67 @@ import { Toolbar } from './toolbar';
 import { cn } from '@/lib/utils';
 
 interface TiptapEditorProps {
-	content: string;
-	onChange: (richText: string) => void;
-	placeholder?: string;
-	editable?: boolean;
-	className?: string;
+  content: string;
+  onChange: (richText: string) => void;
+  placeholder?: string;
+  editable?: boolean;
+  className?: string;
 }
 
 export function TiptapEditor({
-	content,
-	onChange,
-	placeholder = 'Write something...',
-	editable = true,
-	className,
+  content,
+  onChange,
+  placeholder = 'Write something...',
+  editable = true,
+  className,
 }: TiptapEditorProps) {
-	const editor = useEditor({
-		extensions: [
-			StarterKit,
-			Placeholder.configure({
-				placeholder,
-			}),
-			Link.configure({
-				openOnClick: false,
-				HTMLAttributes: {
-					class: 'text-primary underline underline-offset-4',
-				},
-			}),
-			Image.configure({
-				HTMLAttributes: {
-					class: 'rounded-md mx-auto my-4',
-				},
-			}),
-			Table.configure({
-				resizable: true,
-			}),
-			TableRow,
-			TableCell,
-			TableHeader,
-			CodeBlock,
-			Highlight,
-			TextAlign.configure({
-				types: ['heading', 'paragraph'],
-			}),
-		],
-		content,
-		editable,
-		onUpdate: ({ editor }) => {
-			onChange(editor.getHTML());
-		},
-	});
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Placeholder.configure({
+        placeholder,
+      }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'text-primary underline underline-offset-4',
+        },
+      }),
+      Image.configure({
+        HTMLAttributes: {
+          class: 'rounded-md mx-auto my-4',
+        },
+      }),
+      Table.configure({
+        resizable: true,
+      }),
+      TableRow,
+      TableCell,
+      TableHeader,
+      CodeBlock,
+      Highlight,
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
+    ],
+    content,
+    editable,
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+    },
+  });
 
-	return (
-		<div className={cn('overflow-hidden rounded-md border', className)}>
-			{editable && editor && <Toolbar editor={editor} />}
-			<EditorContent
-				editor={editor}
-				className={cn(
-					'prose prose-sm dark:prose-invert w-full max-w-none focus:outline-none',
-					'p-4',
-					!editable && 'rounded-md border',
-				)}
-			/>
-		</div>
-	);
+  return (
+    <div className={cn('overflow-hidden rounded-md border', className)}>
+      {editable && editor && <Toolbar editor={editor} />}
+      <EditorContent
+        editor={editor}
+        className={cn(
+          'prose prose-sm dark:prose-invert w-full max-w-none focus:outline-none',
+          'p-4',
+          !editable && 'rounded-md border',
+        )}
+      />
+    </div>
+  );
 }
