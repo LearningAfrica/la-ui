@@ -25,9 +25,12 @@ import {
 import { registerUserSchemaResolver } from '@/lib/validators/auth-schema';
 import { useState } from 'react';
 import { LucideEye, LucideEyeOff } from 'lucide-react';
+import { useApiClient } from '@/lib/api';
+import { extractCorrectErrorMessage } from '@/lib/utils/axios-err';
 
 export default function RegisterPage() {
   const { register } = useAuth();
+  const apiClient = useApiClient();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -52,11 +55,13 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      await register(data, {});
+      await register(apiClient, data, {});
       toast.success('Registered successfully');
       await navigate('/login');
-    } catch (error: any) {
-      toast.error(error.message, { position: 'top-center' });
+    } catch (error) {
+      toast.error(extractCorrectErrorMessage(error), {
+        position: 'top-center',
+      });
     } finally {
       setIsLoading(false);
     }

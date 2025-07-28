@@ -2,7 +2,7 @@ import { useAuth } from '@/hooks/use-auth';
 import axios from 'axios';
 
 export const useApiClient = () => {
-
+const auth =useAuth();
 const VITE_API_BASE_URL =
   import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000/api';
 
@@ -23,7 +23,7 @@ apiClient.interceptors.response.use(
         error.response.status === 401 &&
         !['/auth/login/', '/auth/register/'].includes(error.config.url)
       ) {
-        useAuth().logout(); // Adjust based on your auth storage
+        auth.logout(); // Adjust based on your auth storage
         window.location.href = '/login'; // Redirect to login page
       }
     }
@@ -36,7 +36,7 @@ apiClient.interceptors.response.use(
 // Interceptor to add authentication token if available
 apiClient.interceptors.request.use(
   (config) => {
-    const token = useAuth().access_token; // Adjust based on your auth storage
+    const token = auth.access_token; // Adjust based on your auth storage
     if (token) {
       config.headers['Authorization'] = `JWT ${token}`;
     }

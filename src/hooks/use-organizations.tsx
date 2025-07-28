@@ -2,8 +2,9 @@ import type { Organization } from '@/lib/types/organization';
 import { useAuth } from './use-auth';
 import type { ICreateOrganizationInput } from '@/lib/validators/organization-schema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import apiClient from '@/lib/api';
+
 import { extractCorrectErrorMessage } from '@/lib/utils/axios-err';
+import { useApiClient } from '@/lib/api';
 
 const organizationKeys = {
   all: ['organizations'] as const,
@@ -16,7 +17,7 @@ const organizationKeys = {
 
 export const useOrganization = () => {
   const auth = useAuth();
-
+  const apiClient = useApiClient();
   if (!auth.user) {
     throw new Error('Organization features require authentication');
   }
@@ -26,9 +27,15 @@ export const useOrganization = () => {
     queryFn: async () => {
       // Fetch organizations from the API or auth store
       try {
-        const { data } = await apiClient.get<Organization[]>('/organizations/');
+        const { data } = await apiClient.get<Organization[]>(
+          '/api/organizations/',
+        );
         return data || [];
       } catch (error) {
+        console.log(
+          extractCorrectErrorMessage(error, 'Failed to fetch organizations'),
+        );
+
         return [];
       }
     },
@@ -36,22 +43,34 @@ export const useOrganization = () => {
   });
 
   const createOrganization = async (payload: ICreateOrganizationInput) => {
-    await apiClient.post<Organization>('/organizations/', payload);
+    const { data } = await apiClient.post<Organization>(
+      '/api/organizations/',
+      payload,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+    return data;
   };
 
   const createOrganizationMutation = useMutation({
     mutationFn: createOrganization,
-    onSuccess: (newOrg) => {
-      queryClient.setQueryData(
-        organizationKeys.lists(),
-        (oldData: Organization[] | undefined) => {
-          return [...(oldData || []), newOrg];
-        },
-      );
+    onSuccess: () => {
+      // queryClient.setQueryData(
+      //   organizationKeys.lists(),
+      //   (oldData: Organization[] | undefined) => {
+      //     return [...(oldData || []), newOrg];
+      //   },
+      // );
+      queryClient.invalidateQueries({ queryKey: organizationKeys.lists() });
     },
     onError: (error) => {
       console.error('Failed to create organization:', error);
-      throw new Error(extractCorrectErrorMessage(error,'Failed to create organization'));
+      throw new Error(
+        extractCorrectErrorMessage(error, 'Failed to create organization'),
+      );
     },
   });
 

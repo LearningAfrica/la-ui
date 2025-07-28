@@ -29,7 +29,15 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Building, Plus, Search, Settings, Users } from 'lucide-react';
+import {
+  Building,
+  Loader2,
+  Plus,
+  Save,
+  Search,
+  Settings,
+  Users,
+} from 'lucide-react';
 import { useOrganization } from '@/hooks/use-organizations';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -55,14 +63,13 @@ export default function OrganizationsPage() {
   });
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
-  const [newOrgName, setNewOrgName] = useState('');
-  const [newOrgDescription, setNewOrgDescription] = useState('');
-  const [isCreating, setIsCreating] = useState(false);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       form.setValue('logo', file, { shouldValidate: true });
+      setLogoPreview(URL.createObjectURL(file));
     }
   };
   const submitNewOrganization = form.handleSubmit(async (data) => {
@@ -75,6 +82,7 @@ export default function OrganizationsPage() {
       await mutations.create.mutateAsync(formData as any);
       setShowCreateDialog(false);
       form.reset();
+      setLogoPreview(null);
     } catch (error: any) {
       console.error('Failed to create organization:', error);
       toast.error(error.message, { position: 'top-center' });
@@ -113,6 +121,13 @@ export default function OrganizationsPage() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
+              <div className="flex items-center justify-center">
+                {logoPreview && (
+                  <Avatar className="mb-4 h-16 w-16 rounded border">
+                    <AvatarImage src={logoPreview} alt="Organization Logo" />
+                  </Avatar>
+                )}
+              </div>
               <DialogTitle>Create New Organization</DialogTitle>
               <DialogDescription>
                 Create a new organization to manage courses and users.
@@ -195,6 +210,7 @@ export default function OrganizationsPage() {
                                   if (fileInputRef.current) {
                                     fileInputRef.current.value = '';
                                   }
+                                  setLogoPreview(null);
                                 }}
                               >
                                 Remove
@@ -221,8 +237,22 @@ export default function OrganizationsPage() {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isCreating}>
-                    {isCreating ? 'Creating...' : 'Create Organization'}
+                  <Button
+                    type="submit"
+                    disabled={form.formState.isSubmitting}
+                    className="disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {form.formState.isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Creating...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="mr-2 h-4 w-4" /> Create Organization
+                      </>
+                    )}
+                    {/* {isCreating ? 'Creating...' : 'Create Organization'} */}
                   </Button>
                 </DialogFooter>
               </form>
@@ -252,7 +282,7 @@ export default function OrganizationsPage() {
           <CardTitle>All Organizations</CardTitle>
           <CardDescription>
             {queries.organizations.data?.length}
-             {/* of {organizations.length}{' '} */}
+            {/* of {organizations.length}{' '} */}
             organizations
           </CardDescription>
         </CardHeader>
@@ -275,7 +305,7 @@ export default function OrganizationsPage() {
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
                         <AvatarImage
-                          src={org.logo || '/placeholder.svg'}
+                          src={org.logo_url || '/placeholder.svg'}
                           alt={org.name}
                         />
                         <AvatarFallback>{org.name.charAt(0)}</AvatarFallback>

@@ -19,7 +19,7 @@ export function Header() {
   };
 
   return (
-    <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
+    <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur max-w-7xl mx-auto">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-6 md:gap-8 lg:gap-10">
           {/* Mobile Menu */}

@@ -22,9 +22,12 @@ import {
 } from '@/components/ui/card';
 import { loginUserSchemaResolver } from '@/lib/validators/auth-schema';
 import { useState } from 'react';
+import { useApiClient } from '@/lib/api';
+import { extractCorrectErrorMessage } from '@/lib/utils/axios-err';
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const apiClient = useApiClient();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -41,13 +44,15 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      await login(data, {
+      await login(apiClient, data, {
         async onSuccess() {},
       });
       toast.success('Logged in successfully');
       await navigate('/dashboard');
-    } catch (error: any) {
-      toast.error(error.message, { position: 'top-center' });
+    } catch (error) {
+      toast.error(extractCorrectErrorMessage(error), {
+        position: 'top-center',
+      });
     } finally {
       setIsLoading(false);
     }
@@ -58,7 +63,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold">
-            Login to LearnHub
+            Login to Your Account
           </CardTitle>
           <CardDescription>
             Enter your email and password to access your account

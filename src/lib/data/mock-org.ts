@@ -7,7 +7,7 @@ export const MOCK_ORGANIZATIONS: Organization[] = [
     slug: 'learning-africa',
     description:
       'Premier online university with courses across all disciplines',
-    logo: '/logos/learning-africa.png',
+    logo_url: '/logos/learning-africa.png',
     banner: '/banners/education-banner.jpg',
     domain: 'learningafrica.com',
     settings: {
@@ -37,7 +37,7 @@ export const MOCK_ORGANIZATIONS: Organization[] = [
     name: 'TechSolutions Training',
     slug: 'techsolutions-training',
     description: 'Enterprise technology training for corporate teams',
-    logo: '/logos/techsolutions.png',
+    logo_url: '/logos/techsolutions.png',
     banner: '/banners/corporate-training.jpg',
     domain: 'training.techsolutions.com',
     settings: {
@@ -65,7 +65,7 @@ export const MOCK_ORGANIZATIONS: Organization[] = [
     name: 'Bright Minds Academy',
     slug: 'bright-minds',
     description: 'K-12 online school with comprehensive curriculum',
-    logo: '/logos/bright-minds.png',
+    logo_url: '/logos/bright-minds.png',
     banner: '/banners/k12-banner.jpg',
     domain: 'brightminds.school',
     settings: {
@@ -92,7 +92,7 @@ export const MOCK_ORGANIZATIONS: Organization[] = [
     name: 'Global Language Institute',
     slug: 'global-language',
     description: 'Language learning platform with native instructors',
-    logo: '/logos/global-language.png',
+    logo_url: '/logos/global-language.png',
     banner: '/banners/language-banner.jpg',
     domain: 'globallanguage.edu',
     settings: {
@@ -119,7 +119,7 @@ export const MOCK_ORGANIZATIONS: Organization[] = [
     name: 'Code Masters Bootcamp',
     slug: 'code-masters',
     description: 'Intensive coding bootcamp for career changers',
-    logo: '/logos/code-masters.png',
+    logo_url: '/logos/code-masters.png',
     banner: '/banners/coding-banner.jpg',
     domain: 'codemasters.io',
     settings: {
@@ -145,7 +145,7 @@ export const MOCK_ORGANIZATIONS: Organization[] = [
     name: 'New Horizons Education',
     slug: 'new-horizons',
     description: 'Innovative learning platform pending launch',
-    logo: '/logos/new-horizons.png',
+    logo_url: '/logos/new-horizons.png',
     domain: 'newhorizons.education',
     settings: {
       allowSelfRegistration: false,
@@ -164,7 +164,7 @@ export const MOCK_ORGANIZATIONS: Organization[] = [
     name: 'Digital Arts College',
     slug: 'digital-arts',
     description: 'Creative arts and design education (currently suspended)',
-    logo: '/logos/digital-arts.png',
+    logo_url: '/logos/digital-arts.png',
     banner: '/banners/arts-banner.jpg',
     domain: 'digitalarts.college',
     settings: {

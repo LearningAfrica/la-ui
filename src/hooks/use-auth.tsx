@@ -1,4 +1,3 @@
-import apiClient from '@/lib/api';
 import type { AuthState, IAuthUser } from '@/lib/types/auth';
 import { extractCorrectErrorMessage } from '@/lib/utils/axios-err';
 import {
@@ -8,6 +7,7 @@ import {
   type IRegisterUser,
   type IRegisterUserResponse,
 } from '@/lib/validators/auth-schema';
+import type { AxiosInstance } from 'axios';
 import { toast } from 'sonner';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
@@ -21,10 +21,12 @@ type RegisterOrLoginCallbackProps = {
 
 interface AuthActions {
   login: (
+    axiosClient: AxiosInstance,
     props: ILoginUser,
     options?: RegisterOrLoginCallbackProps,
   ) => Promise<void>;
   register: (
+    axiosClient: AxiosInstance,
     props: IRegisterUser,
     options?: RegisterOrLoginCallbackProps,
   ) => Promise<void>;
@@ -49,11 +51,10 @@ export const useAuth = create<AuthStore>()(
       error: null,
       current_org_id: null,
       refresh_token: null,
-      login: async (payload, opts) => {
+      login: async (axiosClient, payload, opts) => {
         set({ is_loading: true, error: null });
-
         try {
-          const { data: dbData } = await apiClient.post<ILoginUserResponse>(
+          const { data: dbData } = await axiosClient.post<ILoginUserResponse>(
             '/auth/login/',
             payload,
           );
@@ -91,12 +92,12 @@ export const useAuth = create<AuthStore>()(
         }
       },
 
-      register: async (payload, opts) => {
+      register: async (axiosClient, payload, opts) => {
         set({ is_loading: true, error: null });
 
         try {
           // const { data: dbData } =
-          await apiClient.post<IRegisterUserResponse>(
+          await axiosClient.post<IRegisterUserResponse>(
             '/auth/register/',
             payload,
           );

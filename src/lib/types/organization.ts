@@ -26,6 +26,6 @@ export interface Organization {
   id: string;
   name: string;
   description?: string;
-  logo?: string;
+  logo_url?: string;
 
 }

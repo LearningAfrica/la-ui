@@ -14,7 +14,7 @@ export default function LandingPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="from-primary/10 to-background bg-gradient-to-b pt-16 pb-24">
+      <section className="from-primary/10 to-background bg-gradient-to-b pt-16 p-24  ">
         <div className="container flex flex-col items-center gap-8 lg:flex-row">
           <div className="flex-1 space-y-6">
             <h1 className="text-4xl leading-tight font-bold md:text-5xl lg:text-6xl">
@@ -46,7 +46,7 @@ export default function LandingPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="bg-muted py-16">
+      <section className="bg-muted p-16">
         <div className="container">
           <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
             {landingPageData.stats.map((stat) => (
