@@ -1,4 +1,5 @@
-import type { UserRole } from './auth';
+import type { UserRole } from "../validators/auth-schema";
+
 
 export interface OrganizationSettings {
   allowSelfRegistration?: boolean;
@@ -16,24 +17,15 @@ export interface OrganizationMember {
   status: 'active' | 'pending' | 'suspended';
 }
 
-export type OrganizationStatus =
-  | 'active'
-  | 'pending'
-  | 'suspended'
-  | 'archived';
+// export type OrganizationStatus =
+//   | 'active'
+//   | 'pending'
+//   | 'suspended'
+//   | 'archived';
 export interface Organization {
   id: string;
   name: string;
-  slug: string;
   description?: string;
   logo?: string;
-  banner?: string;
-  domain?: string;
-  settings: OrganizationSettings;
-  createdAt: string;
-  updatedAt?: string;
-  status: OrganizationStatus;
-  memberCount: number;
-  currentUserRole?: UserRole;
-  currentUserMembershipStatus?: OrganizationMember['status'];
+
 }

@@ -25,31 +25,24 @@ import { ArrowLeft, Save, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link, useParams } from 'react-router-dom';
 import { useOrganization } from '@/hooks/use-organizations';
-import type { UserRole } from '@/lib/types/auth';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function OrganizationSettingsPage() {
   const params = useParams<{ id: string }>();
   const { organizations: availableOrganizations, getCurrentUserRole } =
     useOrganization();
+    const auth = useAuth();
   const [isSaving, setIsSaving] = useState(false);
 
   // Find organization
-  const organization = availableOrganizations.find(
-    (org) => org.id === params.id,
-  );
-  const userRole = getCurrentUserRole();
-  const canManageSettings = userRole === 'superAdmin' || userRole === 'admin';
+  const organization = auth.getCurrentOrganization()
+  const userRole = auth.getCurrentUserRole();
+  const canManageSettings = userRole === 'super_admin' || userRole === 'admin';
 
   // Form state
   const [formData, setFormData] = useState({
     name: organization?.name || '',
-    description: organization?.description || '',
-    domain: organization?.domain || '',
-    logo: organization?.logo || '',
-    allowSelfRegistration:
-      organization?.settings.allowSelfRegistration || false,
-    defaultRole: organization?.settings.defaultRole || ('student' as UserRole),
-    features: organization?.settings.features || [],
+   
   });
 
   if (!organization) {

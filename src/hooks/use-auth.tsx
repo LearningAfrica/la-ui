@@ -8,6 +8,7 @@ import {
   type IRegisterUser,
   type IRegisterUserResponse,
 } from '@/lib/validators/auth-schema';
+import { toast } from 'sonner';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
@@ -31,6 +32,9 @@ interface AuthActions {
   clearError: () => void;
   setLoading: (loading: boolean) => void;
   setUser: (user: IAuthUser) => void;
+  getCurrentOrganization: () => IAuthUser['organizations'][number] | undefined;
+  getCurrentUserRole: () => IAuthUser['role'] | undefined;
+  changeCurrentOrganization: (organizationId: string) => void; // Add this method to change current organization
 }
 
 type AuthStore = AuthState & AuthActions;
@@ -39,13 +43,14 @@ export const useAuth = create<AuthStore>()(
   persist(
     (set, _get) => ({
       user: null,
-      token: null,
-      isAuthenticated: false,
-      isLoading: false,
+      access_token: null,
+      is_authenticated: false,
+      is_loading: false,
       error: null,
-
+      current_org_id: null,
+      refresh_token: null,
       login: async (payload, opts) => {
-        set({ isLoading: true, error: null });
+        set({ is_loading: true, error: null });
 
         try {
           const { data: dbData } = await apiClient.post<ILoginUserResponse>(
@@ -63,19 +68,18 @@ export const useAuth = create<AuthStore>()(
               organizations: [],
               avatar: undefined, // Adjust as needed
             },
-            token: data.access_token,
-            isAuthenticated: true,
-            isLoading: false,
+            access_token: data.access_token,
+            is_authenticated: true,
+            is_loading: false,
             error: null,
           }));
-         
         } catch (error) {
           set((state) => ({
             ...state,
             user: null,
-            token: null,
-            isAuthenticated: false,
-            isLoading: false,
+            access_token: null,
+            is_authenticated: false,
+            is_loading: false,
             error: extractCorrectErrorMessage(error, 'Login failed'),
           }));
           if (opts?.onError && typeof opts.onError === 'function') {
@@ -88,7 +92,7 @@ export const useAuth = create<AuthStore>()(
       },
 
       register: async (payload, opts) => {
-        set({ isLoading: true, error: null });
+        set({ is_loading: true, error: null });
 
         try {
           // const { data: dbData } =
@@ -101,9 +105,9 @@ export const useAuth = create<AuthStore>()(
           set((state) => ({
             ...state,
             user: null,
-            token: null,
-            isAuthenticated: false,
-            isLoading: false,
+            access_token: null,
+            is_authenticated: false,
+            is_loading: false,
             error: extractCorrectErrorMessage(error, 'Registration failed'),
           }));
           if (opts?.onError && typeof opts.onError === 'function') {
@@ -123,9 +127,9 @@ export const useAuth = create<AuthStore>()(
         set((state) => ({
           ...state,
           user: null,
-          token: null,
-          isAuthenticated: false,
-          isLoading: false,
+          access_token: null,
+          is_authenticated: false,
+          is_loading: false,
           error: null,
         }));
       },
@@ -135,7 +139,7 @@ export const useAuth = create<AuthStore>()(
       },
 
       setLoading: (loading: boolean) => {
-        set((state) => ({ ...state, isLoading: loading }));
+        set((state) => ({ ...state, is_loading: loading }));
       },
       setUser: (user: IAuthUser) => {
         set((state) => ({
@@ -143,14 +147,40 @@ export const useAuth = create<AuthStore>()(
           user: { ...state.user, ...user },
         }));
       },
+      changeCurrentOrganization: (organizationId: string) => {
+        if (_get().user?.organizations.length === 0) {
+          toast.error('No organizations available to switch to.');
+          return;
+        }
+
+        if (
+          !_get().user?.organizations.some((org) => org.id === organizationId)
+        ) {
+          toast.error('Organization not found.');
+          return;
+        }
+
+        set((state) => ({
+          ...state,
+          current_org_id: organizationId,
+        }));
+      },
+      getCurrentOrganization: () => {
+        const orgId = _get().current_org_id;
+        if (!orgId) return undefined;
+        return _get().user?.organizations.find((org) => org.id === orgId);
+      },
+      getCurrentUserRole: () => {
+        return _get().user?.role;
+      },
     }),
     {
       name: 'auth-storage',
       storage: createJSONStorage(() => localStorage), // Explicit storage with JSON serialization
       partialize: (state) => ({
         user: state.user,
-        token: state.token,
-        isAuthenticated: state.isAuthenticated,
+        token: state.access_token,
+        isAuthenticated: state.is_authenticated,
       }),
       version: 1, // Add version for future migrations
       migrate: (persistedState, version) => {

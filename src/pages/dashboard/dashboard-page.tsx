@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useNavigate } from 'react-router-dom';
 
 export default function DashboardPage() {
-  const { user, isLoading } = useAuth();
+  const { user, is_loading: isLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {

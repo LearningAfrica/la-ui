@@ -30,25 +30,23 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { useOrganization } from '@/hooks/use-organizations';
+import { useAuth } from '@/hooks/use-auth';
 
 export function OrganizationSwitcher() {
   const {
-    getCurrentUserRole,
-    createOrganization,
-    currentOrganization,
-    organizations,
-    switchOrganization,
+    mutations,queries
   } = useOrganization();
-
+const auth = useAuth()
   const [open, setOpen] = useState(false);
   const [showNewOrgDialog, setShowNewOrgDialog] = useState(false);
   const [newOrgName, setNewOrgName] = useState('');
   const [newOrgDescription, setNewOrgDescription] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
-  const userRole = getCurrentUserRole();
+  const userRole = auth.user?.role || 'student';
   const canCreateOrganization =
-    userRole === 'superAdmin' || userRole === 'admin';
+    userRole === 'super_admin' || userRole === 'admin';
+    const currentOrganization = auth.getCurrentOrganization();
 
   const handleCreateOrganization = async () => {
     if (!newOrgName.trim()) return;

@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-
 const userRoleSchema = z.enum([
   'super_admin',
   'admin',
@@ -12,8 +11,8 @@ const userRoleSchema = z.enum([
 
 export type UserRole = z.infer<typeof userRoleSchema>;
 const usernameOrEmailSchema = z.union([
-    z.string().email({ message: 'Invalid email address' }),
-    z.string().min(1, { message: 'Username is required' }),
+  z.string().email({ message: 'Invalid email address' }),
+  z.string().min(1, { message: 'Username is required' }),
 ]);
 
 export const authSchema = z.object({
@@ -43,13 +42,20 @@ const registerSchema = z.object({
   }),
 });
 
+const loginUserOrganizationSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(1, { message: 'Organization name is required' }),
+  position: z.string().optional(),
+  is_active: z.boolean().default(false),
+});
+
 export const loginUserResponseSchema = z.object({
   id: z.string(),
   username: z.string().min(1).max(255),
   user_role: userRoleSchema.default('guest'),
   refresh_token: z.string().nonempty(),
   access_token: z.string().nonempty(),
-  organizations: z.array(z.any()).default([]), // Adjust as needed
+  organizations: z.array(loginUserOrganizationSchema).default([]), // Adjust as needed
 });
 
 export const registerUserResponseSchema = z.object({

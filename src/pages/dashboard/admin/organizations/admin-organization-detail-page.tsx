@@ -61,6 +61,7 @@ import { toast } from 'sonner';
 import type { UserRole } from '@/lib/types/auth';
 import { Link, useParams } from 'react-router-dom';
 import { useOrganization } from '@/hooks/use-organizations';
+import { useAuth } from '@/hooks/use-auth';
 
 // Mock member data
 const mockMembers = [
@@ -114,11 +115,7 @@ interface EmailChip {
 
 export default function OrganizationDetailPage() {
   const params = useParams<{ id: string }>();
-  const {
-    organizations: availableOrganizations,
-    getCurrentUserRole,
-    inviteUserToOrganization,
-  } = useOrganization();
+  const { mutations, queries } = useOrganization();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const [showInviteDialog, setShowInviteDialog] = useState(false);
@@ -135,13 +132,12 @@ export default function OrganizationDetailPage() {
   const [editDescription, setEditDescription] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
-  const userRole = getCurrentUserRole();
-  const canManageMembers = userRole === 'superAdmin' || userRole === 'admin';
+  const { user, getCurrentOrganization } = useAuth();
+  const canManageMembers =
+    user?.role === 'super_admin' || user?.role === 'admin';
 
   // Find organization
-  const organization = availableOrganizations.find(
-    (org) => org.id === params.id,
-  );
+  const organization = getCurrentOrganization();
 
   if (!organization) {
     return (
@@ -249,7 +245,7 @@ export default function OrganizationDetailPage() {
     setIsInviting(true);
     try {
       for (const chip of validEmails) {
-        await inviteUserToOrganization(chip.email, organization.id, inviteRole);
+        // await inviteUserToOrganization(chip.email, organization.id, inviteRole);
       }
       setEmailChips([]);
       setEmailInput('');

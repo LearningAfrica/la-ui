@@ -5,7 +5,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import LoadingFallback from '../loading-fallback';
 
 export default function DashboardLayout() {
-  const { user, isLoading } = useAuth();
+  const { user, is_loading: isLoading } = useAuth();
   const router = useNavigate();
   const pathname = useLocation().pathname;
 
