@@ -1,8 +1,19 @@
-import type React from 'react';
-
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { useAuth } from '@/hooks/use-auth';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormDescription,
+} from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Card,
   CardContent,
@@ -11,76 +22,45 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
-import { useAuth } from '@/hooks/use-auth';
-import { Link, useNavigate } from 'react-router-dom';
+import { registerUserSchemaResolver } from '@/lib/validators/auth-schema';
+import { useState } from 'react';
+import { LucideEye, LucideEyeOff } from 'lucide-react';
 
 export default function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [terms, setTerms] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const form = useForm({
+    resolver: registerUserSchemaResolver,
+    defaultValues: {
+      username: '',
+      email: '',
+      first_name: '',
+      last_name: '',
+      password: '',
+      is_super_admin: false,
+      is_admin: false,
+      is_instructor: false,
+      is_student: true, // Default to student
+      // invitation_token: '',
+      terms: false,
+    },
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = form.handleSubmit(async (data) => {
     setIsLoading(true);
 
     try {
-      // Validate name
-      if (!name || name.length < 2) {
-        toast.error('Name must be at least 2 characters');
-        setIsLoading(false);
-        return;
-      }
-
-      // Validate email
-      if (!email || !email.includes('@')) {
-        toast.error('Please enter a valid email address');
-        setIsLoading(false);
-        return;
-      }
-
-      // Validate password
-      if (!password || password.length < 6) {
-        toast.error('Password must be at least 6 characters');
-        setIsLoading(false);
-        return;
-      }
-
-      // Validate password confirmation
-      if (password !== confirmPassword) {
-        toast.error('Passwords do not match');
-        setIsLoading(false);
-        return;
-      }
-
-      // Validate terms
-      if (!terms) {
-        toast.error('You must agree to the terms and conditions');
-        setIsLoading(false);
-        return;
-      }
-
-      await register(
-        { name, email, password },
-        {
-          onSuccess() {
-            toast.success('Registered successfully');
-            navigate('/dashboard');
-          },
-        },
-      );
-    } catch (error) {
-      toast.error('Registration failed');
+      await register(data, {});
+      toast.success('Registered successfully');
+      await navigate('/login');
+    } catch (error: any) {
+      toast.error(error.message, { position: 'top-center' });
     } finally {
       setIsLoading(false);
     }
-  };
+  });
 
   return (
     <div className="bg-muted/40 flex min-h-screen items-center justify-center p-4">
@@ -94,79 +74,247 @@ export default function RegisterPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                placeholder="John Doe"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your.email@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                placeholder="••••••••"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </div>
-            <div className="flex items-start space-x-2">
-              <input
-                type="checkbox"
-                id="terms"
-                className="text-primary focus:ring-primary mt-1 h-4 w-4 rounded border-gray-300"
-                checked={terms}
-                onChange={(e) => setTerms(e.target.checked)}
-                required
-              />
-              <div>
-                <Label
-                  htmlFor="terms"
-                  className="cursor-pointer text-sm leading-none font-medium"
-                >
-                  I agree to the{' '}
-                  <Link to="/terms" className="text-primary hover:underline">
-                    terms of service
-                  </Link>{' '}
-                  and{' '}
-                  <Link to="/privacy" className="text-primary hover:underline">
-                    privacy policy
-                  </Link>
-                </Label>
+          <Form {...form}>
+            <form onSubmit={onSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="first_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="John" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="last_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Doe" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
-            </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Creating account...' : 'Create account'}
-            </Button>
-          </form>
+
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder="johndoe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="your.email@example.com"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>Password</FormLabel>
+                      <Link
+                        to="/forgot-password"
+                        className="text-primary text-sm hover:underline"
+                      >
+                        Forgot password?
+                      </Link>
+                    </div>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="••••••••"
+                          {...field}
+                          className="pr-10" // Add padding to prevent text under button
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                        >
+                          {showPassword ? (
+                            <LucideEyeOff className="text-muted-foreground h-4 w-4" />
+                          ) : (
+                            <LucideEye className="text-muted-foreground h-4 w-4" />
+                          )}
+                          <span className="sr-only">
+                            {showPassword ? 'Hide password' : 'Show password'}
+                          </span>
+                        </Button>
+                      </div>
+                    </FormControl>
+                    <FormDescription className="text-xs">
+                      At least 8 characters with uppercase, lowercase, and
+                      number
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="invitation_token"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel hidden>Invitation Token (if any)</FormLabel>
+                    <FormControl hidden>
+                      <Input
+                        hidden
+                        placeholder="Enter invitation token"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="space-y-4" hidden>
+                <FormLabel>Account Type</FormLabel>
+                <div className="space-y-2">
+                  {/* <FormField
+                    control={form.control}
+                    name="is_student"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Student Account
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  /> */}
+                  {/* <FormField
+                    control={form.control}
+                    name="is_instructor"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Instructor Account
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  /> */}
+                  {/* <FormField
+                    control={form.control}
+                    name="is_admin"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Administrator Account
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  /> */}
+                  {/* <FormField
+                    control={form.control}
+                    name="is_super_admin"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          Super Administrator Account
+                        </FormLabel>
+                      </FormItem>
+                    )}
+                  /> */}
+                </div>
+              </div>
+
+              <FormField
+                control={form.control}
+                name="terms"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="cursor-pointer font-normal">
+                        I agree to the{' '}
+                        <Link
+                          to="/terms"
+                          className="text-primary hover:underline"
+                        >
+                          terms of service
+                        </Link>{' '}
+                        and{' '}
+                        <Link
+                          to="/privacy"
+                          className="text-primary hover:underline"
+                        >
+                          privacy policy
+                        </Link>
+                      </FormLabel>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Creating account...' : 'Create account'}
+              </Button>
+            </form>
+          </Form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-center text-sm">
@@ -174,24 +322,6 @@ export default function RegisterPage() {
             <Link to="/login" className="text-primary hover:underline">
               Sign in
             </Link>
-          </div>
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background text-muted-foreground px-2">
-                Or continue with
-              </span>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" className="w-full" type="button">
-              Google
-            </Button>
-            <Button variant="outline" className="w-full" type="button">
-              GitHub
-            </Button>
           </div>
         </CardFooter>
       </Card>

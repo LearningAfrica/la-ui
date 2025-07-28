@@ -131,7 +131,7 @@ export default function LandingPage() {
         <div className="container">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
             <div>
-              <h3 className="mb-4 text-lg font-bold">LearnHub</h3>
+              <h3 className="mb-4 text-lg font-bold">Learning Africa</h3>
               <p className="text-muted-foreground">
                 Empowering learners worldwide with quality education and skills
                 for the future.

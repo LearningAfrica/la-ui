@@ -3,13 +3,13 @@ import type { Organization } from '../types/organization';
 export const MOCK_ORGANIZATIONS: Organization[] = [
   {
     id: 'org-edu-001',
-    name: 'LearnHub University',
-    slug: 'learnhub-university',
+    name: 'Learning Africa',
+    slug: 'learning-africa',
     description:
       'Premier online university with courses across all disciplines',
-    logo: '/logos/learnhub-university.png',
+    logo: '/logos/learning-africa.png',
     banner: '/banners/education-banner.jpg',
-    domain: 'learnhub.edu',
+    domain: 'learningafrica.com',
     settings: {
       allowSelfRegistration: true,
       defaultRole: 'student',

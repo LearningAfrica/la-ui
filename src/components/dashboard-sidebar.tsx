@@ -28,7 +28,7 @@ export function DashboardSidebar({ className }: DashboardSidebarProps) {
           <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-lg">
             <GraduationCap className="h-4 w-4" />
           </div>
-          <span className="text-xl font-bold">LearnHub</span>
+          <span className="text-xl font-bold">Learning Africa</span>
         </Link>
         <UserNav />
       </div>

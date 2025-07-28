@@ -229,7 +229,7 @@ export default function InstructorDashboardPage() {
             Instructor Dashboard
           </h1>
           <p className="text-muted-foreground">
-            Welcome back, {user?.name}! Here's what's happening with your
+            Welcome back, {user?.username}! Here's what's happening with your
             courses.
           </p>
         </div>

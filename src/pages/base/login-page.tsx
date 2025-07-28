@@ -1,6 +1,15 @@
-import type React from 'react';
-
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { useAuth } from '@/hooks/use-auth';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -11,53 +20,38 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
-import { useAuth } from '@/hooks/use-auth';
-import { Link, useNavigate } from 'react-router-dom';
+import { loginUserSchemaResolver } from '@/lib/validators/auth-schema';
+import { useState } from 'react';
 
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const form = useForm({
+    resolver: loginUserSchemaResolver,
+    defaultValues: {
+      username_or_email: '',
+      password: '',
+    },
+  });
+
+  const onSubmit = form.handleSubmit(async (data) => {
     setIsLoading(true);
 
     try {
-      // Validate email
-      if (!email || !email.includes('@')) {
-        toast.error('Please enter a valid email address');
-        setIsLoading(false);
-        return;
-      }
-
-      // Validate password
-      if (!password || password.length < 6) {
-        toast.error('Password must be at least 6 characters');
-        setIsLoading(false);
-        return;
-      }
-
-      await login(
-        { email, password },
-        {
-          onSuccess() {
-            toast.success('Logged in successfully');
-            navigate('/dashboard');
-          },
-        },
-      );
-    } catch (error) {
-      toast.error('Invalid email or password');
+      await login(data, {
+        async onSuccess() {},
+      });
+      toast.success('Logged in successfully');
+      await navigate('/dashboard');
+    } catch (error: any) {
+      toast.error(error.message, { position: 'top-center' });
     } finally {
       setIsLoading(false);
     }
-  };
+  });
 
   return (
     <div className="bg-muted/40 flex min-h-screen items-center justify-center p-4">
@@ -71,56 +65,70 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your.email@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
+          <Form {...form}>
+            <form onSubmit={onSubmit} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="username_or_email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username / Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="Username or email"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="remember"
-                  className="text-primary focus:ring-primary h-4 w-4 rounded border-gray-300"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                />
-                <Label
-                  htmlFor="remember"
-                  className="cursor-pointer text-sm leading-none font-medium"
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="remember"
+                    className="text-primary focus:ring-primary h-4 w-4 rounded border-gray-300"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                  />
+                  <label
+                    htmlFor="remember"
+                    className="cursor-pointer text-sm leading-none font-medium"
+                  >
+                    Remember me
+                  </label>
+                </div>
+                <Link
+                  to="/forgot-password"
+                  className="text-primary text-sm hover:underline"
                 >
-                  Remember me
-                </Label>
+                  Forgot password?
+                </Link>
               </div>
-              <Link
-                to="/forgot-password"
-                className="text-primary text-sm hover:underline"
-              >
-                Forgot password?
-              </Link>
-            </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Logging in...' : 'Login'}
-            </Button>
-          </form>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'Logging in...' : 'Login'}
+              </Button>
+            </form>
+          </Form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-center text-sm">
@@ -129,7 +137,7 @@ export default function LoginPage() {
               Sign up
             </Link>
           </div>
-          <div className="relative">
+          {/* <div className="relative">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
             </div>
@@ -138,15 +146,15 @@ export default function LoginPage() {
                 Or continue with
               </span>
             </div>
-          </div>
-          <div className="flex gap-2">
+          </div> */}
+          {/* <div className="flex gap-2">
             <Button variant="outline" className="w-full" type="button">
               Google
             </Button>
             <Button variant="outline" className="w-full" type="button">
               GitHub
             </Button>
-          </div>
+          </div> */}
         </CardFooter>
       </Card>
     </div>

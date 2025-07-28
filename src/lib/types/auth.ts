@@ -1,17 +1,10 @@
+import type { UserRole } from '../validators/auth-schema';
 import type { Organization } from './organization';
 
-export type UserRole =
-  | 'student'
-  | 'instructor'
-  | 'admin'
-  | 'superAdmin'
-  | 'guest';
 
 export interface IAuthUser {
   id: string;
-  email: string;
-  name: string;
-  avatar?: string;
+  username: string;
   role?: UserRole;
   organizations: Organization[];
   currentOrganization?: Organization;
@@ -25,13 +18,3 @@ export interface AuthState {
   error: string | null;
 }
 
-export interface ILoginUser {
-  email: string;
-  password: string;
-  // role?: UserRole; // Optional role for login
-}
-export interface IRegisterUser {
-  email: string;
-  password: string;
-  name: string;
-}

@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { ArrowLeft, Loader2, Plus, Search, X } from 'lucide-react';
@@ -31,7 +29,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
 // Define the Student type
@@ -62,7 +60,7 @@ const formSchema = z.object({
 
 export default function AddStudentsPage() {
   const params = useParams<{ id: string }>();
-  const router = useRouter();
+  const navigate = useNavigate();
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -121,7 +119,7 @@ export default function AddStudentsPage() {
   );
 
   // Initialize the form
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       students: [],
@@ -149,7 +147,7 @@ export default function AddStudentsPage() {
         `${values.students.length} students have been successfully enrolled in the course.`,
       );
 
-      router(`/dashboard/admin/courses/${params.id}/students`);
+      navigate(`/dashboard/admin/courses/${params.id}/students`);
     } catch (error) {
       // toast({
       // 	title: 'Error',
@@ -202,7 +200,7 @@ export default function AddStudentsPage() {
     <div className="flex-1 space-y-4 p-6 md:p-8">
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="sm" asChild>
-          <Link href={`/dashboard/admin/courses/${params.id}/students`}>
+          <Link to={`/dashboard/admin/courses/${params.id}/students`}>
             <ArrowLeft className="mr-1 h-4 w-4" />
             Back to Students
           </Link>
@@ -462,7 +460,7 @@ export default function AddStudentsPage() {
                       type="button"
                       variant="outline"
                       onClick={() =>
-                        router.push(
+                        navigate(
                           `/dashboard/admin/courses/${params.id}/students`,
                         )
                       }

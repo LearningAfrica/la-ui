@@ -9,5 +9,15 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     }
-  }
+  },
+  server: {
+    port: 3000,
+    proxy: {
+      '/api': {
+        target: process.env.VITE_BACKEND_URL || 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 })

@@ -153,7 +153,7 @@ export default function AdminDashboardPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
           <p className="text-muted-foreground">
-            Welcome back, {user?.name}! Here's what's happening in your
+            Welcome back, {user?.username}! Here's what's happening in your
             organization.
           </p>
         </div>

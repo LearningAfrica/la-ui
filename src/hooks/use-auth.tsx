@@ -1,11 +1,13 @@
-import { MOCK_USER_WITH_ORGS } from '@/lib/data/mock-org';
-import type {
-  AuthState,
-  IAuthUser,
-  ILoginUser,
-  IRegisterUser,
-  UserRole,
-} from '@/lib/types/auth';
+import apiClient from '@/lib/api';
+import type { AuthState, IAuthUser } from '@/lib/types/auth';
+import { extractCorrectErrorMessage } from '@/lib/utils/axios-err';
+import {
+  loginUserResponseSchema,
+  type ILoginUser,
+  type ILoginUserResponse,
+  type IRegisterUser,
+  type IRegisterUserResponse,
+} from '@/lib/validators/auth-schema';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
@@ -32,50 +34,6 @@ interface AuthActions {
 }
 
 type AuthStore = AuthState & AuthActions;
-const checkRole = (email: string): UserRole =>
-  email.includes('admin')
-    ? 'admin'
-    : email.includes('instructor')
-      ? 'instructor'
-      : email.includes('student')
-        ? 'student'
-        : 'guest';
-// Mock API functions
-const mockLogin = async ({
-  email,
-  password,
-}: ILoginUser): Promise<{ user: IAuthUser; token: string }> => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (email && password) {
-        resolve({
-          user: { ...MOCK_USER_WITH_ORGS, email, role: checkRole(email) },
-          token: 'test-token',
-        });
-      } else {
-        reject(new Error('Invalid credentials'));
-      }
-    }, 1000);
-  });
-};
-
-const mockRegister = async (
-  payload: IRegisterUser,
-): Promise<{ user: IAuthUser; token: string }> => {
-  const { email, password, name } = payload;
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (email && password && name) {
-        resolve({
-          user: { ...MOCK_USER_WITH_ORGS, email, name },
-          token: 'mock-jwt-token-new-user',
-        });
-      } else {
-        reject(new Error('Registration failed'));
-      }
-    }, 1000);
-  });
-};
 
 export const useAuth = create<AuthStore>()(
   persist(
@@ -90,22 +48,27 @@ export const useAuth = create<AuthStore>()(
         set({ isLoading: true, error: null });
 
         try {
-          const { user, token } = await mockLogin(payload);
-
+          const { data: dbData } = await apiClient.post<ILoginUserResponse>(
+            '/auth/login/',
+            payload,
+          );
+          const data = loginUserResponseSchema.parse(dbData);
           // Use functional update to ensure all state changes are applied together
           set((state) => ({
             ...state,
-            user,
-            token,
+            user: {
+              id: data.id,
+              username: data.username,
+              role: data.user_role,
+              organizations: [],
+              avatar: undefined, // Adjust as needed
+            },
+            token: data.access_token,
             isAuthenticated: true,
             isLoading: false,
             error: null,
           }));
-          if (opts?.onSuccess && typeof opts.onSuccess === 'function') {
-            opts.onSuccess(user, token);
-          } else {
-            console.log('Login successful:');
-          }
+         
         } catch (error) {
           set((state) => ({
             ...state,
@@ -113,15 +76,14 @@ export const useAuth = create<AuthStore>()(
             token: null,
             isAuthenticated: false,
             isLoading: false,
-            error: error instanceof Error ? error.message : 'Login failed',
+            error: extractCorrectErrorMessage(error, 'Login failed'),
           }));
           if (opts?.onError && typeof opts.onError === 'function') {
-            opts.onError(
-              error instanceof Error ? error.message : 'Login failed',
-            );
+            opts.onError(extractCorrectErrorMessage(error, 'Login failed'));
           } else {
             console.error('Login failed:', error);
           }
+          throw new Error(extractCorrectErrorMessage(error, 'Login failed'));
         }
       },
 
@@ -129,21 +91,12 @@ export const useAuth = create<AuthStore>()(
         set({ isLoading: true, error: null });
 
         try {
-          const { user, token } = await mockRegister(payload);
-
-          set((state) => ({
-            ...state,
-            user,
-            token,
-            isAuthenticated: true,
-            isLoading: false,
-            error: null,
-          }));
-          if (opts?.onSuccess && typeof opts.onSuccess === 'function') {
-            opts.onSuccess(user, token);
-          } else {
-            console.log('Registration successful:', user);
-          }
+          // const { data: dbData } =
+          await apiClient.post<IRegisterUserResponse>(
+            '/auth/register/',
+            payload,
+          );
+          // registerUserResponseSchema.parse(dbData);
         } catch (error) {
           set((state) => ({
             ...state,
@@ -151,16 +104,18 @@ export const useAuth = create<AuthStore>()(
             token: null,
             isAuthenticated: false,
             isLoading: false,
-            error:
-              error instanceof Error ? error.message : 'Registration failed',
+            error: extractCorrectErrorMessage(error, 'Registration failed'),
           }));
           if (opts?.onError && typeof opts.onError === 'function') {
             opts.onError(
-              error instanceof Error ? error.message : 'Registration failed',
+              extractCorrectErrorMessage(error, 'Registration failed'),
             );
           } else {
             console.error('Registration failed:', error);
           }
+          throw new Error(
+            extractCorrectErrorMessage(error, 'Registration failed'),
+          );
         }
       },
 
