@@ -24,6 +24,7 @@ import { loginUserSchemaResolver } from '@/lib/validators/auth-schema';
 import { useState } from 'react';
 import { useApiClient } from '@/lib/api';
 import { extractCorrectErrorMessage } from '@/lib/utils/axios-err';
+import { LucideEye, LucideEyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -31,6 +32,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm({
     resolver: loginUserSchemaResolver,
@@ -96,11 +98,30 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="••••••••"
+                          {...field}
+                          className="pr-10" // Add padding to prevent text under button
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                        >
+                          {showPassword ? (
+                            <LucideEyeOff className="text-muted-foreground h-4 w-4" />
+                          ) : (
+                            <LucideEye className="text-muted-foreground h-4 w-4" />
+                          )}
+                          <span className="sr-only">
+                            {showPassword ? 'Hide password' : 'Show password'}
+                          </span>
+                        </Button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
