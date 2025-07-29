@@ -44,7 +44,7 @@ type AuthStore = AuthState & AuthActions;
 export const useAuth = create<AuthStore>()(
   persist(
     (set, _get) => ({
-      user: null,
+      user: {} as IAuthUser,
       access_token: null,
       is_authenticated: false,
       is_loading: false,
@@ -191,6 +191,10 @@ export const useAuth = create<AuthStore>()(
         }
         return persistedState as AuthState;
       },
+      merge: (persistedState, currentState) => ({
+        ...currentState,
+        ...(persistedState as AuthStore),
+      }),
     },
   ),
 );
