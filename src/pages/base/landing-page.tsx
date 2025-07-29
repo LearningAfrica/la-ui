@@ -15,7 +15,7 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="from-primary/10 to-background bg-gradient-to-b pt-16 p-24  ">
-        <div className="container flex flex-col items-center gap-8 lg:flex-row">
+        <div className="container flex flex-col items-center gap-8 lg:flex-row mx-auto">
           <div className="flex-1 space-y-6">
             <h1 className="text-4xl leading-tight font-bold md:text-5xl lg:text-6xl">
               Unlock Your Potential with Online Learning
@@ -34,20 +34,30 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="flex-1">
-            <img
-              src="/hero-image.jpg"
-              alt="Students learning online"
-              className="rounded-lg shadow-xl"
-              width={600}
-              height={400}
-            />
+            <picture className="w-full max-w-md mx-auto">
+              <source
+                srcSet="/4353655.webp"
+                type="image/webp"
+              />
+              <source
+                srcSet="/hero-image.jpg"
+                type="image/jpeg"
+              />
+              <img
+                src="/4353655.webp"
+                alt="Students learning online"
+                className="rounded-lg shadow-xl"
+                width={600}
+                height={400}
+              />
+            </picture>
           </div>
         </div>
       </section>
 
       {/* Stats Section */}
       <section className="bg-muted p-16">
-        <div className="container">
+        <div className="container mx-auto">
           <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
             {landingPageData.stats.map((stat) => (
               <StatsCard key={stat.id} stat={stat} />
@@ -58,7 +68,7 @@ export default function LandingPage() {
 
       {/* Featured Courses Section */}
       <section className="py-16">
-        <div className="container">
+        <div className="container mx-auto">
           <div className="mb-8 flex items-center justify-between">
             <div>
               <h2 className="text-3xl font-bold">Featured Courses</h2>
@@ -83,7 +93,7 @@ export default function LandingPage() {
 
       {/* Testimonials Section */}
       <section className="bg-muted py-16">
-        <div className="container">
+        <div className="container mx-auto">
           <h2 className="mb-12 text-center text-3xl font-bold">
             What Our Students Say
           </h2>
@@ -97,7 +107,7 @@ export default function LandingPage() {
 
       {/* Pricing Section */}
       <section className="py-16">
-        <div className="container">
+        <div className="container mx-auto">
           <div className="mb-12 text-center">
             <h2 className="text-3xl font-bold">Choose Your Learning Plan</h2>
             <p className="text-muted-foreground mt-2">
@@ -114,7 +124,7 @@ export default function LandingPage() {
 
       {/* CTA Section */}
       <section className="bg-primary text-primary-foreground py-16">
-        <div className="container text-center">
+        <div className="container text-center mx-auto">
           <h2 className="mb-4 text-3xl font-bold">Ready to Start Learning?</h2>
           <p className="mx-auto mb-8 max-w-2xl text-xl">
             Join millions of students and start learning today. Access courses
@@ -128,7 +138,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="bg-background border-t py-12">
-        <div className="container">
+        <div className="container mx-auto">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
             <div>
               <h3 className="mb-4 text-lg font-bold">Learning Africa</h3>
@@ -224,7 +234,7 @@ export default function LandingPage() {
           </div>
           <div className="mt-8 flex flex-col items-center justify-between border-t pt-8 md:flex-row">
             <p className="text-muted-foreground">
-              © 2023 LearnHub. All rights reserved.
+              © {new Date().getFullYear()} Learning Africa. All rights reserved.
             </p>
             <div className="mt-4 flex gap-4 md:mt-0">
               <Link

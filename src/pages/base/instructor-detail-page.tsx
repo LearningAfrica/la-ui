@@ -97,7 +97,7 @@ const instructorCoursesData = {
       title: 'Machine Learning Fundamentals',
       description:
         'Learn the basics of machine learning with Python and scikit-learn.',
-      image: '/ml-course.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/girls-are-doing-web-development-and-coding-12260429-10390995.png?f=webp',
       instructor: 'Dr. Sarah Johnson',
       rating: 4.9,
       students: 5432,
@@ -109,7 +109,7 @@ const instructorCoursesData = {
       title: 'Deep Learning with TensorFlow',
       description:
         'Master deep learning concepts and build neural networks with TensorFlow.',
-      image: '/dl-course.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/woman-working-on-deep-learning-14126133-11362695.png?f=webp',
       instructor: 'Dr. Sarah Johnson',
       rating: 4.8,
       students: 3876,
@@ -121,7 +121,7 @@ const instructorCoursesData = {
       title: 'Data Science with Python',
       description:
         'Complete data science course covering pandas, numpy, and matplotlib.',
-      image: '/ds-course.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/online-computer-science-course-5526297-4615191.png?f=webp',
       instructor: 'Dr. Sarah Johnson',
       rating: 4.9,
       students: 6124,
@@ -134,7 +134,7 @@ const instructorCoursesData = {
       id: '4',
       title: 'React Development Masterclass',
       description: 'Build modern web applications with React and Redux.',
-      image: '/react-course.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/coder-doing-web-coding-12644220-10289950.png?f=webp',
       instructor: 'Michael Chen',
       rating: 4.8,
       students: 4567,
@@ -146,7 +146,7 @@ const instructorCoursesData = {
       title: 'Full Stack JavaScript',
       description:
         'Complete full stack development with Node.js, Express, and MongoDB.',
-      image: '/fullstack-course.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/man-working-on-javascript-development-6081845-5054690.png?f=webp',
       instructor: 'Michael Chen',
       rating: 4.7,
       students: 3891,
@@ -162,7 +162,7 @@ const reviewsData = {
     {
       id: 'r1',
       student: 'John Smith',
-      studentImage: '/student-1.jpg',
+      studentImage: 'https://cdni.iconscout.com/illustration/premium/thumb/business-woman-5373575-4498296.png?f=webp',
       rating: 5,
       date: '2024-01-20',
       course: 'Machine Learning Fundamentals',
@@ -172,7 +172,7 @@ const reviewsData = {
     {
       id: 'r2',
       student: 'Emily Davis',
-      studentImage: '/student-2.jpg',
+      studentImage: 'https://cdni.iconscout.com/illustration/premium/thumb/business-woman-5373575-4498296.png?f=webp',
       rating: 5,
       date: '2024-01-15',
       course: 'Deep Learning with TensorFlow',
@@ -182,7 +182,7 @@ const reviewsData = {
     {
       id: 'r3',
       student: 'Alex Rodriguez',
-      studentImage: '/student-3.jpg',
+      studentImage: 'https://cdni.iconscout.com/illustration/premium/thumb/business-woman-5373575-4498296.png?f=webp',
       rating: 4,
       date: '2024-01-10',
       course: 'Data Science with Python',
@@ -194,7 +194,7 @@ const reviewsData = {
     {
       id: 'r4',
       student: 'Lisa Wang',
-      studentImage: '/student-4.jpg',
+      studentImage: 'https://cdni.iconscout.com/illustration/premium/thumb/business-woman-5373575-4498296.png?f=webp',
       rating: 5,
       date: '2024-01-18',
       course: 'React Development Masterclass',
@@ -204,7 +204,7 @@ const reviewsData = {
     {
       id: 'r5',
       student: 'David Kim',
-      studentImage: '/student-5.jpg',
+      studentImage: 'https://cdni.iconscout.com/illustration/premium/thumb/business-woman-5373575-4498296.png?f=webp',
       rating: 4,
       date: '2024-01-12',
       course: 'Full Stack JavaScript',
@@ -228,7 +228,7 @@ export default function InstructorDetailPage() {
     return (
       <div>
         <Header />
-        <div className="container py-8">
+        <div className="container py-8 mx-auto">
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-12">
               <h2 className="mb-2 text-xl font-semibold">
@@ -290,7 +290,7 @@ export default function InstructorDetailPage() {
 
       {/* Instructor Hero */}
       <div className="bg-muted py-12">
-        <div className="container">
+        <div className="container mx-auto">
           <div className="mb-6 flex items-center gap-2">
             <Button variant="ghost" size="sm" asChild>
               <Link to="/instructors">
@@ -410,7 +410,7 @@ export default function InstructorDetailPage() {
       </div>
 
       {/* Instructor Content */}
-      <div className="container py-8">
+      <div className="container py-8 mx-auto">
         <Tabs
           defaultValue="about"
           value={activeTab}

@@ -56,7 +56,7 @@ const coursesData = {
       title: 'Complete JavaScript Course',
       description:
         'Master JavaScript with the most comprehensive course available. Learn from basics to advanced concepts.',
-      image: '/javascript-course.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/male-js-developer-working-with-javascript-6015033-5054768.png?f=webp',
       instructor: 'Jane Doe',
       rating: 4.8,
       students: 45678,
@@ -71,7 +71,7 @@ const coursesData = {
       title: 'Python for Beginners',
       description:
         'Learn Python programming from scratch with hands-on projects and real-world examples.',
-      image: '/python-course.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/male-python-developer-working-on-website-6081850-5054695.png?f=webp',
       instructor: 'John Smith',
       rating: 4.7,
       students: 32145,
@@ -86,7 +86,7 @@ const coursesData = {
       title: 'React Development Masterclass',
       description:
         'Build modern web applications with React, Redux, and modern JavaScript features.',
-      image: '/react-course.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/man-scans-qr-code-11599917-9456186.png?f=webp',
       instructor: 'Sarah Johnson',
       rating: 4.9,
       students: 28934,
@@ -101,7 +101,7 @@ const coursesData = {
       title: 'Full Stack Web Development',
       description:
         'Complete guide to becoming a full stack developer with Node.js, Express, and MongoDB.',
-      image: '/fullstack-course.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/full-stack-software-development-company-2974827-2487721.png?f=webp',
       instructor: 'Michael Chen',
       rating: 4.6,
       students: 19876,
@@ -118,7 +118,7 @@ const coursesData = {
       title: 'Data Science with Python',
       description:
         'Learn data analysis, visualization, and machine learning with Python and popular libraries.',
-      image: '/data-science-course.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/it-education-5526284-4615183.png?f=webp',
       instructor: 'Dr. Emily Rodriguez',
       rating: 4.8,
       students: 24567,
@@ -133,7 +133,7 @@ const coursesData = {
       title: 'Machine Learning A-Z',
       description:
         'Complete machine learning course covering supervised, unsupervised, and reinforcement learning.',
-      image: '/ml-course.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/chip-with-learning-engine-helps-people-choose-yes-or-no-in-voting-comments-14482432-11638374.png?f=webp',
       instructor: 'David Kim',
       rating: 4.7,
       students: 18432,
@@ -165,7 +165,7 @@ const coursesData = {
       title: 'Graphic Design Masterclass',
       description:
         'Master Adobe Creative Suite and create stunning visual designs for print and digital media.',
-      image: '/graphic-design-course.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/graphic-design-4606915-3811713.png?f=webp',
       instructor: 'Robert Taylor',
       rating: 4.6,
       students: 12345,
@@ -182,7 +182,7 @@ const coursesData = {
       title: 'Digital Marketing Strategy',
       description:
         'Learn how to create and execute effective digital marketing campaigns across all channels.',
-      image: '/marketing-course.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/online-marketing-3678972-3092483.png?f=webp',
       instructor: 'Amanda Wilson',
       rating: 4.7,
       students: 21098,
@@ -197,7 +197,7 @@ const coursesData = {
       title: 'Entrepreneurship Essentials',
       description:
         'Start and grow your own business with proven strategies and real-world case studies.',
-      image: '/entrepreneurship-course.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/th…rk-in-entrepreneurship-9629953-7814126.png?f=webp',
       instructor: 'James Brown',
       rating: 4.8,
       students: 16754,
@@ -290,7 +290,7 @@ export default function CategoryCoursesPage() {
 
       {/* Category Hero */}
       <div className="bg-muted py-12">
-        <div className="container">
+        <div className="container mx-auto">
           <div className="mb-4 flex items-center gap-2">
             <Button variant="ghost" size="sm" asChild>
               <Link to="/categories">
@@ -321,7 +321,7 @@ export default function CategoryCoursesPage() {
       </div>
 
       {/* Filters and Search */}
-      <div className="container py-6">
+      <div className="container py-6 mx-auto">
         <div className="flex flex-col gap-6 lg:flex-row">
           {/* Desktop Filters Sidebar */}
           <div className="hidden w-64 space-y-6 lg:block">

@@ -8,7 +8,6 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Table,
@@ -27,7 +26,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Building,
@@ -36,7 +34,6 @@ import {
   Save,
   Search,
   Settings,
-  Users,
 } from 'lucide-react';
 import { useOrganization } from '@/hooks/use-organizations';
 import { Link } from 'react-router-dom';

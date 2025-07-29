@@ -18,48 +18,48 @@ export function CategorySection() {
       name: 'Programming',
       icon: <Code className="text-primary h-8 w-8" />,
       count: 450,
-      image: '/programming-category.jpg',
+      image: "https://cdni.iconscout.com/illustration/premium/thumb/programming-3728250-3123323.png?f=webp",
     },
     {
       id: '2',
       name: 'Data Science',
       icon: <Database className="text-primary h-8 w-8" />,
       count: 320,
-      image: '/data-science-category.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/boy-and-girl-are-showing-sql-database-on-laptop-10717598-8732834.png?f=webp',
     },
     {
       id: '3',
       name: 'Design',
       icon: <Palette className="text-primary h-8 w-8" />,
       count: 280,
-      image: '/design-category.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/female-graphic-designer-doing-design-4393762-3649083.png?f=webp',
     },
     {
       id: '4',
       name: 'Business',
       icon: <LineChart className="text-primary h-8 w-8" />,
       count: 310,
-      image: '/business-category.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/work-on-different-tasks-9184022-7482546.png?f=webp',
     },
     {
       id: '5',
       name: 'Academics',
       icon: <BookOpen className="text-primary h-8 w-8" />,
       count: 215,
-      image: '/programming-category.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/online-academics-12091882-9860409.png?f=webp',
     },
     {
       id: '6',
       name: 'Photography & Video',
       icon: <Video className="text-primary h-8 w-8" />,
       count: 175,
-      image: '/design-category.jpg',
+      image: 'https://cdni.iconscout.com/illustration/premium/thumb/photography-enthusiasts-9959590-8103025.png?f=webp',
     },
   ];
 
   return (
     <section className="py-16">
-      <div className="container">
+      <div className="container mx-auto">
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h2 className="text-3xl font-bold">Browse Categories</h2>

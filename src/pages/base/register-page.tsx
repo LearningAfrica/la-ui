@@ -53,7 +53,6 @@ export default function RegisterPage() {
 
   const onSubmit = form.handleSubmit(async (data) => {
     setIsLoading(true);
-
     try {
       await register(apiClient, data, {});
       toast.success('Registered successfully');

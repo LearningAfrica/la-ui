@@ -91,7 +91,7 @@ export default function InstructorsPage() {
   return (
     <div>
       <Header />
-      <main className="container py-8">
+      <main className="container py-8 mx-auto">
         <h1 className="mb-8 text-3xl font-bold">Our Expert Instructors</h1>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">

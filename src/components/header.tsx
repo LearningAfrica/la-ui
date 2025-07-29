@@ -19,8 +19,8 @@ export function Header() {
   };
 
   return (
-    <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur max-w-7xl mx-auto">
-      <div className="container flex h-16 items-center justify-between">
+    <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
+      <div className="container mx-auto flex h-16 items-center justify-between">
         <div className="flex items-center gap-6 md:gap-8 lg:gap-10">
           {/* Mobile Menu */}
           <Sheet>
@@ -102,8 +102,22 @@ export function Header() {
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold">LearnHub</span>
-          </Link>
+          <picture>
+
+            <source
+              srcSet="https://avatars.githubusercontent.com/u/150797856?s=200&v=4"
+              type="image/webp"
+              />
+            <img
+              src="https://avatars.githubusercontent.com/u/150797856?s=200&v=4"
+              alt="Learnig Africa Logo"
+              className="h-8 w-8 rounded-full"
+              width={32}
+              height={32}
+            />
+          </picture>
+          <span className="md:text-xl font-bold">Learning Africa</span>
+        </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center gap-6 md:flex">
