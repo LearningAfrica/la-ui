@@ -176,12 +176,14 @@ export const useAuth = create<AuthStore>()(
       },
     }),
     {
-      name: 'auth-storage',
+      name: 'c9f98b10c9263e2753024f85',
       storage: createJSONStorage(() => localStorage), // Explicit storage with JSON serialization
       partialize: (state) => ({
+        current_org_id: state.current_org_id,
+        refresh_token: state.refresh_token,
+        access_token: state.access_token,
         user: state.user,
-        token: state.access_token,
-        isAuthenticated: state.is_authenticated,
+        is_authenticated: state.is_authenticated,
       }),
       version: 1, // Add version for future migrations
       migrate: (persistedState, version) => {
@@ -195,6 +197,15 @@ export const useAuth = create<AuthStore>()(
         ...currentState,
         ...(persistedState as AuthStore),
       }),
+      onRehydrateStorage(state) {
+        if (state) {
+          state.is_loading = false; // Ensure loading is false after rehydration
+          state.error = null; // Clear any errors on rehydration
+          // if(state.is_authenticated){
+
+          // }
+        }
+      },
     },
   ),
 );
