@@ -71,10 +71,36 @@ export const registerUserResponseSchema = z.object({
   is_student: z.boolean().optional(),
   invitation_token: z.string().min(1).optional(),
 });
+// Forgot password schema
+export const forgotPasswordSchema = z.object({
+  email: z.string().email({ message: 'Invalid email address' }),
+});
+
+// Reset password schema
+export const resetPasswordSchema = z
+  .object({
+    otp_code: z
+      .string()
+      .length(6, { message: 'OTP must be exactly 6 characters long' }),
+    email: z.string().email({ message: 'Invalid email address' }),
+    new_password: z
+      .string()
+      .min(6, { message: 'Password must be at least 6 characters long' }),
+    confirm_password: z.string(),
+  })
+  .refine((data) => data.new_password === data.confirm_password, {
+    message: 'Passwords must match',
+    path: ['confirm_password'],
+  });
+
 export const loginUserSchemaResolver = zodResolver(authSchema);
 export const registerUserSchemaResolver = zodResolver(registerSchema);
+export const forgotPasswordSchemaResolver = zodResolver(forgotPasswordSchema);
+export const resetPasswordSchemaResolver = zodResolver(resetPasswordSchema);
 
 export type ILoginUserResponse = z.infer<typeof loginUserResponseSchema>;
 export type IRegisterUserResponse = z.infer<typeof registerUserResponseSchema>;
 export type ILoginUser = z.infer<typeof authSchema>;
 export type IRegisterUser = z.infer<typeof registerSchema>;
+export type IForgotPassword = z.infer<typeof forgotPasswordSchema>;
+export type IResetPassword = z.infer<typeof resetPasswordSchema>;

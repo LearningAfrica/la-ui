@@ -11,6 +11,8 @@ const CoursePreviewPage = lazy(
 const CategoriesPage = lazy(() => import('@/pages/base/course-categories'));
 const LoginPage = lazy(() => import('@/pages/base/login-page'));
 const RegisterPage = lazy(() => import('@/pages/base/register-page'));
+const ForgotPasswordPage = lazy(() => import('@/pages/base/forgot-password-page'));
+const ResetPasswordPage = lazy(() => import('@/pages/base/reset-password-page'));
 const InstructorsPage = lazy(() => import('@/pages/base/instructors-page'));
 const InstructorDetailPage = lazy(
   () => import('@/pages/base/instructor-detail-page'),
@@ -44,6 +46,14 @@ export const baseRouter: RouteObject[] = [
   {
     path: '/register',
     element: <RegisterPage />,
+  },
+  {
+    path: '/forgot-password',
+    element: <ForgotPasswordPage />,
+  },
+  {
+    path: '/reset-password',
+    element: <ResetPasswordPage />,
   },
   {
     path: '/instructors',

@@ -7,10 +7,13 @@ import { StatsCard } from '@/components/stats-card';
 import { CategorySection } from '@/components/category-section';
 import { Link } from 'react-router-dom';
 import { landingPageData } from '@/lib/data/landing-page-data';
+import { RenderPageMeta } from '@/lib/utils/seo';
 
 export default function LandingPage() {
   return (
     <div>
+      {/* SEO Meta Tags */}
+     <RenderPageMeta title='Unlock Your Potential with Online Learning' />
       <Header />
 
       {/* Hero Section */}
