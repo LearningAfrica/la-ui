@@ -18,6 +18,7 @@ type NavLink = {
   label: string;
   icon: LucideIcon;
   roles: UserRole[];
+  items?: NavLink[];
 };
 
 // Common links that appear for all roles

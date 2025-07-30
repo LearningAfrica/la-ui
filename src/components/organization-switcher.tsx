@@ -1,16 +1,6 @@
 import { useState } from 'react';
-import { Check, Plus } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Check, ChevronsUpDown, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-} from '@/components/ui/command';
 import {
   Dialog,
   DialogContent,
@@ -20,19 +10,30 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useOrganization } from '@/hooks/use-organizations';
 import { useAuth } from '@/hooks/use-auth';
 
-export function OrganizationSwitcher() {
+import type { Organization } from '@/lib/types/organization';
+
+interface OrganizationSwitcherProps {
+  className?: string;
+  onWorkspaceChange?: (workspace: Organization) => void;
+}
+
+export function OrganizationSwitcher({
+  onWorkspaceChange,
+}: OrganizationSwitcherProps = {}) {
   const { mutations } = useOrganization();
   const auth = useAuth();
   const [open, setOpen] = useState(false);
@@ -45,6 +46,20 @@ export function OrganizationSwitcher() {
   const canCreateOrganization =
     userRole === 'super_admin' || userRole === 'admin';
   const currentOrganization = auth.getCurrentOrganization();
+
+  // Function to get the organization icon
+  const getOrganizationIcon = (organization: Organization) => {
+    return organization?.name?.charAt(0).toUpperCase() || 'O';
+  };
+
+  // Handle organization change
+  const handleOrganizationChange = (organization: Organization) => {
+    auth.changeCurrentOrganization(organization.id);
+    setOpen(false);
+    if (onWorkspaceChange) {
+      onWorkspaceChange(organization);
+    }
+  };
 
   const handleCreateOrganization = async () => {
     if (!newOrgName.trim()) return;
@@ -71,121 +86,96 @@ export function OrganizationSwitcher() {
 
   return (
     <Dialog open={showNewOrgDialog} onOpenChange={setShowNewOrgDialog}>
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
+      <DropdownMenu open={open} onOpenChange={setOpen}>
+        <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            role="combobox"
-            aria-expanded={open}
-            aria-label="Select organization"
-            className="flex items-center gap-2 rounded-full pl-3 pr-5 transition-all hover:bg-muted/50"
+            className="flex w-full items-center gap-2 rounded-lg p-2 hover:bg-muted/50"
           >
-            <Avatar className="h-8 w-8 border shadow">
-              <AvatarImage
-                src={`/placeholder-logo.svg`}
-                alt={currentOrganization.name}
-              />
-              <AvatarFallback className="bg-primary/10 text-primary">
-                {currentOrganization.name.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col items-start">
-              <span className="text-sm font-medium">{currentOrganization.name}</span>
-              <span className="text-xs text-muted-foreground">Switch organization</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <span className="text-base font-semibold">
+                {getOrganizationIcon(currentOrganization)}
+              </span>
             </div>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold">{currentOrganization.name}</span>
+              <span className="truncate text-xs text-muted-foreground">
+                {currentOrganization.position || 'Switch organization'}
+              </span>
+            </div>
+            <ChevronsUpDown className="ml-auto h-4 w-4 text-muted-foreground" />
           </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[280px] p-0" align="end">
-          <Command>
-            <CommandList>
-              <div className="px-4 py-3 border-b">
-                <p className="text-sm font-medium">Current organization</p>
-                <div className="mt-2 flex items-center gap-3 p-2 rounded-md bg-muted/50">
-                  <Avatar className="h-10 w-10 border shadow">
-                    <AvatarImage
-                      src={`/placeholder-logo.svg`}
-                      alt={currentOrganization.name}
-                    />
-                    <AvatarFallback className="bg-primary/10 text-primary">
-                      {currentOrganization.name.charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col">
-                    <span className="font-medium">{currentOrganization.name}</span>
-                    {currentOrganization.position && (
-                      <span className="text-xs text-muted-foreground">
-                        {currentOrganization.position}
-                      </span>
-                    )}
-                  </div>
-                  <Check className="ml-auto h-4 w-4 text-primary" />
-                </div>
-              </div>
-
-              <CommandInput placeholder="Search organizations..." className="px-4 py-3" />
-              <CommandEmpty className="py-6 text-center text-sm">
-                No organization found.
-              </CommandEmpty>
-
-              <ScrollArea className="h-[230px]">
-                <CommandGroup heading="All organizations">
-                  {auth.user?.organizations.map((organization) => (
-                    <CommandItem
-                      key={organization.id}
-                      onSelect={() => {
-                        auth.changeCurrentOrganization(organization.id);
-                        setOpen(false);
-                      }}
-                      className="px-4 py-3 flex items-center gap-3"
-                      disabled={currentOrganization.id === organization.id}
-                    >
-                      <Avatar className="h-10 w-10 border shadow">
-                        <AvatarImage
-                          src={`/placeholder-logo.svg`}
-                          alt={organization.name}
-                        />
-                        <AvatarFallback className="bg-muted text-foreground">
-                          {organization.name.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{organization.name}</span>
-                        {organization.position && (
-                          <span className="text-xs text-muted-foreground">
-                            {organization.position}
-                          </span>
-                        )}
-                      </div>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </ScrollArea>
-
-              {canCreateOrganization && (
-                <>
-                  <CommandSeparator />
-                  <CommandGroup>
-                    <DialogTrigger asChild>
-                      <CommandItem
-                        onSelect={() => {
-                          setOpen(false);
-                          setShowNewOrgDialog(true);
-                        }}
-                        className="px-4 py-3 flex items-center"
-                      >
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted mr-3">
-                          <Plus className="h-5 w-5" />
-                        </div>
-                        <span>Create new organization</span>
-                      </CommandItem>
-                    </DialogTrigger>
-                  </CommandGroup>
-                </>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          className="w-[280px] p-2"
+          side="bottom"
+          align="start"
+          alignOffset={-8}
+          sideOffset={8}
+        >
+          <DropdownMenuLabel className="text-xs text-muted-foreground">
+            Current organization
+          </DropdownMenuLabel>
+          <div className="mt-2 flex items-center gap-3 rounded-md bg-muted/50 p-2">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md border bg-background shadow">
+              <span className="text-base font-semibold">{getOrganizationIcon(currentOrganization)}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-medium">{currentOrganization.name}</span>
+              {currentOrganization.position && (
+                <span className="text-xs text-muted-foreground">{currentOrganization.position}</span>
               )}
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
+            </div>
+            <Check className="ml-auto h-4 w-4 text-primary" />
+          </div>
+
+          <DropdownMenuSeparator className="my-2" />
+          <DropdownMenuLabel className="text-xs text-muted-foreground">
+            All organizations
+          </DropdownMenuLabel>
+          <div className="max-h-[230px] overflow-y-auto py-1">
+            {auth.user?.organizations.map((organization) => (
+              <DropdownMenuItem
+                key={organization.id}
+                disabled={currentOrganization.id === organization.id}
+                onClick={() => handleOrganizationChange(organization)}
+                className="flex items-center gap-3 p-2"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-md border bg-background shadow">
+                  <span className="text-base font-semibold">{getOrganizationIcon(organization)}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-medium">{organization.name}</span>
+                  {organization.position && (
+                    <span className="text-xs text-muted-foreground">{organization.position}</span>
+                  )}
+                </div>
+              </DropdownMenuItem>
+            ))}
+          </div>
+
+          {canCreateOrganization && (
+            <>
+              <DropdownMenuSeparator className="my-2" />
+              <DialogTrigger asChild>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setOpen(false);
+                    setShowNewOrgDialog(true);
+                  }}
+                  className="flex items-center gap-3 p-2"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-md border bg-muted">
+                    <Plus className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <span className="font-medium">Create new organization</span>
+                </DropdownMenuItem>
+              </DialogTrigger>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create Organization</DialogTitle>
