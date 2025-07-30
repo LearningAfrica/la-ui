@@ -1,6 +1,6 @@
 import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
-const NotFoundPage = lazy(() => import('@/components/error/not-found-page'));
+const DashboardNotFoundPage = lazy(() => import('@/components/error/dashboard-not-found-page'));
 const StudentDashboardPage = lazy(
   () => import('@/pages/dashboard/students/dashboard/student-dashboard-page'),
 );
@@ -34,7 +34,9 @@ const StudentCourseLessonPage = lazy(
 const StudentLearningPage = lazy(
   () => import('@/pages/dashboard/students/learning/student-learning-page'),
 );
-
+const StudentLiveSessionsPage = lazy(
+  () => import('@/pages/dashboard/students/live-sessions/student-live-sessions-page'),
+);
 const StudentSupportPage = lazy(
   () => import('@/pages/dashboard/students/support/student-support-page'),
 );
@@ -98,6 +100,10 @@ export const studentRouter: RouteObject[] = [
     element: <StudentLearningPage />,
   },
   {
+    path: '/dashboard/student/live-sessions',
+    element: <StudentLiveSessionsPage />,
+  },
+  {
     path: '/dashboard/student/support',
     element: <StudentSupportPage />,
   },
@@ -115,6 +121,6 @@ export const studentRouter: RouteObject[] = [
   },
   {
     path: '/dashboard/student/*',
-    element: <NotFoundPage />,
+    element: <DashboardNotFoundPage />,
   },
 ];

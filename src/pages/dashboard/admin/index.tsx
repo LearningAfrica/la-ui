@@ -1,7 +1,6 @@
-// import NotFoundPage from '@/components/error/not-found-page';
 import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
-const NotFoundPage = lazy(() => import('@/components/error/not-found-page'));
+const DashboardNotFoundPage = lazy(() => import('@/components/error/dashboard-not-found-page'));
 const AdminDashboardPage = lazy(
   () => import('./dashboard/admin-dashboard-page'),
 );
@@ -71,6 +70,9 @@ const AdminInstructorsAddPage = lazy(
 );
 
 const AdminLearningPage = lazy(() => import('./learning/admin-learning-page'));
+const AdminLiveSessionsPage = lazy(
+  () => import('./live-sessions/admin-live-sessions-page'),
+);
 const AdminReportsPage = lazy(() => import('./reports/admin-reports-page'));
 const AdminReportDetailsPage = lazy(
   () => import('./reports/admin-report-details-page'),
@@ -230,6 +232,10 @@ export const adminRouter: RouteObject[] = [
     element: <AdminLearningPage />,
   },
   {
+    path: '/dashboard/admin/live-sessions',
+    element: <AdminLiveSessionsPage />,
+  },
+  {
     path: '/dashboard/admin/reports',
     element: <AdminReportsPage />,
   },
@@ -311,6 +317,6 @@ export const adminRouter: RouteObject[] = [
   },
   {
     path: '/dashboard/admin/*',
-    element: <NotFoundPage />,
+    element: <DashboardNotFoundPage />,
   },
 ];

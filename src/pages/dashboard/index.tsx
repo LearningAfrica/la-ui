@@ -5,7 +5,7 @@ import { instructorRouter } from './instructor';
 import DashboardLayout from '@/components/layouts/dashboard-layout';
 import { adminRouter } from './admin';
 import ErrorPage from '@/components/error/error-page';
-import NotFoundPage from '@/components/error/not-found-page';
+import DashboardNotFoundPage from '@/components/error/dashboard-not-found-page';
 
 const DashboardPage = lazy(() => import('@/pages/dashboard/dashboard-page'));
 export const dashboardRouter: RouteObject = {
@@ -22,7 +22,7 @@ export const dashboardRouter: RouteObject = {
     ...adminRouter,
     {
       path: '*',
-      element: <NotFoundPage />,
+      element: <DashboardNotFoundPage />,
     },
   ],
 };

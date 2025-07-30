@@ -1,6 +1,6 @@
 import { lazy } from 'react';
 import type { RouteObject } from 'react-router-dom';
-const NotFoundPage = lazy(() => import('@/components/error/not-found-page'));
+const DashboardNotFoundPage = lazy(() => import('@/components/error/dashboard-not-found-page'));
 const InstructorDashboardPage = lazy(
   () => import('./dashboard/instructor-dashboard-page'),
 );
@@ -51,6 +51,9 @@ const InstructorEarningsSettingsPage = lazy(
 );
 const InstructorEarningsTaxInfoPage = lazy(
   () => import('./earnings/instructor-earnings-tax-info-page'),
+);
+const InstructorLiveSessionsPage = lazy(
+  () => import('./live-sessions/instructor-live-sessions-page'),
 );
 const InstructorStudentsPage = lazy(
   () => import('./students/instructor-students-page'),
@@ -135,6 +138,10 @@ export const instructorRouter: RouteObject[] = [
     element: <InstructorEarningsTaxInfoPage />,
   },
   {
+    path: '/dashboard/instructor/live-sessions',
+    element: <InstructorLiveSessionsPage />,
+  },
+  {
     path: '/dashboard/instructor/students',
     element: <InstructorStudentsPage />,
   },
@@ -144,7 +151,7 @@ export const instructorRouter: RouteObject[] = [
   },
   {
     path: '/dashboard/instructor/*',
-    element: <NotFoundPage />,
+    element: <DashboardNotFoundPage />,
   },
   // Catch-all route for instructor dashboard
 ];

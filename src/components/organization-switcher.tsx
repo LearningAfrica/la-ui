@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, ChevronsUpDown, Plus } from 'lucide-react';
+import { Check, ChevronDown, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -81,94 +81,78 @@ export function OrganizationSwitcher({
   };
 
   if (!currentOrganization) {
-    return null;
+    return (
+      <div className="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-500">
+        <div className="w-4 h-4 bg-gray-300 rounded-full flex items-center justify-center">
+          <span className="text-gray-600 text-xs">-</span>
+        </div>
+        <span>No Organization</span>
+      </div>
+    );
   }
 
   return (
     <Dialog open={showNewOrgDialog} onOpenChange={setShowNewOrgDialog}>
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="flex w-full items-center gap-2 rounded-lg p-2 hover:bg-muted/50"
-          >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <span className="text-base font-semibold">
+          <button className="flex items-center gap-2 w-full px-2 py-1.5 text-sm text-gray-600 hover:text-primary hover:bg-gray-50 rounded transition-colors">
+            <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+              <span className="text-primary-foreground text-xs font-medium">
                 {getOrganizationIcon(currentOrganization)}
               </span>
             </div>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{currentOrganization.name}</span>
-              <span className="truncate text-xs text-muted-foreground">
-                {currentOrganization.position || 'Switch organization'}
-              </span>
-            </div>
-            <ChevronsUpDown className="ml-auto h-4 w-4 text-muted-foreground" />
-          </Button>
+            <span className="truncate flex-1 text-left">
+              {currentOrganization.name}
+            </span>
+            <ChevronDown className="h-3 w-3 text-gray-400" />
+          </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          className="w-[280px] p-2"
+          className="w-48 p-1"
           side="bottom"
           align="start"
           alignOffset={-8}
           sideOffset={8}
         >
-          <DropdownMenuLabel className="text-xs text-muted-foreground">
-            Current organization
+          <DropdownMenuLabel className="text-xs text-gray-500 px-2 py-1">
+            Organizations
           </DropdownMenuLabel>
-          <div className="mt-2 flex items-center gap-3 rounded-md bg-muted/50 p-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-md border bg-background shadow">
-              <span className="text-base font-semibold">{getOrganizationIcon(currentOrganization)}</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-medium">{currentOrganization.name}</span>
-              {currentOrganization.position && (
-                <span className="text-xs text-muted-foreground">{currentOrganization.position}</span>
-              )}
-            </div>
-            <Check className="ml-auto h-4 w-4 text-primary" />
-          </div>
-
-          <DropdownMenuSeparator className="my-2" />
-          <DropdownMenuLabel className="text-xs text-muted-foreground">
-            All organizations
-          </DropdownMenuLabel>
-          <div className="max-h-[230px] overflow-y-auto py-1">
+          <div className="max-h-48 overflow-y-auto">
             {auth.user?.organizations.map((organization) => (
               <DropdownMenuItem
                 key={organization.id}
                 disabled={currentOrganization.id === organization.id}
                 onClick={() => handleOrganizationChange(organization)}
-                className="flex items-center gap-3 p-2"
+                className="flex items-center gap-2 px-2 py-1.5 text-sm"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-md border bg-background shadow">
-                  <span className="text-base font-semibold">{getOrganizationIcon(organization)}</span>
+                <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                  <span className="text-primary-foreground text-xs font-medium">
+                    {getOrganizationIcon(organization)}
+                  </span>
                 </div>
-                <div className="flex flex-col">
-                  <span className="font-medium">{organization.name}</span>
-                  {organization.position && (
-                    <span className="text-xs text-muted-foreground">{organization.position}</span>
-                  )}
-                </div>
+                <span className="truncate">{organization.name}</span>
+                {currentOrganization.id === organization.id && (
+                  <Check className="ml-auto h-3 w-3 text-primary" />
+                )}
               </DropdownMenuItem>
             ))}
           </div>
 
           {canCreateOrganization && (
             <>
-              <DropdownMenuSeparator className="my-2" />
+              <DropdownMenuSeparator className="my-1" />
               <DialogTrigger asChild>
                 <DropdownMenuItem
                   onClick={() => {
                     setOpen(false);
                     setShowNewOrgDialog(true);
                   }}
-                  className="flex items-center gap-3 p-2"
+                  className="flex items-center gap-2 px-2 py-1.5 text-sm"
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-md border bg-muted">
-                    <Plus className="h-5 w-5 text-muted-foreground" />
+                  <div className="w-4 h-4 bg-gray-200 rounded-full flex items-center justify-center">
+                    <Plus className="h-3 w-3 text-gray-500" />
                   </div>
-                  <span className="font-medium">Create new organization</span>
+                  <span>Create new</span>
                 </DropdownMenuItem>
               </DialogTrigger>
             </>

@@ -9,9 +9,13 @@ import {
   LayoutDashboard,
   MessageSquare,
   Users,
+  BarChart3,
+  Settings,
+  User,
+  Video,
   type LucideIcon,
 } from 'lucide-react';
-import type { UserRole } from '../types/auth';
+import type { UserRole } from '../validators/auth-schema';
 
 type NavLink = {
   href: string;
@@ -19,165 +23,308 @@ type NavLink = {
   icon: LucideIcon;
   roles: UserRole[];
   items?: NavLink[];
+  section?: 'main' | 'bottom';
+  isParent?: boolean;
 };
 
 // Common links that appear for all roles
 const COMMON_LINKS: NavLink[] = [
   {
     href: '/dashboard',
-    label: 'Overview',
+    label: 'Dashboard',
     icon: LayoutDashboard,
-    roles: ['student', 'instructor', 'admin', 'superAdmin'],
+    roles: ['student', 'instructor', 'admin', 'super_admin'],
   },
 ];
 
-// Student specific links
+// Student specific links with parent sections
 const STUDENT_LINKS: NavLink[] = [
   {
-    href: '/dashboard/student/courses',
-    label: 'My Courses',
-    icon: BookOpen,
-    roles: ['student'],
-  },
-  {
-    href: '/dashboard/student/learning',
-    label: 'My Learning',
+    href: '#',
+    label: 'Learning',
     icon: GraduationCap,
     roles: ['student'],
+    isParent: true,
+    items: [
+      {
+        href: '/dashboard/student/courses',
+        label: 'My Courses',
+        icon: BookOpen,
+        roles: ['student'],
+      },
+      {
+        href: '/dashboard/student/learning',
+        label: 'My Learning',
+        icon: GraduationCap,
+        roles: ['student'],
+      },
+      {
+        href: '/dashboard/student/achievements',
+        label: 'Achievements',
+        icon: Award,
+        roles: ['student'],
+      },
+      {
+        href: '/dashboard/student/certificates',
+        label: 'Certificates',
+        icon: FileCheck,
+        roles: ['student'],
+      },
+    ],
   },
   {
-    href: '/dashboard/student/achievements',
-    label: 'Achievements',
-    icon: Award,
+    href: '#',
+    label: 'Tools',
+    icon: Settings,
     roles: ['student'],
-  },
-  {
-    href: '/dashboard/student/certificates',
-    label: 'Certificates',
-    icon: FileCheck,
-    roles: ['student'],
-  },
-  {
-    href: '/dashboard/student/calendar',
-    label: 'Calendar',
-    icon: Calendar,
-    roles: ['student'],
-  },
-  {
-    href: '/dashboard/student/support',
-    label: 'Support',
-    icon: HelpCircle,
-    roles: ['student'],
+    isParent: true,
+    items: [
+      {
+        href: '/dashboard/student/calendar',
+        label: 'Calendar',
+        icon: Calendar,
+        roles: ['student'],
+      },
+      {
+        href: '/dashboard/student/live-sessions',
+        label: 'Live Sessions',
+        icon: Video,
+        roles: ['student'],
+      },
+      {
+        href: '/dashboard/student/support',
+        label: 'Support',
+        icon: HelpCircle,
+        roles: ['student'],
+      },
+    ],
   },
 ];
 
-// Instructor specific links
+// Instructor specific links with parent sections
 const INSTRUCTOR_LINKS: NavLink[] = [
   {
-    href: '/dashboard/instructor/courses',
-    label: 'Courses',
+    href: '#',
+    label: 'Teaching',
     icon: BookOpen,
     roles: ['instructor'],
+    isParent: true,
+    items: [
+      {
+        href: '/dashboard/instructor/courses',
+        label: 'Courses',
+        icon: BookOpen,
+        roles: ['instructor'],
+      },
+      {
+        href: '/dashboard/instructor/students',
+        label: 'Students',
+        icon: Users,
+        roles: ['instructor'],
+      },
+    ],
   },
   {
-    href: '/dashboard/instructor/students',
-    label: 'Students',
-    icon: Users,
-    roles: ['instructor'],
-  },
-  {
-    href: '/dashboard/instructor/messages',
-    label: 'Messages',
+    href: '#',
+    label: 'Communication',
     icon: MessageSquare,
     roles: ['instructor'],
+    isParent: true,
+    items: [
+      {
+        href: '/dashboard/instructor/messages',
+        label: 'Messages',
+        icon: MessageSquare,
+        roles: ['instructor'],
+      },
+    ],
   },
   {
-    href: '/dashboard/instructor/earnings',
-    label: 'Earnings',
+    href: '#',
+    label: 'Business',
     icon: DollarSign,
     roles: ['instructor'],
+    isParent: true,
+    items: [
+      {
+        href: '/dashboard/instructor/earnings',
+        label: 'Earnings',
+        icon: DollarSign,
+        roles: ['instructor'],
+      },
+    ],
+  },
+  {
+    href: '#',
+    label: 'Tools',
+    icon: Settings,
+    roles: ['instructor'],
+    isParent: true,
+    items: [
+      {
+        href: '/dashboard/instructor/calendar',
+        label: 'Calendar',
+        icon: Calendar,
+        roles: ['instructor'],
+      },
+      {
+        href: '/dashboard/instructor/live-sessions',
+        label: 'Live Sessions',
+        icon: Video,
+        roles: ['instructor'],
+      },
+    ],
   },
 ];
 
-// Admin/SuperAdmin links (shared between both roles)
+// Admin/SuperAdmin links with parent sections
 const ADMIN_LINKS: NavLink[] = [
   {
-    href: '/dashboard/admin/organizations',
-    label: 'Organizations',
+    href: '#',
+    label: 'Management',
     icon: Users,
     roles: ['admin'],
+    isParent: true,
+    items: [
+      {
+        href: '/dashboard/admin/organizations',
+        label: 'Organizations',
+        icon: Users,
+        roles: ['admin'],
+      },
+      {
+        href: '/dashboard/admin/approvals',
+        label: 'Approvals',
+        icon: Users,
+        roles: ['admin'],
+      },
+    ],
   },
   {
-    href: '/dashboard/admin/approvals',
-    label: 'Approvals',
-    icon: Users,
-    roles: ['admin'],
-  },
-  {
-    href: '/dashboard/admin/categories',
-    label: 'Categories',
-    icon: BookOpen,
-    roles: ['admin'],
-  },
-  {
-    href: '/dashboard/admin/certificates',
-    label: 'Certificates',
+    href: '#',
+    label: 'Content',
     icon: FileCheck,
     roles: ['admin'],
+    isParent: true,
+    items: [
+      {
+        href: '/dashboard/admin/categories',
+        label: 'Categories',
+        icon: BookOpen,
+        roles: ['admin'],
+      },
+      {
+        href: '/dashboard/admin/certificates',
+        label: 'Certificates',
+        icon: FileCheck,
+        roles: ['admin'],
+      },
+      {
+        href: '/dashboard/admin/reviews',
+        label: 'Reviews',
+        icon: MessageSquare,
+        roles: ['admin'],
+      },
+      {
+        href: '/dashboard/admin/discussions',
+        label: 'Discussions',
+        icon: MessageSquare,
+        roles: ['admin'],
+      },
+      {
+        href: '/dashboard/admin/courses',
+        label: 'Courses',
+        icon: BookOpen,
+        roles: ['admin'],
+      },
+    ],
   },
   {
-    href: '/dashboard/admin/reviews',
-    label: 'Reviews',
-    icon: MessageSquare,
-    roles: ['admin'],
-  },
-  {
-    href: '/dashboard/admin/discussions',
-    label: 'Discussions',
-    icon: MessageSquare,
-    roles: ['admin'],
-  },
-  {
-    href: '/dashboard/admin/students',
-    label: 'Students',
+    href: '#',
+    label: 'Users',
     icon: Users,
     roles: ['admin'],
+    isParent: true,
+    items: [
+      {
+        href: '/dashboard/admin/students',
+        label: 'Students',
+        icon: Users,
+        roles: ['admin'],
+      },
+      {
+        href: '/dashboard/admin/learning',
+        label: 'Learning',
+        icon: Users,
+        roles: ['admin'],
+      },
+      {
+        href: '/dashboard/admin/instructors',
+        label: 'Instructors',
+        icon: GraduationCap,
+        roles: ['admin'],
+      },
+    ],
   },
   {
-    href: '/dashboard/admin/learning',
-    label: 'Learning',
-    icon: Users,
+    href: '#',
+    label: 'Analytics',
+    icon: BarChart3,
     roles: ['admin'],
+    isParent: true,
+    items: [
+      {
+        href: '/dashboard/admin/reports',
+        label: 'Reports',
+        icon: BarChart3,
+        roles: ['admin'],
+      },
+    ],
   },
   {
-    href: '/dashboard/admin/reports',
-    label: 'Reports',
-    icon: Users,
+    href: '#',
+    label: 'Tools',
+    icon: Settings,
     roles: ['admin'],
+    isParent: true,
+    items: [
+      {
+        href: '/dashboard/admin/support',
+        label: 'Support',
+        icon: HelpCircle,
+        roles: ['admin'],
+      },
+      {
+        href: '/dashboard/admin/calendar',
+        label: 'Calendar',
+        icon: Calendar,
+        roles: ['admin'],
+      },
+      {
+        href: '/dashboard/admin/live-sessions',
+        label: 'Live Sessions',
+        icon: Video,
+        roles: ['admin'],
+      },
+    ],
+  },
+];
+
+// Profile links that will be shown at the bottom for all users
+const PROFILE_LINKS: NavLink[] = [
+  {
+    href: '/dashboard/profile',
+    label: 'Profile',
+    icon: User,
+    roles: ['student', 'instructor', 'admin', 'super_admin'],
+    section: 'bottom'
   },
   {
-    href: '/dashboard/admin/instructors',
-    label: 'Instructors',
-    icon: GraduationCap,
-    roles: ['admin'],
-  },
-  {
-    href: '/dashboard/admin/courses',
-    label: 'Courses',
-    icon: BookOpen,
-    roles: ['admin'],
-  },
-  {
-    href: '/dashboard/admin/support',
-    label: 'Support',
-    icon: HelpCircle,
-    roles: ['admin'],
-  },
-  {
-    href: '/dashboard/admin/calendar',
-    label: 'Calendar',
-    icon: Calendar,
-    roles: ['admin'],
+    href: '/dashboard/settings',
+    label: 'Settings',
+    icon: Settings,
+    roles: ['student', 'instructor', 'admin', 'super_admin'],
+    section: 'bottom'
   },
 ];
 
@@ -187,4 +334,5 @@ export const DASHBOARD_SIDEBAR_NAV_LINKS: NavLink[] = [
   ...STUDENT_LINKS,
   ...INSTRUCTOR_LINKS,
   ...ADMIN_LINKS,
+  ...PROFILE_LINKS,
 ];

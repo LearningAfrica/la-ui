@@ -1,261 +1,214 @@
-import { useState } from 'react';
-import { Bell, Settings, X } from 'lucide-react';
+import { Bell, CheckCircle, AlertCircle, Info, X, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { toast } from 'sonner';
-import { EventReminder } from '@/components/notifications/event-reminder';
-import { NotificationPreferences } from '@/components/notifications/notification-preferences';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 
-// Event types and their corresponding colors
-const EVENT_TYPES = {
-  assignment: { label: 'Assignment', color: '#3b82f6' }, // blue-500
-  deadline: { label: 'Deadline', color: '#ef4444' }, // red-500
-  liveSession: { label: 'Live Session', color: '#22c55e' }, // green-500
-  exam: { label: 'Exam', color: '#f59e0b' }, // amber-500
-  studyGroup: { label: 'Study Group', color: '#8b5cf6' }, // purple-500
-  reminder: { label: 'Reminder', color: '#64748b' }, // slate-500
-};
-
-// Mock notifications data
-const generateNotifications = () => {
-  const now = new Date();
-
-  return [
-    {
-      id: '1',
-      title: 'JavaScript Quiz Due Soon',
-      date: new Date(now.getTime() + 2 * 60 * 60 * 1000), // 2 hours from now
-      type: 'assignment',
-      course: 'Advanced JavaScript',
-      read: false,
-      createdAt: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
-    },
-    {
-      id: '2',
-      title: 'Final Project Deadline',
-      date: new Date(now.getTime() + 24 * 60 * 60 * 1000), // 1 day from now
-      type: 'deadline',
-      course: 'Web Development Bootcamp',
-      read: false,
-      createdAt: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-    },
-    {
-      id: '3',
-      title: 'React Hooks Workshop',
-      date: new Date(now.getTime() + 45 * 60 * 1000), // 45 minutes from now
-      type: 'liveSession',
-      course: 'React Masterclass',
-      read: true,
-      createdAt: new Date(now.getTime() - 4 * 60 * 60 * 1000), // 4 hours ago
-    },
-    {
-      id: '4',
-      title: 'Database Design Midterm',
-      date: new Date(now.getTime() + 48 * 60 * 60 * 1000), // 2 days from now
-      type: 'exam',
-      course: 'Database Systems',
-      read: true,
-      createdAt: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-    },
-  ];
-};
-
-interface NotificationsPanelProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: 'success' | 'warning' | 'info' | 'error';
+  timestamp: string;
+  isRead: boolean;
+  avatar?: string;
+  username?: string;
 }
 
-export function NotificationsPanel({
-  open,
-  onOpenChange,
-}: NotificationsPanelProps) {
-  const [notifications, setNotifications] = useState(generateNotifications());
-  const [activeTab, setActiveTab] = useState('upcoming');
-  const [isPreferencesOpen, setIsPreferencesOpen] = useState(false);
+const mockNotifications: Notification[] = [
+  {
+    id: '1',
+    title: 'Course Completed',
+    message: 'Congratulations! You have completed "JavaScript Fundamentals"',
+    type: 'success',
+    timestamp: '2 minutes ago',
+    isRead: false,
+    username: 'John Doe',
+    avatar: 'JD'
+  },
+  {
+    id: '2',
+    title: 'New Assignment',
+    message: 'A new assignment has been posted for "React Development"',
+    type: 'info',
+    timestamp: '1 hour ago',
+    isRead: false,
+    username: 'Sarah Wilson',
+    avatar: 'SW'
+  },
+  {
+    id: '3',
+    title: 'Deadline Reminder',
+    message: 'Your project submission is due in 2 days',
+    type: 'warning',
+    timestamp: '3 hours ago',
+    isRead: true,
+    username: 'Mike Johnson',
+    avatar: 'MJ'
+  },
+  {
+    id: '4',
+    title: 'Achievement Unlocked',
+    message: 'You earned the "First Course Complete" badge!',
+    type: 'success',
+    timestamp: '1 day ago',
+    isRead: true,
+    username: 'Learning Africa',
+    avatar: 'LA'
+  },
+  {
+    id: '5',
+    title: 'System Maintenance',
+    message: 'Scheduled maintenance will occur tonight at 2 AM',
+    type: 'info',
+    timestamp: '2 days ago',
+    isRead: true,
+    username: 'System',
+    avatar: 'S'
+  }
+];
 
-  // Filter notifications based on active tab
-  const upcomingNotifications = notifications.filter((note) => !note.read);
-  const pastNotifications = notifications.filter((note) => note.read);
+const getNotificationIcon = (type: Notification['type']) => {
+  switch (type) {
+    case 'success':
+      return <CheckCircle className="h-4 w-4 text-green-500" />;
+    case 'warning':
+      return <AlertCircle className="h-4 w-4 text-yellow-500" />;
+    case 'error':
+      return <AlertCircle className="h-4 w-4 text-red-500" />;
+    case 'info':
+    default:
+      return <Info className="h-4 w-4 text-blue-500" />;
+  }
+};
 
-  // Handle dismissing a notification
-  const handleDismiss = (id: string) => {
-    setNotifications(notifications.filter((note) => note.id !== id));
-    toast.success('Notification dismissed');
-  };
+const getNotificationBadgeColor = (type: Notification['type']) => {
+  switch (type) {
+    case 'success':
+      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+    case 'warning':
+      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+    case 'error':
+      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+    case 'info':
+    default:
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+  }
+};
 
-  // Handle snoozing a notification
-  const handleSnooze = (id: string) => {
-    // In a real app, we would update the notification time
-    toast.success('Snoozed for 1 hour');
-  };
-
-  // Mark all as read
-  const markAllAsRead = () => {
-    setNotifications(notifications.map((note) => ({ ...note, read: true })));
-    toast.success('Marked all as read');
-  };
+export function NotificationsPanel() {
+  const unreadCount = mockNotifications.filter(n => !n.isRead).length;
 
   return (
-    <>
-      <Card
-        className={`fixed top-20 right-6 z-50 w-full max-w-md shadow-lg ${open ? 'block' : 'hidden'}`}
-      >
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <div>
-            <CardTitle className="text-xl">Notifications</CardTitle>
-            <CardDescription>Stay updated with your events</CardDescription>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setIsPreferencesOpen(true)}
-            >
-              <Settings className="h-4 w-4" />
-              <span className="sr-only">Notification Settings</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => onOpenChange(false)}
-            >
-              <X className="h-4 w-4" />
-              <span className="sr-only">Close</span>
-            </Button>
-          </div>
-        </CardHeader>
-
-        <CardContent className="pt-0">
-          <Tabs
-            defaultValue="upcoming"
-            value={activeTab}
-            onValueChange={setActiveTab}
-          >
-            <TabsList className="w-full">
-              <TabsTrigger value="upcoming" className="flex-1">
-                Upcoming
-                {upcomingNotifications.length > 0 && (
-                  <Badge variant="destructive" className="ml-2">
-                    {upcomingNotifications.length}
-                  </Badge>
-                )}
-              </TabsTrigger>
-              <TabsTrigger value="past" className="flex-1">
-                Past
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="upcoming" className="pt-4">
-              {upcomingNotifications.length > 0 ? (
-                <>
-                  <div className="mb-2 flex items-center justify-between">
-                    <h3 className="text-muted-foreground text-sm font-medium">
-                      {upcomingNotifications.length} upcoming event
-                      {upcomingNotifications.length !== 1 ? 's' : ''}
-                    </h3>
-                    <Button variant="ghost" size="sm" onClick={markAllAsRead}>
-                      Mark all as read
-                    </Button>
-                  </div>
-                  <div className="max-h-[400px] overflow-y-auto pr-1">
-                    {upcomingNotifications.map((note) => (
-                      <EventReminder
-                        key={note.id}
-                        id={note.id}
-                        title={note.title}
-                        date={note.date}
-                        type={note.type}
-                        course={note.course}
-                        color={
-                          EVENT_TYPES[note.type as keyof typeof EVENT_TYPES]
-                            ?.color
-                        }
-                        onDismiss={handleDismiss}
-                        onSnooze={handleSnooze}
-                      />
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <div className="py-10 text-center">
-                  <Bell className="text-muted-foreground mx-auto h-10 w-10" />
-                  <p className="text-muted-foreground mt-2">
-                    No upcoming notifications
-                  </p>
-                </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="sm" className="relative p-2">
+          <Bell className="h-4 w-4" />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+          )}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-80 p-0" align="end" forceMount>
+        <div className="px-4 py-3 border-b border-border">
+          <div className="flex items-center justify-between">
+            <DropdownMenuLabel className="text-base font-semibold">
+              Notifications
+            </DropdownMenuLabel>
+            <div className="flex items-center gap-2">
+              {unreadCount > 0 && (
+                <Badge variant="secondary" className="text-xs">
+                  {unreadCount} new
+                </Badge>
               )}
-            </TabsContent>
+              <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                <Settings className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+        </div>
 
-            <TabsContent value="past" className="pt-4">
-              {pastNotifications.length > 0 ? (
-                <>
-                  <h3 className="text-muted-foreground mb-2 text-sm font-medium">
-                    {pastNotifications.length} past notification
-                    {pastNotifications.length !== 1 ? 's' : ''}
-                  </h3>
-                  <div className="max-h-[400px] space-y-2 overflow-y-auto pr-1">
-                    {pastNotifications.map((note) => (
-                      <div
-                        key={note.id}
-                        className="hover:bg-muted/50 flex items-start gap-3 rounded-lg p-3"
-                      >
-                        <Bell className="text-muted-foreground mt-0.5 h-5 w-5" />
+        <div className="max-h-96 overflow-y-auto">
+          {mockNotifications.length === 0 ? (
+            <div className="px-4 py-8 text-center text-muted-foreground">
+              <Bell className="h-8 w-8 mx-auto mb-2 text-muted-foreground/50" />
+              <p className="text-sm">No notifications yet</p>
+              <p className="text-xs">We'll notify you when something important happens</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-border">
+              {mockNotifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={cn(
+                    "px-4 py-3 hover:bg-accent transition-colors cursor-pointer group",
+                    !notification.isRead && "bg-primary/5"
+                  )}
+                >
+                  <div className="flex items-start gap-3">
+                    <Avatar className="h-8 w-8 flex-shrink-0">
+                      <AvatarFallback className="text-xs bg-muted">
+                        {notification.avatar}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
                         <div className="flex-1">
-                          <h4 className="text-muted-foreground font-medium">
-                            {note.title}
-                          </h4>
-                          <p className="text-muted-foreground/70 text-sm">
-                            {note.course}
+                          <div className="flex items-center gap-2 mb-1">
+                            {getNotificationIcon(notification.type)}
+                            <p className="text-sm font-medium text-foreground truncate">
+                              {notification.title}
+                            </p>
+                            {!notification.isRead && (
+                              <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground line-clamp-2">
+                            {notification.message}
                           </p>
-                          <p className="text-muted-foreground/70 mt-1 text-xs">
-                            {new Date(note.createdAt).toLocaleDateString()}
-                          </p>
+                          <div className="flex items-center justify-between mt-2">
+                            <p className="text-xs text-muted-foreground">
+                              {notification.timestamp}
+                            </p>
+                            <Badge
+                              variant="secondary"
+                              className={cn("text-xs", getNotificationBadgeColor(notification.type))}
+                            >
+                              {notification.type}
+                            </Badge>
+                          </div>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDismiss(note.id)}
-                        >
-                          Dismiss
+                        <Button variant="ghost" size="sm" className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100">
+                          <X className="h-3 w-3" />
                         </Button>
                       </div>
-                    ))}
+                    </div>
                   </div>
-                </>
-              ) : (
-                <div className="py-10 text-center">
-                  <Bell className="text-muted-foreground mx-auto h-10 w-10" />
-                  <p className="text-muted-foreground mt-2">
-                    No past notifications
-                  </p>
                 </div>
-              )}
-            </TabsContent>
-          </Tabs>
+              ))}
+            </div>
+          )}
+        </div>
 
-          <Separator className="my-4" />
+        {mockNotifications.length > 0 && (
+          <DropdownMenuSeparator />
+        )}
 
-          <div className="text-center">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
-              Close
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <NotificationPreferences
-        open={isPreferencesOpen}
-        onOpenChange={setIsPreferencesOpen}
-      />
-    </>
+        <div className="px-4 py-2 border-t border-border">
+          <DropdownMenuItem className="text-center text-sm text-muted-foreground hover:text-foreground">
+            View all notifications
+          </DropdownMenuItem>
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

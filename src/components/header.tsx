@@ -1,4 +1,4 @@
-import { Menu, Search, User, ShoppingCart } from 'lucide-react';
+import { Menu, Search, User, ShoppingCart, ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,11 +7,12 @@ import { MegaMenu } from '@/components/mega-menu';
 import { useTheme } from '@/providers/theme-provider';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
+import { useState } from 'react';
 
 export function Header() {
   const pathname = useLocation().pathname;
-  // const [showMegaMenu, setShowMegaMenu] = useState(false)
   const { theme, setTheme } = useTheme();
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
 
   const isActive = (path: string) => pathname === path;
 
@@ -19,19 +20,21 @@ export function Header() {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
   const auth = useAuth();
+
   return (
     <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
-      <div className="container mx-auto flex h-16 items-center justify-between">
-        <div className="flex items-center gap-6 md:gap-8 lg:gap-10">
+      <div className="container mx-auto px-4 flex h-16 items-center justify-between gap-4">
+        {/* Left Section - Logo and Mobile Menu */}
+        <div className="flex items-center gap-4 min-w-0 flex-1">
           {/* Mobile Menu */}
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
+              <Button variant="ghost" size="icon" className="md:hidden flex-shrink-0">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-full max-w-xs">
+            <SheetContent side="left" className="w-full max-w-xs p-6">
               <nav className="grid gap-6 text-lg font-medium">
                 <Link
                   to="/"
@@ -53,17 +56,66 @@ export function Header() {
                 >
                   Courses
                 </Link>
-                <Link
-                  to="/categories"
-                  className={cn(
-                    'hover:text-foreground/80',
-                    isActive('/categories')
-                      ? 'text-foreground'
-                      : 'text-foreground/60',
+
+                {/* Collapsible Categories Section */}
+                <div className="border-t border-border pt-4">
+                  <button
+                    onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
+                    className="flex items-center justify-between w-full hover:text-foreground/80 text-left"
+                  >
+                    <span className={cn(
+                      isActive('/categories') ? 'text-foreground' : 'text-foreground/60'
+                    )}>
+                      Categories
+                    </span>
+                    {isCategoriesOpen ? (
+                      <ChevronDown className="h-4 w-4" />
+                    ) : (
+                      <ChevronRight className="h-4 w-4" />
+                    )}
+                  </button>
+
+                  {isCategoriesOpen && (
+                    <div className="mt-3 space-y-2 pl-4">
+                      <Link
+                        to="/categories"
+                        className={cn(
+                          'block hover:text-foreground/80 text-base',
+                          isActive('/categories')
+                            ? 'text-foreground'
+                            : 'text-foreground/60',
+                        )}
+                      >
+                        All Categories
+                      </Link>
+                      <Link
+                        to="/categories/web-development"
+                        className="block hover:text-foreground/80 text-base text-foreground/60"
+                      >
+                        Web Development
+                      </Link>
+                      <Link
+                        to="/categories/mobile-development"
+                        className="block hover:text-foreground/80 text-base text-foreground/60"
+                      >
+                        Mobile Development
+                      </Link>
+                      <Link
+                        to="/categories/data-science"
+                        className="block hover:text-foreground/80 text-base text-foreground/60"
+                      >
+                        Data Science
+                      </Link>
+                      <Link
+                        to="/categories/design"
+                        className="block hover:text-foreground/80 text-base text-foreground/60"
+                      >
+                        Design
+                      </Link>
+                    </div>
                   )}
-                >
-                  Categories
-                </Link>
+                </div>
+
                 <Link
                   to="/instructors"
                   className={cn(
@@ -102,7 +154,7 @@ export function Header() {
           </Sheet>
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
             <picture>
               <source
                 srcSet="https://avatars.githubusercontent.com/u/150797856?s=200&v=4"
@@ -110,31 +162,33 @@ export function Header() {
               />
               <img
                 src="https://avatars.githubusercontent.com/u/150797856?s=200&v=4"
-                alt="Learnig Africa Logo"
+                alt="Learning Africa Logo"
                 className="h-8 w-8 rounded-full"
                 width={32}
                 height={32}
               />
             </picture>
-            <span className="font-bold md:text-xl">Learning Africa</span>
+            <span className="font-bold text-sm sm:text-base md:text-xl truncate">Learning Africa</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden items-center gap-6 md:flex">
+          <nav className="hidden xl:flex items-center gap-6 ml-8">
             <Link
               to="/"
               className={cn(
-                'hover:text-foreground/80 text-sm font-medium transition-colors',
+                'hover:text-foreground/80 text-sm font-medium transition-colors whitespace-nowrap',
                 isActive('/') ? 'text-foreground' : 'text-foreground/60',
               )}
             >
               Home
             </Link>
-            <div className="relative">{<MegaMenu />}</div>
+            <div className="relative">
+              <MegaMenu />
+            </div>
             <Link
               to="/categories"
               className={cn(
-                'hover:text-foreground/80 text-sm font-medium transition-colors',
+                'hover:text-foreground/80 text-sm font-medium transition-colors whitespace-nowrap',
                 isActive('/categories')
                   ? 'text-foreground'
                   : 'text-foreground/60',
@@ -145,7 +199,7 @@ export function Header() {
             <Link
               to="/instructors"
               className={cn(
-                'hover:text-foreground/80 text-sm font-medium transition-colors',
+                'hover:text-foreground/80 text-sm font-medium transition-colors whitespace-nowrap',
                 isActive('/instructors')
                   ? 'text-foreground'
                   : 'text-foreground/60',
@@ -156,22 +210,35 @@ export function Header() {
           </nav>
         </div>
 
-        {/* Right Side - Search, Cart, User */}
-        <div className="flex items-center gap-4">
-          <form className="hidden lg:block">
+        {/* Center Section - Search (Desktop) */}
+        <div className="hidden xl:block flex-1 max-w-md mx-8">
+          <form>
             <div className="relative">
               <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
               <Input
                 type="search"
                 placeholder="Search courses..."
-                className="bg-background w-64 pl-8"
+                className="bg-background w-full pl-8"
               />
             </div>
           </form>
+        </div>
+
+        {/* Right Section - Actions */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Search (Mobile/Tablet) */}
+          <Button variant="ghost" size="icon" className="xl:hidden">
+            <Search className="h-5 w-5" />
+            <span className="sr-only">Search</span>
+          </Button>
+
+          {/* Cart */}
           <Button variant="ghost" size="icon" className="text-foreground/60">
             <ShoppingCart className="h-5 w-5" />
             <span className="sr-only">Shopping cart</span>
           </Button>
+
+          {/* Theme Toggle */}
           <Button
             variant="ghost"
             size="icon"
@@ -211,29 +278,43 @@ export function Header() {
               </svg>
             )}
           </Button>
-          <Button variant="outline" size="sm" asChild>
+
+          {/* Auth Button */}
+          <Button variant="outline" size="sm" asChild className="hidden sm:flex">
             {auth.is_authenticated ? (
               <>
                 <Button
                   type="button"
                   variant="destructive"
                   onClick={() => auth.logout()}
+                  className="hidden"
                 >
                   Logout
                 </Button>
-                {/* <Link to="/profile" className="flex items-center">
-                <User className="mr-2 h-4 w-4" />
-                Profile
-              </Link> */}
                 <Link to="/dashboard" className="flex items-center">
                   <User className="mr-2 h-4 w-4" />
-                  Dashboard
+                  <span className="hidden md:inline">Dashboard</span>
                 </Link>
               </>
             ) : (
               <Link to="/login">
                 <User className="mr-2 h-4 w-4" />
-                Login
+                <span className="hidden md:inline">Login</span>
+              </Link>
+            )}
+          </Button>
+
+          {/* Mobile Auth Button */}
+          <Button variant="outline" size="icon" asChild className="sm:hidden">
+            {auth.is_authenticated ? (
+              <Link to="/dashboard">
+                <User className="h-4 w-4" />
+                <span className="sr-only">Dashboard</span>
+              </Link>
+            ) : (
+              <Link to="/login">
+                <User className="h-4 w-4" />
+                <span className="sr-only">Login</span>
               </Link>
             )}
           </Button>
