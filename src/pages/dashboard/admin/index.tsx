@@ -73,6 +73,9 @@ const AdminLearningPage = lazy(() => import('./learning/admin-learning-page'));
 const AdminLiveSessionsPage = lazy(
   () => import('./live-sessions/admin-live-sessions-page'),
 );
+const AdminMeetingPage = lazy(
+  () => import('./meeting/admin-meeting-page'),
+);
 const AdminReportsPage = lazy(() => import('./reports/admin-reports-page'));
 const AdminReportDetailsPage = lazy(
   () => import('./reports/admin-report-details-page'),
@@ -234,6 +237,10 @@ export const adminRouter: RouteObject[] = [
   {
     path: '/dashboard/admin/live-sessions',
     element: <AdminLiveSessionsPage />,
+  },
+  {
+    path: '/dashboard/admin/meeting/:meetingId',
+    element: <AdminMeetingPage />,
   },
   {
     path: '/dashboard/admin/reports',
