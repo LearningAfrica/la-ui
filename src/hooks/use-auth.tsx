@@ -66,13 +66,15 @@ export const useAuth = create<AuthStore>()(
               id: data.id,
               username: data.username,
               role: data.user_role,
-              organizations: [],
+              organizations: data.organizations,
               avatar: undefined, // Adjust as needed
             },
             access_token: data.access_token,
             is_authenticated: true,
             is_loading: false,
             error: null,
+            current_org_id:
+              data.organizations.length > 0 ? data.organizations[0].id : null,
           }));
         } catch (error) {
           set((state) => ({

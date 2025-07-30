@@ -81,7 +81,8 @@ export const resetPasswordSchema = z
   .object({
     otp_code: z
       .string()
-      .length(6, { message: 'OTP must be exactly 6 characters long' }),
+      .length(6, { message: 'OTP must be exactly 6 characters long' })
+      .regex(/^\d+$/, { message: 'OTP must contain only numbers' }),
     email: z.string().email({ message: 'Invalid email address' }),
     new_password: z
       .string()

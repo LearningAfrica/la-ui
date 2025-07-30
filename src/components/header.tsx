@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { MegaMenu } from '@/components/mega-menu';
 import { useTheme } from '@/providers/theme-provider';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '@/hooks/use-auth';
 
 export function Header() {
   const pathname = useLocation().pathname;
@@ -17,7 +18,7 @@ export function Header() {
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
-
+  const auth = useAuth();
   return (
     <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
       <div className="container mx-auto flex h-16 items-center justify-between">
@@ -102,22 +103,21 @@ export function Header() {
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-          <picture>
-
-            <source
-              srcSet="https://avatars.githubusercontent.com/u/150797856?s=200&v=4"
-              type="image/webp"
+            <picture>
+              <source
+                srcSet="https://avatars.githubusercontent.com/u/150797856?s=200&v=4"
+                type="image/webp"
               />
-            <img
-              src="https://avatars.githubusercontent.com/u/150797856?s=200&v=4"
-              alt="Learnig Africa Logo"
-              className="h-8 w-8 rounded-full"
-              width={32}
-              height={32}
-            />
-          </picture>
-          <span className="md:text-xl font-bold">Learning Africa</span>
-        </Link>
+              <img
+                src="https://avatars.githubusercontent.com/u/150797856?s=200&v=4"
+                alt="Learnig Africa Logo"
+                className="h-8 w-8 rounded-full"
+                width={32}
+                height={32}
+              />
+            </picture>
+            <span className="font-bold md:text-xl">Learning Africa</span>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center gap-6 md:flex">
@@ -212,10 +212,30 @@ export function Header() {
             )}
           </Button>
           <Button variant="outline" size="sm" asChild>
-            <Link to="/login">
-              <User className="mr-2 h-4 w-4" />
-              Login
-            </Link>
+            {auth.is_authenticated ? (
+              <>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => auth.logout()}
+                >
+                  Logout
+                </Button>
+                {/* <Link to="/profile" className="flex items-center">
+                <User className="mr-2 h-4 w-4" />
+                Profile
+              </Link> */}
+                <Link to="/dashboard" className="flex items-center">
+                  <User className="mr-2 h-4 w-4" />
+                  Dashboard
+                </Link>
+              </>
+            ) : (
+              <Link to="/login">
+                <User className="mr-2 h-4 w-4" />
+                Login
+              </Link>
+            )}
           </Button>
         </div>
       </div>

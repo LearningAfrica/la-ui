@@ -8,9 +8,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from '@/components/ui/input-otp';
 import {
   Card,
   CardContent,
@@ -63,13 +70,13 @@ export default function ResetPasswordPage() {
 
     try {
       // Replace with your actual API endpoint
-      await apiClient.post('/auth/password-reset-complete', {
+      await apiClient.patch('/auth/password-reset-complete/', {
         otp_code: data.otp_code,
         email: sessionEmail!,
         new_password: data.new_password,
       });
       toast.success('Password reset successfully');
-      localStorage.removeItem(PASSWORD_RESET_KEYS.resetEmailKey);
+      // localStorage.removeItem(PASSWORD_RESET_KEYS.resetEmailKey);
       await navigate('/login');
     } catch (error) {
       toast.error(extractCorrectErrorMessage(error), {
@@ -85,7 +92,10 @@ export default function ResetPasswordPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
           <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
-          <CardDescription>Enter your new password below</CardDescription>
+          <CardDescription>
+            Enter the verification code sent to your email and set your new
+            password
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -95,17 +105,36 @@ export default function ResetPasswordPage() {
                 name="otp_code"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>OTP</FormLabel>
+                    <FormLabel>One-Time Password</FormLabel>
                     <FormControl>
-                      <Input
-                        type={'text'}
-                        placeholder="*** ***"
-                        maxLength={6}
-                        minLength={6}
-                        {...field}
-                        className='text-center'
-                      />
+                                            <div className="flex items-center gap-2">
+                        <InputOTP maxLength={6} {...field}>
+                          <InputOTPGroup>
+                            <InputOTPSlot index={0} />
+                            <InputOTPSlot index={1} />
+                            <InputOTPSlot index={2} />
+                          </InputOTPGroup>
+                          <InputOTPSeparator />
+                          <InputOTPGroup>
+                            <InputOTPSlot index={3} />
+                            <InputOTPSlot index={4} />
+                            <InputOTPSlot index={5} />
+                          </InputOTPGroup>
+                        </InputOTP>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => field.onChange('')}
+                          className="text-xs"
+                        >
+                          Clear
+                        </Button>
+                      </div>
                     </FormControl>
+                    <FormDescription>
+                      Please enter the one-time password sent to your email.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -194,7 +223,10 @@ export default function ResetPasswordPage() {
         </CardContent>
         <CardFooter className="flex flex-col space-y-2">
           <div className="flex justify-center">
-            <Link to="/forgot-password" className="text-primary text-sm hover:underline">
+            <Link
+              to="/forgot-password"
+              className="text-primary text-sm hover:underline"
+            >
               Didn't receive OTP? Request again
             </Link>
           </div>

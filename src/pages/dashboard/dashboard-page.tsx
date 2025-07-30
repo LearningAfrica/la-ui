@@ -11,7 +11,7 @@ export default function DashboardPage() {
     if (!isLoading && user) {
       // Redirect to the appropriate dashboard based on user role
       switch (user.role) {
-        case 'superAdmin':
+        case 'super_admin':
           navigate('/dashboard/super-admin');
           break;
         case 'admin':
