@@ -6,23 +6,14 @@ import {
   CardTitle,
   CardDescription,
 } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
 import {
   BookOpen,
-  Clock,
-  Award,
-  GraduationCap,
-  Calendar,
-  FileText,
   DollarSign,
   Users,
   Target,
   ChevronRight,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useAuth } from '@/hooks/use-auth';
 
 // Mock data for the dashboard
 const recentProjects = [
@@ -62,7 +53,6 @@ const dashboardStats = {
 
 export default function StudentDashboard() {
   const [isLoading, setIsLoading] = useState(true);
-  const { user } = useAuth();
 
   useEffect(() => {
     // Simulate loading

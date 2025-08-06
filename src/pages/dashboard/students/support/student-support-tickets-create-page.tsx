@@ -245,7 +245,7 @@ export default function StudentSupportTicketsCreatePage() {
               <FormField
                 control={form.control}
                 name="attachments"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
                     <FormLabel>Attachments (Optional)</FormLabel>
                     <FormControl>

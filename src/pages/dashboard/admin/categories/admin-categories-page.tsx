@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import {
   Card,
@@ -37,116 +37,52 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Edit, MoreHorizontal, Plus, Search, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-
-// Mock data for categories
-const initialCategories = [
-  {
-    id: '1',
-    name: 'Programming',
-    description: 'Learn coding and software development',
-    image: '/programming-category.jpg',
-    courseCount: 243,
-    students: 12345,
-    revenue: '$243,500',
-    createdAt: '2023-05-15',
-  },
-  {
-    id: '2',
-    name: 'Data Science',
-    description: 'Master data analysis and machine learning',
-    image: '/data-science-category.jpg',
-    courseCount: 187,
-    students: 9876,
-    revenue: '$187,600',
-    createdAt: '2023-06-20',
-  },
-  {
-    id: '3',
-    name: 'Design',
-    description: 'Explore graphic, UX, and UI design',
-    image: '/design-category.jpg',
-    courseCount: 156,
-    students: 8765,
-    revenue: '$156,300',
-    createdAt: '2023-07-10',
-  },
-  {
-    id: '4',
-    name: 'Business',
-    description: 'Develop business and entrepreneurship skills',
-    image: '/business-category.jpg',
-    courseCount: 201,
-    students: 10432,
-    revenue: '$201,400',
-    createdAt: '2023-08-05',
-  },
-  {
-    id: '5',
-    name: 'Marketing',
-    description: 'Learn digital marketing strategies and techniques',
-    image: '/marketing-category.jpg',
-    courseCount: 132,
-    students: 7654,
-    revenue: '$132,800',
-    createdAt: '2023-09-12',
-  },
-  {
-    id: '6',
-    name: 'Photography',
-    description: 'Master photography and photo editing',
-    image: '/photography-category.jpg',
-    courseCount: 98,
-    students: 5432,
-    revenue: '$98,700',
-    createdAt: '2023-10-18',
-  },
-  {
-    id: '7',
-    name: 'Music',
-    description: 'Learn music theory and instrument playing',
-    image: '/music-category.jpg',
-    courseCount: 76,
-    students: 4321,
-    revenue: '$76,500',
-    createdAt: '2023-11-22',
-  },
-  {
-    id: '8',
-    name: 'Health & Fitness',
-    description: 'Improve your health and fitness knowledge',
-    image: '/fitness-category.jpg',
-    courseCount: 112,
-    students: 6543,
-    revenue: '$112,900',
-    createdAt: '2023-12-15',
-  },
-];
+import { useCourseCategories } from '@/domains/categories/use-course-categories';
+import { format } from 'date-fns';
 
 export default function CategoriesPage() {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState(initialCategories);
+  // const [categories, setCategories] = useState(initialCategories);
+  const { queries } = useCourseCategories();
+  const categoriesData = useMemo(
+    () =>
+      queries.courseCategories.data && queries.courseCategories.data.data
+        ? queries.courseCategories.data.data
+        : [],
+    [queries.courseCategories.data],
+  );
   const [searchQuery, setSearchQuery] = useState('');
-  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<number | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   // Filter categories based on search query
-  const filteredCategories = categories.filter(
-    (category) =>
-      category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      category.description.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  // const filteredCategories = categories.filter(
+  //   (category) =>
+  //     category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  //     category.description.toLowerCase().includes(searchQuery.toLowerCase()),
+  // );
+
+  const filteredCategories = useMemo(() => {
+    return categoriesData.filter(
+      (category) =>
+        category.category_name
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        category.description.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+  }, [categoriesData, searchQuery]);
 
   // Handle category deletion
-  const handleDeleteCategory = (id: string) => {
+  const handleDeleteCategory = (id: number) => {
     setCategoryToDelete(id);
     setIsDeleteDialogOpen(true);
   };
 
   const confirmDelete = () => {
     if (categoryToDelete) {
-      setCategories(
-        categories.filter((category) => category.id !== categoryToDelete),
-      );
+      // setCategories(
+      //   categories.filter((category) => category.id !== categoryToDelete),
+      // );
       toast.success('Category deleted successfully');
       setCategoryToDelete(null);
       setIsDeleteDialogOpen(false);
@@ -195,7 +131,7 @@ export default function CategoriesPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Category</TableHead>
-                  <TableHead className="hidden md:table-cell">
+                  {/* <TableHead className="hidden md:table-cell">
                     Courses
                   </TableHead>
                   <TableHead className="hidden md:table-cell">
@@ -203,7 +139,7 @@ export default function CategoriesPage() {
                   </TableHead>
                   <TableHead className="hidden lg:table-cell">
                     Revenue
-                  </TableHead>
+                  </TableHead> */}
                   <TableHead className="hidden lg:table-cell">
                     Created
                   </TableHead>
@@ -224,13 +160,17 @@ export default function CategoriesPage() {
                         <div className="flex items-center gap-3">
                           <div className="h-10 w-10 overflow-hidden rounded-md">
                             <img
-                              src={category.image || '/placeholder.svg'}
-                              alt={category.name}
+                              src={
+                                category.category_image || '/placeholder.svg'
+                              }
+                              alt={category.category_name}
                               className="h-full w-full object-cover"
                             />
                           </div>
                           <div>
-                            <div className="font-medium">{category.name}</div>
+                            <div className="font-medium">
+                              {category.category_name}
+                            </div>
                             <div className="text-muted-foreground hidden text-sm md:block">
                               {category.description.length > 50
                                 ? `${category.description.substring(0, 50)}...`
@@ -239,17 +179,17 @@ export default function CategoriesPage() {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="hidden md:table-cell">
+                      {/* <TableCell className="hidden md:table-cell">
                         {category.courseCount}
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell">
+                      </TableCell> */}
+                      {/* <TableCell className="hidden md:table-cell">
                         {category.students.toLocaleString()}
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell">
+                      </TableCell> */}
+                      {/* <TableCell className="hidden lg:table-cell">
                         {category.revenue}
-                      </TableCell>
+                      </TableCell> */}
                       <TableCell className="hidden lg:table-cell">
-                        {category.createdAt}
+                        {format(category.created, 'MMMM dd, yyyy')}
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>

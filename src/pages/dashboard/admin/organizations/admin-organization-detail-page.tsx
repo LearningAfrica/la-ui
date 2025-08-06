@@ -60,7 +60,7 @@ import {
 import { toast } from 'sonner';
 import type { UserRole } from '@/lib/types/auth';
 import { Link, useParams } from 'react-router-dom';
-import { useOrganization } from '@/hooks/use-organizations';
+import { useOrganization } from '@/domains/organizations/use-organizations';
 import { useAuth } from '@/hooks/use-auth';
 
 // Mock member data

@@ -1,12 +1,12 @@
-import type { Organization } from '@/lib/types/organization';
-import { useAuth } from './use-auth';
+import type { ApiOrganizationInterface } from '@/lib/types/organization';
+import { useAuth } from '@/hooks/use-auth';
 import type { ICreateOrganizationInput } from '@/lib/validators/organization-schema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { extractCorrectErrorMessage } from '@/lib/utils/axios-err';
 import { useApiClient } from '@/lib/api';
 
-const organizationKeys = {
+export const organizationKeys = {
   all: ['organizations'] as const,
   lists: () => [...organizationKeys.all, 'list'] as const,
   list: (organizationId: string) =>
@@ -27,7 +27,7 @@ export const useOrganization = () => {
     queryFn: async () => {
       // Fetch organizations from the API or auth store
       try {
-        const { data } = await apiClient.get<Organization[]>(
+        const { data } = await apiClient.get<ApiOrganizationInterface[]>(
           '/api/organizations/',
         );
         return data || [];
@@ -43,7 +43,7 @@ export const useOrganization = () => {
   });
 
   const createOrganization = async (payload: ICreateOrganizationInput) => {
-    const { data } = await apiClient.post<Organization>(
+    const { data } = await apiClient.post<ApiOrganizationInterface>(
       '/api/organizations/',
       payload,
       {
@@ -58,12 +58,6 @@ export const useOrganization = () => {
   const createOrganizationMutation = useMutation({
     mutationFn: createOrganization,
     onSuccess: () => {
-      // queryClient.setQueryData(
-      //   organizationKeys.lists(),
-      //   (oldData: Organization[] | undefined) => {
-      //     return [...(oldData || []), newOrg];
-      //   },
-      // );
       queryClient.invalidateQueries({ queryKey: organizationKeys.lists() });
     },
     onError: (error) => {

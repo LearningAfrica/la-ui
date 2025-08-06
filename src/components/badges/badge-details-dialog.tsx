@@ -1,4 +1,4 @@
-import type { AchievementBadge as AchievementBadgeType } from '@/types/badge';
+import type { AchievementBadge as AchievementBadgeType } from '@/lib/types/badge';
 import {
   Dialog,
   DialogContent,

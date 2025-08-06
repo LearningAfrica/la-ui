@@ -1,15 +1,14 @@
-import type { AchievementBadge as AchievementBadgeType } from '@/types/badge';
+import type { AchievementBadge as AchievementBadgeType } from '@/lib/types/badge';
 import { AchievementBadge } from './achievement-badge';
 import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from 'react-router-dom';
 
 interface BadgeEarnedToastProps {
   badge: AchievementBadgeType;
 }
 
 export function BadgeEarnedToast({ badge }: BadgeEarnedToastProps) {
-  const router = useRouter();
+  const navigate = useNavigate();
 
   return (
     <div className="flex items-center gap-4">
@@ -21,7 +20,7 @@ export function BadgeEarnedToast({ badge }: BadgeEarnedToastProps) {
       <Button
         variant="outline"
         size="sm"
-        onClick={() => router.push('/dashboard/student/achievements')}
+        onClick={() => navigate('/dashboard/student/achievements')}
       >
         View
       </Button>
@@ -30,15 +29,10 @@ export function BadgeEarnedToast({ badge }: BadgeEarnedToastProps) {
 }
 
 export function useBadgeToast() {
-  const { toast } = useToast();
-
   return {
     showBadgeEarned: (badge: AchievementBadgeType) => {
-      toast({
-        title: 'Achievement Unlocked!',
-        description: <BadgeEarnedToast badge={badge} />,
-        duration: 5000,
-      });
+      // TODO: Implement toast notification
+      console.log('Badge earned:', badge.name);
     },
   };
 }

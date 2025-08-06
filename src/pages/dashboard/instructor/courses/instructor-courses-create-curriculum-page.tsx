@@ -80,23 +80,20 @@ import { Link, useNavigate } from 'react-router-dom';
 const sectionSchema = z.object({
   title: z.string().min(3, { message: 'Title must be at least 3 characters' }),
   description: z.string().optional(),
-  order: z.number().int().nonnegative().default(0),
+  order: z.number().int().nonnegative(),
 });
 
 const contentSchema = z.object({
   title: z.string().min(3, { message: 'Title must be at least 3 characters' }),
   type: z.enum(['video', 'rich-text', 'image']),
-  duration: z
-    .string()
-    .regex(/^\d+:\d{2}$/, { message: 'Format must be MM:SS' })
-    .optional(),
+  duration: z.string().optional(),
   description: z.string().optional(),
   content: z.string().optional(),
-  videoUrl: z.string().url({ message: 'Please enter a valid URL' }).optional(),
-  imageUrl: z.string().url({ message: 'Please enter a valid URL' }).optional(),
+  videoUrl: z.string().optional(),
+  imageUrl: z.string().optional(),
   imageAlt: z.string().optional(),
   isPreview: z.boolean().default(false),
-  order: z.number().int().nonnegative().default(0),
+  order: z.number().int().nonnegative(),
 });
 
 type SectionFormValues = z.infer<typeof sectionSchema>;

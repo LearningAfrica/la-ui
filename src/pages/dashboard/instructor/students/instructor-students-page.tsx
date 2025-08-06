@@ -84,7 +84,6 @@ const initialStudents = [
 ];
 
 export default function InstructorStudentsPage() {
-  const { user } = useAuth();
   const [students, _setStudents] = useState(initialStudents);
   const [searchQuery, setSearchQuery] = useState('');
 

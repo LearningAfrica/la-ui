@@ -21,11 +21,11 @@ export function EventReminder({
   id,
   title,
   date,
-  type,
+  _type,
   course,
   color,
   location,
-  onDismiss,
+  _onDismiss,
   onSnooze,
 }: EventReminderProps) {
   const [isHovered, setIsHovered] = useState(false);

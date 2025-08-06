@@ -42,10 +42,10 @@ const formSchema = z.object({
   showQrCode: z.boolean().default(false),
   expiryEnabled: z.boolean().default(false),
   expiryPeriod: z.string().optional(),
-  backgroundColor: z.string().default('#ffffff'),
-  borderColor: z.string().default('#000000'),
-  textColor: z.string().default('#000000'),
-  accentColor: z.string().default('#3b82f6'),
+  backgroundColor: z.string(),
+  borderColor: z.string(),
+  textColor: z.string(),
+  accentColor: z.string(),
 });
 
 export default function CreateCertificatePage() {

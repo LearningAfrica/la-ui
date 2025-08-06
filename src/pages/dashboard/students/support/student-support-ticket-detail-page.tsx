@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ArrowLeft, Paperclip, Send } from 'lucide-react';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 // Mock ticket data
@@ -88,7 +88,7 @@ const ticketData = {
 
 export default function StudentSupportTicketDetailPage() {
   //   const router = useRouter()
-  const params = useParams<{ id: string }>();
+  // const params = useParams<{ id: string }>();
   const [newMessage, setNewMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 

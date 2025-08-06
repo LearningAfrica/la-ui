@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Calendar as BigCalendar, dateFnsLocalizer } from 'react-big-calendar';
+import type { TSFixMe } from '@/lib/types/global';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 // import format from "date-fns/format"
 // import parse from "date-fns/parse"
@@ -267,7 +268,7 @@ const sampleCourses = [
 
 export default function StudentCalendarPage() {
   const [events, setEvents] = useState(generateSampleEvents());
-  const [selectedEvent, setSelectedEvent] = useState<any>(null);
+  const [selectedEvent, setSelectedEvent] = useState<TSFixMe>(null);
   const [isAddEventOpen, setIsAddEventOpen] = useState(false);
   const [isViewEventOpen, setIsViewEventOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -302,7 +303,7 @@ export default function StudentCalendarPage() {
       : events;
 
   // Handle event selection
-  const handleSelectEvent = (event: any) => {
+  const handleSelectEvent = (event: TSFixMe) => {
     setSelectedEvent(event);
     setIsViewEventOpen(true);
     setIsEditMode(false);
@@ -407,7 +408,7 @@ export default function StudentCalendarPage() {
   };
 
   // Handle share event submission
-  const handleShareEventSubmit = (recipients: string[], _options: any) => {
+  const handleShareEventSubmit = (recipients: string[], _options: TSFixMe) => {
     if (!selectedEvent) return;
 
     // In a real app, this would send invitations to the recipients
@@ -448,7 +449,7 @@ export default function StudentCalendarPage() {
   };
 
   // Handle add shared event to calendar
-  const handleAddSharedEventToCalendar = (event: any) => {
+  const handleAddSharedEventToCalendar = (event: TSFixMe) => {
     // In a real app, this would add the shared event to the user's calendar
     console.log(`Added shared event to calendar: ${event.id}`);
   };
@@ -473,7 +474,7 @@ export default function StudentCalendarPage() {
   };
 
   // Custom event styling
-  const eventStyleGetter = (event: any) => {
+  const eventStyleGetter = (event: TSFixMe) => {
     const eventType = event.type as keyof typeof EVENT_TYPES;
     const typeInfo = EVENT_TYPES[eventType];
 
@@ -619,7 +620,7 @@ export default function StudentCalendarPage() {
                   week: true,
                   day: true,
                 }}
-                view={calendarView as any}
+                view={calendarView as TSFixMe}
                 onView={(view) => setCalendarView(view)}
                 date={currentDate}
                 onNavigate={(date) => setCurrentDate(date)}
@@ -893,10 +894,7 @@ export default function StudentCalendarPage() {
         />
       )}
 
-      <NotificationsPanel
-        open={isNotificationsPanelOpen}
-        onOpenChange={setIsNotificationsPanelOpen}
-      />
+      <NotificationsPanel />
     </div>
   );
 }

@@ -24,7 +24,7 @@ import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, Save, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link, useParams } from 'react-router-dom';
-import { useOrganization } from '@/hooks/use-organizations';
+import { useOrganization } from '@/domains/organizations/use-organizations';
 import { useAuth } from '@/hooks/use-auth';
 
 export default function OrganizationSettingsPage() {
@@ -42,7 +42,7 @@ export default function OrganizationSettingsPage() {
   // Form state
   const [formData, setFormData] = useState({
     name: organization?.name || '',
-   
+
   });
 
   if (!organization) {

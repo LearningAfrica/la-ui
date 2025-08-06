@@ -3,6 +3,7 @@ import { Search, Share2, User, Users, X } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import type { TSFixMe } from '@/lib/types/global';
 
 import {
   Dialog,
@@ -103,8 +104,8 @@ const sampleGroups = [
 // Form schema
 const shareFormSchema = z.object({
   message: z.string().optional(),
-  allowEdit: z.boolean().default(false),
-  notifyRecipients: z.boolean().default(true),
+  allowEdit: z.boolean(),
+  notifyRecipients: z.boolean(),
 });
 
 type ShareFormValues = z.infer<typeof shareFormSchema>;
@@ -112,7 +113,7 @@ type ShareFormValues = z.infer<typeof shareFormSchema>;
 interface ShareEventDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  event: any;
+  event: TSFixMe;
   onShare: (recipients: string[], options: ShareFormValues) => void;
 }
 

@@ -55,7 +55,7 @@ const contentSchema = z.object({
   type: z.enum(['text', 'video', 'image']),
   description: z.string().max(500).optional(),
   content: z.string().min(1, { message: 'Content is required' }),
-  videoUrl: z.string().url({ message: 'Please enter a valid URL' }).optional(),
+  videoUrl: z.string().optional(),
   videoDuration: z.string().optional(),
   imageAlt: z.string().max(200).optional(),
   order: z.number().int().positive().optional(),

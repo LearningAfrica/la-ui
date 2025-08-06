@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ArrowLeft, Menu, Home } from 'lucide-react';
+import type { TSFixMe } from '@/lib/types/global';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -189,8 +190,8 @@ export default function StudentCourseLessonPage() {
 
   // Handle adding a new comment
   const handleAddComment = (
-    contentId: string,
-    contentType: string,
+    _contentId: string,
+    _contentType: string,
     content: string,
   ) => {
     const newComment = {
@@ -338,7 +339,7 @@ export default function StudentCourseLessonPage() {
   };
 
   // Handle reporting a comment
-  const handleReportComment = (commentId: string) => {
+  const handleReportComment = (_commentId: string) => {
     toast.success(
       // 	{
       //   title: "Comment reported",
@@ -398,9 +399,9 @@ export default function StudentCourseLessonPage() {
       <div className="flex flex-1">
         {/* Course curriculum sidebar */}
         <CurriculumSidebar
-          courseId={params.id}
+          courseId={params.id || ''}
           sections={courseData.sections}
-          currentLessonId={params.lessonId}
+          currentLessonId={params.lessonId || ''}
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
         />
@@ -428,7 +429,7 @@ export default function StudentCourseLessonPage() {
                   </Button>
                 )}
                 <LessonCompletionButton
-                  lessonId={params.lessonId}
+                  lessonId={params.lessonId || ''}
                   isCompleted={lessonData.isCompleted}
                   onComplete={handleLessonComplete}
                 />
@@ -489,9 +490,12 @@ export default function StudentCourseLessonPage() {
                 <Card>
                   <CardContent className="p-6">
                     <CommentSection
-                      contentId={params.lessonId}
+                      contentId={params.lessonId || ''}
                       contentType="lesson"
-                      comments={comments}
+                      comments={comments.map(comment => ({
+                        ...comment,
+                        currentUserId: currentUser.id
+                      }))}
                       currentUser={currentUser}
                       onAddComment={handleAddComment}
                       onReplyComment={handleReplyComment}

@@ -21,14 +21,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useOrganization } from '@/hooks/use-organizations';
+import { useOrganization } from '@/domains/organizations/use-organizations';
 import { useAuth } from '@/hooks/use-auth';
 
-import type { Organization } from '@/lib/types/organization';
+import type { ApiOrganizationInterface } from '@/lib/types/organization';
 
 interface OrganizationSwitcherProps {
   className?: string;
-  onWorkspaceChange?: (workspace: Organization) => void;
+  onWorkspaceChange?: (workspace: ApiOrganizationInterface) => void;
 }
 
 export function OrganizationSwitcher({
@@ -48,12 +48,12 @@ export function OrganizationSwitcher({
   const currentOrganization = auth.getCurrentOrganization();
 
   // Function to get the organization icon
-  const getOrganizationIcon = (organization: Organization) => {
+  const getOrganizationIcon = (organization: ApiOrganizationInterface) => {
     return organization?.name?.charAt(0).toUpperCase() || 'O';
   };
 
   // Handle organization change
-  const handleOrganizationChange = (organization: Organization) => {
+  const handleOrganizationChange = (organization: ApiOrganizationInterface) => {
     auth.changeCurrentOrganization(organization.id);
     setOpen(false);
     if (onWorkspaceChange) {

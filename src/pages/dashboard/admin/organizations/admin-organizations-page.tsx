@@ -35,7 +35,7 @@ import {
   Search,
   Settings,
 } from 'lucide-react';
-import { useOrganization } from '@/hooks/use-organizations';
+import { useOrganization } from '@/domains/organizations/use-organizations';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { createOrganizationResolver } from '@/lib/validators/organization-schema';

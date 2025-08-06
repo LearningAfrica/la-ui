@@ -1,6 +1,6 @@
-import type { Organization } from '../types/organization';
+import type { ApiOrganizationInterface } from '../types/organization';
 
-export const MOCK_ORGANIZATIONS: Organization[] = [
+export const MOCK_ORGANIZATIONS: ApiOrganizationInterface[] = [
   {
     id: 'org-edu-001',
     name: 'Learning Africa',

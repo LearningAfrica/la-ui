@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import { Link } from 'react-router-dom';
 import confetti from 'canvas-confetti';
 import {
   Award,
@@ -154,12 +153,10 @@ export function CourseCompletionModal({
 
           <div className="relative h-40 w-full overflow-hidden rounded-lg">
             <div className="from-primary/20 to-primary/10 absolute inset-0 flex items-center justify-center bg-gradient-to-r">
-              <Image
+              <img
                 src="/abstract-geometric-certificate.png"
                 alt="Achievement"
-                width={300}
-                height={150}
-                className="opacity-50 mix-blend-overlay"
+                className="opacity-50 mix-blend-overlay w-[300px] h-[150px] object-cover"
               />
             </div>
           </div>
@@ -187,7 +184,7 @@ export function CourseCompletionModal({
         <DialogFooter className="flex flex-col gap-2 sm:flex-row">
           {certificateId ? (
             <Button asChild className="w-full sm:w-auto">
-              <Link href={`/dashboard/student/certificates/${certificateId}`}>
+              <Link to={`/dashboard/student/certificates/${certificateId}`}>
                 <Download className="mr-2 h-4 w-4" />
                 View Certificate
               </Link>
@@ -206,7 +203,7 @@ export function CourseCompletionModal({
             Close
           </Button>
           <Button variant="secondary" className="w-full sm:w-auto" asChild>
-            <Link href="/dashboard/student/achievements">
+            <Link to="/dashboard/student/achievements">
               View All Achievements
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>

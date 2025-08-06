@@ -1,5 +1,5 @@
-import type { UserRole } from "../validators/auth-schema";
-
+import type { UserRole } from '../validators/auth-schema';
+import type { Paginated } from './global';
 
 export interface OrganizationSettings {
   allowSelfRegistration?: boolean;
@@ -17,15 +17,12 @@ export interface OrganizationMember {
   status: 'active' | 'pending' | 'suspended';
 }
 
-// export type OrganizationStatus =
-//   | 'active'
-//   | 'pending'
-//   | 'suspended'
-//   | 'archived';
-export interface Organization {
+export interface ApiOrganizationInterface {
   id: string;
   name: string;
   description?: string;
   logo_url?: string;
-
 }
+
+export type PaginatedApiOrganizationInterface =
+  Paginated<ApiOrganizationInterface>;
