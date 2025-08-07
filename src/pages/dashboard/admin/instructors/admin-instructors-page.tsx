@@ -3,6 +3,7 @@ import {
   ArrowUpDown,
   Download,
   Filter,
+  Mail,
   MoreHorizontal,
   Plus,
   Search,
@@ -51,6 +52,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Link, useNavigate } from 'react-router-dom';
+import { InviteInstructorDialog } from '@/components/instructors/invite-instructors-dialog';
 
 // Sample data for instructors
 const instructors = [
@@ -191,10 +193,18 @@ export default function InstructorsPage() {
             Manage instructor accounts and permissions
           </p>
         </div>
-        <Button onClick={() => navigate('/dashboard/admin/instructors/add')}>
-          <UserPlus className="mr-2 h-4 w-4" />
-          Add Instructor
-        </Button>
+        <div className='flex items-center gap-2'>
+          <InviteInstructorDialog >
+          <Button variant="outline" size="sm">
+            <Mail className="mr-2 h-4 w-4" />
+            Invite
+          </Button>
+          </InviteInstructorDialog>
+          <Button disabled onClick={() => navigate('/dashboard/admin/instructors/add')}>
+            <UserPlus className="mr-2 h-4 w-4" />
+            Add Instructor
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -302,8 +312,14 @@ export default function InstructorsPage() {
                   </Button>
                 </>
               )}
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/dashboard/admin/instructors/add">
+              <InviteInstructorDialog>
+                <Button variant="outline" size="sm">
+                  <Mail className="mr-2 h-4 w-4" />
+                  Invite
+                </Button>
+              </InviteInstructorDialog>
+              <Button disabled variant="outline" size="sm" className='hidden sm:inline-flex'>
+                <Link  to="/dashboard/admin/instructors/add" className='flex items-center gap-1'>
                   <Plus className="mr-2 h-4 w-4" />
                   Add New
                 </Link>

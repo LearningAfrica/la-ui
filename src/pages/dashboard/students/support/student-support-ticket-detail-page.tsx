@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ArrowLeft, Paperclip, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 
 // Mock ticket data
 const ticketData = {
@@ -157,7 +158,10 @@ export default function StudentSupportTicketDetailPage() {
       //     variant: "destructive",
       //   })
       toast.error(
-        'There was a problem sending your message. Please try again.',
+        apiErrorMsg(
+          error,
+          'There was a problem sending your message. Please try again.',
+        ),
       );
     } finally {
       setIsSubmitting(false);

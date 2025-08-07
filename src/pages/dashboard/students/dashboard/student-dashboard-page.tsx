@@ -14,6 +14,7 @@ import {
   Target,
   ChevronRight,
 } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
 
 // Mock data for the dashboard
 const recentProjects = [

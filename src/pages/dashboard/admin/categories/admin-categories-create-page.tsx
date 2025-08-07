@@ -25,7 +25,7 @@ import { ArrowLeft, Loader2, SaveIcon, Upload } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createCourseCategoryResolver } from '@/lib/validators/course-categories-page';
 import { useCourseCategories } from '@/domains/categories/use-course-categories';
-import { extractCorrectErrorMessage } from '@/lib/utils/axios-err';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 import { useAuth } from '@/hooks/use-auth';
 
 export default function CreateCategoryPage() {
@@ -55,7 +55,7 @@ export default function CreateCategoryPage() {
       },
       onError: (error) => {
         toast.error(
-          extractCorrectErrorMessage(error, 'Failed to create category'),
+          apiErrorMsg(error, 'Failed to create category'),
         );
       },
     });

@@ -26,7 +26,8 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { toast } from '@/hooks/use-toast';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
+import { toast } from 'sonner';
 
 const formSchema = z.object({
   notes: z.string().optional(),
@@ -69,19 +70,19 @@ export function SubmitForReviewDialog({
       // In a real app, this would be an API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      toast({
-        title: 'Course submitted for review',
+      toast.success('Course submitted for review successfully', {
         description: "We'll notify you once your course has been reviewed.",
       });
 
       setOpen(false);
       router.refresh();
     } catch (error) {
-      toast({
-        title: 'Something went wrong',
-        description: 'Your course could not be submitted. Please try again.',
-        variant: 'destructive',
-      });
+      toast.error(
+        apiErrorMsg(error, 'Failed to submit course'),
+        {
+          description: 'Your course could not be submitted. Please try again.',
+        },
+      );
     } finally {
       setIsSubmitting(false);
     }

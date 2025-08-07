@@ -26,6 +26,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 
 const reviewSchema = z.object({
   decision: z.enum(['approve', 'reject']),
@@ -87,9 +88,15 @@ export function CourseReviewForm({
 
       navigate('/dashboard/admin/reviews');
     } catch (error) {
-      toast.error('The review could not be submitted. Please try again.', {
-        description: 'An error occurred while submitting the review.',
-      });
+      toast.error(
+        apiErrorMsg(
+          error,
+          'The review could not be submitted. Please try again.',
+        ),
+        {
+          description: 'An error occurred while submitting the review.',
+        },
+      );
     } finally {
       setIsSubmitting(false);
     }

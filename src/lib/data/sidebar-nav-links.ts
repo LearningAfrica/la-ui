@@ -33,7 +33,13 @@ const COMMON_LINKS: NavLink[] = [
     href: '/dashboard',
     label: 'Dashboard',
     icon: LayoutDashboard,
-    roles: ['student', 'instructor', 'admin', 'super_admin'],
+    roles: ['learner', 'instructor', 'admin', 'super_admin'],
+  },
+  {
+    href: '/dashboard/invitations',
+    label: 'Invitations',
+    icon: MessageSquare,
+    roles: ['learner', 'instructor', 'admin', 'super_admin'],
   },
 ];
 
@@ -43,32 +49,32 @@ const STUDENT_LINKS: NavLink[] = [
     href: '#',
     label: 'Learning',
     icon: GraduationCap,
-    roles: ['student'],
+    roles: ['learner'],
     isParent: true,
     items: [
       {
         href: '/dashboard/student/courses',
         label: 'My Courses',
         icon: BookOpen,
-        roles: ['student'],
+        roles: ['learner'],
       },
       {
         href: '/dashboard/student/learning',
         label: 'My Learning',
         icon: GraduationCap,
-        roles: ['student'],
+        roles: ['learner'],
       },
       {
         href: '/dashboard/student/achievements',
         label: 'Achievements',
         icon: Award,
-        roles: ['student'],
+        roles: ['learner'],
       },
       {
         href: '/dashboard/student/certificates',
         label: 'Certificates',
         icon: FileCheck,
-        roles: ['student'],
+        roles: ['learner'],
       },
     ],
   },
@@ -76,26 +82,26 @@ const STUDENT_LINKS: NavLink[] = [
     href: '#',
     label: 'Tools',
     icon: Settings,
-    roles: ['student'],
+    roles: ['learner'],
     isParent: true,
     items: [
       {
         href: '/dashboard/student/calendar',
         label: 'Calendar',
         icon: Calendar,
-        roles: ['student'],
+        roles: ['learner'],
       },
       {
         href: '/dashboard/student/live-sessions',
         label: 'Live Sessions',
         icon: Video,
-        roles: ['student'],
+        roles: ['learner'],
       },
       {
         href: '/dashboard/student/support',
         label: 'Support',
         icon: HelpCircle,
-        roles: ['student'],
+        roles: ['learner'],
       },
     ],
   },
@@ -264,6 +270,12 @@ const ADMIN_LINKS: NavLink[] = [
         icon: GraduationCap,
         roles: ['admin'],
       },
+      {
+        href: '/dashboard/admin/instructors/invitations',
+        label: 'Invitations',
+        icon: Users,
+        roles: ['admin'],
+      },
     ],
   },
   {
@@ -316,15 +328,15 @@ const PROFILE_LINKS: NavLink[] = [
     href: '/dashboard/profile',
     label: 'Profile',
     icon: User,
-    roles: ['student', 'instructor', 'admin', 'super_admin'],
-    section: 'bottom'
+    roles: ['learner', 'instructor', 'admin', 'super_admin'],
+    section: 'bottom',
   },
   {
     href: '/dashboard/settings',
     label: 'Settings',
     icon: Settings,
-    roles: ['student', 'instructor', 'admin', 'super_admin'],
-    section: 'bottom'
+    roles: ['learner', 'instructor', 'admin', 'super_admin'],
+    section: 'bottom',
   },
 ];
 

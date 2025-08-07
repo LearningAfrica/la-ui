@@ -20,7 +20,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useApiClient } from '@/lib/api';
-import { extractCorrectErrorMessage } from '@/lib/utils/axios-err';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 import {
   forgotPasswordSchemaResolver,
   type IForgotPassword,
@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
       localStorage.setItem(PASSWORD_RESET_KEYS.resetEmailKey, data.email);
       await navigate('/reset-password'); // Adjust the token as needed
     } catch (error) {
-      toast.error(extractCorrectErrorMessage(error), {
+      toast.error(apiErrorMsg(error), {
         position: 'top-center',
       });
     }

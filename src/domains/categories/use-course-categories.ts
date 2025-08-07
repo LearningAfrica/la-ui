@@ -1,7 +1,7 @@
 import { useAuth } from '@/hooks/use-auth';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { extractCorrectErrorMessage } from '@/lib/utils/axios-err';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 import { useApiClient } from '@/lib/api';
 import type { CreateCourseCategoryInput } from '@/lib/validators/course-categories-page';
 import type { PaginatedApiCourseCategoriesInterface ,ApiCourseCategoriesInterface} from '@/lib/types/course-categories';
@@ -54,7 +54,7 @@ export const useCourseCategories = () => {
     onError: (error) => {
       console.error('Failed to create course category:', error);
       throw new Error(
-        extractCorrectErrorMessage(error, 'Failed to create course category'),
+        apiErrorMsg(error, 'Failed to create course category'),
       );
     },
   });

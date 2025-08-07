@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios';
 
-export function extractCorrectErrorMessage(
+export function apiErrorMsg(
   error: unknown,
   fallbackMessage?: string,
 ): string {

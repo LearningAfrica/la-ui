@@ -1,9 +1,12 @@
 import type { ApiOrganizationInterface } from '@/lib/types/organization';
 import { useAuth } from '@/hooks/use-auth';
-import type { ICreateOrganizationInput } from '@/lib/validators/organization-schema';
+import type {
+  ICreateOrganizationInput,
+  IInviteUsersToOrganizationInput,
+} from '@/lib/validators/organization-schema';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { extractCorrectErrorMessage } from '@/lib/utils/axios-err';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 import { useApiClient } from '@/lib/api';
 
 export const organizationKeys = {
@@ -33,7 +36,7 @@ export const useOrganization = () => {
         return data || [];
       } catch (error) {
         console.log(
-          extractCorrectErrorMessage(error, 'Failed to fetch organizations'),
+          apiErrorMsg(error, 'Failed to fetch organizations'),
         );
 
         return [];
@@ -55,6 +58,16 @@ export const useOrganization = () => {
     return data;
   };
 
+  const inviteUserToOrganization = async (
+    payload: IInviteUsersToOrganizationInput,
+  ) => {
+    const { data } = await apiClient.post<ApiOrganizationInterface>(
+      `/invite/admin/`,
+      payload,
+    );
+    return data;
+  };
+
   const createOrganizationMutation = useMutation({
     mutationFn: createOrganization,
     onSuccess: () => {
@@ -63,7 +76,20 @@ export const useOrganization = () => {
     onError: (error) => {
       console.error('Failed to create organization:', error);
       throw new Error(
-        extractCorrectErrorMessage(error, 'Failed to create organization'),
+        apiErrorMsg(error, 'Failed to create organization'),
+      );
+    },
+  });
+
+  const inviteUsersToOrganizationMutation = useMutation({
+    mutationFn: inviteUserToOrganization,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: organizationKeys.lists() });
+    },
+    onError: (error) => {
+      console.error('Failed to invite users:', error);
+      throw new Error(
+        apiErrorMsg(error, 'Failed to invite users'),
       );
     },
   });
@@ -73,6 +99,7 @@ export const useOrganization = () => {
   return {
     mutations: {
       create: createOrganizationMutation,
+      inviteUsers: inviteUsersToOrganizationMutation,
     },
     queries: {
       organizations: organizationsQuery,

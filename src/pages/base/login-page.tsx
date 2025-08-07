@@ -23,7 +23,7 @@ import {
 import { loginUserSchemaResolver } from '@/lib/validators/auth-schema';
 import { useState } from 'react';
 import { useApiClient } from '@/lib/api';
-import { extractCorrectErrorMessage } from '@/lib/utils/axios-err';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 import { LucideEye, LucideEyeOff } from 'lucide-react';
 
 export default function LoginPage() {
@@ -52,7 +52,7 @@ export default function LoginPage() {
       toast.success('Logged in successfully');
       await navigate('/dashboard');
     } catch (error) {
-      toast.error(extractCorrectErrorMessage(error), {
+      toast.error(apiErrorMsg(error), {
         position: 'top-center',
       });
     } finally {

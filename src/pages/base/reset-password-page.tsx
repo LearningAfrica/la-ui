@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 import { useApiClient } from '@/lib/api';
-import { extractCorrectErrorMessage } from '@/lib/utils/axios-err';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 import { LucideEye, LucideEyeOff } from 'lucide-react';
 import {
   resetPasswordSchemaResolver,
@@ -79,7 +79,7 @@ export default function ResetPasswordPage() {
       // localStorage.removeItem(PASSWORD_RESET_KEYS.resetEmailKey);
       await navigate('/login');
     } catch (error) {
-      toast.error(extractCorrectErrorMessage(error), {
+      toast.error(apiErrorMsg(error), {
         position: 'top-center',
       });
     } finally {

@@ -4,6 +4,10 @@ const DashboardNotFoundPage = lazy(() => import('@/components/error/dashboard-no
 const AdminDashboardPage = lazy(
   () => import('./dashboard/admin-dashboard-page'),
 );
+/** * ================ Organizations Pages ================
+ * These pages handle the management of organizations,
+ * including viewing, adding, and editing organization details.
+ */
 const AdminOrganizationsPage = lazy(
   () => import('./organizations/admin-organizations-page'),
 );
@@ -13,14 +17,24 @@ const AdminOrganizationDetailPage = lazy(
 const AdminOrganizationDetailSettingsPage = lazy(
   () => import('./organizations/admin-organization-detail-settings-page'),
 );
+/** * ================ Approvals Pages ================
+ * These pages handle the management of approvals,
+ * including viewing, approving, and rejecting requests.
+ */
 const AdminApprovalsPage = lazy(
   () => import('./approvals/admin-approvals-page'),
 );
 const AdminApprovalDetailsPage = lazy(
   () => import('./approvals/admin-approval-details-page'),
 );
-
+/** * ================ Calendar Page ================
+ * This page handles the calendar view for the admin dashboard.
+ */
 const AdminCalendarPage = lazy(() => import('./calendar/admin-calendar-page'));
+/** * ================ Categories Pages ================
+ * These pages handle the management of categories,
+ * including viewing, adding, and editing category details.
+ */
 const AdminCategoriesPage = lazy(
   () => import('./categories/admin-categories-page'),
 );
@@ -33,6 +47,11 @@ const AdminCategoryEditPage = lazy(
 const AdminCategoryDetailsPage = lazy(
   () => import('./categories/admin-category-details-page'),
 );
+/**
+ * ================ Certificates Pages ================
+ * These pages handle the management of certificates,
+ * including viewing, creating, and editing certificate details.
+ */
 const AdminCertificatesPage = lazy(
   () => import('./certificates/admin-certificates-page'),
 );
@@ -45,6 +64,10 @@ const AdminCertificateCreatePage = lazy(
 const AdminCertificateDetailsEditPage = lazy(
   () => import('./certificates/admin-certificate-details-edit-page'),
 );
+/** * ================ Courses Pages ================
+ * These pages handle the management of courses,
+ * including viewing, creating, and editing course details.
+ */
 const AdminCoursesPage = lazy(() => import('./courses/admin-courses-page'));
 
 const AdminCourseStudentsAddPage = lazy(
@@ -59,6 +82,11 @@ const AdminDiscussionsPage = lazy(
 const AdminDiscussionDetailsPage = lazy(
   () => import('./discussions/admin-discussion-details-page'),
 );
+/**
+ * =============== Instructors Pages ===============
+ * These pages handle the management of instructors,
+ * including viewing, adding, and editing instructor details.
+ */
 const AdminInstructorsPage = lazy(
   () => import('./instructors/admin-instructors-page'),
 );
@@ -68,7 +96,9 @@ const AdminInstructorDetailsPage = lazy(
 const AdminInstructorsAddPage = lazy(
   () => import('./instructors/admin-instructors-add-page'),
 );
-
+const AdminInstructorsInvitationsPage = lazy(
+  () => import('./instructors/admin-instructors-invitations-page'),
+);
 const AdminLearningPage = lazy(() => import('./learning/admin-learning-page'));
 const AdminLiveSessionsPage = lazy(
   () => import('./live-sessions/admin-live-sessions-page'),
@@ -80,10 +110,16 @@ const AdminReportsPage = lazy(() => import('./reports/admin-reports-page'));
 const AdminReportDetailsPage = lazy(
   () => import('./reports/admin-report-details-page'),
 );
+/**
+ * ================= Reviews Pages ================
+ */
 const AdminReviewsPage = lazy(() => import('./reviews/admin-reviews-page'));
 const AdminReviewDetailsPage = lazy(
   () => import('./reviews/admin-review-details-page'),
 );
+/**
+ * ================ Support Pages ================
+ */
 const AdminSupportPage = lazy(() => import('./support/admin-support-page'));
 const AdminSupportCategoriesPage = lazy(
   () => import('./support/admin-support-categories-page'),
@@ -119,6 +155,11 @@ const AdminSupportArticleDetailsEditPage = lazy(
 const AdminSupportArticlesCreatePage = lazy(
   () => import('./support/admin-support-articles-create-page'),
 );
+/**
+ * ================ Students Pages ================
+ * These pages handle the management of students,
+ * including viewing, adding, and editing student details.
+ */
 const AdminStudentsPage = lazy(() => import('./students/admin-students-page'));
 const AdminStudentDetailsPage = lazy(
   () => import('./students/admin-student-details-page'),
@@ -229,6 +270,10 @@ export const adminRouter: RouteObject[] = [
   {
     path: '/dashboard/admin/instructors/add',
     element: <AdminInstructorsAddPage />,
+  },
+  {
+    path: '/dashboard/admin/instructors/invitations',
+    element: <AdminInstructorsInvitationsPage />,
   },
   {
     path: '/dashboard/admin/learning',

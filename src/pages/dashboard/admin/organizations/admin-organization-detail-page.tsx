@@ -1,4 +1,3 @@
-import type React from 'react';
 
 import { useState } from 'react';
 import {
@@ -30,26 +29,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import {
   ArrowLeft,
   Edit,
-  Mail,
   MoreHorizontal,
   Search,
   Settings,
   Trash2,
-  UserPlus,
   Users,
-  X,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -58,10 +47,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
-import type { UserRole } from '@/lib/types/auth';
 import { Link, useParams } from 'react-router-dom';
 import { useOrganization } from '@/domains/organizations/use-organizations';
 import { useAuth } from '@/hooks/use-auth';
+import type { UserRole } from '@/lib/validators/auth-schema';
+import OrganizationsInviteUsersModal from '@/components/organizations/organizations-invite-users-modal';
 
 // Mock member data
 const mockMembers = [
@@ -107,24 +97,16 @@ const mockMembers = [
   },
 ];
 
-interface EmailChip {
-  id: string;
-  email: string;
-  isValid: boolean;
-}
 
 export default function OrganizationDetailPage() {
   const params = useParams<{ id: string }>();
   const { mutations, queries } = useOrganization();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
-  const [showInviteDialog, setShowInviteDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
-  const [emailInput, setEmailInput] = useState('');
-  const [emailChips, setEmailChips] = useState<EmailChip[]>([]);
-  const [inviteRole, setInviteRole] = useState<UserRole>('student');
-  const [isInviting, setIsInviting] = useState(false);
+
+
   const [isRemoving, setIsRemoving] = useState(false);
 
   // Edit form state
@@ -186,38 +168,7 @@ export default function OrganizationDetailPage() {
     return emailRegex.test(email);
   };
 
-  const handleEmailInputKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ',' || e.key === ' ') {
-      e.preventDefault();
-      addEmailChip();
-    }
-  };
 
-  const addEmailChip = () => {
-    const email = emailInput.trim();
-    if (!email) return;
-
-    const isValid = validateEmail(email);
-    const isDuplicate = emailChips.some((chip) => chip.email === email);
-
-    if (isDuplicate) {
-      toast.error('Email already added');
-      return;
-    }
-
-    const newChip: EmailChip = {
-      id: `chip-${Date.now()}`,
-      email,
-      isValid,
-    };
-
-    setEmailChips([...emailChips, newChip]);
-    setEmailInput('');
-  };
-
-  const removeEmailChip = (chipId: string) => {
-    setEmailChips(emailChips.filter((chip) => chip.id !== chipId));
-  };
 
   const handleSelectMember = (memberId: string, checked: boolean) => {
     if (checked) {
@@ -235,29 +186,6 @@ export default function OrganizationDetailPage() {
     }
   };
 
-  const handleInviteUsers = async () => {
-    const validEmails = emailChips.filter((chip) => chip.isValid);
-    if (validEmails.length === 0) {
-      toast.error('Please add at least one valid email address');
-      return;
-    }
-
-    setIsInviting(true);
-    try {
-      for (const chip of validEmails) {
-        // await inviteUserToOrganization(chip.email, organization.id, inviteRole);
-      }
-      setEmailChips([]);
-      setEmailInput('');
-      setInviteRole('student');
-      setShowInviteDialog(false);
-      toast.success(`Invitations sent to ${validEmails.length} users`);
-    } catch (error) {
-      toast.error('Failed to send invitations');
-    } finally {
-      setIsInviting(false);
-    }
-  };
 
   const handleRemoveMembers = async () => {
     if (selectedMembers.length === 0) return;
@@ -470,7 +398,8 @@ export default function OrganizationDetailPage() {
               </Dialog>
             )}
           </div>
-          <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
+          <OrganizationsInviteUsersModal orgId={params.id} />
+          {/* <Dialog open={showInviteDialog} onOpenChange={setShowInviteDialog}>
             <DialogTrigger asChild>
               <Button>
                 <UserPlus className="mr-2 h-4 w-4" />
@@ -560,7 +489,7 @@ export default function OrganizationDetailPage() {
                 </Button>
               </DialogFooter>
             </DialogContent>
-          </Dialog>
+          </Dialog> */}
         </div>
       )}
 

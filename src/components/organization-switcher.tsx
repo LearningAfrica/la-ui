@@ -25,6 +25,7 @@ import { useOrganization } from '@/domains/organizations/use-organizations';
 import { useAuth } from '@/hooks/use-auth';
 
 import type { ApiOrganizationInterface } from '@/lib/types/organization';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 
 interface OrganizationSwitcherProps {
   className?: string;
@@ -74,7 +75,9 @@ export function OrganizationSwitcher({
       setNewOrgDescription('');
       setShowNewOrgDialog(false);
     } catch (error) {
-      console.error('Failed to create organization:', error);
+      console.error(
+        apiErrorMsg(error, 'Failed to create organization:'),
+      );
     } finally {
       setIsCreating(false);
     }
@@ -83,8 +86,8 @@ export function OrganizationSwitcher({
   if (!currentOrganization) {
     return (
       <div className="flex items-center gap-2 px-2 py-1.5 text-sm text-gray-500">
-        <div className="w-4 h-4 bg-gray-300 rounded-full flex items-center justify-center">
-          <span className="text-gray-600 text-xs">-</span>
+        <div className="flex h-4 w-4 items-center justify-center rounded-full bg-gray-300">
+          <span className="text-xs text-gray-600">-</span>
         </div>
         <span>No Organization</span>
       </div>
@@ -95,13 +98,13 @@ export function OrganizationSwitcher({
     <Dialog open={showNewOrgDialog} onOpenChange={setShowNewOrgDialog}>
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
-          <button className="flex items-center gap-2 w-full px-2 py-1.5 text-sm text-gray-600 hover:text-primary hover:bg-gray-50 rounded transition-colors">
-            <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+          <button className="hover:text-primary flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-50">
+            <div className="bg-primary flex h-4 w-4 items-center justify-center rounded-full">
               <span className="text-primary-foreground text-xs font-medium">
                 {getOrganizationIcon(currentOrganization)}
               </span>
             </div>
-            <span className="truncate flex-1 text-left">
+            <span className="flex-1 truncate text-left">
               {currentOrganization.name}
             </span>
             <ChevronDown className="h-3 w-3 text-gray-400" />
@@ -114,7 +117,7 @@ export function OrganizationSwitcher({
           alignOffset={-8}
           sideOffset={8}
         >
-          <DropdownMenuLabel className="text-xs text-gray-500 px-2 py-1">
+          <DropdownMenuLabel className="px-2 py-1 text-xs text-gray-500">
             Organizations
           </DropdownMenuLabel>
           <div className="max-h-48 overflow-y-auto">
@@ -125,14 +128,14 @@ export function OrganizationSwitcher({
                 onClick={() => handleOrganizationChange(organization)}
                 className="flex items-center gap-2 px-2 py-1.5 text-sm"
               >
-                <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                <div className="bg-primary flex h-4 w-4 items-center justify-center rounded-full">
                   <span className="text-primary-foreground text-xs font-medium">
                     {getOrganizationIcon(organization)}
                   </span>
                 </div>
                 <span className="truncate">{organization.name}</span>
                 {currentOrganization.id === organization.id && (
-                  <Check className="ml-auto h-3 w-3 text-primary" />
+                  <Check className="text-primary ml-auto h-3 w-3" />
                 )}
               </DropdownMenuItem>
             ))}
@@ -149,7 +152,7 @@ export function OrganizationSwitcher({
                   }}
                   className="flex items-center gap-2 px-2 py-1.5 text-sm"
                 >
-                  <div className="w-4 h-4 bg-gray-200 rounded-full flex items-center justify-center">
+                  <div className="flex h-4 w-4 items-center justify-center rounded-full bg-gray-200">
                     <Plus className="h-3 w-3 text-gray-500" />
                   </div>
                   <span>Create new</span>

@@ -10,6 +10,7 @@ export interface IAuthUser {
 export interface AuthState {
   user: IAuthUser | null;
   current_org_id: string | null;
+  session_id: string | null;
   access_token: string | null;
   refresh_token: string | null;
   is_authenticated: boolean;

@@ -34,6 +34,7 @@ import {
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 
 // Mock data for courses
 const courses = [
@@ -95,7 +96,13 @@ export default function StudentSupportTicketsCreatePage() {
       //     variant: "destructive",
       //   })
       toast.error(
-        'There was a problem creating your ticket. Please try again.',
+        apiErrorMsg(
+          error,
+          'There was a problem creating your ticket. Please try again.',
+        ),
+        {
+          position: 'top-center',
+        },
       );
     } finally {
       setIsSubmitting(false);

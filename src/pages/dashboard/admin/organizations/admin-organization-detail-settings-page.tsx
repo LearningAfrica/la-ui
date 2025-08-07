@@ -26,6 +26,7 @@ import { toast } from 'sonner';
 import { Link, useParams } from 'react-router-dom';
 import { useOrganization } from '@/domains/organizations/use-organizations';
 import { useAuth } from '@/hooks/use-auth';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 
 export default function OrganizationSettingsPage() {
   const params = useParams<{ id: string }>();
@@ -110,7 +111,7 @@ export default function OrganizationSettingsPage() {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       toast.success('Organization settings updated successfully');
     } catch (error) {
-      toast.error('Failed to update organization settings');
+      toast.error(apiErrorMsg(error, 'Failed to update organization settings'));
     } finally {
       setIsSaving(false);
     }

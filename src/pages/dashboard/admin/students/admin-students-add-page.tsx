@@ -35,6 +35,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 
 // Define the schema for student creation
 const studentFormSchema = z
@@ -118,12 +119,13 @@ export default function AddStudentPage() {
       // 		'There was an error creating the student. Please try again.',
       // 	variant: 'destructive',
       // });
-      toast.error(
+      toast.error(apiErrorMsg(
+        error,
         'There was an error creating the student. Please try again.',
-        {
-          duration: 3000,
-        },
-      );
+      ), {
+        description: 'There was an error creating the student. Please try again.',
+        duration: 3000,
+      });
     } finally {
       setIsSubmitting(false);
     }

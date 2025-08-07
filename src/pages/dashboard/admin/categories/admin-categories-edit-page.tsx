@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/form';
 import { ArrowLeft, Upload, X } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 
 // Define the form schema with Zod
 const categorySchema = z.object({
@@ -106,7 +107,7 @@ export default function EditCategoryPage() {
         });
       } catch (error) {
         console.error('Error loading category:', error);
-        toast.error('Failed to load category');
+        toast.error(apiErrorMsg(error, 'Failed to load category'));
       } finally {
         setIsLoading(false);
       }

@@ -35,6 +35,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { TiptapEditor } from '@/components/tiptap';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 
 // Define the form schema with Zod
 const articleSchema = z.object({
@@ -224,13 +225,13 @@ export default function EditArticlePage() {
 
       navigate(`/dashboard/admin/support/articles/${params.slug}`);
     } catch (error) {
-      console.error('Error updating article:', error);
+      console.error(apiErrorMsg(error, 'Error updating article:'), error);
       //   toast({
       //     title: "Update failed",
       //     description: "Failed to update article. Please try again.",
       //     variant: "destructive",
       //   })
-      toast.error('Update failed', {
+      toast.error(apiErrorMsg(error, 'Update failed'), {
         description: 'Failed to update article. Please try again.',
       });
     } finally {

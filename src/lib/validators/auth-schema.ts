@@ -1,11 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-const userRoleSchema = z.enum([
+export const userRoleSchema = z.enum([
   'super_admin',
   'admin',
   'instructor',
-  'student',
+  'learner',
   'guest',
 ]);
 
@@ -35,7 +35,7 @@ const registerSchema = z.object({
   is_super_admin: z.boolean().optional(),
   is_admin: z.boolean().optional(),
   is_instructor: z.boolean().optional(),
-  is_student: z.boolean().optional(),
+  is_learner: z.boolean().optional(),
   invitation_token: z.string().optional(),
   terms: z.boolean().refine((val) => val === true, {
     message: 'You must accept the terms and conditions',
@@ -55,22 +55,22 @@ export const loginUserResponseSchema = z.object({
   user_role: userRoleSchema.default('guest'),
   refresh_token: z.string().nonempty(),
   access_token: z.string().nonempty(),
-  organizations: z.array(loginUserOrganizationSchema).default([]), // Adjust as needed
+  organizations: z.array(loginUserOrganizationSchema).default([]),
 });
 
 export const registerUserResponseSchema = z.object({
-  id: z.string().uuid(),
-  username: z.string().min(1).max(255),
-  email: z.string().email().min(1).max(255),
-  first_name: z.string().min(1).max(255).optional(),
-  last_name: z.string().min(1).max(255).optional(),
-  password: z.string().min(6).max(68),
-  is_super_admin: z.boolean().optional(),
-  is_admin: z.boolean().optional(),
-  is_instructor: z.boolean().optional(),
-  is_student: z.boolean().optional(),
-  invitation_token: z.string().min(1).optional(),
-});
+  // id: z.string().uuid(),
+  // username: z.string().min(1).max(255),
+  // email: z.string().email().min(1).max(255),
+  // first_name: z.string().min(1).max(255).optional(),
+  // last_name: z.string().min(1).max(255).optional(),
+  // password: z.string().min(6).max(68),
+  // is_super_admin: z.boolean().optional(),
+  // is_admin: z.boolean().optional(),
+  // is_instructor: z.boolean().optional(),
+  // is_student: z.boolean().optional(),
+  // invitation_token: z.string().min(1).optional(),
+}).merge(loginUserResponseSchema);
 // Forgot password schema
 export const forgotPasswordSchema = z.object({
   email: z.string().email({ message: 'Invalid email address' }),

@@ -26,7 +26,7 @@ import { registerUserSchemaResolver } from '@/lib/validators/auth-schema';
 import { useState } from 'react';
 import { LucideEye, LucideEyeOff } from 'lucide-react';
 import { useApiClient } from '@/lib/api';
-import { extractCorrectErrorMessage } from '@/lib/utils/axios-err';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -44,8 +44,8 @@ export default function RegisterPage() {
       password: '',
       is_super_admin: false,
       is_admin: false,
-      is_instructor: false,
-      is_student: true, // Default to student
+      is_instructor: true,
+      is_learner: false, // Default to student
       // invitation_token: '',
       terms: false,
     },
@@ -56,9 +56,10 @@ export default function RegisterPage() {
     try {
       await register(apiClient, data, {});
       toast.success('Registered successfully');
-      await navigate('/login');
+      // await navigate('/login');
+       await navigate('/dashboard');
     } catch (error) {
-      toast.error(extractCorrectErrorMessage(error), {
+      toast.error(apiErrorMsg(error), {
         position: 'top-center',
       });
     } finally {

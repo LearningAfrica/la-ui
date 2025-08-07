@@ -1,7 +1,9 @@
 import type { AuthState, IAuthUser } from '@/lib/types/auth';
-import { extractCorrectErrorMessage } from '@/lib/utils/axios-err';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
+import { cookieStorage } from 'zustand-cookie-storage';
 import {
   loginUserResponseSchema,
+  registerUserResponseSchema,
   type ILoginUser,
   type ILoginUserResponse,
   type IRegisterUser,
@@ -11,7 +13,7 @@ import type { AxiosInstance } from 'axios';
 import { toast } from 'sonner';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-
+import { v4 as uuidv4 } from 'uuid';
 // Types
 
 type RegisterOrLoginCallbackProps = {
@@ -51,6 +53,7 @@ export const useAuth = create<AuthStore>()(
       error: null,
       current_org_id: null,
       refresh_token: null,
+      session_id: uuidv4(), // Generate a unique session ID on initialization
       login: async (axiosClient, payload, opts) => {
         set({ is_loading: true, error: null });
         try {
@@ -70,9 +73,11 @@ export const useAuth = create<AuthStore>()(
               avatar: undefined, // Adjust as needed
             },
             access_token: data.access_token,
+            refresh_token: data.refresh_token,
             is_authenticated: true,
             is_loading: false,
             error: null,
+            session_id: uuidv4(), // Generate a new session ID on login
             current_org_id:
               data.organizations.length > 0 ? data.organizations[0].id : null,
           }));
@@ -83,14 +88,14 @@ export const useAuth = create<AuthStore>()(
             access_token: null,
             is_authenticated: false,
             is_loading: false,
-            error: extractCorrectErrorMessage(error, 'Login failed'),
+            error: apiErrorMsg(error, 'Login failed'),
           }));
           if (opts?.onError && typeof opts.onError === 'function') {
-            opts.onError(extractCorrectErrorMessage(error, 'Login failed'));
+            opts.onError(apiErrorMsg(error, 'Login failed'));
           } else {
             console.error('Login failed:', error);
           }
-          throw new Error(extractCorrectErrorMessage(error, 'Login failed'));
+          throw new Error(apiErrorMsg(error, 'Login failed'));
         }
       },
 
@@ -98,11 +103,30 @@ export const useAuth = create<AuthStore>()(
         set({ is_loading: true, error: null });
 
         try {
-          // const { data: dbData } =
-          await axiosClient.post<IRegisterUserResponse>(
+          const { data } = await axiosClient.post<IRegisterUserResponse>(
             '/auth/register/',
             payload,
           );
+          registerUserResponseSchema.parse(data);
+          set((state) => ({
+            ...state,
+            user: {
+              id: data.id,
+              username: data.username,
+              role: data.user_role,
+              organizations: data.organizations,
+              avatar: undefined, // Adjust as needed
+            },
+            access_token: data.access_token,
+            refresh_token: data.refresh_token,
+            is_authenticated: true,
+            is_loading: false,
+            error: null,
+            session_id: uuidv4(), // Generate a new session ID on login
+            current_org_id:
+              data.organizations.length > 0 ? data.organizations[0].id : null,
+          }));
+
           // registerUserResponseSchema.parse(dbData);
         } catch (error) {
           set((state) => ({
@@ -111,18 +135,14 @@ export const useAuth = create<AuthStore>()(
             access_token: null,
             is_authenticated: false,
             is_loading: false,
-            error: extractCorrectErrorMessage(error, 'Registration failed'),
+            error: apiErrorMsg(error, 'Registration failed'),
           }));
           if (opts?.onError && typeof opts.onError === 'function') {
-            opts.onError(
-              extractCorrectErrorMessage(error, 'Registration failed'),
-            );
+            opts.onError(apiErrorMsg(error, 'Registration failed'));
           } else {
             console.error('Registration failed:', error);
           }
-          throw new Error(
-            extractCorrectErrorMessage(error, 'Registration failed'),
-          );
+          throw new Error(apiErrorMsg(error, 'Registration failed'));
         }
       },
 
@@ -134,6 +154,9 @@ export const useAuth = create<AuthStore>()(
           is_authenticated: false,
           is_loading: false,
           error: null,
+          refresh_token: null,
+          current_org_id: null,
+          session_id: uuidv4(), // Generate a new session ID on logout
         }));
       },
 
@@ -179,13 +202,14 @@ export const useAuth = create<AuthStore>()(
     }),
     {
       name: 'c9f98b10c9263e2753024f85',
-      storage: createJSONStorage(() => localStorage), // Explicit storage with JSON serialization
+      storage: createJSONStorage(() => cookieStorage), // Explicit storage with JSON serialization
       partialize: (state) => ({
         current_org_id: state.current_org_id,
         refresh_token: state.refresh_token,
         access_token: state.access_token,
         user: state.user,
         is_authenticated: state.is_authenticated,
+        session_id: state.session_id,
       }),
       version: 1, // Add version for future migrations
       migrate: (persistedState, version) => {
