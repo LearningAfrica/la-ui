@@ -37,7 +37,7 @@ export default function LoginPage() {
   const form = useForm({
     resolver: loginUserSchemaResolver,
     defaultValues: {
-      username_or_email: '',
+      email: '',
       password: '',
     },
   });
@@ -76,14 +76,14 @@ export default function LoginPage() {
             <form onSubmit={onSubmit} className="space-y-4">
               <FormField
                 control={form.control}
-                name="username_or_email"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Username / Email</FormLabel>
+                    <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
-                        type="text"
-                        placeholder="Username or email"
+                        type="email"
+                        placeholder="Email"
                         {...field}
                       />
                     </FormControl>

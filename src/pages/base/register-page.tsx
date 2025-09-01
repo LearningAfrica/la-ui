@@ -42,10 +42,6 @@ export default function RegisterPage() {
       first_name: '',
       last_name: '',
       password: '',
-      is_super_admin: false,
-      is_admin: false,
-      is_instructor: true,
-      is_learner: false, // Default to student
       // invitation_token: '',
       terms: false,
     },
