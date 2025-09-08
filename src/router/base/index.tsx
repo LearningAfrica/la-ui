@@ -21,6 +21,9 @@ const CategoryCoursesPage = lazy(
   () => import('@/pages/base/category-courses-page'),
 );
 
+const SetupInquiry = lazy(() => import('@/pages/base/setup-inquiry'));
+const ThankYouPage = lazy(() => import('@/pages/base/setup-inquiry-thank-you'));
+
 export const baseRouter: RouteObject[] = [
   {
     path: '/',
@@ -66,6 +69,14 @@ export const baseRouter: RouteObject[] = [
   {
     path: '/categories/:id',
     element: <CategoryCoursesPage />,
+  },
+  {
+    path: '/inquiry',
+    element: <SetupInquiry />,
+  },
+  {
+    path: '/thank-you',
+    element: <ThankYouPage />,
   },
   dashboardRouter,
 ];
