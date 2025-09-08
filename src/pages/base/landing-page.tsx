@@ -13,7 +13,7 @@ export default function LandingPage() {
           <nav className="flex items-center justify-between">
             <div className="flex items-center space-x-2 hover:scale-105 transition-transform">
               <Zap className="h-8 w-8 text-primary animate-pulse" />
-              <span className="text-xl font-bold text-primary">LearnCraft</span>
+              <span className="text-xl font-bold text-primary">Learning Africa</span>
             </div>
             <div className="hidden md:flex items-center space-x-6">
               <Link to="#about" className="text-muted-foreground hover:text-primary transition-all duration-300">
@@ -241,7 +241,7 @@ export default function LandingPage() {
             {[
               {
                 quote:
-                  "LearnCraft transformed our employee training program. The engagement rates increased by 60% and our team retention improved significantly.",
+                  "Learning Africa transformed our employee training program. The engagement rates increased by 60% and our team retention improved significantly.",
                 author: "Sarah Johnson",
                 role: "HR Director",
                 company: "TechCorp Solutions",
@@ -255,7 +255,7 @@ export default function LandingPage() {
               },
               {
                 quote:
-                  "Professional, efficient, and results-driven. LearnCraft helped us create a world-class training program that our competitors envy.",
+                  "Professional, efficient, and results-driven. Learning Africa helped us create a world-class training program that our competitors envy.",
                 author: "Emily Rodriguez",
                 role: "Chief Operations Officer",
                 company: "Healthcare Partners",
@@ -318,7 +318,7 @@ export default function LandingPage() {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <Zap className="h-6 w-6 text-primary" />
-                <span className="text-lg font-bold text-primary">LearnCraft</span>
+                <span className="text-lg font-bold text-primary">Learning Africa</span>
               </div>
               <p className="text-muted-foreground text-sm leading-relaxed">
                 Empowering organizations through exceptional learning material development and innovative technology
@@ -349,7 +349,7 @@ export default function LandingPage() {
             <div>
               <h3 className="font-semibold text-foreground mb-4">Contact</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="hover:text-primary transition-colors">hello@learncraft.com</li>
+                <li className="hover:text-primary transition-colors">hello@Learning Africa.com</li>
                 <li className="hover:text-primary transition-colors">+1 (555) 123-4567</li>
                 <li className="hover:text-primary transition-colors">San Francisco, CA</li>
               </ul>
@@ -357,7 +357,7 @@ export default function LandingPage() {
           </div>
 
           <div className="border-t border-border/50 mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 LearnCraft. All rights reserved. | Powered by Innovation</p>
+            <p>&copy; 2024 Learning Africa. All rights reserved. | Powered by Innovation</p>
           </div>
         </div>
       </footer>

@@ -14,7 +14,7 @@ export default function SetupInquiryThankYou() {
             <Link to="/" className="flex items-center space-x-2">
               <BookOpen className="text-primary h-8 w-8" />
               <span className="text-foreground text-xl font-bold">
-                LearnCraft
+                Learning Africa
               </span>
             </Link>
             <Link
