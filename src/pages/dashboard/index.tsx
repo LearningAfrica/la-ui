@@ -7,6 +7,7 @@ import { adminRouter } from './admin';
 import ErrorPage from '@/components/error/error-page';
 import DashboardNotFoundPage from '@/components/error/dashboard-not-found-page';
 import { dashboardCommonRoutes } from './common';
+import { superAdminRouter } from './super-admin';
 
 const DashboardPage = lazy(() => import('@/pages/dashboard/dashboard-page'));
 export const dashboardRouter: RouteObject = {
@@ -22,6 +23,7 @@ export const dashboardRouter: RouteObject = {
     ...studentRouter,
     ...instructorRouter,
     ...adminRouter,
+    ...superAdminRouter,
     {
       path: '*',
       element: <DashboardNotFoundPage />,

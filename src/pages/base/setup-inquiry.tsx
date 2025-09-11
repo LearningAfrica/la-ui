@@ -1,7 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Building, Send, Users } from 'lucide-react';
 
@@ -36,31 +34,13 @@ import {
   COMPANY_CATEGORIES,
   COMPANY_SIZES,
 } from '@/lib/constants/company-types';
-
-// Define the schema for the inquiry form
-const inquirySchema = z.object({
-  first_name: z.string().min(1, { message: 'First name is required' }),
-  last_name: z.string().min(1, { message: 'Last name is required' }),
-  contact_email: z
-    .string()
-    .email({ message: 'Please enter a valid email address' }),
-  company_name: z.string().min(1, { message: 'Company name is required' }),
-  company_description: z
-    .string()
-    .min(10, { message: 'Please provide a description (min. 10 characters)' }),
-  company_category: z.string().min(1, { message: 'Please select a category' }),
-  company_size: z.string().min(1, { message: 'Please select a company size' }),
-});
-
-// const
-
-type InquiryFormData = z.infer<typeof inquirySchema>;
+import { setupRequisitionSchemaResolver } from '@/lib/validators/setup-requisition-schema';
 
 export default function SetupInquiry() {
   const navigate = useNavigate();
   const apiClient = useApiClient();
-  const form = useForm<InquiryFormData>({
-    resolver: zodResolver(inquirySchema),
+  const form = useForm({
+    resolver: setupRequisitionSchemaResolver,
     defaultValues: {
       first_name: '',
       last_name: '',
@@ -78,7 +58,7 @@ export default function SetupInquiry() {
     formState: { isSubmitting },
   } = form;
 
-  const onSubmit = async (data: InquiryFormData) => {
+  const onSubmit = handleSubmit(async (data) => {
     try {
       await apiClient.post('/users/organization-setup-requests/', data);
       navigate('/thank-you');
@@ -86,7 +66,7 @@ export default function SetupInquiry() {
       console.error('[v0] Error submitting inquiry:', error);
       alert('Failed to submit inquiry. Please try again.');
     }
-  };
+  });
 
   return (
     <div className="bg-background min-h-screen">
@@ -125,7 +105,7 @@ export default function SetupInquiry() {
           </div>
 
           <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={onSubmit} className="space-y-8">
               {/* Company Information */}
               <Card>
                 <CardHeader>
@@ -161,12 +141,12 @@ export default function SetupInquiry() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Company Category *</FormLabel>
-                          <FormControl className='w-full'>
+                          <FormControl className="w-full">
                             <Select
                               onValueChange={field.onChange}
                               value={field.value}
                             >
-                              <SelectTrigger className='w-full'>
+                              <SelectTrigger className="w-full">
                                 <SelectValue placeholder="Select company category" />
                               </SelectTrigger>
                               <SelectContent>
