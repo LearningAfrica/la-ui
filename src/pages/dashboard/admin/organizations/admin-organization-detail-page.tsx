@@ -116,7 +116,7 @@ export default function OrganizationDetailPage() {
 
   const { user, getCurrentOrganization } = useAuth();
   const canManageMembers =
-    user?.role === 'super_admin' || user?.role === 'admin';
+    user?.user_role === 'super_admin' || user?.user_role === 'admin';
 
   // Find organization
   const organization = getCurrentOrganization();

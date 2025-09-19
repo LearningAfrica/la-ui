@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { userRoleSchema } from './auth-schema';
+import { systermUserRoleSchema } from './auth-schema';
 /**
  * ========= Schemas =========
  */
@@ -13,7 +13,7 @@ const createOrganizationSchema = z.object({
 
 export const inviteUsersToOrganizationSchema = z.object({
   organization_id: z.string(),
-  role: userRoleSchema.default('learner'),
+  role: systermUserRoleSchema.default('learner'),
   receiver_email: z.array(z.string().email()),
 });
 /**

@@ -175,12 +175,12 @@ export default function DashboardLayout() {
                 <div className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
                     <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                      {user?.username?.[0]?.toUpperCase()}
+                      {user?.email?.[0]?.toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="hidden sm:block">
-                    <p className="text-sm font-medium text-foreground">{user?.username}</p>
-                    <p className="text-xs text-muted-foreground">{user?.role}</p>
+                    <p className="text-sm font-medium text-foreground">{user?.email}</p>
+                    <p className="text-xs text-muted-foreground">{user?.user_role}</p>
                   </div>
                 </div>
               </div>

@@ -2,8 +2,9 @@ import type {  ILoginUserResponse, UserRole } from '../validators/auth-schema';
 
 export interface IAuthUser {
   id: string;
-  username: string;
-  role?: UserRole;
+  email: string;
+  user_role?: UserRole;
+  can_create_organization: boolean;
   organizations: Pick<ILoginUserResponse,'organizations'>['organizations']
 }
 

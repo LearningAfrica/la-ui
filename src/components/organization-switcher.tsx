@@ -43,7 +43,7 @@ export function OrganizationSwitcher({
   const [newOrgDescription, setNewOrgDescription] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
-  const userRole = auth.user?.role || 'student';
+  const userRole = auth.user?.user_role || 'student';
   const canCreateOrganization =
     userRole === 'super_admin' || userRole === 'admin';
   const currentOrganization = auth.getCurrentOrganization();

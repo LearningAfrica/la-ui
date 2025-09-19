@@ -23,10 +23,10 @@ export default function LandingPage() {
                 Services
               </Link>
               <Link
-                to="#testimonials"
+                to="/login"
                 className="text-muted-foreground hover:text-primary transition-all duration-300"
               >
-                Testimonials
+                Login
               </Link>
               <Link to="/inquiry">
                 <Button className="bg-primary hover:bg-primary/90 hover:scale-105 transition-transform shadow-lg hover:shadow-xl">

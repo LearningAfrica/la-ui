@@ -27,14 +27,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Building,
-  Loader2,
-  Plus,
-  Save,
-  Search,
-  Settings,
-} from 'lucide-react';
+import { Building, Loader2, Plus, Save, Search, Settings } from 'lucide-react';
 import { useOrganization } from '@/domains/organizations/use-organizations';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -86,7 +79,7 @@ export default function OrganizationsPage() {
     }
   });
 
-  if (!auth.user?.role && auth.user?.role !== 'admin') {
+  if (!auth.user?.user_role && auth.user?.user_role !== 'admin') {
     return (
       <div className="flex-1 space-y-6 p-6 md:p-8">
         <div className="py-12 text-center">
@@ -109,153 +102,160 @@ export default function OrganizationsPage() {
             Manage organizations and their settings across the platform.
           </p>
         </div>
-        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Create Organization
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <div className="flex items-center justify-center">
-                {logoPreview && (
-                  <Avatar className="mb-4 h-16 w-16 rounded border">
-                    <AvatarImage src={logoPreview} alt="Organization Logo" />
-                  </Avatar>
-                )}
-              </div>
-              <DialogTitle>Create New Organization</DialogTitle>
-              <DialogDescription>
-                Create a new organization to manage courses and users.
-              </DialogDescription>
-            </DialogHeader>
 
-            <Form {...form}>
-              <form
-                onSubmit={submitNewOrganization}
-                className="space-y-4 py-2 pb-4"
-              >
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Organization Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter organization name"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+        {auth.user.can_create_organization ? (
+          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+            <DialogTrigger asChild>
+              <Button disabled={!auth.user.can_create_organization}>
+                <Plus className="mr-2 h-4 w-4" />
+                Create Organization
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <div className="flex items-center justify-center">
+                  {logoPreview && (
+                    <Avatar className="mb-4 h-16 w-16 rounded border">
+                      <AvatarImage src={logoPreview} alt="Organization Logo" />
+                    </Avatar>
                   )}
-                />
+                </div>
+                <DialogTitle>Create New Organization</DialogTitle>
+                <DialogDescription>
+                  Create a new organization to manage courses and users.
+                </DialogDescription>
+              </DialogHeader>
 
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description (optional)</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Enter organization description"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="logo"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Logo (optional)</FormLabel>
-                      <FormControl>
-                        <div className="space-y-2">
+              <Form {...form}>
+                <form
+                  onSubmit={submitNewOrganization}
+                  className="space-y-4 py-2 pb-4"
+                >
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Organization Name</FormLabel>
+                        <FormControl>
                           <Input
-                            type="file"
-                            accept="image/jpeg,image/png,image/svg+xml"
-                            ref={fileInputRef}
-                            onChange={handleFileChange}
-                            className="hidden"
+                            placeholder="Enter organization name"
+                            {...field}
                           />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => fileInputRef.current?.click()}
-                            className="w-full"
-                          >
-                            {field.value?.name || 'Upload Logo'}
-                          </Button>
-                          {field.value && (
-                            <div className="flex items-center gap-2">
-                              <span className="text-muted-foreground text-sm">
-                                {field.value.name}
-                              </span>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                  form.setValue('logo', undefined);
-                                  if (fileInputRef.current) {
-                                    fileInputRef.current.value = '';
-                                  }
-                                  setLogoPreview(null);
-                                }}
-                              >
-                                Remove
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </FormControl>
-                      <FormDescription>
-                        JPEG, PNG, or SVG (max 2MB)
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <DialogFooter>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setShowCreateDialog(false);
-                      form.reset();
-                    }}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    disabled={form.formState.isSubmitting}
-                    className="disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {form.formState.isSubmitting ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Creating...
-                      </>
-                    ) : (
-                      <>
-                        <Save className="mr-2 h-4 w-4" /> Create Organization
-                      </>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                     )}
-                    {/* {isCreating ? 'Creating...' : 'Create Organization'} */}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Description (optional)</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Enter organization description"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="logo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Logo (optional)</FormLabel>
+                        <FormControl>
+                          <div className="space-y-2">
+                            <Input
+                              type="file"
+                              accept="image/jpeg,image/png,image/svg+xml"
+                              ref={fileInputRef}
+                              onChange={handleFileChange}
+                              className="hidden"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => fileInputRef.current?.click()}
+                              className="w-full"
+                            >
+                              {field.value?.name || 'Upload Logo'}
+                            </Button>
+                            {field.value && (
+                              <div className="flex items-center gap-2">
+                                <span className="text-muted-foreground text-sm">
+                                  {field.value.name}
+                                </span>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    form.setValue('logo', undefined);
+                                    if (fileInputRef.current) {
+                                      fileInputRef.current.value = '';
+                                    }
+                                    setLogoPreview(null);
+                                  }}
+                                >
+                                  Remove
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                        </FormControl>
+                        <FormDescription>
+                          JPEG, PNG, or SVG (max 2MB)
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <DialogFooter>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setShowCreateDialog(false);
+                        form.reset();
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={form.formState.isSubmitting}
+                      className="disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {form.formState.isSubmitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Creating...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="mr-2 h-4 w-4" /> Create Organization
+                        </>
+                      )}
+                      {/* {isCreating ? 'Creating...' : 'Create Organization'} */}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        ) : (
+          <Link to="/dashboard/billing" className="">
+            Contact sales to create an organization.
+          </Link>
+        )}
       </div>
 
       {/* Search */}

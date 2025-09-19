@@ -37,7 +37,7 @@ interface AuthActions {
   setLoading: (loading: boolean) => void;
   setUser: (user: IAuthUser) => void;
   getCurrentOrganization: () => IAuthUser['organizations'][number] | undefined;
-  getCurrentUserRole: () => IAuthUser['role'] | undefined;
+  getCurrentUserRole: () => IAuthUser['user_role'] | undefined;
   changeCurrentOrganization: (organizationId: string) => void; // Add this method to change current organization
 }
 
@@ -67,10 +67,11 @@ export const useAuth = create<AuthStore>()(
             ...state,
             user: {
               id: data.id,
-              username: data.username,
-              role: data.user_role,
+              user_role: data.user_role,
               organizations: data.organizations,
               avatar: undefined, // Adjust as needed
+              can_create_organization: data.can_create_organization,
+              email: data.email,
             },
             access_token: data.access_token,
             refresh_token: data.refresh_token,
@@ -112,10 +113,12 @@ export const useAuth = create<AuthStore>()(
             ...state,
             user: {
               id: data.id,
-              username: data.username,
-              role: data.user_role,
+              // username: data.username,
+              user_role: data.user_role,
               organizations: data.organizations,
               avatar: undefined, // Adjust as needed
+              can_create_organization: data.can_create_organization,
+              email: data.email,
             },
             access_token: data.access_token,
             refresh_token: data.refresh_token,
@@ -197,7 +200,7 @@ export const useAuth = create<AuthStore>()(
         return _get().user?.organizations.find((org) => org.id === orgId);
       },
       getCurrentUserRole: () => {
-        return _get().user?.role;
+        return _get().user?.user_role;
       },
     }),
     {
@@ -227,9 +230,6 @@ export const useAuth = create<AuthStore>()(
         if (state) {
           state.is_loading = false; // Ensure loading is false after rehydration
           state.error = null; // Clear any errors on rehydration
-          // if(state.is_authenticated){
-
-          // }
         }
       },
     },

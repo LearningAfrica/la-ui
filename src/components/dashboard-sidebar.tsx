@@ -2,7 +2,13 @@ import { cn } from '@/lib/utils';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
 import { DASHBOARD_SIDEBAR_NAV_LINKS } from '@/lib/data/sidebar-nav-links';
-import { GraduationCap, ChevronDown, ChevronRight, User, X } from 'lucide-react';
+import {
+  GraduationCap,
+  ChevronDown,
+  ChevronRight,
+  User,
+  X,
+} from 'lucide-react';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import {
   DropdownMenu,
@@ -15,7 +21,7 @@ import {
 import { OrganizationSwitcher } from './organization-switcher';
 import { Button } from './ui/button';
 import { useSidebarStore } from '@/store/sidebar-store';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 interface DashboardSidebarProps {
   className?: string;
@@ -27,11 +33,11 @@ interface DashboardSidebarProps {
 function RecursiveChildrenPanel({
   items,
   level = 0,
-  onNavigate
+  onNavigate,
 }: {
-  items: any[], // eslint-disable-line @typescript-eslint/no-explicit-any
-  level?: number,
-  onNavigate: () => void
+  items: any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
+  level?: number;
+  onNavigate: () => void;
 }) {
   const pathname = useLocation().pathname;
 
@@ -40,33 +46,33 @@ function RecursiveChildrenPanel({
   };
 
   return (
-    <div className="bg-popover border border-border rounded-md shadow-lg min-w-48 max-w-64">
+    <div className="bg-popover border-border max-w-64 min-w-48 rounded-md border shadow-lg">
       {items.map((item) => {
         const hasChildren = item.items && item.items.length > 0;
         const isActive = isActiveLink(item.href);
 
         return (
-          <div key={item.href} className="relative group">
+          <div key={item.href} className="group relative">
             <Link
               to={item.href}
               className={cn(
-                'flex items-center gap-3 px-3 py-2 text-sm transition-colors hover:bg-accent whitespace-nowrap',
+                'hover:bg-accent flex items-center gap-3 px-3 py-2 text-sm whitespace-nowrap transition-colors',
                 isActive
                   ? 'bg-primary/10 text-primary'
-                  : 'text-muted-foreground'
+                  : 'text-muted-foreground',
               )}
               onClick={onNavigate}
             >
               <item.icon className="h-3 w-3 flex-shrink-0" />
-              <span className="truncate flex-1">{item.label}</span>
+              <span className="flex-1 truncate">{item.label}</span>
               {hasChildren && (
-                <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                <ChevronRight className="text-muted-foreground h-3 w-3" />
               )}
             </Link>
 
             {/* Recursive children panel */}
             {hasChildren && (
-              <div className="absolute left-full top-0 ml-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto z-50">
+              <div className="pointer-events-none absolute top-0 left-full z-50 ml-1 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100">
                 <RecursiveChildrenPanel
                   items={item.items}
                   level={level + 1}
@@ -81,25 +87,42 @@ function RecursiveChildrenPanel({
   );
 }
 
-export function DashboardSidebar({ className, collapsed = false, onClose }: DashboardSidebarProps) {
+export function DashboardSidebar({
+  className,
+  collapsed = false,
+  onClose,
+}: DashboardSidebarProps) {
   const pathname = useLocation().pathname;
-  const { user } = useAuth();
-  const userRole = user?.role || 'student';
+  const { user, current_org_id, getCurrentOrganization } = useAuth();
+  const userRole = user?.user_role || 'user';
 
   // Zustand store for sidebar state
-  const {
-    expandedSections,
-    toggleSection,
-    autoExpandActiveSections,
-  } = useSidebarStore();
+  const { expandedSections, toggleSection, autoExpandActiveSections } =
+    useSidebarStore();
 
+  const currentOrgRole = useMemo(() => {
+    if (user && Array.isArray(user.organizations)) {
+      if (current_org_id) {
+        return getCurrentOrganization()!.role!;
+      }
+      return null;
+    }
+    return null;
+  }, [user, current_org_id, getCurrentOrganization]);
   const filteredNavItems = DASHBOARD_SIDEBAR_NAV_LINKS.filter((item) =>
-    item.roles.includes(userRole),
+    currentOrgRole
+      ? item.orgRole.includes(currentOrgRole) &&
+        item.systemRole.includes(userRole!)
+      : item.systemRole.includes(userRole!),
   );
 
   // Get main navigation items (excluding bottom section items)
-  const mainNavItems = filteredNavItems.filter(item => item.section !== 'bottom');
-  const bottomNavItems = filteredNavItems.filter(item => item.section === 'bottom');
+  const mainNavItems = filteredNavItems.filter(
+    (item) => item.section !== 'bottom',
+  );
+  const bottomNavItems = filteredNavItems.filter(
+    (item) => item.section === 'bottom',
+  );
 
   const isSectionExpanded = (sectionLabel: string) => {
     return expandedSections.includes(sectionLabel);
@@ -111,12 +134,14 @@ export function DashboardSidebar({ className, collapsed = false, onClose }: Dash
 
   const isAnyChildActive = (items?: { href: string }[]) => {
     if (!items) return false;
-    return items.some(item => isActiveLink(item.href));
+    return items.some((item) => isActiveLink(item.href));
   };
 
   // Auto-expand sections that have active children
   useEffect(() => {
-    const parentSections = mainNavItems.filter(item => item.isParent && item.items);
+    const parentSections = mainNavItems.filter(
+      (item) => item.isParent && item.items,
+    );
     if (parentSections.length > 0) {
       autoExpandActiveSections(parentSections, pathname);
     }
@@ -125,21 +150,23 @@ export function DashboardSidebar({ className, collapsed = false, onClose }: Dash
   // Only show collapsed version on desktop when collapsed is true
   if (collapsed) {
     return (
-      <div className={cn('flex h-full flex-col relative', className)}>
+      <div className={cn('relative flex h-full flex-col', className)}>
         {/* Header - collapsed */}
-        <div className="p-2 border-b border-border">
+        <div className="border-border border-b p-2">
           <div className="flex items-center justify-center">
-            <div className="bg-primary text-primary-foreground p-2 rounded-lg">
+            <div className="bg-primary text-primary-foreground rounded-lg p-2">
               <GraduationCap className="h-5 w-5" />
             </div>
           </div>
         </div>
 
         {/* Organization switcher - collapsed */}
-        <div className="p-2 border-b border-border">
+        <div className="border-border border-b p-2">
           <div className="flex items-center justify-center">
-            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-              <span className="text-primary-foreground text-xs font-medium">P</span>
+            <div className="bg-primary flex h-6 w-6 items-center justify-center rounded-full">
+              <span className="text-primary-foreground text-xs font-medium">
+                P
+              </span>
             </div>
           </div>
         </div>
@@ -152,29 +179,29 @@ export function DashboardSidebar({ className, collapsed = false, onClose }: Dash
                 const hasActiveChild = isAnyChildActive(item.items);
 
                 return (
-                  <div key={item.label} className="relative group">
+                  <div key={item.label} className="group relative">
                     <button
                       className={cn(
-                        'flex items-center justify-center w-full p-2 rounded-md text-sm transition-colors relative',
+                        'relative flex w-full items-center justify-center rounded-md p-2 text-sm transition-colors',
                         hasActiveChild
                           ? 'bg-primary/10 text-primary'
-                          : 'text-muted-foreground hover:bg-accent hover:text-primary'
+                          : 'text-muted-foreground hover:bg-accent hover:text-primary',
                       )}
                     >
                       <item.icon className="h-4 w-4" />
 
                       {/* Floating indicator for parent items */}
-                      <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-primary rounded-full opacity-60"></div>
+                      <div className="bg-primary absolute top-1/2 -right-1 h-2 w-2 -translate-y-1/2 rounded-full opacity-60"></div>
                     </button>
 
                     {/* Tooltip for collapsed state */}
-                    <div className="absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-border">
+                    <div className="bg-popover text-popover-foreground border-border pointer-events-none absolute left-full z-50 ml-2 rounded border px-2 py-1 text-xs opacity-0 transition-opacity group-hover:opacity-100">
                       {item.label}
                     </div>
 
                     {/* Recursive right panel for children */}
                     {item.items && item.items.length > 0 && (
-                      <div className="absolute left-full top-0 ml-1 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto z-50">
+                      <div className="pointer-events-none absolute top-0 left-full z-50 ml-1 opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100">
                         <RecursiveChildrenPanel
                           items={item.items}
                           onNavigate={() => {}}
@@ -185,21 +212,21 @@ export function DashboardSidebar({ className, collapsed = false, onClose }: Dash
                 );
               } else {
                 return (
-                  <div key={item.href} className="relative group">
+                  <div key={item.href} className="group relative">
                     <Link
                       to={item.href}
                       className={cn(
-                        'flex items-center justify-center w-full p-2 rounded-md text-sm transition-colors',
+                        'flex w-full items-center justify-center rounded-md p-2 text-sm transition-colors',
                         isActiveLink(item.href)
                           ? 'bg-primary/10 text-primary'
-                          : 'text-muted-foreground hover:bg-accent hover:text-primary'
+                          : 'text-muted-foreground hover:bg-accent hover:text-primary',
                       )}
                     >
                       <item.icon className="h-4 w-4" />
                     </Link>
 
                     {/* Tooltip for collapsed state */}
-                    <div className="absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 border border-border">
+                    <div className="bg-popover text-popover-foreground border-border pointer-events-none absolute left-full z-50 ml-2 rounded border px-2 py-1 text-xs opacity-0 transition-opacity group-hover:opacity-100">
                       {item.label}
                     </div>
                   </div>
@@ -210,11 +237,11 @@ export function DashboardSidebar({ className, collapsed = false, onClose }: Dash
         </div>
 
         {/* User info - collapsed */}
-        <div className="p-2 border-t border-border">
+        <div className="border-border border-t p-2">
           <div className="flex items-center justify-center">
             <Avatar className="h-8 w-8">
               <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                {user?.username?.[0]?.toUpperCase()}
+                {user?.email?.[0]?.toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </div>
@@ -226,15 +253,19 @@ export function DashboardSidebar({ className, collapsed = false, onClose }: Dash
   return (
     <div className={cn('flex h-full flex-col', className)}>
       {/* Header */}
-      <div className="p-4 border-b border-border flex-shrink-0">
+      <div className="border-border flex-shrink-0 border-b p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="bg-primary text-primary-foreground p-2 rounded-lg">
+            <div className="bg-primary text-primary-foreground rounded-lg p-2">
               <GraduationCap className="h-5 w-5" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-foreground">Learning Africa</h1>
-              <p className="text-xs text-muted-foreground">Education Platform</p>
+              <h1 className="text-foreground text-lg font-semibold">
+                Learning Africa
+              </h1>
+              <p className="text-muted-foreground text-xs">
+                Education Platform
+              </p>
             </div>
           </div>
           {onClose && (
@@ -242,7 +273,7 @@ export function DashboardSidebar({ className, collapsed = false, onClose }: Dash
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="lg:hidden p-1"
+              className="p-1 lg:hidden"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -251,7 +282,7 @@ export function DashboardSidebar({ className, collapsed = false, onClose }: Dash
       </div>
 
       {/* Organization switcher */}
-      <div className="p-4 border-b border-border flex-shrink-0">
+      <div className="border-border flex-shrink-0 border-b p-4">
         <OrganizationSwitcher />
       </div>
 
@@ -268,10 +299,10 @@ export function DashboardSidebar({ className, collapsed = false, onClose }: Dash
                   <button
                     onClick={() => toggleSection(item.label)}
                     className={cn(
-                      'flex items-center justify-between w-full px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                      'flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors',
                       hasActiveChild
                         ? 'bg-primary/10 text-primary'
-                        : 'text-muted-foreground hover:bg-accent hover:text-primary'
+                        : 'text-muted-foreground hover:bg-accent hover:text-primary',
                     )}
                   >
                     <div className="flex items-center gap-3">
@@ -286,16 +317,16 @@ export function DashboardSidebar({ className, collapsed = false, onClose }: Dash
                   </button>
 
                   {isExpanded && (
-                    <div className="ml-6 mt-1 space-y-1">
+                    <div className="mt-1 ml-6 space-y-1">
                       {item.items.map((childItem) => (
                         <Link
                           key={childItem.href}
                           to={childItem.href}
                           className={cn(
-                            'flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                            'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
                             isActiveLink(childItem.href)
                               ? 'bg-primary/10 text-primary'
-                              : 'text-muted-foreground hover:bg-accent hover:text-primary'
+                              : 'text-muted-foreground hover:bg-accent hover:text-primary',
                           )}
                         >
                           <childItem.icon className="h-4 w-4" />
@@ -312,10 +343,10 @@ export function DashboardSidebar({ className, collapsed = false, onClose }: Dash
                   key={item.href}
                   to={item.href}
                   className={cn(
-                    'flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                    'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
                     isActiveLink(item.href)
                       ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:bg-accent hover:text-primary'
+                      : 'text-muted-foreground hover:bg-accent hover:text-primary',
                   )}
                 >
                   <item.icon className="h-4 w-4" />
@@ -328,32 +359,34 @@ export function DashboardSidebar({ className, collapsed = false, onClose }: Dash
       </div>
 
       {/* Fixed User info at bottom with dropdown */}
-      <div className="p-4 border-t border-border flex-shrink-0">
+      <div className="border-border flex-shrink-0 border-t p-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-3 p-2 rounded-md hover:bg-accent cursor-pointer w-full">
+            <button className="hover:bg-accent flex w-full cursor-pointer items-center gap-3 rounded-md p-2">
               <Avatar className="h-8 w-8">
                 <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                  {user?.username?.[0]?.toUpperCase()}
+                  {user?.email?.[0]?.toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex-1 min-w-0 text-left">
-                <p className="text-sm font-medium text-foreground truncate">
-                  {user?.username}
+              <div className="min-w-0 flex-1 text-left">
+                <p className="text-foreground truncate text-sm font-medium">
+                  {user?.email}
                 </p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {user?.role}
+                <p className="text-muted-foreground truncate text-xs">
+                  {user?.user_role}
                 </p>
               </div>
-              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+              <ChevronDown className="text-muted-foreground h-4 w-4" />
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{user?.username}</p>
-                <p className="text-xs leading-none text-muted-foreground">
-                  {user?.role}
+                <p className="text-sm leading-none font-medium">
+                  {user?.email}
+                </p>
+                <p className="text-muted-foreground text-xs leading-none">
+                  {user?.user_role}
                 </p>
               </div>
             </DropdownMenuLabel>
