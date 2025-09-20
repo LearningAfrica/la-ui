@@ -46,7 +46,7 @@ type AuthStore = AuthState & AuthActions;
 export const useAuth = create<AuthStore>()(
   persist(
     (set, _get) => ({
-      user: {} as IAuthUser,
+      user: null,
       access_token: null,
       is_authenticated: false,
       is_loading: false,
@@ -54,6 +54,7 @@ export const useAuth = create<AuthStore>()(
       current_org_id: null,
       refresh_token: null,
       session_id: uuidv4(), // Generate a unique session ID on initialization
+      hasHydrated: false,
       login: async (axiosClient, payload, opts) => {
         set({ is_loading: true, error: null });
         try {
@@ -81,6 +82,7 @@ export const useAuth = create<AuthStore>()(
             session_id: uuidv4(), // Generate a new session ID on login
             current_org_id:
               data.organizations.length > 0 ? data.organizations[0].id : null,
+            hasHydrated: true,
           }));
         } catch (error) {
           set((state) => ({
@@ -90,6 +92,7 @@ export const useAuth = create<AuthStore>()(
             is_authenticated: false,
             is_loading: false,
             error: apiErrorMsg(error, 'Login failed'),
+            hasHydrated: true,
           }));
           if (opts?.onError && typeof opts.onError === 'function') {
             opts.onError(apiErrorMsg(error, 'Login failed'));
@@ -128,6 +131,7 @@ export const useAuth = create<AuthStore>()(
             session_id: uuidv4(), // Generate a new session ID on login
             current_org_id:
               data.organizations.length > 0 ? data.organizations[0].id : null,
+            hasHydrated: true,
           }));
 
           // registerUserResponseSchema.parse(dbData);
@@ -139,6 +143,7 @@ export const useAuth = create<AuthStore>()(
             is_authenticated: false,
             is_loading: false,
             error: apiErrorMsg(error, 'Registration failed'),
+            hasHydrated: true,
           }));
           if (opts?.onError && typeof opts.onError === 'function') {
             opts.onError(apiErrorMsg(error, 'Registration failed'));
@@ -160,6 +165,7 @@ export const useAuth = create<AuthStore>()(
           refresh_token: null,
           current_org_id: null,
           session_id: uuidv4(), // Generate a new session ID on logout
+          hasHydrated: true,
         }));
       },
 
@@ -173,18 +179,18 @@ export const useAuth = create<AuthStore>()(
       setUser: (user: IAuthUser) => {
         set((state) => ({
           ...state,
-          user: { ...state.user, ...user },
+          user: state.user ? { ...state.user, ...user } : user,
         }));
       },
       changeCurrentOrganization: (organizationId: string) => {
-        if (_get().user?.organizations.length === 0) {
+        const organizations = _get().user?.organizations ?? [];
+
+        if (organizations.length === 0) {
           toast.error('No organizations available to switch to.');
           return;
         }
 
-        if (
-          !_get().user?.organizations.some((org) => org.id === organizationId)
-        ) {
+        if (!organizations.some((org) => org.id === organizationId)) {
           toast.error('Organization not found.');
           return;
         }
@@ -226,11 +232,27 @@ export const useAuth = create<AuthStore>()(
         ...currentState,
         ...(persistedState as AuthStore),
       }),
-      onRehydrateStorage(state) {
-        if (state) {
-          state.is_loading = false; // Ensure loading is false after rehydration
-          state.error = null; // Clear any errors on rehydration
+      onRehydrateStorage: () => (state, error) => {
+        if (!state) {
+          return;
         }
+
+        if (error) {
+          console.error('Failed to rehydrate auth store', error);
+          state.error = 'Failed to restore session';
+        } else {
+          state.error = null;
+        }
+
+        const isAuthenticated = Boolean(state.user && state.access_token);
+        state.is_authenticated = isAuthenticated;
+
+        if (!isAuthenticated) {
+          state.current_org_id = null;
+        }
+
+        state.hasHydrated = true;
+        state.is_loading = false;
       },
     },
   ),

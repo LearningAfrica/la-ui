@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import {
   ArrowRight,
@@ -12,13 +13,15 @@ import {
   Sparkles,
   Users,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { Header } from '@/components/header';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { useAuth } from '@/hooks/use-auth';
+import { useAuthModal } from '@/components/auth/auth-modal.context';
 
 const stats = [
   { label: 'Organizations empowered', value: '500+' },
@@ -184,6 +187,18 @@ const trustedBy = [
 ];
 
 export default function LandingPage() {
+  const { is_authenticated } = useAuth();
+  const { openModal } = useAuthModal();
+  const navigate = useNavigate();
+
+  const handleStartInquiry = useCallback(() => {
+    if (is_authenticated) {
+      navigate('/inquiry');
+    } else {
+      openModal('register');
+    }
+  }, [is_authenticated, navigate, openModal]);
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
       <div className="pointer-events-none absolute inset-0 -z-10">
@@ -228,12 +243,14 @@ export default function LandingPage() {
                 </div>
 
                 <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-                  <Button size="lg" asChild className="gap-2 px-8 py-6 text-base shadow-lg shadow-primary/20">
-                    <Link to="/inquiry">
-                      <Rocket className="h-5 w-5" />
-                      Start an Inquiry
-                      <ArrowRight className="h-5 w-5" />
-                    </Link>
+                  <Button
+                    size="lg"
+                    className="gap-2 px-8 py-6 text-base shadow-lg shadow-primary/20"
+                    onClick={handleStartInquiry}
+                  >
+                    <Rocket className="h-5 w-5" />
+                    Start an Inquiry
+                    <ArrowRight className="h-5 w-5" />
                   </Button>
                   <Button
                     size="lg"
@@ -361,11 +378,13 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <div className="flex flex-wrap gap-4">
-                  <Button asChild size="lg" className="gap-2 px-7 py-5 text-base shadow-lg shadow-primary/20">
-                    <Link to="/inquiry">
-                      Continue to inquiry
-                      <ArrowRight className="h-5 w-5" />
-                    </Link>
+                  <Button
+                    size="lg"
+                    className="gap-2 px-7 py-5 text-base shadow-lg shadow-primary/20"
+                    onClick={handleStartInquiry}
+                  >
+                    Continue to inquiry
+                    <ArrowRight className="h-5 w-5" />
                   </Button>
                   <Button variant="outline" size="lg" asChild className="border-primary/30 px-7 py-5 text-base">
                     <a href="#contact">Talk to our team</a>
@@ -439,7 +458,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3 md:max-w-3xl md:mx-auto lg:max-w-none">
               {differentiators.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -478,7 +497,7 @@ export default function LandingPage() {
                 </p>
               </div>
 
-              <div className="grid flex-1 gap-6 sm:grid-cols-2">
+              <div className="grid flex-1 gap-6 sm:grid-cols-2 md:max-w-3xl md:mx-auto lg:mx-0 lg:max-w-none">
                 {services.map((service) => {
                   const Icon = service.icon;
 
@@ -528,7 +547,7 @@ export default function LandingPage() {
               </Button>
             </div>
 
-            <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4 md:max-w-4xl md:mx-auto xl:max-w-none">
               {processSteps.map((step, index) => (
                 <Card
                   key={step.title}
@@ -555,7 +574,7 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="mt-16 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="mt-16 grid gap-6 md:grid-cols-2 xl:grid-cols-3 md:max-w-4xl md:mx-auto xl:max-w-none">
               {testimonials.map((testimonial) => (
                 <Card key={testimonial.name} className="h-full border-border/60 bg-background/85 backdrop-blur">
                   <CardContent className="flex h-full flex-col gap-6 p-8">
@@ -591,11 +610,13 @@ export default function LandingPage() {
                   </p>
                 </div>
                 <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center md:justify-end">
-                  <Button size="lg" asChild className="gap-2 px-8 py-6 text-base shadow-lg shadow-primary/25">
-                    <Link to="/inquiry">
-                      Start an Inquiry
-                      <ArrowRight className="h-5 w-5" />
-                    </Link>
+                  <Button
+                    size="lg"
+                    className="gap-2 px-8 py-6 text-base shadow-lg shadow-primary/25"
+                    onClick={handleStartInquiry}
+                  >
+                    Start an Inquiry
+                    <ArrowRight className="h-5 w-5" />
                   </Button>
                   <Button
                     variant="outline"

@@ -1,7 +1,9 @@
 import { useAuth } from '@/hooks/use-auth';
 import { useApiClient } from '@/lib/api';
+import type { Paginated } from '@/lib/types/global';
 import { apiErrorMsg } from '@/lib/utils/axios-err';
 import type { SetupInquiryPayload } from '@/lib/validators/setup-requisition-schema';
+import type { Inquiry } from '@/pages/dashboard/super-admin/dashboard/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const ADMIN_REQUISITION_KEYS = {
@@ -21,8 +23,10 @@ export function useAdminRequisitions() {
   }
 
   async function fetchRequisitions() {
-    const { data } = await apiClient.get(`/users/organization-setup-requests/`);
-    return data;
+    const { data } = await apiClient.get<Paginated<Inquiry>>(
+      `/invite/organization-permission-requests/?page=1&limit=100`,
+    );
+    return data.data;
   }
   const queryClient = useQueryClient();
   const adminRequisitionsQuery = useQuery({
@@ -32,11 +36,15 @@ export function useAdminRequisitions() {
   });
 
   const createRequisition = async (payload: SetupInquiryPayload) => {
-    const { data } = await apiClient.post('/users/organization-setup-requests/', payload, {
-      headers: {
-        'Content-Type': 'application/json',
+    const { data } = await apiClient.post(
+      '/users/organization-setup-requests/',
+      payload,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
       },
-    });
+    );
     return data;
   };
 

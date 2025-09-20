@@ -1,4 +1,4 @@
-import { Menu, Search, User, ShoppingCart, ChevronDown, ChevronRight } from 'lucide-react';
+import { Menu, Search, User, ShoppingCart, ChevronDown, ChevronRight, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -452,45 +452,48 @@ export function Header({
             </>
           ) : (
             <>
-              {/* Auth Button */}
-              <Button variant="outline" size="sm" asChild className="hidden sm:flex">
-                {auth.is_authenticated ? (
-                  <>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      onClick={() => auth.logout()}
-                      className="hidden"
-                    >
-                      Logout
-                    </Button>
-                    <Link to="/dashboard" className="flex items-center">
-                      <User className="mr-2 h-4 w-4" />
+              {auth.is_authenticated ? (
+                <>
+                  <Button variant="outline" size="sm" asChild className="hidden sm:flex">
+                    <Link to="/dashboard" className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
                       <span className="hidden md:inline">Dashboard</span>
                     </Link>
-                  </>
-                ) : (
-                  <Link to="/login">
-                    <User className="mr-2 h-4 w-4" />
-                    <span className="hidden md:inline">Login</span>
-                  </Link>
-                )}
-              </Button>
-
-              {/* Mobile Auth Button */}
-              <Button variant="outline" size="icon" asChild className="sm:hidden">
-                {auth.is_authenticated ? (
-                  <Link to="/dashboard">
-                    <User className="h-4 w-4" />
-                    <span className="sr-only">Dashboard</span>
-                  </Link>
-                ) : (
-                  <Link to="/login">
-                    <User className="h-4 w-4" />
-                    <span className="sr-only">Login</span>
-                  </Link>
-                )}
-              </Button>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => auth.logout()}
+                    className="hidden sm:inline-flex gap-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="sm:hidden"
+                    onClick={() => auth.logout()}
+                    aria-label="Log out"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button variant="outline" size="sm" asChild className="hidden sm:flex">
+                    <Link to="/login" className="flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      <span className="hidden md:inline">Login</span>
+                    </Link>
+                  </Button>
+                  <Button variant="outline" size="icon" asChild className="sm:hidden">
+                    <Link to="/login" aria-label="Login">
+                      <User className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </>
+              )}
             </>
           )}
         </div>

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ArrowLeft, Menu, Home } from 'lucide-react';
-import type { TSFixMe } from '@/lib/types/global';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';

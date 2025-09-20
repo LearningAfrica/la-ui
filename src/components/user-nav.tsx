@@ -24,7 +24,7 @@ export function UserNav() {
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
             <AvatarImage
-              src={user.avatar || '/placeholder.svg'}
+              src={user.email || '/placeholder.svg'}
               alt={user.email}
             />
             <AvatarFallback>{user.email?.charAt(0) || 'U'}</AvatarFallback>
@@ -56,7 +56,12 @@ export function UserNav() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={logout}>
+        <DropdownMenuItem
+          onSelect={(event) => {
+            event.preventDefault();
+            logout();
+          }}
+        >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>

@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/use-auth';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Form,
   FormControl,
@@ -32,6 +32,7 @@ export default function RegisterPage() {
   const { register } = useAuth();
   const apiClient = useApiClient();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const form = useForm({
@@ -47,13 +48,17 @@ export default function RegisterPage() {
     },
   });
 
+  const redirectTo = searchParams.get('redirect') || '/dashboard';
+  const redirectQuery = redirectTo
+    ? `?redirect=${encodeURIComponent(redirectTo)}`
+    : '';
+
   const onSubmit = form.handleSubmit(async (data) => {
     setIsLoading(true);
     try {
       await register(apiClient, data, {});
       toast.success('Registered successfully');
-      // await navigate('/login');
-       await navigate('/dashboard');
+      navigate(redirectTo || '/dashboard', { replace: true });
     } catch (error) {
       toast.error(apiErrorMsg(error), {
         position: 'top-center',
@@ -320,7 +325,7 @@ export default function RegisterPage() {
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-center text-sm">
             Already have an account?{' '}
-            <Link to="/login" className="text-primary hover:underline">
+            <Link to={`/login${redirectQuery}`} className="text-primary hover:underline">
               Sign in
             </Link>
           </div>

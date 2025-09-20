@@ -1,5 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import {
   Building,
   CheckCircle2,
@@ -7,7 +8,6 @@ import {
   Mail,
   PhoneCall,
   Send,
-  Users,
 } from 'lucide-react';
 
 import { Header } from '@/components/header';
@@ -44,6 +44,9 @@ import {
   COMPANY_SIZES,
 } from '@/lib/constants/company-types';
 import { setupRequisitionSchemaResolver } from '@/lib/validators/setup-requisition-schema';
+import { useAuth } from '@/hooks/use-auth';
+import { useAuthModal } from '@/components/auth/auth-modal.context';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 
 const inquiryHighlights = [
   'A partnership strategist will review your submission and respond within 24 hours.',
@@ -74,16 +77,19 @@ const contactDetails = [
 export default function SetupInquiry() {
   const navigate = useNavigate();
   const apiClient = useApiClient();
+  const { is_authenticated } = useAuth();
+  const { openModal } = useAuthModal();
   const form = useForm({
     resolver: setupRequisitionSchemaResolver,
     defaultValues: {
-      first_name: '',
-      last_name: '',
-      contact_email: '',
+      // first_name: '',
+      // last_name: '',
+      // contact_email: '',
       company_name: '',
       company_description: '',
       company_category: '',
       company_size: '',
+      reason: '',
     },
   });
 
@@ -94,12 +100,18 @@ export default function SetupInquiry() {
   } = form;
 
   const onSubmit = handleSubmit(async (data) => {
+    if (!is_authenticated) {
+      toast.info('Create an account or log in to send your inquiry.');
+      openModal('register');
+      return;
+    }
+
     try {
-      await apiClient.post('/users/organization-setup-requests/', data);
+      await apiClient.post('/invite/organization-permission-requests/', data);
       navigate('/thank-you');
     } catch (error) {
       console.error('[v0] Error submitting inquiry:', error);
-      alert('Failed to submit inquiry. Please try again.');
+      toast.error(apiErrorMsg(error, 'Failed to submit inquiry. Please try again.'));
     }
   });
 
@@ -212,7 +224,7 @@ export default function SetupInquiry() {
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel>Company name *</FormLabel>
-                                    <FormControl>
+                                    <FormControl className='w-full'>
                                       <Input placeholder="Enter your company name" {...field} />
                                     </FormControl>
                                     <FormMessage />
@@ -225,9 +237,9 @@ export default function SetupInquiry() {
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel>Company category *</FormLabel>
-                                    <FormControl>
-                                      <Select onValueChange={field.onChange} value={field.value}>
-                                        <SelectTrigger>
+                                    <FormControl className='w-full'>
+                                      <Select onValueChange={field.onChange} value={field.value} >
+                                        <SelectTrigger className='w-full'>
                                           <SelectValue placeholder="Select company category" />
                                         </SelectTrigger>
                                         <SelectContent>
@@ -250,9 +262,9 @@ export default function SetupInquiry() {
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel>Company size *</FormLabel>
-                                  <FormControl>
+                                  <FormControl className='w-full'>
                                     <Select onValueChange={field.onChange} value={field.value}>
-                                      <SelectTrigger>
+                                      <SelectTrigger className='w-full'>
                                         <SelectValue placeholder="Select company size" />
                                       </SelectTrigger>
                                       <SelectContent>
@@ -285,10 +297,27 @@ export default function SetupInquiry() {
                                 </FormItem>
                               )}
                             />
+                               <FormField
+                              control={control}
+                              name="reason"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel>Company vision & focus *</FormLabel>
+                                  <FormControl className='w-full'>
+                                    <Textarea
+                                      placeholder="Briefly describe your reason for reaching out and what you hope to achieve through our partnership."
+                                      rows={5}
+                                      {...field}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
                           </CardContent>
                         </Card>
 
-                        <Card className="border border-border/60 bg-background/90">
+                        {/* <Card className="border border-border/60 bg-background/90">
                           <CardHeader className="space-y-2">
                             <CardTitle className="flex items-center gap-2 text-lg">
                               <Users className="h-5 w-5 text-primary" />
@@ -346,7 +375,7 @@ export default function SetupInquiry() {
                               )}
                             />
                           </CardContent>
-                        </Card>
+                        </Card> */}
 
                         <Card className="border border-border/60 bg-background/90">
                           <CardContent className="flex flex-col gap-4 pt-6 sm:flex-row sm:items-center sm:justify-between">

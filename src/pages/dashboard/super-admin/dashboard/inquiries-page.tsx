@@ -6,5 +6,5 @@ export default function SuperAdminInquiriesPage() {
   // const { inquiries, isLoading } = useOutletContext<SuperAdminDashboardOutletContext>()
   const { data, isLoading } = useInquiries()
 
-  return <InquiriesOverview inquiries={data!} isLoading={isLoading} />
+  return <InquiriesOverview inquiries={data!} isLoading={isLoading}  />
 }

@@ -17,5 +17,5 @@ export interface AuthState {
   is_authenticated: boolean;
   is_loading: boolean;
   error: string | null;
+  hasHydrated: boolean;
 }
-

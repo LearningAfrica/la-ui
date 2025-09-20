@@ -26,6 +26,7 @@ type NavLink = {
   items?: NavLink[];
   section?: 'main' | 'bottom';
   isParent?: boolean;
+  requiresOrg: boolean;
 };
 
 // Common links that appear for all roles
@@ -36,6 +37,7 @@ const COMMON_LINKS: NavLink[] = [
     icon: LayoutDashboard,
     orgRole: ['learner', 'instructor', 'admin'],
     systemRole: ['super_admin', 'user'],
+    requiresOrg: false,
   },
   {
     href: '/dashboard/invitations',
@@ -43,6 +45,7 @@ const COMMON_LINKS: NavLink[] = [
     icon: MessageSquare,
     orgRole: ['learner', 'instructor', 'admin'],
     systemRole: ['user'],
+    requiresOrg: false,
   },
 ];
 
@@ -55,6 +58,7 @@ const STUDENT_LINKS: NavLink[] = [
     orgRole: ['learner'],
     systemRole: ['user'],
     isParent: true,
+    requiresOrg: true,
     items: [
       {
         href: '/dashboard/student/courses',
@@ -62,6 +66,7 @@ const STUDENT_LINKS: NavLink[] = [
         icon: BookOpen,
         orgRole: ['learner'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
       {
         href: '/dashboard/student/learning',
@@ -69,6 +74,7 @@ const STUDENT_LINKS: NavLink[] = [
         icon: GraduationCap,
         orgRole: ['learner'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
       {
         href: '/dashboard/student/achievements',
@@ -76,6 +82,7 @@ const STUDENT_LINKS: NavLink[] = [
         icon: Award,
         orgRole: ['learner'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
       {
         href: '/dashboard/student/certificates',
@@ -83,6 +90,7 @@ const STUDENT_LINKS: NavLink[] = [
         icon: FileCheck,
         orgRole: ['learner'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
     ],
   },
@@ -93,6 +101,7 @@ const STUDENT_LINKS: NavLink[] = [
     orgRole: ['learner'],
     systemRole: ['user'],
     isParent: true,
+    requiresOrg: true,
     items: [
       {
         href: '/dashboard/student/calendar',
@@ -100,6 +109,7 @@ const STUDENT_LINKS: NavLink[] = [
         icon: Calendar,
         orgRole: ['learner'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
       {
         href: '/dashboard/student/live-sessions',
@@ -107,6 +117,7 @@ const STUDENT_LINKS: NavLink[] = [
         icon: Video,
         orgRole: ['learner'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
       {
         href: '/dashboard/student/support',
@@ -114,6 +125,7 @@ const STUDENT_LINKS: NavLink[] = [
         icon: HelpCircle,
         systemRole: ['user'],
         orgRole: ['learner'],
+        requiresOrg: false,
       },
     ],
   },
@@ -128,6 +140,7 @@ const INSTRUCTOR_LINKS: NavLink[] = [
     orgRole: ['instructor'],
     systemRole: ['user'],
     isParent: true,
+    requiresOrg: true,
     items: [
       {
         href: '/dashboard/instructor/courses',
@@ -135,6 +148,7 @@ const INSTRUCTOR_LINKS: NavLink[] = [
         icon: BookOpen,
         orgRole: ['instructor'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
       {
         href: '/dashboard/instructor/students',
@@ -142,6 +156,7 @@ const INSTRUCTOR_LINKS: NavLink[] = [
         icon: Users,
         orgRole: ['instructor'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
     ],
   },
@@ -152,6 +167,7 @@ const INSTRUCTOR_LINKS: NavLink[] = [
     orgRole: ['instructor'],
     systemRole: ['user'],
     isParent: true,
+    requiresOrg: true,
     items: [
       {
         href: '/dashboard/instructor/messages',
@@ -159,6 +175,7 @@ const INSTRUCTOR_LINKS: NavLink[] = [
         icon: MessageSquare,
         orgRole: ['instructor'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
     ],
   },
@@ -169,6 +186,7 @@ const INSTRUCTOR_LINKS: NavLink[] = [
     orgRole: ['instructor'],
     systemRole: ['user'],
     isParent: true,
+    requiresOrg: true,
     items: [
       {
         href: '/dashboard/instructor/earnings',
@@ -176,6 +194,7 @@ const INSTRUCTOR_LINKS: NavLink[] = [
         icon: DollarSign,
         orgRole: ['instructor'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
     ],
   },
@@ -186,6 +205,7 @@ const INSTRUCTOR_LINKS: NavLink[] = [
     orgRole: ['instructor'],
     systemRole: ['user'],
     isParent: true,
+    requiresOrg: true,
     items: [
       {
         href: '/dashboard/instructor/calendar',
@@ -193,6 +213,7 @@ const INSTRUCTOR_LINKS: NavLink[] = [
         icon: Calendar,
         orgRole: ['instructor'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
       {
         href: '/dashboard/instructor/live-sessions',
@@ -200,6 +221,7 @@ const INSTRUCTOR_LINKS: NavLink[] = [
         icon: Video,
         orgRole: ['instructor'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
     ],
   },
@@ -214,13 +236,23 @@ const ADMIN_LINKS: NavLink[] = [
     orgRole: ['admin'],
     systemRole: ['user'],
     isParent: true,
+    requiresOrg: false,
     items: [
-      {
+       {
         href: '/dashboard/admin/organizations',
         label: 'Organizations',
         icon: Users,
         orgRole: ['admin'],
         systemRole: ['user'],
+        requiresOrg: false,
+      },
+       {
+        href: '/dashboard/admin/inquiries',
+        label: 'My Inquiries',
+        icon: MessageSquare,
+        orgRole: ['admin'],
+        systemRole: ['user'],
+        requiresOrg: false,
       },
       {
         href: '/dashboard/admin/approvals',
@@ -228,6 +260,7 @@ const ADMIN_LINKS: NavLink[] = [
         icon: Users,
         orgRole: ['admin'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
     ],
   },
@@ -238,6 +271,7 @@ const ADMIN_LINKS: NavLink[] = [
     orgRole: ['admin'],
     systemRole: ['user'],
     isParent: true,
+    requiresOrg: true,
     items: [
       {
         href: '/dashboard/admin/categories',
@@ -245,6 +279,7 @@ const ADMIN_LINKS: NavLink[] = [
         icon: BookOpen,
         orgRole: ['admin'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
       {
         href: '/dashboard/admin/certificates',
@@ -252,6 +287,7 @@ const ADMIN_LINKS: NavLink[] = [
         icon: FileCheck,
         orgRole: ['admin'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
       {
         href: '/dashboard/admin/reviews',
@@ -259,6 +295,7 @@ const ADMIN_LINKS: NavLink[] = [
         icon: MessageSquare,
         systemRole: ['user'],
         orgRole: ['admin'],
+        requiresOrg: true,
       },
       {
         href: '/dashboard/admin/discussions',
@@ -266,6 +303,7 @@ const ADMIN_LINKS: NavLink[] = [
         icon: MessageSquare,
         orgRole: ['admin'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
       {
         href: '/dashboard/admin/courses',
@@ -273,6 +311,7 @@ const ADMIN_LINKS: NavLink[] = [
         icon: BookOpen,
         orgRole: ['admin'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
     ],
   },
@@ -283,6 +322,7 @@ const ADMIN_LINKS: NavLink[] = [
     orgRole: ['admin'],
     systemRole: ['user'],
     isParent: true,
+    requiresOrg: true,
     items: [
       {
         href: '/dashboard/admin/students',
@@ -290,6 +330,7 @@ const ADMIN_LINKS: NavLink[] = [
         icon: Users,
         orgRole: ['admin'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
       {
         href: '/dashboard/admin/learning',
@@ -297,6 +338,7 @@ const ADMIN_LINKS: NavLink[] = [
         icon: Users,
         orgRole: ['admin'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
       {
         href: '/dashboard/admin/instructors',
@@ -304,6 +346,7 @@ const ADMIN_LINKS: NavLink[] = [
         icon: GraduationCap,
         systemRole: ['user'],
         orgRole: ['admin'],
+        requiresOrg: true,
       },
       {
         href: '/dashboard/admin/instructors/invitations',
@@ -311,6 +354,7 @@ const ADMIN_LINKS: NavLink[] = [
         icon: Users,
         orgRole: ['admin'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
     ],
   },
@@ -321,6 +365,7 @@ const ADMIN_LINKS: NavLink[] = [
     orgRole: ['admin'],
     systemRole: ['user'],
     isParent: true,
+    requiresOrg: true,
     items: [
       {
         href: '/dashboard/admin/reports',
@@ -328,6 +373,7 @@ const ADMIN_LINKS: NavLink[] = [
         icon: BarChart3,
         orgRole: ['admin'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
     ],
   },
@@ -338,6 +384,7 @@ const ADMIN_LINKS: NavLink[] = [
     orgRole: ['admin'],
     systemRole: ['user'],
     isParent: true,
+    requiresOrg: true,
     items: [
       {
         href: '/dashboard/admin/support',
@@ -345,6 +392,7 @@ const ADMIN_LINKS: NavLink[] = [
         icon: HelpCircle,
         orgRole: ['admin'],
         systemRole: ['user'],
+        requiresOrg: false,
       },
       {
         href: '/dashboard/admin/calendar',
@@ -352,6 +400,7 @@ const ADMIN_LINKS: NavLink[] = [
         icon: Calendar,
         orgRole: ['admin'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
       {
         href: '/dashboard/admin/live-sessions',
@@ -359,6 +408,7 @@ const ADMIN_LINKS: NavLink[] = [
         icon: Video,
         orgRole: ['admin'],
         systemRole: ['user'],
+        requiresOrg: true,
       },
     ],
   },
@@ -378,6 +428,7 @@ const SUPER_ADMIN_LINKS: NavLink[] = [
     icon: Users,
     orgRole: ['admin'],
     systemRole: ['super_admin'],
+    requiresOrg: false,
   },
   {
     href: '/dashboard/super-admin/organizations',
@@ -385,6 +436,7 @@ const SUPER_ADMIN_LINKS: NavLink[] = [
     icon: Users,
     orgRole: [],
     systemRole: ['super_admin'],
+    requiresOrg: false,
   },
 ];
 
@@ -397,6 +449,7 @@ const PROFILE_LINKS: NavLink[] = [
     orgRole: ['learner', 'instructor', 'admin'],
     systemRole: ['super_admin', 'user'],
     section: 'bottom',
+    requiresOrg: false,
   },
   {
     href: '/dashboard/settings',
@@ -405,6 +458,7 @@ const PROFILE_LINKS: NavLink[] = [
     orgRole: ['learner', 'instructor', 'admin'],
     systemRole: ['super_admin', 'user'],
     section: 'bottom',
+    requiresOrg: false,
   },
 ];
 

@@ -155,6 +155,9 @@ const AdminSupportArticleDetailsEditPage = lazy(
 const AdminSupportArticlesCreatePage = lazy(
   () => import('./support/admin-support-articles-create-page'),
 );
+const AdminInquiriesPage = lazy(
+  () => import('./inquiries/admin-inquiries-page'),
+);
 /**
  * ================ Students Pages ================
  * These pages handle the management of students,
@@ -185,6 +188,10 @@ export const adminRouter: RouteObject[] = [
   {
     path: '/dashboard/admin/organizations',
     element: <AdminOrganizationsPage />,
+  },
+  {
+    path: '/dashboard/admin/inquiries',
+    element: <AdminInquiriesPage />,
   },
   {
     path: '/dashboard/admin/organizations/:id',

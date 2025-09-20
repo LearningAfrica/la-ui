@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import type { Analytics, Inquiry, Organization } from './types';
 import { useApiClient } from '@/lib/api';
-import type { Paginated, PaginationMetaData } from '@/lib/types/global';
+import type { Paginated } from '@/lib/types/global';
 
 export const useInquiries = () => {
   const api = useApiClient();
@@ -10,11 +10,11 @@ export const useInquiries = () => {
     queryKey: ['inquiries'],
     queryFn: async ()=> {
       try {
-        const { data } = await api.get<Paginated<Inquiry[]>>(
-          '/users/organization-setup-requests/?page=1&limit=20',
+        const { data } = await api.get<Paginated<Inquiry>>(
+          '/invite/organization-permission-requests/?page=1&limit=20',
         );
         return data.data;
-      } catch (error) {
+      } catch {
         throw new Error('Failed to fetch inquiries');
       }
     },
@@ -29,7 +29,7 @@ export const useOrganizations = () => {
       try {
         const { data } = await api.get('/api/organizations');
         return data;
-      } catch (error) {
+      } catch {
         throw new Error('Failed to fetch organizations');
       }
     },
@@ -37,7 +37,6 @@ export const useOrganizations = () => {
 };
 
 export const useAnalytics = () => {
-  const api = useApiClient();
   return useQuery({
     queryKey: ['analytics'],
     queryFn: async (): Promise<Analytics> => {

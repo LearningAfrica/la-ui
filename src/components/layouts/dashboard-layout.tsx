@@ -1,19 +1,18 @@
 import React, { useEffect } from 'react';
 import { DashboardSidebar } from '@/components/dashboard-sidebar';
 import { useAuth } from '@/hooks/use-auth';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import LoadingFallback from '../loading-fallback';
 import { Menu, Search, ChevronRight, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useSidebarStore } from '@/store/sidebar-store';
 import { NotificationsPanel } from '@/components/notifications/notifications-panel';
 import { SimpleThemeToggle } from '@/components/theme-toggle';
+import { UserNav } from '@/components/user-nav';
 
 export default function DashboardLayout() {
-  const { user, is_loading: isLoading } = useAuth();
-  const router = useNavigate();
+  const { user, is_loading: isLoading, hasHydrated } = useAuth();
   const pathname = useLocation().pathname;
 
   // Zustand store for sidebar state
@@ -26,12 +25,6 @@ export default function DashboardLayout() {
 
   // Check if we're in a lesson page
   const isLessonPage = pathname.includes('/lessons/');
-
-  useEffect(() => {
-    if (!isLoading && !user) {
-      router('/login');
-    }
-  }, [user, isLoading, router]);
 
   // Close mobile sidebar when pathname changes
   useEffect(() => {
@@ -77,7 +70,7 @@ export default function DashboardLayout() {
 
   const breadcrumbs = generateBreadcrumbs();
 
-  if (isLoading) {
+  if (!hasHydrated || isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="text-center">
@@ -172,17 +165,7 @@ export default function DashboardLayout() {
                 <SimpleThemeToggle />
                 <NotificationsPanel />
 
-                <div className="flex items-center gap-2">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-primary text-primary-foreground text-xs">
-                      {user?.email?.[0]?.toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="hidden sm:block">
-                    <p className="text-sm font-medium text-foreground">{user?.email}</p>
-                    <p className="text-xs text-muted-foreground">{user?.user_role}</p>
-                  </div>
-                </div>
+                <UserNav />
               </div>
             </div>
           </header>

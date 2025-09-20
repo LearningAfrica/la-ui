@@ -1,8 +1,6 @@
-import { useState } from "react"
+import { useState } from 'react';
 
 import {
-  type ColumnDef,
-  type ColumnFiltersState,
   type SortingState,
   createColumnHelper,
   flexRender,
@@ -11,36 +9,40 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+} from '@tanstack/react-table';
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import {
-  Activity,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
   ArrowUpDown,
   Building,
   ChevronLeft,
   ChevronRight,
-  DollarSign,
+  ImageIcon,
   Search,
-} from "lucide-react"
+} from 'lucide-react';
 
-import { useOrganizations } from "../hooks"
-import type { Organization } from "../types"
-import { OrganizationDetailModal } from "./organization-detail-modal"
+import { useOrganizations } from '../hooks';
+import type { Organization } from '../types';
+import { OrganizationDetailModal } from './organization-detail-modal';
 
-const columnHelper = createColumnHelper<Organization>()
+const columnHelper = createColumnHelper<Organization>();
 
-const columns: ColumnDef<Organization, unknown>[] = [
-  columnHelper.accessor("name", {
+const columns = [
+  columnHelper.accessor('name', {
     header: ({ column }) => (
       <Button
         variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         className="h-auto p-0 font-semibold"
       >
         Organization
@@ -48,77 +50,48 @@ const columns: ColumnDef<Organization, unknown>[] = [
       </Button>
     ),
     cell: ({ row }) => (
-      <div>
-        <div className="font-medium">{row.getValue("name")}</div>
-        <div className="text-sm text-muted-foreground">{row.original.type}</div>
+      <div className="flex items-center gap-3">
+        {row.original.logo_url ? (
+          <img
+            src={row.original.logo_url}
+            alt={row.original.name}
+            className="h-10 w-10 rounded-md border object-cover"
+          />
+        ) : (
+          <div className="bg-muted text-muted-foreground flex h-10 w-10 items-center justify-center rounded-md text-sm font-semibold">
+            {row.original.name.slice(0, 2).toUpperCase()}
+          </div>
+        )}
+        <div>
+          <p className="font-medium">{row.getValue('name')}</p>
+          <p className="text-muted-foreground text-sm">
+            {row.original.description
+              ? `${row.original.description.slice(0, 40)}${row.original.description.length > 40 ? '…' : ''}`
+              : 'No description provided'}
+          </p>
+        </div>
       </div>
     ),
   }),
-  columnHelper.accessor("contactName", {
-    header: "Contact",
-    cell: ({ row }) => (
-      <div>
-        <div className="font-medium">{row.getValue("contactName")}</div>
-        <div className="text-sm text-muted-foreground">{row.original.contactEmail}</div>
-      </div>
-    ),
-  }),
-  columnHelper.accessor("industry", {
-    header: "Industry",
-    cell: ({ getValue }) => getValue(),
-  }),
-  columnHelper.accessor("size", {
-    header: "Size",
-    cell: ({ getValue }) => <Badge variant="outline">{getValue()}</Badge>,
-  }),
-  columnHelper.accessor("activeProjects", {
-    header: "Active Projects",
+  columnHelper.accessor('description', {
+    header: 'Description',
     cell: ({ getValue }) => (
-      <div className="flex items-center">
-        <Activity className="h-4 w-4 mr-1 text-muted-foreground" />
-        {getValue()}
-      </div>
+      <p className="text-muted-foreground max-w-xs text-sm">
+        {getValue() ? String(getValue()) : 'No description provided'}
+      </p>
     ),
-  }),
-  columnHelper.accessor("revenue", {
-    header: "Revenue",
-    cell: ({ getValue }) => (
-      <div className="flex items-center">
-        <DollarSign className="h-4 w-4 mr-1 text-muted-foreground" />${getValue().toLocaleString()}
-      </div>
-    ),
-  }),
-  columnHelper.accessor("status", {
-    header: "Status",
-    cell: ({ getValue }) => {
-      const status = getValue()
-      return (
-        <Badge
-          className={
-            status === "active"
-              ? "bg-green-100 text-green-800 hover:bg-green-100"
-              : status === "inactive"
-                ? "bg-red-100 text-red-800 hover:bg-red-100"
-                : "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
-          }
-        >
-          {status.charAt(0).toUpperCase() + status.slice(1)}
-        </Badge>
-      )
-    },
   }),
   columnHelper.display({
-    id: "actions",
-    header: "Actions",
+    id: 'actions',
+    header: 'Actions',
     cell: ({ row }) => <OrganizationDetailModal organization={row.original} />,
   }),
-]
+];
 
 export function OrganizationManagement() {
-  const { data: organizations = [], isLoading } = useOrganizations()
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [globalFilter, setGlobalFilter] = useState("")
+  const { data: organizations = [], isLoading } = useOrganizations();
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = useState('');
 
   const table = useReactTable({
     data: organizations,
@@ -128,18 +101,29 @@ export function OrganizationManagement() {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     state: {
       sorting,
-      columnFilters,
       globalFilter,
     },
-  })
+    globalFilterFn: 'includesString',
+  });
 
-  const activeOrgs = organizations.filter((org) => org.status === "active").length
-  const totalRevenue = organizations.reduce((sum, org) => sum + org.revenue, 0)
-  const totalProjects = organizations.reduce((sum, org) => sum + org.activeProjects, 0)
+  const organizationsWithLogo = organizations.filter((org) =>
+    Boolean(org.logo_url),
+  ).length;
+  const organizationsWithDescription = organizations.filter((org) =>
+    Boolean(org.description),
+  ).length;
+  const totalFiltered = table.getFilteredRowModel().rows.length;
+  const firstRowIndex =
+    table.getState().pagination.pageIndex *
+    table.getState().pagination.pageSize;
+  const showingFrom = totalFiltered ? firstRowIndex + 1 : 0;
+  const showingTo = Math.min(
+    firstRowIndex + table.getRowModel().rows.length,
+    totalFiltered,
+  );
 
   return (
     <div className="space-y-6">
@@ -148,8 +132,10 @@ export function OrganizationManagement() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Active Organizations</p>
-                <p className="text-2xl font-bold">{activeOrgs}</p>
+                <p className="text-muted-foreground text-sm font-medium">
+                  Total organizations
+                </p>
+                <p className="text-2xl font-bold">{organizations.length}</p>
               </div>
               <Building className="h-8 w-8 text-green-600" />
             </div>
@@ -160,10 +146,12 @@ export function OrganizationManagement() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Revenue</p>
-                <p className="text-2xl font-bold">${totalRevenue.toLocaleString()}</p>
+                <p className="text-muted-foreground text-sm font-medium">
+                  With brand assets
+                </p>
+                <p className="text-2xl font-bold">{organizationsWithLogo}</p>
               </div>
-              <DollarSign className="h-8 w-8 text-green-600" />
+              <ImageIcon className="h-8 w-8 text-blue-600" />
             </div>
           </CardContent>
         </Card>
@@ -172,10 +160,14 @@ export function OrganizationManagement() {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Active Projects</p>
-                <p className="text-2xl font-bold">{totalProjects}</p>
+                <p className="text-muted-foreground text-sm font-medium">
+                  With description
+                </p>
+                <p className="text-2xl font-bold">
+                  {organizationsWithDescription}
+                </p>
               </div>
-              <Activity className="h-8 w-8 text-blue-600" />
+              <ArrowUpDown className="h-8 w-8 text-purple-600" />
             </div>
           </CardContent>
         </Card>
@@ -183,32 +175,18 @@ export function OrganizationManagement() {
 
       <Card>
         <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col gap-4 md:flex-row">
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Search className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
                 <Input
                   placeholder="Search organizations..."
-                  value={globalFilter ?? ""}
+                  value={globalFilter ?? ''}
                   onChange={(e) => setGlobalFilter(e.target.value)}
                   className="pl-10"
                 />
               </div>
             </div>
-            <Select
-              value={(table.getColumn("status")?.getFilterValue() as string) ?? "all"}
-              onValueChange={(value) => table.getColumn("status")?.setFilterValue(value === "all" ? "" : value)}
-            >
-              <SelectTrigger className="w-full md:w-48">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </CardContent>
       </Card>
@@ -217,7 +195,7 @@ export function OrganizationManagement() {
         <CardContent className="p-0">
           {isLoading ? (
             <div className="flex items-center justify-center p-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              <div className="border-primary h-8 w-8 animate-spin rounded-full border-b-2" />
             </div>
           ) : (
             <>
@@ -229,7 +207,10 @@ export function OrganizationManagement() {
                         <TableHead key={header.id}>
                           {header.isPlaceholder
                             ? null
-                            : flexRender(header.column.columnDef.header, header.getContext())}
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
                         </TableHead>
                       ))}
                     </TableRow>
@@ -241,14 +222,20 @@ export function OrganizationManagement() {
                       <TableRow key={row.id}>
                         {row.getVisibleCells().map((cell) => (
                           <TableCell key={cell.id}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
                           </TableCell>
                         ))}
                       </TableRow>
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={columns.length} className="h-24 text-center">
+                      <TableCell
+                        colSpan={columns.length}
+                        className="h-24 text-center"
+                      >
                         No results.
                       </TableCell>
                     </TableRow>
@@ -256,14 +243,10 @@ export function OrganizationManagement() {
                 </TableBody>
               </Table>
 
-              <div className="flex items-center justify-between px-6 py-4 border-t">
-                <div className="text-sm text-muted-foreground">
-                  Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
-                  {Math.min(
-                    (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-                    table.getFilteredRowModel().rows.length,
-                  )}{" "}
-                  of {table.getFilteredRowModel().rows.length} entries
+              <div className="flex items-center justify-between border-t px-6 py-4">
+                <div className="text-muted-foreground text-sm">
+                  Showing {showingFrom} to {showingTo} of {totalFiltered}{' '}
+                  entries
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button
@@ -291,5 +274,5 @@ export function OrganizationManagement() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

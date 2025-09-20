@@ -6,8 +6,8 @@ import {
   GraduationCap,
   ChevronDown,
   ChevronRight,
-  User,
   X,
+  LogOut as LogoutIcon,
 } from 'lucide-react';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import {
@@ -93,7 +93,7 @@ export function DashboardSidebar({
   onClose,
 }: DashboardSidebarProps) {
   const pathname = useLocation().pathname;
-  const { user, current_org_id, getCurrentOrganization } = useAuth();
+  const { user, current_org_id, getCurrentOrganization, logout } = useAuth();
   const userRole = user?.user_role || 'user';
 
   // Zustand store for sidebar state
@@ -109,12 +109,28 @@ export function DashboardSidebar({
     }
     return null;
   }, [user, current_org_id, getCurrentOrganization]);
-  const filteredNavItems = DASHBOARD_SIDEBAR_NAV_LINKS.filter((item) =>
-    currentOrgRole
-      ? item.orgRole.includes(currentOrgRole) &&
-        item.systemRole.includes(userRole!)
-      : item.systemRole.includes(userRole!),
-  );
+  const filteredNavItems = DASHBOARD_SIDEBAR_NAV_LINKS.filter((item) => {
+    // return currentOrgRole
+    //   ? item.orgRole.includes(currentOrgRole) &&
+    //     item.systemRole.includes(userRole!)
+    //   : item.systemRole.includes(userRole!)
+    if (currentOrgRole) {
+      console.log(
+        `[DashboardSidebar-Org] currentOrgRole: ${currentOrgRole}, userRole: ${userRole}, href: ${item.href}`,
+      );
+
+      return (
+        item.orgRole.includes(currentOrgRole) &&
+        item.systemRole.includes(userRole!) &&
+        item.orgRole.length > 0
+      );
+    } else {
+      console.log(
+        `[DashboardSidebar-Sys] currentOrgRole: ${currentOrgRole}, userRole: ${userRole}, href: ${item.href}`,
+      );
+      return item.systemRole.includes(userRole!) && !item.requiresOrg;
+    }
+  });
 
   // Get main navigation items (excluding bottom section items)
   const mainNavItems = filteredNavItems.filter(
@@ -145,7 +161,7 @@ export function DashboardSidebar({
     if (parentSections.length > 0) {
       autoExpandActiveSections(parentSections, pathname);
     }
-  }, [pathname]);
+  }, [pathname, autoExpandActiveSections, mainNavItems]);
 
   // Only show collapsed version on desktop when collapsed is true
   if (collapsed) {
@@ -400,8 +416,14 @@ export function DashboardSidebar({
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
+            <DropdownMenuItem
+              onSelect={(event) => {
+                event.preventDefault();
+                logout();
+              }}
+              className="text-destructive"
+            >
+              <LogoutIcon className="mr-2 h-4 w-4" />
               <span>Log out</span>
             </DropdownMenuItem>
           </DropdownMenuContent>

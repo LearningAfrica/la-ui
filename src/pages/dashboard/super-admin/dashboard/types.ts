@@ -1,15 +1,21 @@
 export type InquiryStatus = 'pending' | 'approved' | 'rejected';
 
-export type InquiryPriority = 'high' | 'medium' | 'low';
-
 export interface Inquiry {
-  first_name: string;
-  last_name: string;
-  contact_email: string;
+  id: number;
+  user: {
+    id: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+  };
   company_name: string;
   company_description: string;
   company_category: string;
   company_size: string;
+  reason: string;
+  status: InquiryStatus;
+  created_at: string;
+  reviewed_at: null | string;
 }
 
 export type OrganizationStatus = 'active' | 'inactive' | 'pending';
@@ -17,21 +23,8 @@ export type OrganizationStatus = 'active' | 'inactive' | 'pending';
 export interface Organization {
   id: string;
   name: string;
-  type: string;
-  contactName: string;
-  contactTitle: string;
-  contactEmail: string;
-  contactPhone?: string;
-  industry: string;
-  size: string;
-  activeProjects: number;
-  revenue: number;
-  status: OrganizationStatus;
-  location: string;
-  website?: string;
-  partnershipDate: string;
-  services: string[];
   description: string;
+  logo_url: string;
 }
 
 export interface Analytics {

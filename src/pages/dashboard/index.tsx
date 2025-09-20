@@ -8,25 +8,37 @@ import ErrorPage from '@/components/error/error-page';
 import DashboardNotFoundPage from '@/components/error/dashboard-not-found-page';
 import { dashboardCommonRoutes } from './common';
 import { superAdminRouter } from './super-admin';
+import { ProtectedRoute } from '@/router/guards/protected-route';
+import { DashboardAccessGuard } from '@/router/guards/dashboard-access-guard';
 
 const DashboardPage = lazy(() => import('@/pages/dashboard/dashboard-page'));
 export const dashboardRouter: RouteObject = {
   path: '/dashboard',
-  element: <DashboardLayout />,
+  element: <ProtectedRoute />,
   errorElement: <ErrorPage />,
   children: [
     {
-      index: true,
-      element: <DashboardPage />,
-    },
-    ...dashboardCommonRoutes,
-    ...studentRouter,
-    ...instructorRouter,
-    ...adminRouter,
-    ...superAdminRouter,
-    {
-      path: '*',
-      element: <DashboardNotFoundPage />,
+      element: <DashboardAccessGuard />,
+      children: [
+        {
+          element: <DashboardLayout />,
+          children: [
+            {
+              index: true,
+              element: <DashboardPage />,
+            },
+            ...dashboardCommonRoutes,
+            ...studentRouter,
+            ...instructorRouter,
+            ...adminRouter,
+            ...superAdminRouter,
+            {
+              path: '*',
+              element: <DashboardNotFoundPage />,
+            },
+          ],
+        },
+      ],
     },
   ],
 };

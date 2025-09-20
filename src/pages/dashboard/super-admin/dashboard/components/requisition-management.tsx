@@ -32,7 +32,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import {
-  AlertTriangle,
   CheckCircle,
   ChevronLeft,
   ChevronRight,
@@ -52,7 +51,6 @@ export function RequisitionManagement() {
   const [globalFilter, setGlobalFilter] = useState('');
   const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({});
   const [statusFilter, setStatusFilter] = useState('all');
-  const [priorityFilter, setPriorityFilter] = useState('all');
   const queryClient = useQueryClient();
   const api = useApiClient();
   const bulkUpdateMutation = useMutation({
@@ -78,9 +76,7 @@ export function RequisitionManagement() {
   const filteredInquiries = inquiries.filter((inquiry) => {
     const matchesStatus =
       statusFilter === 'all' || inquiry.status === statusFilter;
-    const matchesPriority =
-      priorityFilter === 'all' || inquiry.priority === priorityFilter;
-    return matchesStatus && matchesPriority;
+    return matchesStatus;
   });
 
   const table = useReactTable({
@@ -136,13 +132,9 @@ export function RequisitionManagement() {
   const rejectedCount = inquiries.filter(
     (item) => item.status === 'rejected',
   ).length;
-  const highPriorityCount = inquiries.filter(
-    (item) => item.priority === 'high',
-  ).length;
-
   return (
     <div className="space-y-6">
-      <div className="grid gap-6 md:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-3">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -185,7 +177,7 @@ export function RequisitionManagement() {
           </CardContent>
         </Card>
 
-        <Card>
+        {/* <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -197,7 +189,7 @@ export function RequisitionManagement() {
               <AlertTriangle className="h-8 w-8 text-red-600" />
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
 
       <Card>
@@ -224,17 +216,6 @@ export function RequisitionManagement() {
                   <SelectItem value="pending">Pending</SelectItem>
                   <SelectItem value="approved">Approved</SelectItem>
                   <SelectItem value="rejected">Rejected</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="Priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Priority</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="low">Low</SelectItem>
                 </SelectContent>
               </Select>
             </div>
