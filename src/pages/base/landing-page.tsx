@@ -1,363 +1,661 @@
-import { Button } from '@/components/ui/button';
+import type { LucideIcon } from 'lucide-react';
+import {
+  ArrowRight,
+  BarChart3,
+  CheckCircle2,
+  GraduationCap,
+  Layers,
+  Play,
+  Quote,
+  Rocket,
+  ShieldCheck,
+  Sparkles,
+  Users,
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
-import {  ArrowRight, CheckCircle, Cpu, Rocket, Star, Target, Users, Zap } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+import { Header } from '@/components/header';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+
+const stats = [
+  { label: 'Organizations empowered', value: '500+' },
+  { label: 'Learner satisfaction rate', value: '98%' },
+  { label: 'Time-to-launch acceleration', value: '4x faster' },
+];
+
+const heroHighlights = [
+  'Adaptive learning journeys shaped around your teams',
+  'Immersive, on-brand content crafted by specialist studios',
+  'Evidence-backed analytics that prove ROI to leadership',
+];
+
+const demoHighlights = [
+  'Preview how our inquiry-to-launch framework aligns stakeholders in weeks, not months.',
+  'See the creative production workflow that keeps every deliverable on-brand and on-budget.',
+  'Understand the analytics command centre leaders use to track adoption and ROI in real time.',
+];
+
+const differentiators = [
+  {
+    title: 'Embedded partnership',
+    description:
+      'We co-create with your stakeholders from discovery to delivery, translating ambition into actionable learning strategy.',
+    icon: Users,
+  },
+  {
+    title: 'Design grounded in evidence',
+    description:
+      'Our multidisciplinary studios blend pedagogy, storytelling, and technology to craft experiences learners love.',
+    icon: ShieldCheck,
+  },
+  {
+    title: 'Impact you can measure',
+    description:
+      'Live dashboards transform learner behaviour into insights the C-suite can act on, ensuring every initiative lands.',
+    icon: BarChart3,
+  },
+];
+
+type Service = {
+  title: string;
+  description: string;
+  highlights: string[];
+  icon: LucideIcon;
+};
+
+const services: Service[] = [
+  {
+    title: 'Curriculum Architecture',
+    description: 'Strategic blueprints that map competencies to measurable outcomes.',
+    highlights: [
+      'Needs analysis & vision workshops',
+      'Modular, mastery-based journeys',
+      'Embedded assessment strategy',
+    ],
+    icon: Layers,
+  },
+  {
+    title: 'Immersive Content Studios',
+    description: 'High-production storytelling, interactive media, and on-brand assets.',
+    highlights: [
+      'Video, audio, and motion design',
+      'Scenario-based simulations',
+      'Inclusive & accessible design',
+    ],
+    icon: Sparkles,
+  },
+  {
+    title: 'Learning Operations',
+    description: 'Seamless implementation and governance across your ecosystem.',
+    highlights: [
+      'LMS configuration & automation',
+      'Facilitator enablement suites',
+      'Performance dashboards',
+    ],
+    icon: ShieldCheck,
+  },
+  {
+    title: 'Community & Facilitation',
+    description: 'Human-centred activations that sustain engagement.',
+    highlights: [
+      'Instructor playbooks & scripts',
+      'Engagement nudges & comms',
+      'Peer learning activations',
+    ],
+    icon: Users,
+  },
+  {
+    title: 'Assessment Intelligence',
+    description: 'Data-informed evaluation to evidence progress and retention.',
+    highlights: [
+      'Diagnostics & benchmarking',
+      'Adaptive check-ins & surveys',
+      'Executive-ready insights',
+    ],
+    icon: BarChart3,
+  },
+  {
+    title: 'Strategic Advisory',
+    description: 'Ongoing guidance from leaders who understand your context.',
+    highlights: [
+      'Operating model design',
+      'Capability build & training',
+      'Optimisation sprints',
+    ],
+    icon: GraduationCap,
+  },
+];
+
+const processSteps = [
+  {
+    title: 'Discover & Align',
+    summary: 'Deep dive workshops to clarify ambition and success metrics.',
+    detail: 'We listen, audit, and align to co-create a bold yet achievable vision for your learners.',
+  },
+  {
+    title: 'Co-Design & Prototype',
+    summary: 'Experience design led by pedagogy, creativity, and data.',
+    detail: 'Rapid prototyping sessions give stakeholders confidence and space to iterate early.',
+  },
+  {
+    title: 'Produce & Orchestrate',
+    summary: 'Studios, SMEs, and technologists bring the blueprint to life.',
+    detail: 'From narrative scripts to platform automation, every asset is crafted and stress-tested.',
+  },
+  {
+    title: 'Launch & Elevate',
+    summary: 'Roll-out support with analytics that illuminate adoption and impact.',
+    detail: 'We monitor, optimise, and coach your teams so programmes scale with integrity.',
+  },
+];
+
+const testimonials = [
+  {
+    quote:
+      'Learning Africa transformed our employee training. Engagement lifted by 60% and our leadership finally has clarity on impact.',
+    name: 'Sarah Johnson',
+    role: 'HR Director',
+    company: 'TechCorp Solutions',
+  },
+  {
+    quote:
+      'Their collaborative approach and attention to detail exceeded expectations. Our members can feel the craftsmanship in every module.',
+    name: 'Michael Chen',
+    role: 'Learning & Development Manager',
+    company: 'Global Finance Inc.',
+  },
+  {
+    quote:
+      'Professional, efficient, and relentlessly strategic. We launched a world-class academy in record time with measurable results.',
+    name: 'Emily Rodriguez',
+    role: 'Chief Operations Officer',
+    company: 'Healthcare Partners',
+  },
+];
+
+const trustedBy = [
+  'TechCorp Solutions',
+  'Global Finance Inc.',
+  'Healthcare Partners',
+  'EduFuture Africa',
+];
 
 export default function LandingPage() {
   return (
-  <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Header */}
-      <header className="border-b bg-card/80 backdrop-blur-md sticky top-0 z-50 rounded-2xl border border-border/50">
-        <div className="container mx-auto px-4 py-4">
-          <nav className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 hover:scale-105 transition-transform">
-              <Zap className="h-8 w-8 text-primary animate-pulse" />
-              <span className="text-xl font-bold text-primary">Learning Africa</span>
-            </div>
-            <div className="hidden md:flex items-center space-x-6">
-              <Link to="#about" className="text-muted-foreground hover:text-primary transition-all duration-300">
-                About
-              </Link>
-              <Link to="#services" className="text-muted-foreground hover:text-primary transition-all duration-300">
-                Services
-              </Link>
-              <Link
-                to="/login"
-                className="text-muted-foreground hover:text-primary transition-all duration-300"
-              >
-                Login
-              </Link>
-              <Link to="/inquiry">
-                <Button className="bg-primary hover:bg-primary/90 hover:scale-105 transition-transform shadow-lg hover:shadow-xl">
-                  <Rocket className="mr-2 h-4 w-4" />
-                  Get Started
-                </Button>
-              </Link>
-            </div>
-            <div className="md:hidden">
-              <Link to="/inquiry">
-                <Button size="sm" className="bg-primary hover:bg-primary/90">
-                  Start
-                </Button>
-              </Link>
-            </div>
-          </nav>
-        </div>
-      </header>
+    <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -top-40 left-1/2 h-[36rem] w-[36rem] -translate-x-1/2 rounded-full bg-primary/25 blur-3xl" />
+        <div className="absolute bottom-0 right-0 h-[32rem] w-[32rem] translate-x-1/3 bg-secondary/20 blur-3xl" />
+        <div className="absolute -bottom-40 left-0 h-[28rem] w-[28rem] -translate-x-1/2 bg-muted/30 blur-3xl" />
+      </div>
 
-      {/* Hero Section */}
-      <section className="relative py-20 lg:py-32 overflow-hidden">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-secondary/10 rounded-full blur-3xl animate-pulse"></div>
+      <Header
+        variant="marketing"
+        navItems={[
+          { label: 'About', href: '#about' },
+          { label: 'Services', href: '#services' },
+          { label: 'Demo', href: '#demo' },
+          { label: 'Approach', href: '#process' },
+          { label: 'Impact', href: '#testimonials' },
+          { label: 'Contact', href: '#contact' },
+        ]}
+        cta={{ label: 'Start an Inquiry', href: '/inquiry' }}
+      />
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center animate-fade-in">
-            <Badge
-              variant="secondary"
-              className="mb-6 bg-secondary/20 text-secondary border-secondary/30 backdrop-blur-sm px-6 py-2 rounded-full"
-            >
-              <Cpu className="w-4 h-4 mr-2" />
-              Trusted by 500+ Organizations
-            </Badge>
-
-            <h1 className="text-4xl lg:text-7xl font-bold mb-6 text-balance leading-tight">
-              Empowering Learning Through <span className="text-primary relative">Innovation</span>
-            </h1>
-
-            <p className="text-xl lg:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto text-pretty leading-relaxed">
-              We help organizations create exceptional learning materials that engage, educate, and inspire their
-              members to achieve their full potential through cutting-edge technology.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Link to="/inquiry">
-                <Button
-                  size="lg"
-                  className="bg-primary hover:bg-primary/90 hover:scale-105 transition-transform text-lg px-8 py-4"
+      <main className="relative">
+        <section className="pt-16 pb-24 md:pt-24 md:pb-32 lg:pb-36">
+          <div className="container mx-auto px-4">
+            <div className="grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-center">
+              <div className="space-y-10">
+                <Badge
+                  variant="outline"
+                  className="inline-flex items-center gap-2 rounded-full border-primary/40 bg-primary/10 px-4 py-2 text-sm font-medium text-primary backdrop-blur"
                 >
-                  <Rocket className="mr-2 h-5 w-5" />
-                  Start Your Journey
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-2 border-primary/30 hover:border-primary/60 bg-background/50 backdrop-blur-sm text-lg px-8 py-4 hover:bg-primary/5 transition-all duration-300"
-              >
-                Learn More
-              </Button>
+                  <Sparkles className="h-4 w-4" />
+                  Learning experiences reimagined
+                </Badge>
+
+                <div className="space-y-6">
+                  <h1 className="text-balance text-4xl font-semibold tracking-tight md:text-5xl lg:text-6xl">
+                    Crafting high-impact learning ecosystems for the organisations building Africa&apos;s future
+                  </h1>
+                  <p className="max-w-2xl text-lg text-muted-foreground md:text-xl">
+                    Learning Africa partners with ambitious teams to design, produce, and operationalise premium learning journeys that energise talent and move the metrics that matter.
+                  </p>
+                </div>
+
+                <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+                  <Button size="lg" asChild className="gap-2 px-8 py-6 text-base shadow-lg shadow-primary/20">
+                    <Link to="/inquiry">
+                      <Rocket className="h-5 w-5" />
+                      Start an Inquiry
+                      <ArrowRight className="h-5 w-5" />
+                    </Link>
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    asChild
+                    className="border-primary/30 bg-background/80 px-8 py-6 text-base backdrop-blur hover:bg-primary/10"
+                  >
+                    <a href="#services">Explore services</a>
+                  </Button>
+                </div>
+
+                <div className="space-y-6">
+                  <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
+                    {stats.map((stat) => (
+                      <div key={stat.label} className="min-w-[10rem] rounded-2xl border border-border/60 bg-background/80 px-6 py-4 backdrop-blur">
+                        <div className="text-2xl font-semibold text-primary">{stat.value}</div>
+                        <div className="mt-1 text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                          {stat.label}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="space-y-3 text-sm text-muted-foreground">
+                    {heroHighlights.map((highlight) => (
+                      <div key={highlight} className="flex items-start gap-3">
+                        <div className="mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary/15 text-primary">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                        </div>
+                        <p className="max-w-xl text-pretty">{highlight}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground/80">
+                      Trusted by teams across the continent
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-x-8 gap-y-3 text-sm font-medium text-muted-foreground/90">
+                      {trustedBy.map((partner) => (
+                        <span key={partner} className="whitespace-nowrap">
+                          {partner}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative">
+                <div className="absolute inset-x-8 -top-12 -z-10 h-40 rounded-full bg-primary/20 blur-3xl" />
+                <Card className="overflow-hidden border-border/50 bg-background/80 backdrop-blur">
+                  <CardHeader className="gap-3">
+                    <div className="flex items-center gap-3 text-primary">
+                      <div className="rounded-full bg-primary/15 p-3">
+                        <GraduationCap className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <p className="text-sm uppercase tracking-[0.25em] text-muted-foreground">
+                          Signature engagements
+                        </p>
+                        <CardTitle className="text-xl">Enterprise Learning Accelerators</CardTitle>
+                      </div>
+                    </div>
+                    <CardDescription className="text-pretty">
+                      Cohort-based, hybrid, or self-paced programmes engineered with precision—from instructional design to automation and analytics.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="space-y-4">
+                      {heroHighlights.map((highlight) => (
+                        <div key={`feature-${highlight}`} className="flex gap-3 rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-4">
+                          <div className="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
+                            <CheckCircle2 className="h-4 w-4" />
+                          </div>
+                          <p className="text-sm text-muted-foreground text-pretty">{highlight}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="rounded-3xl border border-primary/40 bg-primary/10 p-6 text-primary-foreground">
+                      <p className="text-xs font-medium uppercase tracking-[0.35em] text-primary/80">
+                        Most requested package
+                      </p>
+                      <p className="mt-3 text-lg font-semibold text-primary">
+                        Launch-ready microlearning series in just 6 weeks
+                      </p>
+                      <p className="mt-2 text-sm text-primary/80">
+                        Strategy, creative production, change enablement, and performance analytics included.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* About Section */}
-      <section id="about" className="py-20 bg-muted/20 relative">
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl lg:text-5xl font-bold mb-6 text-primary">Why Organizations Choose Us</h2>
-            <p className="text-lg lg:text-xl text-muted-foreground text-pretty leading-relaxed">
-              With over a decade of experience in educational content development, we understand what makes learning
-              materials truly effective in the digital age.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <Card className="text-center group hover:scale-105 transition-all duration-300 border-border/50 backdrop-blur-sm bg-card/50">
-              <CardHeader>
-                <div className="mx-auto w-16 h-16 bg-secondary/20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <Target className="h-8 w-8 text-primary" />
+        <section id="demo" className="relative py-20">
+          <div className="absolute inset-x-0 top-1/2 -z-10 h-[38rem] -translate-y-1/2 bg-gradient-to-r from-primary/10 via-background to-secondary/10 blur-3xl" />
+          <div className="container mx-auto px-4">
+            <div className="grid gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center">
+              <div className="space-y-8">
+                <Badge
+                  variant="outline"
+                  className="inline-flex items-center gap-2 rounded-full border-primary/40 bg-primary/10 px-4 py-1 text-sm font-medium text-primary backdrop-blur"
+                >
+                  Immersive preview
+                </Badge>
+                <div className="space-y-4">
+                  <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+                    Experience a client onboarding in under three minutes
+                  </h2>
+                  <p className="max-w-xl text-lg text-muted-foreground">
+                    This guided tour reveals how Learning Africa designs, produces, and launches learning ecosystems that stay ahead of stakeholder expectations.
+                  </p>
                 </div>
-                <CardTitle className="text-xl lg:text-2xl">Expert Guidance</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-muted-foreground text-base leading-relaxed">
-                  Our team of learning specialists brings years of experience in curriculum design and educational
-                  psychology, enhanced by AI-driven insights.
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center group hover:scale-105 transition-all duration-300 border-border/50 backdrop-blur-sm bg-card/50">
-              <CardHeader>
-                <div className="mx-auto w-16 h-16 bg-secondary/20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <Users className="h-8 w-8 text-primary" />
+                <div className="space-y-3 text-sm text-muted-foreground">
+                  {demoHighlights.map((highlight) => (
+                    <div key={highlight} className="flex items-start gap-3">
+                      <div className="mt-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary/15 text-primary">
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                      </div>
+                      <span className="text-pretty">{highlight}</span>
+                    </div>
+                  ))}
                 </div>
-                <CardTitle className="text-xl lg:text-2xl">Collaborative Process</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-muted-foreground text-base leading-relaxed">
-                  We work closely with your team using advanced collaboration tools to ensure the learning materials
-                  align perfectly with your organization's goals.
-                </CardDescription>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center group hover:scale-105 transition-all duration-300 border-border/50 backdrop-blur-sm bg-card/50">
-              <CardHeader>
-                <div className="mx-auto w-16 h-16 bg-secondary/20 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <CheckCircle className="h-8 w-8 text-primary" />
+                <div className="flex flex-wrap gap-4">
+                  <Button asChild size="lg" className="gap-2 px-7 py-5 text-base shadow-lg shadow-primary/20">
+                    <Link to="/inquiry">
+                      Continue to inquiry
+                      <ArrowRight className="h-5 w-5" />
+                    </Link>
+                  </Button>
+                  <Button variant="outline" size="lg" asChild className="border-primary/30 px-7 py-5 text-base">
+                    <a href="#contact">Talk to our team</a>
+                  </Button>
                 </div>
-                <CardTitle className="text-xl lg:text-2xl">Proven Results</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-muted-foreground text-base leading-relaxed">
-                  Our materials have helped organizations achieve 40% higher engagement rates and improved learning
-                  outcomes through data-driven optimization.
-                </CardDescription>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Services Section */}
-      <section id="services" className="py-20 relative">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl lg:text-5xl font-bold mb-6 text-primary">Our Services</h2>
-            <p className="text-lg lg:text-xl text-muted-foreground text-pretty leading-relaxed">
-              Comprehensive learning material development tailored to your organization's unique needs using
-              cutting-edge technology.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {[
-              {
-                title: "Curriculum Development",
-                description: "Custom learning paths designed to meet your specific objectives and learner needs.",
-                features: ["Learning objectives mapping", "Progressive skill building", "Assessment integration"],
-              },
-              {
-                title: "Interactive Content Creation",
-                description: "Engaging multimedia content that keeps learners motivated and involved.",
-                features: ["Video production", "Interactive simulations", "Gamification elements"],
-              },
-              {
-                title: "Training Program Design",
-                description: "Comprehensive training programs for employee development and skill enhancement.",
-                features: ["Onboarding programs", "Leadership development", "Technical skill training"],
-              },
-              {
-                title: "Assessment & Evaluation",
-                description: "Robust assessment tools to measure learning effectiveness and progress.",
-                features: ["Knowledge checks", "Performance metrics", "Progress tracking"],
-              },
-              {
-                title: "Learning Management",
-                description: "Complete LMS setup and management for seamless learning delivery.",
-                features: ["Platform setup", "User management", "Analytics & reporting"],
-              },
-              {
-                title: "Consultation Services",
-                description: "Expert advice on learning strategy and educational best practices.",
-                features: ["Learning audits", "Strategy development", "Implementation support"],
-              },
-            ].map((service, index) => (
-              <Card
-                key={index}
-                className="group hover:scale-105 transition-all duration-300 border-border/50 backdrop-blur-sm bg-card/50"
-              >
-                <CardHeader>
-                  <CardTitle className="text-lg lg:text-xl group-hover:text-primary transition-colors duration-300">
-                    {service.title}
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground leading-relaxed">
-                    {service.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ul className="space-y-3">
-                    {service.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-center text-sm text-muted-foreground">
-                        <CheckCircle className="h-4 w-4 text-secondary mr-3 flex-shrink-0 group-hover:text-primary transition-colors duration-300" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section id="testimonials" className="py-20 bg-muted/20 relative">
-        <div className="absolute top-10 right-20 w-80 h-80 bg-secondary/12 rounded-full blur-3xl animate-pulse"></div>
-
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <h2 className="text-3xl lg:text-5xl font-bold mb-6 text-primary">What Our Partners Say</h2>
-            <p className="text-lg lg:text-xl text-muted-foreground text-pretty leading-relaxed">
-              Hear from organizations that have transformed their learning programs with our innovative approach.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {[
-              {
-                quote:
-                  "Learning Africa transformed our employee training program. The engagement rates increased by 60% and our team retention improved significantly.",
-                author: "Sarah Johnson",
-                role: "HR Director",
-                company: "TechCorp Solutions",
-              },
-              {
-                quote:
-                  "The collaborative approach and attention to detail exceeded our expectations. Our members love the new learning materials.",
-                author: "Michael Chen",
-                role: "Learning & Development Manager",
-                company: "Global Finance Inc.",
-              },
-              {
-                quote:
-                  "Professional, efficient, and results-driven. Learning Africa helped us create a world-class training program that our competitors envy.",
-                author: "Emily Rodriguez",
-                role: "Chief Operations Officer",
-                company: "Healthcare Partners",
-              },
-            ].map((testimonial, index) => (
-              <Card
-                key={index}
-                className="group hover:scale-105 transition-all duration-300 border-border/50 backdrop-blur-sm bg-card/50"
-              >
-                <CardContent className="pt-6">
-                  <div className="flex mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-secondary text-secondary transition-all duration-300" />
-                    ))}
-                  </div>
-                  <blockquote className="text-muted-foreground mb-6 text-pretty leading-relaxed text-base">
-                    "{testimonial.quote}"
-                  </blockquote>
-                  <div className="border-t border-border/50 pt-4">
-                    <div className="font-semibold text-foreground text-lg">{testimonial.author}</div>
-                    <div className="text-sm text-primary">{testimonial.role}</div>
-                    <div className="text-sm text-muted-foreground">{testimonial.company}</div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 relative">
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl lg:text-6xl font-bold mb-6 text-balance">
-              Ready to Transform Your <span className="text-primary">Learning Materials?</span>
-            </h2>
-            <p className="text-lg lg:text-xl text-muted-foreground mb-8 text-pretty leading-relaxed max-w-2xl mx-auto">
-              Join hundreds of organizations that have already elevated their learning programs. Submit an inquiry to
-              get started on your transformation journey.
-            </p>
-            <Link to="/inquiry">
-              <Button
-                size="lg"
-                className="bg-primary hover:bg-primary/90 hover:scale-105 transition-transform text-xl px-12 py-6"
-              >
-                <Rocket className="mr-3 h-6 w-6" />
-                Submit Inquiry
-                <ArrowRight className="ml-3 h-6 w-6" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-muted/30 border-t border-border/50 backdrop-blur-sm relative">
-        <div className="container mx-auto px-4 py-12">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <Zap className="h-6 w-6 text-primary" />
-                <span className="text-lg font-bold text-primary">Learning Africa</span>
               </div>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Empowering organizations through exceptional learning material development and innovative technology
-                solutions.
+
+              <div>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button
+                      type="button"
+                      aria-label="Play Learning Africa demo video"
+                      className="group relative block w-full overflow-hidden rounded-[2rem] border border-border/60 bg-gradient-to-br from-primary/15 via-background to-secondary/15 shadow-xl shadow-primary/15"
+                    >
+                      <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
+                        <div className="absolute inset-0">
+                          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.12),_transparent_60%)]" />
+                          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(12,20,52,0.75),rgba(24,30,68,0.55))] mix-blend-overlay" />
+                          <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 text-center text-primary-foreground">
+                            <div className="relative flex items-center justify-center">
+                              <span className="absolute inline-flex h-36 w-36 rounded-full bg-primary/20 blur-3xl" aria-hidden />
+                              <span className="absolute inline-flex h-24 w-24 rounded-full bg-primary/40 opacity-75 animate-ping" aria-hidden />
+                              <span className="absolute inline-flex h-28 w-28 rounded-full bg-primary/20" aria-hidden />
+                              <span className="relative flex h-20 w-20 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[0_15px_45px_rgba(12,20,52,0.35)] transition-transform duration-300 group-hover:scale-105">
+                                <Play className="h-8 w-8" />
+                              </span>
+                            </div>
+                            <div className="space-y-2 px-6">
+                              <p className="text-lg font-semibold text-white">
+                                Play the demo video
+                              </p>
+                              <p className="text-sm text-white/75">
+                                Discover the lifecycle from inquiry intake to post-launch analytics.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/85 via-background/10 to-transparent p-8 text-left text-sm text-white/80">
+                          <p className="font-medium tracking-wide">Learning Africa Platform Walkthrough</p>
+                          <p className="text-xs uppercase tracking-[0.35em] text-white/60">Duration: 02:42</p>
+                        </div>
+                      </div>
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-5xl overflow-hidden border-border/60 bg-background/95 p-0">
+                    <div className="aspect-video w-full">
+                      <iframe
+                        title="Learning Africa Demo"
+                        src="https://www.youtube.com/embed/5MgBikgcWnY?rel=0"
+                        className="h-full w-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                      />
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="about" className="relative py-20">
+          <div className="container mx-auto px-4">
+            <div className="mx-auto max-w-3xl text-center">
+              <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+                Why organisations choose Learning Africa
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                Our teams blend pedagogy, creative studios, and data science to deliver programmes that delight learners and satisfy the boardroom.
               </p>
             </div>
 
-            <div>
-              <h3 className="font-semibold text-foreground mb-4">Services</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="hover:text-primary transition-colors cursor-pointer">Curriculum Development</li>
-                <li className="hover:text-primary transition-colors cursor-pointer">Content Creation</li>
-                <li className="hover:text-primary transition-colors cursor-pointer">Training Programs</li>
-                <li className="hover:text-primary transition-colors cursor-pointer">Assessment Tools</li>
-              </ul>
+            <div className="mt-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {differentiators.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Card
+                    key={item.title}
+                    className="h-full border-border/60 bg-background/80 transition-transform duration-300 hover:-translate-y-2 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10"
+                  >
+                    <CardHeader className="space-y-4">
+                      <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                        <Icon className="h-6 w-6" />
+                      </div>
+                      <CardTitle className="text-xl">{item.title}</CardTitle>
+                      <CardDescription className="text-pretty text-sm text-muted-foreground">
+                        {item.description}
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section id="services" className="relative bg-muted/30 py-20">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between">
+              <div className="max-w-xl space-y-6">
+                <Badge variant="secondary" className="rounded-full bg-secondary/20 px-4 py-1 text-secondary">
+                  Our services
+                </Badge>
+                <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+                  A full-suite partner from strategy to sustained operations
+                </h2>
+                <p className="text-lg text-muted-foreground">
+                  Engage the capabilities you need, when you need them. We assemble cross-functional squads who embed with your teams and deliver outcomes—not handovers.
+                </p>
+              </div>
+
+              <div className="grid flex-1 gap-6 sm:grid-cols-2">
+                {services.map((service) => {
+                  const Icon = service.icon;
+
+                  return (
+                    <Card key={service.title} className="h-full border-border/60 bg-background/80 backdrop-blur">
+                      <CardHeader className="space-y-3">
+                        <div className="flex items-center gap-3 text-primary">
+                          <div className="rounded-full bg-primary/10 p-2">
+                            <Icon className="h-5 w-5" />
+                          </div>
+                          <CardTitle className="text-lg">{service.title}</CardTitle>
+                        </div>
+                        <CardDescription className="text-sm text-muted-foreground text-pretty">
+                          {service.description}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        {service.highlights.map((highlight) => (
+                          <div key={highlight} className="flex items-start gap-2 text-sm text-muted-foreground">
+                            <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
+                            <span className="text-pretty">{highlight}</span>
+                          </div>
+                        ))}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="process" className="relative py-20">
+          <div className="container mx-auto px-4">
+            <div className="flex flex-col items-start gap-8 md:flex-row md:items-center md:justify-between">
+              <div className="max-w-xl">
+                <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">How we partner with you</h2>
+                <p className="mt-4 text-lg text-muted-foreground">
+                  A transparent, collaborative approach keeps stakeholders aligned and momentum high from day one.
+                </p>
+              </div>
+              <Button variant="outline" asChild className="border-primary/30">
+                <a href="#contact" className="flex items-center gap-2">
+                  Discuss your roadmap
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+              </Button>
             </div>
 
-            <div>
-              <h3 className="font-semibold text-foreground mb-4">Company</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="hover:text-primary transition-colors cursor-pointer">About Us</li>
-                <li className="hover:text-primary transition-colors cursor-pointer">Our Team</li>
-                <li className="hover:text-primary transition-colors cursor-pointer">Case Studies</li>
-                <li className="hover:text-primary transition-colors cursor-pointer">Contact</li>
-              </ul>
+            <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+              {processSteps.map((step, index) => (
+                <Card
+                  key={step.title}
+                  className="relative h-full border-border/60 bg-background/80 px-6 py-8 text-left transition-transform duration-300 hover:-translate-y-2 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10"
+                >
+                  <span className="text-sm font-medium uppercase tracking-[0.3em] text-primary/80">Step {index + 1}</span>
+                  <h3 className="mt-4 text-xl font-semibold text-foreground">{step.title}</h3>
+                  <p className="mt-3 text-sm font-medium text-primary">{step.summary}</p>
+                  <p className="mt-4 text-sm text-muted-foreground text-pretty">{step.detail}</p>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="testimonials" className="relative bg-muted/25 py-20">
+          <div className="container mx-auto px-4">
+            <div className="mx-auto max-w-3xl text-center">
+              <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+                Stories from teams we&apos;ve partnered with
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                From multinationals to agile scale-ups, leaders trust us to deliver learning that elevates performance and pride.
+              </p>
             </div>
 
-            <div>
-              <h3 className="font-semibold text-foreground mb-4">Contact</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="hover:text-primary transition-colors">hello@Learning Africa.com</li>
-                <li className="hover:text-primary transition-colors">+1 (555) 123-4567</li>
-                <li className="hover:text-primary transition-colors">San Francisco, CA</li>
-              </ul>
+            <div className="mt-16 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {testimonials.map((testimonial) => (
+                <Card key={testimonial.name} className="h-full border-border/60 bg-background/85 backdrop-blur">
+                  <CardContent className="flex h-full flex-col gap-6 p-8">
+                    <Quote className="h-8 w-8 text-primary" />
+                    <p className="flex-1 text-sm text-muted-foreground text-pretty">
+                      “{testimonial.quote}”
+                    </p>
+                    <div>
+                      <p className="font-semibold text-foreground">{testimonial.name}</p>
+                      <p className="text-sm text-primary">{testimonial.role}</p>
+                      <p className="text-sm text-muted-foreground">{testimonial.company}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="contact" className="relative py-20">
+          <div className="container mx-auto px-4">
+            <div className="overflow-hidden rounded-3xl border border-primary/40 bg-gradient-to-r from-primary/15 via-background to-secondary/10 p-10 md:p-16">
+              <div className="grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,0.7fr)] md:items-center">
+                <div className="space-y-6">
+                  <Badge variant="outline" className="rounded-full border-primary/50 bg-primary/10 px-4 py-1 text-primary">
+                    Let&apos;s build together
+                  </Badge>
+                  <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+                    Ready to accelerate your learning transformation?
+                  </h2>
+                  <p className="text-lg text-muted-foreground">
+                    Share your goals and we&apos;ll curate a discovery sprint with the right strategists, designers, and technologists to get you moving.
+                  </p>
+                </div>
+                <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center md:justify-end">
+                  <Button size="lg" asChild className="gap-2 px-8 py-6 text-base shadow-lg shadow-primary/25">
+                    <Link to="/inquiry">
+                      Start an Inquiry
+                      <ArrowRight className="h-5 w-5" />
+                    </Link>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    asChild
+                    className="border-primary/40 bg-background/80 px-8 py-6 text-base backdrop-blur hover:bg-primary/10"
+                  >
+                    <a href="mailto:support@learningafrica.com">Email our team</a>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-border/60 bg-background/90">
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div className="space-y-6">
+              <Link to="/" className="flex items-center gap-3">
+                <img src="/la-logo.png" alt="Learning Africa" className="h-10 w-10 rounded-full border border-primary/40" />
+                <span className="text-lg font-semibold">Learning Africa</span>
+              </Link>
+              <p className="max-w-md text-sm text-muted-foreground text-pretty">
+                Empowering organisations through crafted learning experiences that inspire, upskill, and deliver measurable value across the continent.
+              </p>
+              <div className="text-sm text-muted-foreground">
+                <p className="font-semibold text-foreground">Contact</p>
+                <p>support@learningafrica.com</p>
+                <p>+254(7)--------</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-8 text-sm text-muted-foreground sm:grid-cols-3">
+              <div className="space-y-3">
+                <p className="font-semibold text-foreground">Services</p>
+                <a href="#services" className="block hover:text-foreground">Curriculum Architecture</a>
+                <a href="#services" className="block hover:text-foreground">Content Studios</a>
+                <a href="#services" className="block hover:text-foreground">Learning Operations</a>
+                <a href="#services" className="block hover:text-foreground">Advisory</a>
+              </div>
+              <div className="space-y-3">
+                <p className="font-semibold text-foreground">Company</p>
+                <a href="#about" className="block hover:text-foreground">About</a>
+                <a href="#testimonials" className="block hover:text-foreground">Impact</a>
+                <Link to="/login" className="block hover:text-foreground">Client login</Link>
+                <Link to="/inquiry" className="block hover:text-foreground">Start an inquiry</Link>
+              </div>
+              <div className="space-y-3">
+                <p className="font-semibold text-foreground">Resources</p>
+                <a href="#process" className="block hover:text-foreground">Our approach</a>
+                <a href="mailto:support@learningafrica.com" className="block hover:text-foreground">Book a call</a>
+                <a href="#contact" className="block hover:text-foreground">Contact</a>
+              </div>
             </div>
           </div>
 
-          <div className="border-t border-border/50 mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 Learning Africa. All rights reserved. | Powered by Innovation</p>
+          <div className="mt-12 border-t border-border/60 pt-6 text-xs text-muted-foreground/80">
+            <p>&copy; {new Date().getFullYear()} Learning Africa. All rights reserved.</p>
           </div>
         </div>
       </footer>

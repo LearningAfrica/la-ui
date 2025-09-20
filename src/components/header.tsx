@@ -9,7 +9,33 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
 import { useState } from 'react';
 
-export function Header() {
+type HeaderNavItem = {
+  label: string;
+  href: string;
+  external?: boolean;
+};
+
+type HeaderAction = {
+  label: string;
+  href: string;
+  external?: boolean;
+};
+
+export interface HeaderProps {
+  variant?: 'default' | 'marketing';
+  navItems?: HeaderNavItem[];
+  cta?: HeaderAction;
+  secondaryAction?: HeaderAction | null;
+  className?: string;
+}
+
+export function Header({
+  variant = 'default',
+  navItems,
+  cta,
+  secondaryAction,
+  className,
+}: HeaderProps = {}) {
   const pathname = useLocation().pathname;
   const { theme, setTheme } = useTheme();
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
@@ -21,8 +47,63 @@ export function Header() {
   };
   const auth = useAuth();
 
+  const isMarketing = variant === 'marketing';
+  const marketingNavItems = navItems ?? [
+    { label: 'About', href: '#about' },
+    { label: 'Services', href: '#services' },
+    { label: 'Testimonials', href: '#testimonials' },
+  ];
+  const marketingPrimaryAction = cta ?? { label: 'Start Inquiry', href: '/inquiry' };
+  const defaultMarketingSecondary = auth.is_authenticated
+    ? { label: 'Dashboard', href: '/dashboard' }
+    : { label: 'Login', href: '/login' };
+  const marketingSecondaryAction = secondaryAction === null
+    ? null
+    : (secondaryAction ?? defaultMarketingSecondary);
+
+  const renderLink = (
+    link: HeaderNavItem | HeaderAction,
+    linkClassName?: string,
+    key?: string,
+  ) => {
+    const { href, label, external } = link;
+
+    if (external) {
+      return (
+        <a
+          key={key ?? href}
+          href={href}
+          target="_blank"
+          rel="noreferrer"
+          className={linkClassName}
+        >
+          {label}
+        </a>
+      );
+    }
+
+    if (href.startsWith('#')) {
+      return (
+        <a key={key ?? href} href={href} className={linkClassName}>
+          {label}
+        </a>
+      );
+    }
+
+    return (
+      <Link key={key ?? href} to={href} className={linkClassName}>
+        {label}
+      </Link>
+    );
+  };
+
   return (
-    <header className="bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur">
+    <header
+      className={cn(
+        'bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur',
+        className,
+      )}
+    >
       <div className="container mx-auto px-4 flex h-16 items-center justify-between gap-4">
         {/* Left Section - Logo and Mobile Menu */}
         <div className="flex items-center gap-4 min-w-0 flex-1">
@@ -35,121 +116,144 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-full max-w-xs p-6">
-              <nav className="grid gap-6 text-lg font-medium">
-                <Link
-                  to="/"
-                  className={cn(
-                    'hover:text-foreground/80',
-                    isActive('/') ? 'text-foreground' : 'text-foreground/60',
+              {isMarketing ? (
+                <nav className="grid gap-5 text-lg font-medium">
+                  {marketingNavItems.map((item) =>
+                    renderLink(
+                      item,
+                      'text-foreground/70 transition-colors hover:text-foreground',
+                      `${item.href}-${item.label}`,
+                    )
                   )}
-                >
-                  Home
-                </Link>
-                <Link
-                  to="/courses"
-                  className={cn(
-                    'hover:text-foreground/80',
-                    isActive('/courses')
-                      ? 'text-foreground'
-                      : 'text-foreground/60',
-                  )}
-                >
-                  Courses
-                </Link>
-
-                {/* Collapsible Categories Section */}
-                <div className="border-t border-border pt-4">
-                  <button
-                    onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
-                    className="flex items-center justify-between w-full hover:text-foreground/80 text-left"
-                  >
-                    <span className={cn(
-                      isActive('/categories') ? 'text-foreground' : 'text-foreground/60'
-                    )}>
-                      Categories
-                    </span>
-                    {isCategoriesOpen ? (
-                      <ChevronDown className="h-4 w-4" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4" />
+                  {marketingSecondaryAction &&
+                    renderLink(
+                      marketingSecondaryAction,
+                      'text-foreground/70 transition-colors hover:text-foreground',
+                      `${marketingSecondaryAction.href}-${marketingSecondaryAction.label}`,
                     )}
-                  </button>
+                  {renderLink(
+                    marketingPrimaryAction,
+                    'text-primary font-semibold transition-colors hover:text-primary/80',
+                    `${marketingPrimaryAction.href}-${marketingPrimaryAction.label}`,
+                  )}
+                </nav>
+              ) : (
+                <nav className="grid gap-6 text-lg font-medium">
+                  <Link
+                    to="/"
+                    className={cn(
+                      'hover:text-foreground/80',
+                      isActive('/') ? 'text-foreground' : 'text-foreground/60',
+                    )}
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    to="/courses"
+                    className={cn(
+                      'hover:text-foreground/80',
+                      isActive('/courses')
+                        ? 'text-foreground'
+                        : 'text-foreground/60',
+                    )}
+                  >
+                    Courses
+                  </Link>
 
-                  {isCategoriesOpen && (
-                    <div className="mt-3 space-y-2 pl-4">
-                      <Link
-                        to="/categories"
-                        className={cn(
-                          'block hover:text-foreground/80 text-base',
-                          isActive('/categories')
-                            ? 'text-foreground'
-                            : 'text-foreground/60',
-                        )}
-                      >
-                        All Categories
-                      </Link>
-                      <Link
-                        to="/categories/web-development"
-                        className="block hover:text-foreground/80 text-base text-foreground/60"
-                      >
-                        Web Development
-                      </Link>
-                      <Link
-                        to="/categories/mobile-development"
-                        className="block hover:text-foreground/80 text-base text-foreground/60"
-                      >
-                        Mobile Development
-                      </Link>
-                      <Link
-                        to="/categories/data-science"
-                        className="block hover:text-foreground/80 text-base text-foreground/60"
-                      >
-                        Data Science
-                      </Link>
-                      <Link
-                        to="/categories/design"
-                        className="block hover:text-foreground/80 text-base text-foreground/60"
-                      >
-                        Design
-                      </Link>
-                    </div>
-                  )}
-                </div>
+                  {/* Collapsible Categories Section */}
+                  <div className="border-t border-border pt-4">
+                    <button
+                      onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
+                      className="flex items-center justify-between w-full hover:text-foreground/80 text-left"
+                    >
+                      <span className={cn(
+                        isActive('/categories') ? 'text-foreground' : 'text-foreground/60'
+                      )}>
+                        Categories
+                      </span>
+                      {isCategoriesOpen ? (
+                        <ChevronDown className="h-4 w-4" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4" />
+                      )}
+                    </button>
 
-                <Link
-                  to="/instructors"
-                  className={cn(
-                    'hover:text-foreground/80',
-                    isActive('/instructors')
-                      ? 'text-foreground'
-                      : 'text-foreground/60',
-                  )}
-                >
-                  Instructors
-                </Link>
-                <Link
-                  to="/about"
-                  className={cn(
-                    'hover:text-foreground/80',
-                    isActive('/about')
-                      ? 'text-foreground'
-                      : 'text-foreground/60',
-                  )}
-                >
-                  About
-                </Link>
-                <Link
-                  to="/contact"
-                  className={cn(
-                    'hover:text-foreground/80',
-                    isActive('/contact')
-                      ? 'text-foreground'
-                      : 'text-foreground/60',
-                  )}
-                >
-                  Contact
-                </Link>
-              </nav>
+                    {isCategoriesOpen && (
+                      <div className="mt-3 space-y-2 pl-4">
+                        <Link
+                          to="/categories"
+                          className={cn(
+                            'block hover:text-foreground/80 text-base',
+                            isActive('/categories')
+                              ? 'text-foreground'
+                              : 'text-foreground/60',
+                          )}
+                        >
+                          All Categories
+                        </Link>
+                        <Link
+                          to="/categories/web-development"
+                          className="block hover:text-foreground/80 text-base text-foreground/60"
+                        >
+                          Web Development
+                        </Link>
+                        <Link
+                          to="/categories/mobile-development"
+                          className="block hover:text-foreground/80 text-base text-foreground/60"
+                        >
+                          Mobile Development
+                        </Link>
+                        <Link
+                          to="/categories/data-science"
+                          className="block hover:text-foreground/80 text-base text-foreground/60"
+                        >
+                          Data Science
+                        </Link>
+                        <Link
+                          to="/categories/design"
+                          className="block hover:text-foreground/80 text-base text-foreground/60"
+                        >
+                          Design
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+
+                  <Link
+                    to="/instructors"
+                    className={cn(
+                      'hover:text-foreground/80',
+                      isActive('/instructors')
+                        ? 'text-foreground'
+                        : 'text-foreground/60',
+                    )}
+                  >
+                    Instructors
+                  </Link>
+                  <Link
+                    to="/about"
+                    className={cn(
+                      'hover:text-foreground/80',
+                      isActive('/about')
+                        ? 'text-foreground'
+                        : 'text-foreground/60',
+                    )}
+                  >
+                    About
+                  </Link>
+                  <Link
+                    to="/contact"
+                    className={cn(
+                      'hover:text-foreground/80',
+                      isActive('/contact')
+                        ? 'text-foreground'
+                        : 'text-foreground/60',
+                    )}
+                  >
+                    Contact
+                  </Link>
+                </nav>
+              )}
             </SheetContent>
           </Sheet>
 
@@ -172,71 +276,103 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden xl:flex items-center gap-6 ml-8">
-            <Link
-              to="/"
-              className={cn(
-                'hover:text-foreground/80 text-sm font-medium transition-colors whitespace-nowrap',
-                isActive('/') ? 'text-foreground' : 'text-foreground/60',
-              )}
-            >
-              Home
-            </Link>
-            <div className="relative">
-              <MegaMenu />
-            </div>
-            <Link
-              to="/categories"
-              className={cn(
-                'hover:text-foreground/80 text-sm font-medium transition-colors whitespace-nowrap',
-                isActive('/categories')
-                  ? 'text-foreground'
-                  : 'text-foreground/60',
-              )}
-            >
-              Categories
-            </Link>
-            <Link
-              to="/instructors"
-              className={cn(
-                'hover:text-foreground/80 text-sm font-medium transition-colors whitespace-nowrap',
-                isActive('/instructors')
-                  ? 'text-foreground'
-                  : 'text-foreground/60',
-              )}
-            >
-              Instructors
-            </Link>
+          <nav
+            className={cn(
+              'hidden xl:flex items-center',
+              isMarketing ? 'gap-8 ml-6' : 'gap-6 ml-8',
+            )}
+          >
+            {isMarketing
+              ? marketingNavItems.map((item) => {
+                  const navClass = cn(
+                    'text-sm font-medium transition-colors whitespace-nowrap',
+                    item.href.startsWith('#')
+                      ? 'text-foreground/70 hover:text-foreground'
+                      : isActive(item.href)
+                        ? 'text-foreground'
+                        : 'text-foreground/60 hover:text-foreground',
+                  );
+
+                  return renderLink(
+                    item,
+                    navClass,
+                    `desktop-${item.href}-${item.label}`,
+                  );
+                })
+              : (
+                <>
+                  <Link
+                    to="/"
+                    className={cn(
+                      'hover:text-foreground/80 text-sm font-medium transition-colors whitespace-nowrap',
+                      isActive('/') ? 'text-foreground' : 'text-foreground/60',
+                    )}
+                  >
+                    Home
+                  </Link>
+                  <div className="relative">
+                    <MegaMenu />
+                  </div>
+                  <Link
+                    to="/categories"
+                    className={cn(
+                      'hover:text-foreground/80 text-sm font-medium transition-colors whitespace-nowrap',
+                      isActive('/categories')
+                        ? 'text-foreground'
+                        : 'text-foreground/60',
+                    )}
+                  >
+                    Categories
+                  </Link>
+                  <Link
+                    to="/instructors"
+                    className={cn(
+                      'hover:text-foreground/80 text-sm font-medium transition-colors whitespace-nowrap',
+                      isActive('/instructors')
+                        ? 'text-foreground'
+                        : 'text-foreground/60',
+                    )}
+                  >
+                    Instructors
+                  </Link>
+                </>
+                )}
           </nav>
         </div>
 
         {/* Center Section - Search (Desktop) */}
-        <div className="hidden xl:block flex-1 max-w-md mx-8">
-          <form>
-            <div className="relative">
-              <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
-              <Input
-                type="search"
-                placeholder="Search courses..."
-                className="bg-background w-full pl-8"
-              />
-            </div>
-          </form>
-        </div>
+        {!isMarketing && (
+          <div className="hidden xl:block flex-1 max-w-md mx-8">
+            <form>
+              <div className="relative">
+                <Search className="text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4" />
+                <Input
+                  type="search"
+                  placeholder="Search courses..."
+                  className="bg-background w-full pl-8"
+                />
+              </div>
+            </form>
+          </div>
+        )}
 
         {/* Right Section - Actions */}
         <div className="flex items-center gap-2 flex-shrink-0">
-          {/* Search (Mobile/Tablet) */}
-          <Button variant="ghost" size="icon" className="xl:hidden">
-            <Search className="h-5 w-5" />
-            <span className="sr-only">Search</span>
-          </Button>
+          {!isMarketing && (
+            <>
+              {/* Search (Mobile/Tablet) */}
+              <Button variant="ghost" size="icon" className="xl:hidden">
+                <Search className="h-5 w-5" />
+                <span className="sr-only">Search</span>
+              </Button>
 
-          {/* Cart */}
-          <Button variant="ghost" size="icon" className="text-foreground/60">
-            <ShoppingCart className="h-5 w-5" />
-            <span className="sr-only">Shopping cart</span>
-          </Button>
+              {/* Cart */}
+              <Button variant="ghost" size="icon" className="text-foreground/60">
+                <ShoppingCart className="h-5 w-5" />
+                <span className="sr-only">Shopping cart</span>
+              </Button>
+            </>
+          )}
 
           {/* Theme Toggle */}
           <Button
@@ -279,45 +415,84 @@ export function Header() {
             )}
           </Button>
 
-          {/* Auth Button */}
-          <Button variant="outline" size="sm" asChild className="hidden sm:flex">
-            {auth.is_authenticated ? (
-              <>
+          {isMarketing ? (
+            <>
+              {marketingSecondaryAction && (
                 <Button
-                  type="button"
-                  variant="destructive"
-                  onClick={() => auth.logout()}
-                  className="hidden"
+                  variant="ghost"
+                  size="sm"
+                  asChild
+                  className="hidden sm:inline-flex text-sm font-medium text-foreground/70 hover:text-foreground"
                 >
-                  Logout
+                  {renderLink(
+                    marketingSecondaryAction,
+                    undefined,
+                    `secondary-${marketingSecondaryAction.href}-${marketingSecondaryAction.label}`,
+                  )}
                 </Button>
-                <Link to="/dashboard" className="flex items-center">
-                  <User className="mr-2 h-4 w-4" />
-                  <span className="hidden md:inline">Dashboard</span>
-                </Link>
-              </>
-            ) : (
-              <Link to="/login">
-                <User className="mr-2 h-4 w-4" />
-                <span className="hidden md:inline">Login</span>
-              </Link>
-            )}
-          </Button>
+              )}
+              <Button
+                size="sm"
+                asChild
+                className="hidden sm:inline-flex bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                {renderLink(
+                  marketingPrimaryAction,
+                  undefined,
+                  `cta-${marketingPrimaryAction.href}-${marketingPrimaryAction.label}`,
+                )}
+              </Button>
+              <Button variant="default" size="icon" asChild className="sm:hidden">
+                {renderLink(
+                  marketingPrimaryAction,
+                  undefined,
+                  `cta-mobile-${marketingPrimaryAction.href}-${marketingPrimaryAction.label}`,
+                )}
+              </Button>
+            </>
+          ) : (
+            <>
+              {/* Auth Button */}
+              <Button variant="outline" size="sm" asChild className="hidden sm:flex">
+                {auth.is_authenticated ? (
+                  <>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      onClick={() => auth.logout()}
+                      className="hidden"
+                    >
+                      Logout
+                    </Button>
+                    <Link to="/dashboard" className="flex items-center">
+                      <User className="mr-2 h-4 w-4" />
+                      <span className="hidden md:inline">Dashboard</span>
+                    </Link>
+                  </>
+                ) : (
+                  <Link to="/login">
+                    <User className="mr-2 h-4 w-4" />
+                    <span className="hidden md:inline">Login</span>
+                  </Link>
+                )}
+              </Button>
 
-          {/* Mobile Auth Button */}
-          <Button variant="outline" size="icon" asChild className="sm:hidden">
-            {auth.is_authenticated ? (
-              <Link to="/dashboard">
-                <User className="h-4 w-4" />
-                <span className="sr-only">Dashboard</span>
-              </Link>
-            ) : (
-              <Link to="/login">
-                <User className="h-4 w-4" />
-                <span className="sr-only">Login</span>
-              </Link>
-            )}
-          </Button>
+              {/* Mobile Auth Button */}
+              <Button variant="outline" size="icon" asChild className="sm:hidden">
+                {auth.is_authenticated ? (
+                  <Link to="/dashboard">
+                    <User className="h-4 w-4" />
+                    <span className="sr-only">Dashboard</span>
+                  </Link>
+                ) : (
+                  <Link to="/login">
+                    <User className="h-4 w-4" />
+                    <span className="sr-only">Login</span>
+                  </Link>
+                )}
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

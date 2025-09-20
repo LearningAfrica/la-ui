@@ -1,119 +1,181 @@
-import { Link } from "react-router-dom";
-import { BookOpen, CheckCircle, Home, Mail } from "lucide-react";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import {
+  ArrowRight,
+  CalendarDays,
+  CheckCircle2,
+  Mail,
+  PhoneCall,
+  Sparkles,
+} from 'lucide-react';
+
+import { Header } from '@/components/header';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+
+const nextSteps = [
+  {
+    title: 'Review & alignment',
+    description:
+      'Our partnerships strategist is reviewing your inquiry and aligning the right specialists for your goals.',
+    icon: Sparkles,
+  },
+  {
+    title: 'Intro conversation',
+    description:
+      'Expect a follow-up email with proposed times for a 30-minute discovery sprint within one business day.',
+    icon: CalendarDays,
+  },
+  {
+    title: 'Preparation pack',
+    description:
+      'We will share an agenda and a lightweight preparation kit so every minute together delivers value.',
+    icon: CheckCircle2,
+  },
+];
+
+const supportChannels = [
+  {
+    icon: Mail,
+    label: 'Email',
+    value: 'support@learningafrica.com',
+    href: 'mailto:support@learningafrica.com',
+  },
+  {
+    icon: PhoneCall,
+    label: 'Call',
+    value: '+254(7)--------',
+    href: 'tel:+27115552300',
+  },
+];
 
 export default function SetupInquiryThankYou() {
   return (
-    <div className="bg-background min-h-screen">
-      {/* Header */}
-      <header className="bg-card/50 border-b backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4">
-          <nav className="flex items-center justify-between">
-            <Link to="/" className="flex items-center space-x-2">
-              <BookOpen className="text-primary h-8 w-8" />
-              <span className="text-foreground text-xl font-bold">
-                Learning Africa
-              </span>
-            </Link>
-            <Link
-              to="/"
-              className="text-muted-foreground hover:text-foreground flex items-center transition-colors"
-            >
-              <Home className="mr-2 h-4 w-4" />
-              Back to Home
-            </Link>
-          </nav>
-        </div>
-      </header>
+    <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -top-40 left-1/2 h-[30rem] w-[30rem] -translate-x-1/2 rounded-full bg-primary/20 blur-3xl" />
+        <div className="absolute bottom-0 right-0 h-[28rem] w-[28rem] translate-x-1/3 bg-secondary/20 blur-3xl" />
+      </div>
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="mx-auto max-w-3xl">
-          <div className="mb-12 text-center">
+      <Header
+        variant="marketing"
+        navItems={[
+          { label: 'Home', href: '/' },
+          { label: 'Services', href: '/#services' },
+          { label: 'Contact', href: '/#contact' },
+        ]}
+        cta={{ label: 'Start another inquiry', href: '/inquiry' }}
+      />
+
+      <main className="relative pb-24">
+        <section className="pt-12 md:pt-16">
+          <div className="container mx-auto px-4">
+            <div className="mx-auto max-w-3xl text-center">
+              <motion.div
+                initial={{ scale: 0.85, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="mx-auto flex h-24 w-24 items-center justify-center rounded-full border border-primary/40 bg-primary/10 text-primary"
+              >
+                <CheckCircle2 className="h-12 w-12" />
+              </motion.div>
+
+              <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.15, duration: 0.5 }}
+                className="mt-10 space-y-4"
+              >
+                <Badge
+                  variant="outline"
+                  className="rounded-full border-primary/40 bg-primary/10 px-4 py-1 text-primary"
+                >
+                  Thank you for reaching out
+                </Badge>
+                <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
+                  We&apos;ve received your inquiry and we&apos;re excited to collaborate
+                </h1>
+                <p className="text-lg text-muted-foreground">
+                  A confirmation email is on its way. We&apos;ll be in touch within one business day to schedule your discovery sprint and outline the next steps.
+                </p>
+              </motion.div>
+            </div>
+
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="mb-8 flex justify-center"
-            >
-              <div className="rounded-full bg-primary/10 p-6">
-                <CheckCircle className="text-primary h-20 w-20" />
-              </div>
-            </motion.div>
-
-            <motion.h1
-              initial={{ y: 20, opacity: 0 }}
+              initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="text-foreground mb-4 text-3xl font-bold lg:text-4xl"
+              className="mx-auto mt-16 grid gap-8 lg:max-w-4xl"
             >
-              Thank You for Your Inquiry!
-            </motion.h1>
+              <Card className="border-border/60 bg-background/85 backdrop-blur">
+                <CardContent className="p-8">
+                  <div className="grid gap-6 md:grid-cols-3">
+                    {nextSteps.map(({ title, description, icon: Icon }) => (
+                      <div key={title} className="text-left">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <p className="mt-4 text-base font-semibold text-foreground">{title}</p>
+                        <p className="mt-2 text-sm text-muted-foreground text-pretty">{description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
 
-            <motion.p
-              initial={{ y: 20, opacity: 0 }}
+              <Card className="border-border/60 bg-background/85 backdrop-blur">
+                <CardContent className="flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <p className="text-sm uppercase tracking-[0.35em] text-muted-foreground/80">
+                      Need something sooner?
+                    </p>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Reach out through the channels below and we&apos;ll prioritise your inquiry.
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:gap-6">
+                    {supportChannels.map(({ icon: Icon, label, value, href }) => (
+                      <div key={label} className="flex items-center gap-2">
+                        <Icon className="h-4 w-4 text-primary" />
+                        {href ? (
+                          <a href={href} className="font-medium text-foreground hover:text-primary">
+                            {value}
+                          </a>
+                        ) : (
+                          <span className="font-medium text-foreground">{value}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.5, duration: 0.5 }}
-              className="text-muted-foreground mx-auto max-w-2xl text-lg text-pretty"
+              transition={{ delay: 0.45, duration: 0.5 }}
+              className="mx-auto mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row"
             >
-              We've received your partnership inquiry and our team will review it promptly.
-              Expect to hear back from us within 24 hours.
-            </motion.p>
+              <Button size="lg" asChild className="gap-2 px-8 py-6 text-base shadow-lg shadow-primary/25">
+                <Link to="/">
+                  Return home
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                asChild
+                className="border-primary/40 bg-background/80 px-8 py-6 text-base backdrop-blur hover:bg-primary/10"
+              >
+                <Link to="/#services">Explore services</Link>
+              </Button>
+            </motion.div>
           </div>
-
-          <motion.div
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.7, duration: 0.5 }}
-          >
-            <Card className="bg-card/50 border shadow-sm">
-              <CardContent className="p-6">
-                <div className="space-y-6">
-                  <div className="flex items-start space-x-4">
-                    <div className="bg-primary/10 rounded-full p-2 mt-1">
-                      <Mail className="text-primary h-5 w-5" />
-                    </div>
-                    <div>
-                      <h3 className="text-foreground font-medium">Check your email</h3>
-                      <p className="text-muted-foreground text-sm">
-                        We've sent a confirmation of your inquiry to your email address.
-                        Please check your inbox and spam folder.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-4">
-                    <div className="bg-primary/10 rounded-full p-2 mt-1">
-                      <CheckCircle className="text-primary h-5 w-5" />
-                    </div>
-                    <div>
-                      <h3 className="text-foreground font-medium">Next steps</h3>
-                      <p className="text-muted-foreground text-sm">
-                        A member of our partnerships team will review your submission and contact you
-                        to discuss how we can best support your learning needs.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="pt-4 flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
-                    <Button asChild size="lg" className="flex-1">
-                      <Link to="/">
-                        Return to Home
-                      </Link>
-                    </Button>
-                    {/* <Button asChild variant="outline" size="lg" className="flex-1">
-                      <Link to="/courses">
-                        Explore Courses
-                      </Link>
-                    </Button> */}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 }
