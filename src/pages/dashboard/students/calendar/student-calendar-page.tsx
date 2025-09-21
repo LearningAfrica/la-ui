@@ -273,10 +273,10 @@ export default function StudentCalendarPage() {
   const [isViewEventOpen, setIsViewEventOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isShareEventOpen, setIsShareEventOpen] = useState(false);
-  const [_isSharedEventsOpen, setIsSharedEventsOpen] = useState(false);
+  const [, setIsSharedEventsOpen] = useState(false);
   const [calendarView, setCalendarView] = useState('month');
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [isNotificationsPanelOpen, setIsNotificationsPanelOpen] =
+  const [, setIsNotificationsPanelOpen] =
     useState(false);
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
 

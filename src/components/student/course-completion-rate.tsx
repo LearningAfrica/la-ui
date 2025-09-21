@@ -83,7 +83,7 @@ export function CourseCompletionRate() {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {completionData.map((entry, index) => (
+                  {completionData.map((_, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}

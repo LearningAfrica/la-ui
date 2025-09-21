@@ -6,9 +6,34 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CurriculumSidebar } from '@/components/courses/curriculum-sidebar';
 import { LessonCompletionButton } from '@/components/courses/lesson-completion-button';
 import { CommentSection } from '@/components/comments/comment-section';
+import type { CommentProps } from '@/components/comments/comment-item';
 import { CurriculumBackdrop } from '@/components/courses/curriculum-backdrop';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
+
+// Local comment interface for this component
+interface LocalComment {
+  id: string;
+  content: string;
+  author: {
+    id: string;
+    name: string;
+    image?: string;
+    role: 'student' | 'instructor' | 'admin';
+  };
+  createdAt: string;
+  updatedAt?: string;
+  likes: number;
+  isLiked: boolean;
+  replies?: LocalComment[];
+}
+
+// Helper function to convert LocalComment to CommentProps
+const transformComment = (comment: LocalComment, currentUserId: string): CommentProps => ({
+  ...comment,
+  currentUserId,
+  replies: comment.replies?.map(reply => transformComment(reply, currentUserId)),
+});
 
 // Mock data for the lesson
 const lessonData = {
@@ -115,7 +140,7 @@ const courseData = {
 };
 
 // Mock comments data
-const commentsData = [
+const commentsData: LocalComment[] = [
   {
     id: 'c1',
     content:
@@ -124,7 +149,7 @@ const commentsData = [
       id: 'u1',
       name: 'John Smith',
       image: '/student-1.jpg',
-      role: 'student',
+      role: 'student' as const,
     },
     createdAt: '2023-11-15T10:30:00Z',
     likes: 5,
@@ -491,10 +516,7 @@ export default function StudentCourseLessonPage() {
                     <CommentSection
                       contentId={params.lessonId || ''}
                       contentType="lesson"
-                      comments={comments.map(comment => ({
-                        ...comment,
-                        currentUserId: currentUser.id
-                      }))}
+                      comments={comments.map(comment => transformComment(comment, currentUser.id))}
                       currentUser={currentUser}
                       onAddComment={handleAddComment}
                       onReplyComment={handleReplyComment}

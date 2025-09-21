@@ -23,8 +23,8 @@ import {
   Paperclip,
   Send,
 } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
-import Link from 'next/link';
+import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
 
 interface TicketDetailsProps {
   ticket: Ticket;
@@ -44,6 +44,8 @@ export function TicketDetails({ ticket }: TicketDetailsProps) {
     setTimeout(() => {
       const newTicketComment: TicketComment = {
         id: `comment-${Date.now()}`,
+        ticketId: ticket.id,
+        userId: 'current-user',
         content: newComment,
         createdAt: new Date().toISOString(),
         author: {
@@ -59,10 +61,7 @@ export function TicketDetails({ ticket }: TicketDetailsProps) {
       setNewComment('');
       setIsSubmitting(false);
 
-      toast({
-        title: 'Comment added',
-        description: 'Your comment has been added to the ticket.',
-      });
+      toast.success('Comment added successfully');
     }, 1000);
   };
 
@@ -99,7 +98,7 @@ export function TicketDetails({ ticket }: TicketDetailsProps) {
                   <span className="font-medium">
                     {ticket.courseId ? (
                       <Link
-                        href={`/dashboard/student/courses/${ticket.courseId}`}
+                        to={`/dashboard/student/courses/${ticket.courseId}`}
                         className="text-primary hover:underline"
                       >
                         {ticket.courseName}

@@ -27,23 +27,29 @@ import { Link, useParams } from 'react-router-dom';
 import { useOrganization } from '@/domains/organizations/use-organizations';
 import { useAuth } from '@/hooks/use-auth';
 import { apiErrorMsg } from '@/lib/utils/axios-err';
+import type { OrgUserRole } from '@/lib/validators/auth-schema';
 
 export default function OrganizationSettingsPage() {
   const params = useParams<{ id: string }>();
-  const { organizations: availableOrganizations, getCurrentUserRole } =
-    useOrganization();
-    const auth = useAuth();
+  const { queries } = useOrganization();
+  const auth = useAuth();
   const [isSaving, setIsSaving] = useState(false);
 
-  // Find organization
-  const organization = auth.getCurrentOrganization()
+  // Find organization from queries data using the params ID
+  const organizations = queries.organizations.data || [];
+  const organization = organizations.find(org => org.id === params.id);
   const userRole = auth.getCurrentUserRole();
-  const canManageSettings = userRole === 'super_admin' || userRole === 'admin';
+  const canManageSettings = userRole === 'super_admin';
 
   // Form state
   const [formData, setFormData] = useState({
     name: organization?.name || '',
-
+    description: organization?.description || '',
+    domain: organization?.domain || '',
+    logo: organization?.logo || '',
+    features: organization?.features || [],
+    allowSelfRegistration: organization?.allowSelfRegistration || false,
+    defaultRole: organization?.defaultRole || 'learner',
   });
 
   if (!organization) {
@@ -299,7 +305,7 @@ export default function OrganizationSettingsPage() {
             <Label htmlFor="default-role">Default Role for New Members</Label>
             <Select
               value={formData.defaultRole}
-              onValueChange={(value: UserRole) =>
+              onValueChange={(value: OrgUserRole) =>
                 setFormData((prev) => ({ ...prev, defaultRole: value }))
               }
             >

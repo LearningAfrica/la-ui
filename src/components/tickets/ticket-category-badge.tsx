@@ -40,6 +40,21 @@ export function TicketCategoryBadge({ category }: TicketCategoryBadgeProps) {
       icon: FileText,
       variant: 'outline' as const,
     },
+    general: {
+      label: 'General',
+      icon: HelpCircle,
+      variant: 'outline' as const,
+    },
+    'feature-request': {
+      label: 'Feature Request',
+      icon: FileText,
+      variant: 'outline' as const,
+    },
+    'bug-report': {
+      label: 'Bug Report',
+      icon: MonitorSmartphone,
+      variant: 'outline' as const,
+    },
     other: {
       label: 'Other',
       icon: HelpCircle,

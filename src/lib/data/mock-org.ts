@@ -12,7 +12,7 @@ export const MOCK_ORGANIZATIONS: ApiOrganizationInterface[] = [
     domain: 'learningafrica.com',
     settings: {
       allowSelfRegistration: true,
-      defaultRole: 'student',
+      defaultRole: 'learner',
       features: [
         'courses',
         'degrees',
@@ -42,7 +42,7 @@ export const MOCK_ORGANIZATIONS: ApiOrganizationInterface[] = [
     domain: 'training.techsolutions.com',
     settings: {
       allowSelfRegistration: false,
-      defaultRole: 'student',
+      defaultRole: 'learner',
       features: [
         'custom-courses',
         'team-progress',
@@ -70,7 +70,7 @@ export const MOCK_ORGANIZATIONS: ApiOrganizationInterface[] = [
     domain: 'brightminds.school',
     settings: {
       allowSelfRegistration: false,
-      defaultRole: 'student',
+      defaultRole: 'learner',
       features: [
         'gradebook',
         'parent-portal',
@@ -97,7 +97,7 @@ export const MOCK_ORGANIZATIONS: ApiOrganizationInterface[] = [
     domain: 'globallanguage.edu',
     settings: {
       allowSelfRegistration: true,
-      defaultRole: 'student',
+      defaultRole: 'learner',
       features: [
         'language-courses',
         'tutor-sessions',
@@ -111,7 +111,7 @@ export const MOCK_ORGANIZATIONS: ApiOrganizationInterface[] = [
     updatedAt: '2023-09-18T00:00:00Z',
     status: 'active',
     memberCount: 5678,
-    currentUserRole: 'student',
+    currentUserRole: 'learner',
     currentUserMembershipStatus: 'active',
   },
   {
@@ -124,7 +124,7 @@ export const MOCK_ORGANIZATIONS: ApiOrganizationInterface[] = [
     domain: 'codemasters.io',
     settings: {
       allowSelfRegistration: true,
-      defaultRole: 'student',
+      defaultRole: 'learner',
       features: [
         'coding-challenges',
         'pair-programming',
@@ -137,7 +137,7 @@ export const MOCK_ORGANIZATIONS: ApiOrganizationInterface[] = [
     createdAt: '2023-05-20T00:00:00Z',
     status: 'active',
     memberCount: 342,
-    currentUserRole: 'student',
+    currentUserRole: 'learner',
     currentUserMembershipStatus: 'active',
   },
   {
@@ -149,7 +149,7 @@ export const MOCK_ORGANIZATIONS: ApiOrganizationInterface[] = [
     domain: 'newhorizons.education',
     settings: {
       allowSelfRegistration: false,
-      defaultRole: 'student',
+      defaultRole: 'learner',
       features: ['courses', 'community'],
       maxMembers: 1000,
     },
@@ -169,7 +169,7 @@ export const MOCK_ORGANIZATIONS: ApiOrganizationInterface[] = [
     domain: 'digitalarts.college',
     settings: {
       allowSelfRegistration: false,
-      defaultRole: 'student',
+      defaultRole: 'learner',
       features: [
         'portfolio-tools',
         'creative-challenges',

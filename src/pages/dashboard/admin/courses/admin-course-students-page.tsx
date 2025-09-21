@@ -175,7 +175,7 @@ const columns: ColumnDef<(typeof students)[0]>[] = [
       <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
+          (table.getIsSomePageRowsSelected() ? 'indeterminate' : false)
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -426,13 +426,13 @@ export default function CourseStudentsPage({
   });
 
   // Filter by status
-  const handleStatusFilter = (status: string) => {
-    if (statusFilter.includes(status)) {
-      setStatusFilter(statusFilter.filter((s) => s !== status));
-    } else {
-      setStatusFilter([...statusFilter, status]);
-    }
-  };
+  // const handleStatusFilter = (status: string) => {
+  //   if (statusFilter.includes(status)) {
+  //     setStatusFilter(statusFilter.filter((s) => s !== status));
+  //   } else {
+  //     setStatusFilter([...statusFilter, status]);
+  //   }
+  // };
 
   // Apply status filter
   useState(() => {

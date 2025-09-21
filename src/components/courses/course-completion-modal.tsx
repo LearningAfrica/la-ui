@@ -24,11 +24,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { AchievementBadge } from '@/components/badges/achievement-badge';
 import { useBadgeToast } from '@/components/badges/badge-earned-toast';
+import type { AchievementBadge as AchievementBadgeType } from '@/lib/types/badge';
 
 interface CourseCompletionModalProps {
   isOpen: boolean;
   onClose: () => void;
-  courseId: string;
+  _courseId: string;
   courseName: string;
   certificateId?: string;
   instructorName: string;
@@ -37,7 +38,6 @@ interface CourseCompletionModalProps {
 export function CourseCompletionModal({
   isOpen,
   onClose,
-  courseId,
   courseName,
   certificateId,
   instructorName,
@@ -55,7 +55,7 @@ export function CourseCompletionModal({
         return Math.random() * (max - min) + min;
       }
 
-      const interval: any = setInterval(() => {
+      const interval = setInterval(() => {
         const timeLeft = animationEnd - Date.now();
 
         if (timeLeft <= 0) {
@@ -78,7 +78,7 @@ export function CourseCompletionModal({
       }, 250);
 
       // Show badge earned toast
-      const firstCourseBadge = {
+      const firstCourseBadge: AchievementBadgeType = {
         id: 'first-course',
         name: 'First Steps',
         description: 'Complete your first course',

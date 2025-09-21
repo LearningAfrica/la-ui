@@ -92,7 +92,7 @@ export function InviteInstructorDialog({ children }: InviteInstructorDialogProps
     }
   }
 
-  const onSubmit = async (data: InviteFormData) => {
+  const onSubmit = form.handleSubmit(async () => {
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000))
@@ -107,7 +107,7 @@ export function InviteInstructorDialog({ children }: InviteInstructorDialogProps
     } catch (error) {
       toast.error(apiErrorMsg(error, "Failed to send invitations"))
     }
-  }
+  })
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -144,13 +144,13 @@ export function InviteInstructorDialog({ children }: InviteInstructorDialogProps
 
         <div className="p-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={(onSubmit)} className="space-y-6">
               <div className="space-y-6">
                 {/* Email Input Section */}
                 <FormField
                   control={form.control}
                   name="emails"
-                  render={({ field }) => (
+                  render={() => (
                     <FormItem>
                       <FormLabel className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                         <Users className="h-4 w-4 text-violet-600" />

@@ -1,11 +1,13 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { systermUserRoleSchema } from './auth-schema';
+import { organizationUserRoleSchema } from './auth-schema';
+
 /**
  * ========= Schemas =========
  */
-const createOrganizationSchema = z.object({
-  name: z.string().min(1, { message: 'Organization name is required' }),
+
+export const createOrganizationSchema = z.object({
+  name: z.string().min(1, 'Organization name is required'),
   description: z.string().optional(),
   //   File
   logo: z.instanceof(File).optional(),
@@ -13,9 +15,10 @@ const createOrganizationSchema = z.object({
 
 export const inviteUsersToOrganizationSchema = z.object({
   organization_id: z.string(),
-  role: systermUserRoleSchema.default('learner'),
+  role: organizationUserRoleSchema.default('learner'),
   receiver_email: z.array(z.string().email()),
 });
+
 /**
  * ======== Types =========
  */

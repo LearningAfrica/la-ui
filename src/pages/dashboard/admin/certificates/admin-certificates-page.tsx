@@ -416,8 +416,8 @@ const issuanceColumns: ColumnDef<CertificateIssuance>[] = [
   },
   {
     id: 'actions',
-    cell: ({ row }) => {
-      const issuance = row.original;
+    cell: () => {
+      // const issuance = row.original;
 
       return (
         <DropdownMenu>
@@ -503,7 +503,7 @@ export default function CertificatesPage() {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const [activeTab, setActiveTab] = useState('templates');
+  const [, setActiveTab] = useState('templates');
 
   // Table for templates
   const templatesTable = useReactTable({

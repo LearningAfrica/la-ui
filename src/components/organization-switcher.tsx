@@ -29,7 +29,7 @@ import { apiErrorMsg } from '@/lib/utils/axios-err';
 
 interface OrganizationSwitcherProps {
   className?: string;
-  onWorkspaceChange?: (workspace: ApiOrganizationInterface) => void;
+  onWorkspaceChange?: (workspace: Partial<ApiOrganizationInterface>) => void;
 }
 
 export function OrganizationSwitcher({
@@ -43,10 +43,10 @@ export function OrganizationSwitcher({
   const [newOrgDescription, setNewOrgDescription] = useState('');
   const [isCreating, setIsCreating] = useState(false);
 
-  const userRole = auth.user?.user_role || 'student';
+  const userRole = auth.user?.user_role || 'user';
   const canCreateOrganization =
-    userRole === 'super_admin' || userRole === 'admin';
-  const currentOrganization = auth.getCurrentOrganization();
+    userRole === 'super_admin' || userRole === 'user';
+  const currentOrganization = auth.getCurrentOrganization()!;
 
   // Function to get the organization icon
   const getOrganizationIcon = (organization: ApiOrganizationInterface) => {
@@ -54,7 +54,8 @@ export function OrganizationSwitcher({
   };
 
   // Handle organization change
-  const handleOrganizationChange = (organization: ApiOrganizationInterface) => {
+  const handleOrganizationChange = (organization: Partial<ApiOrganizationInterface>) => {
+    if (!organization.id) return;
     auth.changeCurrentOrganization(organization.id);
     setOpen(false);
     if (onWorkspaceChange) {
@@ -101,7 +102,7 @@ export function OrganizationSwitcher({
           <button className="hover:text-primary flex w-full items-center gap-2 rounded px-2 py-1.5 text-sm text-gray-600 transition-colors hover:bg-gray-50">
             <div className="bg-primary flex h-4 w-4 items-center justify-center rounded-full">
               <span className="text-primary-foreground text-xs font-medium">
-                {getOrganizationIcon(currentOrganization)}
+                {getOrganizationIcon(currentOrganization!)}
               </span>
             </div>
             <span className="flex-1 truncate text-left">

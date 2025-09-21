@@ -26,7 +26,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Eye, MessageSquare, MoreHorizontal, Search } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
 import { Link } from 'react-router-dom';
 
 // Mock data for students

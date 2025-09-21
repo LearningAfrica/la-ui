@@ -353,7 +353,7 @@ export default function AddStudentsPage() {
                   <FormField
                     control={form.control}
                     name="students"
-                    render={({ field }) => (
+                    render={() => (
                       <FormItem>
                         <FormLabel>Selected Students</FormLabel>
                         <FormControl>

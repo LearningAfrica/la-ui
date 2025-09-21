@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { CheckCircle, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,8 +25,6 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { apiErrorMsg } from '@/lib/utils/axios-err';
-import { toast } from 'sonner';
 
 const formSchema = z.object({
   notes: z.string().optional(),
@@ -41,18 +38,17 @@ const formSchema = z.object({
 
 type SubmitForReviewFormValues = z.infer<typeof formSchema>;
 
-interface SubmitForReviewDialogProps {
-  courseId: string;
-  disabled?: boolean;
+export interface SubmitForReviewDialogProps {
+  isOpen: boolean;
+  onClose: () => void;
+  _courseId: string; // Prefixed with _ to indicate it's intentionally unused
 }
 
 export function SubmitForReviewDialog({
-  courseId,
-  disabled,
+  isOpen,
+  onClose,
 }: SubmitForReviewDialogProps) {
-  const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
 
   const form = useForm<SubmitForReviewFormValues>({
     resolver: zodResolver(formSchema),
@@ -63,35 +59,25 @@ export function SubmitForReviewDialog({
     },
   });
 
-  const onSubmit = async (values: SubmitForReviewFormValues) => {
+    const onSubmit = async (_values: SubmitForReviewFormValues) => {
     setIsSubmitting(true);
 
     try {
-      // In a real app, this would be an API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // TODO: Implement actual submission logic
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
 
-      toast.success('Course submitted for review successfully', {
-        description: "We'll notify you once your course has been reviewed.",
-      });
-
-      setOpen(false);
-      router.refresh();
+      setIsSubmitting(false);
+      onClose();
     } catch (error) {
-      toast.error(
-        apiErrorMsg(error, 'Failed to submit course'),
-        {
-          description: 'Your course could not be submitted. Please try again.',
-        },
-      );
-    } finally {
+      console.error('Failed to submit for review:', error);
       setIsSubmitting(false);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogTrigger asChild>
-        <Button disabled={disabled}>Submit for Review</Button>
+        <Button>Submit for Review</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
@@ -178,7 +164,7 @@ export function SubmitForReviewDialog({
             <DialogFooter>
               <Button
                 variant="outline"
-                onClick={() => setOpen(false)}
+                onClick={onClose}
                 type="button"
               >
                 Cancel

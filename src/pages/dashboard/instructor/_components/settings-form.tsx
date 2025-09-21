@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Course } from '@/types/curriculum';
+import type { Course } from '@/lib/types/curriculum';
 
 interface CourseSettingsFormProps {
   courseData: Course;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { BookOpen, CheckCircle, Clock } from 'lucide-react';
 
 import {
@@ -72,7 +72,7 @@ export function CourseProgressTracker({
         {nextLessonId ? (
           <Button className="w-full" asChild>
             <Link
-              href={`/dashboard/student/courses/${courseId}/lessons/${nextLessonId}`}
+              to={`/dashboard/student/courses/${courseId}/lessons/${nextLessonId}`}
             >
               Continue Learning
             </Link>
@@ -80,21 +80,21 @@ export function CourseProgressTracker({
         ) : lastLessonId ? (
           <Button className="w-full" asChild>
             <Link
-              href={`/dashboard/student/courses/${courseId}/lessons/${lastLessonId}`}
+              to={`/dashboard/student/courses/${courseId}/lessons/${lastLessonId}`}
             >
               Resume Course
             </Link>
           </Button>
         ) : (
           <Button className="w-full" asChild>
-            <Link href={`/dashboard/student/courses/${courseId}`}>
+            <Link to={`/dashboard/student/courses/${courseId}`}>
               Start Course
             </Link>
           </Button>
         )}
 
         <Button variant="outline" className="w-full" asChild>
-          <Link href={`/dashboard/student/courses/${courseId}`}>
+          <Link to={`/dashboard/student/courses/${courseId}`}>
             <BookOpen className="mr-2 h-4 w-4" />
             View Curriculum
           </Link>

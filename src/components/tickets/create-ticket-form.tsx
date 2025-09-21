@@ -88,10 +88,7 @@ export function CreateTicketForm({
       console.log(values);
       console.log(files);
 
-      toast({
-        title: 'Ticket submitted',
-        description: 'Your ticket has been submitted successfully.',
-      });
+      toast.success('Ticket submitted successfully!');
 
       setIsSubmitting(false);
       form.reset();
@@ -109,11 +106,7 @@ export function CreateTicketForm({
       const validFiles = newFiles.filter((file) => file.size <= MAX_FILE_SIZE);
 
       if (validFiles.length !== newFiles.length) {
-        toast({
-          title: 'File too large',
-          description: 'Some files exceed the maximum size of 5MB.',
-          variant: 'destructive',
-        });
+        toast.error('File too large. Please select files under 10MB.');
       }
 
       setFiles((prev) => [...prev, ...validFiles]);

@@ -9,7 +9,7 @@ interface EventReminderProps {
   id: string;
   title: string;
   date: Date;
-  type: string;
+  _type: string;
   course: string;
   color: string;
   onDismiss: (id: string) => void;
@@ -20,7 +20,6 @@ export function EventReminder({
   id,
   title,
   date,
-  type,
   course,
   color,
   onDismiss,

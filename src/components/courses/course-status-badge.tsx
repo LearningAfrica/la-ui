@@ -47,7 +47,7 @@ export function CourseStatusBadge({
       case 'published':
         return {
           label: 'Published',
-          variant: 'success' as const,
+          variant: 'default' as const,
         };
       default:
         return {

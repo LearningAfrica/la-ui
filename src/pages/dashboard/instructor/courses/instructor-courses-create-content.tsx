@@ -59,7 +59,7 @@ const contentSchema = z.object({
   videoDuration: z.string().optional(),
   imageAlt: z.string().max(200).optional(),
   order: z.number().int().positive().optional(),
-  isPublished: z.boolean().default(false),
+  isPublished: z.boolean(),
 });
 
 type ContentFormValues = z.infer<typeof contentSchema>;
@@ -228,7 +228,7 @@ export default function InstructorCreateCourseContentPage() {
             <ScrollArea className="h-[400px]">
               <div className="space-y-4 p-6">
                 {contentItems.length > 0 ? (
-                  contentItems.map((item, index) => (
+                  contentItems.map((item) => (
                     <div
                       key={item.id}
                       className="bg-muted/30 flex items-center gap-3 rounded-md p-3"

@@ -194,6 +194,8 @@ export default function CurriculumEditorPage() {
     // Simulate API call
     setTimeout(() => {
       toast.success('Curriculum saved successfully');
+      console.log({data});
+
       setIsSaving(false);
     }, 1000);
   }
@@ -303,7 +305,7 @@ export default function CurriculumEditorPage() {
       if (section.id === sectionId) {
         return {
           ...section,
-          lessons: section.lessons.filter((lesson) => lesson.id !== lessonId),
+          lessons: section.lessons.filter((lesson: { id: string; title: string; duration: string; type: string }) => lesson.id !== lessonId),
         };
       }
       return section;
@@ -344,7 +346,7 @@ export default function CurriculumEditorPage() {
       if (section.id === sectionId) {
         return {
           ...section,
-          lessons: section.lessons.map((lesson) => {
+          lessons: section.lessons.map((lesson:any) => {
             if (lesson.id === lessonId) {
               return {
                 ...lesson,

@@ -27,6 +27,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 
 // Form schema
 const formSchema = z.object({
@@ -47,6 +48,8 @@ const formSchema = z.object({
   textColor: z.string(),
   accentColor: z.string(),
 });
+
+// type CertificateFormValues = z.infer<typeof formSchema>;
 
 // Mock certificate template data - in real app, this would come from API
 const getCertificateTemplate = (id: string) => {
@@ -105,7 +108,7 @@ export default function EditCertificatePage() {
   const [certificateData, setCertificateData] = useState<any>(null);
 
   // Form definition
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
@@ -172,7 +175,7 @@ export default function EditCertificatePage() {
         //   description: "Failed to load certificate template data.",
         //   variant: "destructive",
         // })
-        toast.error('Error loading certificate', {
+        toast.error(apiErrorMsg(error,'Error loading certificate'), {
           description: 'Failed to load certificate template data.',
         });
       } finally {
@@ -184,16 +187,18 @@ export default function EditCertificatePage() {
   }, [params.id, form, navigate]);
 
   // Form submission handler
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const  onSubmit = form.handleSubmit((values) => {
     // toast({
     //   title: "Certificate template updated",
     //   description: "Your certificate template has been updated successfully.",
     // })
+    console.log({values});
+
     toast.success('Certificate template updated', {
       description: 'Your certificate template has been updated successfully.',
     });
     navigate(`/dashboard/admin/certificates/${params.id}`);
-  }
+  });
 
   // Certificate templates
   const templates = [
@@ -299,7 +304,7 @@ export default function EditCertificatePage() {
           <Form {...form}>
             <form
               id="certificate-form"
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={(onSubmit)}
               className="space-y-6"
             >
               <Card>

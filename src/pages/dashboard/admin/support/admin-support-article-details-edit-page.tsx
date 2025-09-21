@@ -201,6 +201,10 @@ export default function EditArticlePage() {
       try {
         setIsLoading(true);
         // In a real app, this would be an API call
+        if (!params.id) {
+          setError('Article ID is required');
+          return;
+        }
         const articleData = getArticleById(params.id);
 
         if (!articleData) {

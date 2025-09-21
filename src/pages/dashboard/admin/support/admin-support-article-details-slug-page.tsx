@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom';
 export default function ArticleDetailPage() {
   // const params = useParams<{ slug: string }>();
   //   const router = useNavigate()
-  const [article, setArticle] = useState({
+  const [article,] = useState({
     id: 'KB-101',
     title: 'How to Reset Your Password',
     slug: 'how-to-reset-password',

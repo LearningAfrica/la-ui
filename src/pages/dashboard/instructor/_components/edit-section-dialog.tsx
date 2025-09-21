@@ -66,8 +66,14 @@ export function EditSectionDialog({
   function onSubmit(data: SectionFormValues) {
     setIsSubmitting(true);
 
+    // Ensure title exists since it's required by schema
+    if (!data.title) {
+      setIsSubmitting(false);
+      return;
+    }
+
     // Update the section
-    onUpdate(data);
+    onUpdate({ title: data.title });
 
     // Reset form and close dialog
     setIsSubmitting(false);

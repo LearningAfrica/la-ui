@@ -68,8 +68,18 @@ export function AddLessonDialog({
   function onSubmit(data: LessonFormValues) {
     setIsSubmitting(true);
 
+    // Ensure all required fields exist since they're required by schema
+    if (!data.title || !data.type || !data.duration) {
+      setIsSubmitting(false);
+      return;
+    }
+
     // Add the lesson
-    onAdd(data);
+    onAdd({
+      title: data.title,
+      type: data.type,
+      duration: data.duration
+    });
 
     // Reset form and close dialog
     form.reset();

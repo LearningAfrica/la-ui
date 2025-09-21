@@ -162,7 +162,7 @@ const supportStaff = [
 ];
 
 // Add this utility function after the existing mock data and before the component
-function exportToCSV(data, filename) {
+function exportToCSV(data: any[], filename: string) {
   // Convert data to CSV format
   const headers = [
     'Ticket ID',
@@ -178,7 +178,7 @@ function exportToCSV(data, filename) {
 
   const csvRows = [
     headers.join(','),
-    ...data.map((ticket) =>
+    ...data.map((ticket: any) =>
       [
         ticket.id,
         `"${ticket.subject.replace(/"/g, '""')}"`, // Escape quotes in subject
@@ -211,55 +211,55 @@ function exportToCSV(data, filename) {
 
 export default function AdminSupportPage() {
   // Mock data for quick stats
-  const stats = {
-    totalArticles: 52,
-    totalCategories: 8,
-    totalViews: 12450,
-    searchesPerDay: 345,
-  };
+  // const _stats = {
+  //   totalArticles: 52,
+  //   totalCategories: 8,
+  //   totalViews: 12450,
+  //   searchesPerDay: 345,
+  // };
 
   // Mock data for popular articles
-  const popularArticles = [
-    {
-      id: 'kb-101',
-      title: 'How to Reset Your Password',
-      views: 1245,
-      category: 'Account Management',
-    },
-    {
-      id: 'kb-203',
-      title: 'Understanding Course Completion Requirements',
-      views: 987,
-      category: 'Student Resources',
-    },
-    {
-      id: 'kb-156',
-      title: 'Setting Up Two-Factor Authentication',
-      views: 876,
-      category: 'Account Management',
-    },
-    {
-      id: 'kb-302',
-      title: 'How to Create a Quiz for Your Course',
-      views: 754,
-      category: 'Course Creation',
-    },
-    {
-      id: 'kb-189',
-      title: 'Troubleshooting Video Playback Issues',
-      views: 632,
-      category: 'Technical Support',
-    },
-  ];
+  // const _popularArticles = [
+  //   {
+  //     id: 'kb-101',
+  //     title: 'How to Reset Your Password',
+  //     views: 1245,
+  //     category: 'Account Management',
+  //   },
+  //   {
+  //     id: 'kb-203',
+  //     title: 'Understanding Course Completion Requirements',
+  //     views: 987,
+  //     category: 'Student Resources',
+  //   },
+  //   {
+  //     id: 'kb-156',
+  //     title: 'Setting Up Two-Factor Authentication',
+  //     views: 876,
+  //     category: 'Account Management',
+  //   },
+  //   {
+  //     id: 'kb-302',
+  //     title: 'How to Create a Quiz for Your Course',
+  //     views: 754,
+  //     category: 'Course Creation',
+  //   },
+  //   {
+  //     id: 'kb-189',
+  //     title: 'Troubleshooting Video Playback Issues',
+  //     views: 632,
+  //     category: 'Technical Support',
+  //   },
+  // ];
 
   // Mock data for recent searches
-  const recentSearches = [
-    { query: 'reset password', count: 45, trend: 'up' },
-    { query: 'payment failed', count: 32, trend: 'down' },
-    { query: 'certificate download', count: 28, trend: 'up' },
-    { query: 'course refund', count: 24, trend: 'stable' },
-    { query: 'video not playing', count: 19, trend: 'up' },
-  ];
+  // const _recentSearches = [
+  //   { query: 'reset password', count: 45, trend: 'up' },
+  //   { query: 'payment failed', count: 32, trend: 'down' },
+  //   { query: 'certificate download', count: 28, trend: 'up' },
+  //   { query: 'course refund', count: 24, trend: 'stable' },
+  //   { query: 'video not playing', count: 19, trend: 'up' },
+  // ];
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -268,12 +268,12 @@ export default function AdminSupportPage() {
   const [selectedTicket, setSelectedTicket] = useState<any>(null);
   const [replyContent, setReplyContent] = useState('');
   const [isReplying, setIsReplying] = useState(false);
-  const [isAssigningAgent, setIsAssigningAgent] = useState(false);
-  const [selectedAgent, setSelectedAgent] = useState('');
+  const [, setIsAssigningAgent] = useState(false);
+  // const [selectedAgent, _setSelectedAgent] = useState('');
   const [isExporting, setIsExporting] = useState(false);
   const [exportFormat, setExportFormat] = useState('');
   const [showExportDialog, setShowExportDialog] = useState(false);
-  const [activeTab, setActiveTab] = useState('tickets');
+  const [, setActiveTab] = useState('tickets');
 
   // Filter tickets based on search query and filters
   const filteredTickets = supportTickets.filter((ticket) => {
@@ -374,28 +374,28 @@ export default function AdminSupportPage() {
   };
 
   // Handle agent assignment
-  const handleAssignAgent = () => {
-    if (!selectedAgent) return;
+  // const _handleAssignAgent = () => {
+  //   if (!selectedAgent) return;
 
-    const agent = supportStaff.find((staff) => staff.id === selectedAgent);
+  //   const agent = supportStaff.find((staff) => staff.id === selectedAgent);
 
-    if (!agent) return;
+  //   if (!agent) return;
 
-    // In a real app, you would update the ticket in the database
-    setSelectedTicket({
-      ...selectedTicket,
-      assignedTo: agent,
-      updatedAt: new Date().toISOString(),
-    });
+  //   // In a real app, you would update the ticket in the database
+  //   setSelectedTicket({
+  //     ...selectedTicket,
+  //     assignedTo: agent,
+  //     updatedAt: new Date().toISOString(),
+  //   });
 
-    // toast({
-    //   title: "Agent assigned",
-    //   description: `Ticket ${selectedTicket.id} assigned to ${agent.name}`,
-    // })
-    toast.success(`Ticket ${selectedTicket.id} assigned to ${agent.name}`);
+  //   // toast({
+  //   //   title: "Agent assigned",
+  //   //   description: `Ticket ${selectedTicket.id} assigned to ${agent.name}`,
+  //   // })
+  //   toast.success(`Ticket ${selectedTicket.id} assigned to ${agent.name}`);
 
-    setIsAssigningAgent(false);
-  };
+  //   setIsAssigningAgent(false);
+  // };
 
   const handleExport = (format: 'csv' | 'pdf') => {
     setIsExporting(true);

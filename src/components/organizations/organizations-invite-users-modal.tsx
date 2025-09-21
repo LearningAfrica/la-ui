@@ -38,7 +38,7 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import type { UserRole } from '@/lib/validators/auth-schema';
+import type { OrgUserRole } from '@/lib/validators/auth-schema';
 import { useOrganization } from '@/domains/organizations/use-organizations';
 import { inviteUsersToOrganizationResolver } from '@/lib/validators/organization-schema';
 import { apiErrorMsg } from '@/lib/utils/axios-err';
@@ -145,7 +145,7 @@ export default function OrganizationsInviteUsersModal({
     }
   });
 
-  const getRoleIcon = (role: UserRole) => {
+  const getRoleIcon = (role: OrgUserRole) => {
     switch (role) {
       case 'learner':
         return <GraduationCap className="h-4 w-4" />;
@@ -156,7 +156,7 @@ export default function OrganizationsInviteUsersModal({
     }
   };
 
-  const getRoleColor = (role: UserRole) => {
+  const getRoleColor = (role: OrgUserRole) => {
     switch (role) {
       case 'learner':
         return 'from-blue-500 to-cyan-500';
@@ -192,7 +192,6 @@ export default function OrganizationsInviteUsersModal({
 
       <DialogContent className="overflow-hidden border-0 bg-gradient-to-br from-slate-50 to-white p-0 shadow-2xl sm:max-w-[650px]">
         {/* Beautiful Header */}
-        {organizationUuid}
         <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-6 text-white">
           <div className="absolute inset-0 bg-black/10"></div>
           <div className="relative z-10">

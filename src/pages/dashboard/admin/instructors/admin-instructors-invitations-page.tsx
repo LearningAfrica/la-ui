@@ -148,11 +148,13 @@ export default function AdminInstructorsInvitationsPage() {
 
   // Resend invitation
   const resendInvitation = (id: string, email: string) => {
+    console.warn(`Resending invitation ${id} to ${email}`);
     toast.success(`Invitation resent to ${email}`)
   }
 
   // Delete invitation
   const deleteInvitation = (id: string, email: string) => {
+    console.warn(`Deleting invitation ${id} to ${email}`);
     toast.success(`Invitation to ${email} deleted`)
   }
 
@@ -456,7 +458,7 @@ export default function AdminInstructorsInvitationsPage() {
                               )}
                               {invitation.acceptedBy && (
                                 <DropdownMenuItem
-                                  onClick={() => router.push(`/dashboard/admin/instructors/${invitation.id}`)}
+                                  onClick={() => router(`/dashboard/admin/instructors/${invitation.id}`)}
                                 >
                                   View instructor profile
                                 </DropdownMenuItem>

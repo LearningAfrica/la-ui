@@ -22,7 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { Link, useParams } from 'react-router-dom';
 
 // Mock data for a category
-const getCategoryById = (id: string) => {
+const getCategoryById = (_id: string) => {
   return {
     id: 'CAT-1',
     name: 'Account Management',

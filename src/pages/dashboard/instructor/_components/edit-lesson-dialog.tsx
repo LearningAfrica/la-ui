@@ -91,8 +91,19 @@ export function EditLessonDialog({
   function onSubmit(data: LessonFormValues) {
     setIsSubmitting(true);
 
+    // Ensure all required fields exist since they're required by schema
+    if (!data.title || !data.type || !data.duration || data.isPublished === undefined) {
+      setIsSubmitting(false);
+      return;
+    }
+
     // Update the lesson
-    onUpdate(data);
+    onUpdate({
+      title: data.title,
+      type: data.type,
+      duration: data.duration,
+      isPublished: data.isPublished
+    });
 
     // Reset form and close dialog
     setIsSubmitting(false);

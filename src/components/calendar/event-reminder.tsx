@@ -9,11 +9,11 @@ interface EventReminderProps {
   id: string;
   title: string;
   date: Date;
-  type: string;
+  _type: string;
   course: string;
   color: string;
   location?: string;
-  onDismiss: (id: string) => void;
+  _onDismiss: (id: string) => void;
   onSnooze: (id: string) => void;
 }
 
@@ -21,11 +21,9 @@ export function EventReminder({
   id,
   title,
   date,
-  _type,
   course,
   color,
   location,
-  _onDismiss,
   onSnooze,
 }: EventReminderProps) {
   const [isHovered, setIsHovered] = useState(false);

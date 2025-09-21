@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 
 // Define the schema for the note form
 const noteFormSchema = z.object({
@@ -47,7 +48,6 @@ interface AddNoteDialogProps {
 }
 
 export function AddNoteDialog({
-  studentId,
   studentName,
   onNoteAdded,
 }: AddNoteDialogProps) {
@@ -99,7 +99,7 @@ export function AddNoteDialog({
       // 	description: 'There was an error adding the note. Please try again.',
       // 	variant: 'destructive',
       // });
-      toast.error('There was an error adding the note. Please try again.', {
+      toast.error(apiErrorMsg(error, 'There was an error adding the note. Please try again.'), {
         duration: 3000,
       });
     } finally {

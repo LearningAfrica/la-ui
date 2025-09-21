@@ -37,7 +37,7 @@ const registerSchema = z.object({
 const loginUserOrganizationSchema = z.object({
   id: z.string().nonempty(),
   name: z.string().min(1, { message: 'Organization name is required' }),
-  position: z.string().optional().nullable(),
+  position: z.string().optional(),
   is_active: z.boolean().default(false),
   role: organizationUserRoleSchema,
 });

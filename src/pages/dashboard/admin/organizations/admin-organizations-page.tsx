@@ -79,7 +79,7 @@ export default function OrganizationsPage() {
     }
   });
 
-  if (!auth.user?.user_role && auth.user?.user_role !== 'admin') {
+  if (!auth.user?.user_role || auth.user?.user_role !== 'super_admin') {
     return (
       <div className="flex-1 space-y-6 p-6 md:p-8">
         <div className="py-12 text-center">

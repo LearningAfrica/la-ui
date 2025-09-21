@@ -3,7 +3,6 @@ import { useState, useEffect, useMemo } from 'react';
 import {
   useNavigate,
   Link,
-  useParams,
   useSearchParams,
 } from 'react-router-dom';
 import {
@@ -321,7 +320,7 @@ const discussionsColumns: ColumnDef<Discussion>[] = [
       <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
+          (table.getIsSomePageRowsSelected() ? 'indeterminate' : false)
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -589,7 +588,7 @@ const flaggedContentColumns: ColumnDef<FlaggedContent>[] = [
       <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
+          (table.getIsSomePageRowsSelected() ? 'indeterminate' : false)
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -766,7 +765,7 @@ const flaggedContentColumns: ColumnDef<FlaggedContent>[] = [
 
 export default function DiscussionsPage() {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const paramsString = searchParams?.toString() || '';
 
   const [discussionSorting, setDiscussionSorting] = useState<SortingState>([]);
@@ -857,14 +856,14 @@ export default function DiscussionsPage() {
 
     if (params.minMessages) {
       filtered = filtered.filter(
-        (d) => d.messageCount >= Number.parseInt(params.minMessages),
+        (d) => d.messageCount >= Number.parseInt(params.minMessages!),
       );
       newActiveFilters.push(`Min messages: ${params.minMessages}`);
     }
 
     if (params.maxMessages) {
       filtered = filtered.filter(
-        (d) => d.messageCount <= Number.parseInt(params.maxMessages),
+        (d) => d.messageCount <= Number.parseInt(params.maxMessages!),
       );
       newActiveFilters.push(`Max messages: ${params.maxMessages}`);
     }
@@ -897,10 +896,7 @@ export default function DiscussionsPage() {
         newActiveFilters.length > 0 &&
         filtered.length !== discussionsData.length
       ) {
-        toast({
-          title: 'Search filters applied',
-          description: `Showing ${filtered.length} of ${discussionsData.length} discussions`,
-        });
+        toast.success(`Search filters applied - Showing ${filtered.length} of ${discussionsData.length} discussions`);
       }
     }
   }, [paramsString]);
@@ -957,15 +953,15 @@ export default function DiscussionsPage() {
   const openCount = filteredDiscussions.filter(
     (d) => d.status === 'open',
   ).length;
-  const resolvedCount = filteredDiscussions.filter(
-    (d) => d.status === 'resolved',
-  ).length;
-  const flaggedCount = filteredDiscussions.filter(
-    (d) => d.status === 'flagged',
-  ).length;
-  const archivedCount = filteredDiscussions.filter(
-    (d) => d.status === 'archived',
-  ).length;
+  // const _resolvedCount = filteredDiscussions.filter(
+  //   (d) => d.status === 'resolved',
+  // ).length;
+  // const _flaggedCount = filteredDiscussions.filter(
+  //   (d) => d.status === 'flagged',
+  // ).length;
+  // const _archivedCount = filteredDiscussions.filter(
+  //   (d) => d.status === 'archived',
+  // ).length;
   const privateCount = filteredDiscussions.filter((d) => d.isPrivate).length;
 
   // Count flagged content by status
@@ -975,7 +971,7 @@ export default function DiscussionsPage() {
 
   // Clear all filters
   const clearAllFilters = () => {
-    navigate.push('/dashboard/admin/discussions');
+    navigate('/dashboard/admin/discussions');
     setFilteredDiscussions(discussionsData);
     setActiveFilters([]);
   };
@@ -1000,10 +996,7 @@ export default function DiscussionsPage() {
           <Button
             variant="outline"
             onClick={() => {
-              toast({
-                title: 'Bulk action completed',
-                description: `Action applied to ${Object.keys(activeTab === 'all' ? discussionRowSelection : flaggedRowSelection).length} selected items.`,
-              });
+              toast.success(`Bulk action completed - Action applied to ${Object.keys(activeTab === 'all' ? discussionRowSelection : flaggedRowSelection).length} selected items.`);
               if (activeTab === 'all') {
                 setDiscussionRowSelection({});
               } else {

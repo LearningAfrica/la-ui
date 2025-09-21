@@ -203,7 +203,7 @@ const columns: ColumnDef<(typeof courses)[0]>[] = [
       <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
+          (table.getIsSomePageRowsSelected() ? 'indeterminate' : false)
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -544,10 +544,10 @@ export default function CoursesPage() {
   const publishedCourses = courses.filter(
     (course) => course.status === 'published',
   ).length;
-  const pendingCourses = courses.filter(
-    (course) => course.status === 'pending',
-  ).length;
-  const featuredCourses = courses.filter((course) => course.featured).length;
+  // const pendingCourses = courses.filter(
+  //   (course) => course.status === 'pending',
+  // ).length;
+  // const featuredCourses = courses.filter((course) => course.featured).length;
   const totalStudents = courses.reduce(
     (sum, course) => sum + course.students,
     0,

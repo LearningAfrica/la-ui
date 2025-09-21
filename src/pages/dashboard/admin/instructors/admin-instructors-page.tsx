@@ -168,6 +168,8 @@ export default function InstructorsPage() {
 
   // Toggle featured status
   const toggleFeatured = (id: string, currentStatus: boolean) => {
+    console.warn(`Toggling featured status for instructor ${id}`);
+
     toast.success(
       `Instructor ${currentStatus ? 'removed from' : 'marked as'} featured`,
     );

@@ -84,9 +84,21 @@ export function CreateSessionDialog({ open, onOpenChange, session, onSave, mode 
   }, [session, mode, open, form]);
 
   const onSubmit = form.handleSubmit((data) => {
+    // Ensure all required fields are present
+    if (!data.title || !data.course || !data.date || !data.time || !data.duration || !data.maxParticipants) {
+      return;
+    }
+
     const sessionData: CreateSessionData = {
-      ...data,
       id: mode === 'edit' ? session?.id : undefined,
+      title: data.title,
+      course: data.course,
+      date: data.date,
+      time: data.time,
+      duration: data.duration,
+      maxParticipants: data.maxParticipants,
+      description: data.description,
+      meetingLink: data.meetingLink,
     };
 
     onSave(sessionData);

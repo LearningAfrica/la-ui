@@ -50,8 +50,9 @@ import { toast } from 'sonner';
 import { Link, useParams } from 'react-router-dom';
 import { useOrganization } from '@/domains/organizations/use-organizations';
 import { useAuth } from '@/hooks/use-auth';
-import type { UserRole } from '@/lib/validators/auth-schema';
+import type {  OrgUserRole } from '@/lib/validators/auth-schema';
 import OrganizationsInviteUsersModal from '@/components/organizations/organizations-invite-users-modal';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 
 // Mock member data
 const mockMembers = [
@@ -60,7 +61,7 @@ const mockMembers = [
     name: 'John Doe',
     email: 'john@example.com',
     image: '/vibrant-street-market.png',
-    role: 'admin' as UserRole,
+    role: 'admin' as OrgUserRole,
     joinedAt: '2023-01-20T00:00:00Z',
     status: 'active',
     lastActive: '2024-01-15T10:30:00Z',
@@ -70,7 +71,7 @@ const mockMembers = [
     name: 'Jane Smith',
     email: 'jane@example.com',
     image: '/abstract-geometric-shapes.png',
-    role: 'instructor' as UserRole,
+    role: 'instructor' as OrgUserRole,
     joinedAt: '2023-02-15T00:00:00Z',
     status: 'active',
     lastActive: '2024-01-14T15:45:00Z',
@@ -80,7 +81,7 @@ const mockMembers = [
     name: 'Mike Johnson',
     email: 'mike@example.com',
     image: '/abstract-blue-burst.png',
-    role: 'student' as UserRole,
+    role: 'learner' as OrgUserRole,
     joinedAt: '2023-03-10T00:00:00Z',
     status: 'active',
     lastActive: '2024-01-13T09:20:00Z',
@@ -90,7 +91,7 @@ const mockMembers = [
     name: 'Sarah Wilson',
     email: 'sarah@example.com',
     image: '/abstract-southwest.png',
-    role: 'student' as UserRole,
+    role: 'learner' as OrgUserRole,
     joinedAt: '2023-04-05T00:00:00Z',
     status: 'pending',
     lastActive: null,
@@ -100,7 +101,7 @@ const mockMembers = [
 
 export default function OrganizationDetailPage() {
   const params = useParams<{ id: string }>();
-  const { mutations, queries } = useOrganization();
+  const {  queries } = useOrganization();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const [showEditDialog, setShowEditDialog] = useState(false);
@@ -114,12 +115,13 @@ export default function OrganizationDetailPage() {
   const [editDescription, setEditDescription] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
-  const { user, getCurrentOrganization } = useAuth();
+  const { user } = useAuth();
   const canManageMembers =
-    user?.user_role === 'super_admin' || user?.user_role === 'admin';
+    user?.user_role === 'super_admin';
 
-  // Find organization
-  const organization = getCurrentOrganization();
+  // Find organization from queries data using the params ID
+  const organizations = queries.organizations.data || [];
+  const organization = organizations.find(org => org.id === params.id);
 
   if (!organization) {
     return (
@@ -163,12 +165,6 @@ export default function OrganizationDetailPage() {
       member.email.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-
 
   const handleSelectMember = (memberId: string, checked: boolean) => {
     if (checked) {
@@ -201,7 +197,7 @@ export default function OrganizationDetailPage() {
         `Removed ${selectedMembers.length} members from organization`,
       );
     } catch (error) {
-      toast.error('Failed to remove members');
+      toast.error(apiErrorMsg(error, 'Failed to remove members'));
     } finally {
       setIsRemoving(false);
     }
@@ -221,19 +217,19 @@ export default function OrganizationDetailPage() {
       setShowEditDialog(false);
       toast.success('Organization updated successfully');
     } catch (error) {
-      toast.error('Failed to update organization');
+      toast.error(apiErrorMsg(error, 'Failed to update organization'));
     } finally {
       setIsEditing(false);
     }
   };
 
-  const getRoleBadgeVariant = (role: UserRole) => {
+  const getRoleBadgeVariant = (role: OrgUserRole) => {
     switch (role) {
       case 'admin':
         return 'destructive';
       case 'instructor':
         return 'default';
-      case 'student':
+      case 'learner':
         return 'secondary';
       default:
         return 'outline';

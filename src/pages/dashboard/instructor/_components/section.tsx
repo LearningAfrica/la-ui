@@ -66,6 +66,7 @@ export function Section({
   allSections,
 }: SectionProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const dropRef = useRef<HTMLDivElement>(null);
   const [isExpanded, setIsExpanded] = useState(true);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
@@ -102,9 +103,9 @@ export function Section({
   });
 
   // Set up drop for lessons from other sections
-  const [{ isOver }, dropLesson] = useDrop<DragItem>({
+  const [{ isOver }, dropLesson] = useDrop({
     accept: 'lesson',
-    drop: (item) => {
+    drop: (_item) => {
       // Handle dropping a lesson into this section
       return { sectionId: section.id };
     },
@@ -115,6 +116,7 @@ export function Section({
 
   // Combine the refs
   drag(drop(ref));
+  dropLesson(dropRef);
 
   // Handle section deletion
   const handleDeleteSection = () => {
@@ -136,7 +138,7 @@ export function Section({
       >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4">
           <div className="flex items-center gap-2">
-            <div className="cursor-move" ref={dropLesson}>
+            <div className="cursor-move" ref={dropRef}>
               <Grip className="text-muted-foreground h-5 w-5" />
             </div>
             <Button

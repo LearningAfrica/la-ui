@@ -92,7 +92,7 @@ const contentSchema = z.object({
   videoUrl: z.string().optional(),
   imageUrl: z.string().optional(),
   imageAlt: z.string().optional(),
-  isPreview: z.boolean().default(false),
+  isPreview: z.boolean(),
   order: z.number().int().nonnegative(),
 });
 
@@ -164,7 +164,7 @@ function DraggableSection({
 
   const [, drop] = useDrop({
     accept: ItemTypes.SECTION,
-    hover(item: { index: number }, _monitor) {
+    hover(item: { index: number }) {
       if (!ref.current) {
         return;
       }

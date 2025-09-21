@@ -170,7 +170,7 @@ export default function EditSupportCategoryPage() {
   }, [watchedName, form]);
 
   // Handle form submission
-  const onSubmit = async (data: CategoryFormData) => {
+  const onSubmit = async (_data: CategoryFormData) => {
     setIsSubmitting(true);
 
     try {

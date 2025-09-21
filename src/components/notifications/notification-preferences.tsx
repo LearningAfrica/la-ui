@@ -24,15 +24,13 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
 
 const notificationPreferencesSchema = z.object({
-  emailNotifications: z.boolean().default(true),
-  browserNotifications: z.boolean().default(true),
-  defaultReminderTime: z
-    .enum(['15min', '30min', '1hour', '1day'])
-    .default('1hour'),
-  assignmentReminders: z.boolean().default(true),
-  deadlineReminders: z.boolean().default(true),
-  liveSessionReminders: z.boolean().default(true),
-  examReminders: z.boolean().default(true),
+  emailNotifications: z.boolean(),
+  browserNotifications: z.boolean(),
+  defaultReminderTime: z.enum(['15min', '30min', '1hour', '1day']),
+  assignmentReminders: z.boolean(),
+  deadlineReminders: z.boolean(),
+  liveSessionReminders: z.boolean(),
+  examReminders: z.boolean(),
 });
 
 type NotificationPreferencesValues = z.infer<

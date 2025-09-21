@@ -33,41 +33,26 @@ import {
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { apiErrorMsg } from '@/lib/utils/axios-err';
 
-// Define the schema for student creation
-const studentFormSchema = z
-  .object({
-    // Basic Information
-    name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
-    email: z.string().email({ message: 'Please enter a valid email address' }),
-    phone: z
-      .string()
-      .min(5, { message: 'Phone number must be at least 5 characters' }),
-    location: z
-      .string()
-      .min(2, { message: 'Location must be at least 2 characters' }),
-    bio: z.string().optional(),
-    status: z.enum(['active', 'inactive', 'suspended'], {
-      required_error: 'Please select a status',
-    }),
-
-    // Additional Information
-    password: z
-      .string()
-      .min(8, { message: 'Password must be at least 8 characters' }),
-    confirmPassword: z
-      .string()
-      .min(8, { message: 'Password must be at least 8 characters' }),
-    sendWelcomeEmail: z.boolean().default(true),
-    notes: z.string().optional(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  });
+// Define the form schema
+const studentFormSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Please enter a valid email address'),
+  phone: z.string().optional(),
+  location: z.string().optional(),
+  bio: z.string().optional(),
+  status: z.enum(['active', 'inactive', 'suspended']),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  confirmPassword: z.string(),
+  sendWelcomeEmail: z.boolean(),
+  notes: z.string().optional(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
 
 type StudentFormValues = z.infer<typeof studentFormSchema>;
 
@@ -133,24 +118,25 @@ export default function AddStudentPage() {
 
   return (
     <div className="flex-1 space-y-4 p-6 md:p-8">
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="sm" asChild>
-          <Link to="/dashboard/admin/students">
-            <ArrowLeft className="mr-1 h-4 w-4" />
+      <div className="container mx-auto p-6 space-y-6">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router('/dashboard/admin/students')}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Students
-          </Link>
-        </Button>
-      </div>
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">Add New Student</h1>
+            <p className="text-muted-foreground">Create a new student account with their details and credentials.</p>
+          </div>
+        </div>
 
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Add New Student</h2>
-        <p className="text-muted-foreground">
-          Create a new student account in the system.
-        </p>
-      </div>
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="flex flex-col gap-6 md:flex-row">
             <div className="md:w-1/3">
               <Card>
@@ -409,7 +395,7 @@ export default function AddStudentPage() {
                 <CardFooter className="flex justify-between">
                   <Button
                     variant="outline"
-                    onClick={() => router.push('/dashboard/admin/students')}
+                    onClick={() => router('/dashboard/admin/students')}
                   >
                     Cancel
                   </Button>
@@ -428,7 +414,8 @@ export default function AddStudentPage() {
             </div>
           </div>
         </form>
-      </Form>
+        </Form>
+      </div>
     </div>
   );
-}
+};

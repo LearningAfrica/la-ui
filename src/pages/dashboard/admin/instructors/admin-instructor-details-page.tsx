@@ -34,7 +34,8 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { apiErrorMsg } from '@/lib/utils/axios-err';
 
 // Sample instructor data
 const instructorData = {
@@ -121,7 +122,7 @@ const instructorData = {
 };
 
 export default function InstructorDetailPage() {
-  const params = useParams<{ id: string }>();
+  // const params = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -154,7 +155,7 @@ export default function InstructorDetailPage() {
       toast.success('Instructor updated successfully');
       setIsEditing(false);
     } catch (error) {
-      toast.error('Failed to update instructor');
+      toast.error(apiErrorMsg(error, 'Failed to update instructor'));
     } finally {
       setIsSubmitting(false);
     }
@@ -168,7 +169,7 @@ export default function InstructorDetailPage() {
       toast.success('Instructor deleted successfully');
       navigate('/dashboard/admin/instructors');
     } catch (error) {
-      toast.error('Failed to delete instructor');
+      toast.error(apiErrorMsg(error,'Failed to delete instructor'));
     } finally {
       setIsSubmitting(false);
       setDeleteDialogOpen(false);

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import {
   Table,
@@ -34,7 +34,7 @@ export function TicketList({
 }: TicketListProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<TicketStatus | 'all'>('all');
-  const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
+  const [tickets,] = useState<Ticket[]>(initialTickets);
 
   const filteredTickets = tickets.filter((ticket) => {
     const matchesSearch =
@@ -120,7 +120,7 @@ export function TicketList({
                   </TableCell>
                   <TableCell>
                     <Link
-                      href={`${baseUrl}/${ticket.id}`}
+                      to={`${baseUrl}/${ticket.id}`}
                       className="font-medium hover:underline"
                     >
                       {ticket.title}
@@ -151,7 +151,7 @@ export function TicketList({
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem asChild>
-                          <Link href={`${baseUrl}/${ticket.id}`}>
+                          <Link to={`${baseUrl}/${ticket.id}`}>
                             View details
                           </Link>
                         </DropdownMenuItem>

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Bell, CalendarIcon, Clock } from 'lucide-react';
 import {
   Card,
@@ -41,9 +40,6 @@ const upcomingEvents = [
 ];
 
 export function UpcomingNotifications() {
-  const [isNotificationsPanelOpen, setIsNotificationsPanelOpen] =
-    useState(false);
-
   // Sort events by date (closest first)
   const sortedEvents = [...upcomingEvents].sort(
     (a, b) => a.date.getTime() - b.date.getTime(),
@@ -65,7 +61,7 @@ export function UpcomingNotifications() {
               variant="outline"
               size="icon"
               className="relative"
-              onClick={() => setIsNotificationsPanelOpen(true)}
+              onClick={() => {/* Open notifications panel */}}
             >
               <Bell className="h-4 w-4" />
               <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
@@ -109,17 +105,14 @@ export function UpcomingNotifications() {
             variant="outline"
             size="sm"
             className="w-full"
-            onClick={() => setIsNotificationsPanelOpen(true)}
+            onClick={() => {/* Open notifications panel */}}
           >
             View all notifications
           </Button>
         </CardFooter>
       </Card>
 
-      <NotificationsPanel
-        open={isNotificationsPanelOpen}
-        onOpenChange={setIsNotificationsPanelOpen}
-      />
+      <NotificationsPanel />
     </>
   );
 }

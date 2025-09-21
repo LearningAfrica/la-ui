@@ -48,14 +48,18 @@ const formSchema = z.object({
   accentColor: z.string(),
 });
 
+type CertificateFormValues = z.infer<typeof formSchema>;
+
 export default function CreateCertificatePage() {
   const navigate = useNavigate();
   const [previewMode, setPreviewMode] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState('template1');
 
   // Form definition
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const form = useForm<CertificateFormValues, any, CertificateFormValues>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       name: '',
       description: '',
@@ -70,11 +74,12 @@ export default function CreateCertificatePage() {
       borderColor: '#000000',
       textColor: '#000000',
       accentColor: '#3b82f6',
+      expiryPeriod: '',
     },
   });
 
   // Form submission handler
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(_values: CertificateFormValues) {
     // toast({
     // 	title: 'Certificate template created',
     // 	description: 'Your certificate template has been created successfully.',
