@@ -647,7 +647,7 @@ export default function LandingPage() {
               <div className="text-sm text-muted-foreground">
                 <p className="font-semibold text-foreground">Contact</p>
                 <p>support@learningafrica.com</p>
-                <p>+254(7)--------</p>
+                <p>+254736212410</p>
               </div>
             </div>
 

@@ -64,7 +64,7 @@ const contactDetails = [
   {
     icon: PhoneCall,
     label: 'Call',
-    value: '+254(7)--------',
+    value: '+254736212410',
     href: 'tel:+27115552300',
   },
   {
