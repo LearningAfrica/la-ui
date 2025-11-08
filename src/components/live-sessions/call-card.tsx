@@ -59,7 +59,6 @@ export function CallCard({
   };
 
   const shouldShowJoinButton = () => {
-    return true
     // Always show for ongoing sessions
     if (session.status === 'ongoing') return true;
 
