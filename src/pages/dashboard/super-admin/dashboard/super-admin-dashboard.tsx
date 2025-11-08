@@ -3,7 +3,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Building } from 'lucide-react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
-import { useAdminRequisitions } from '@/domains/requisitions/admin-requisitions';
+import { useAdminRequisitions } from '@/lib/features/requisitions/admin-requisitions';
 
 import { useInquiries } from './hooks';
 import type { Inquiry } from './types';

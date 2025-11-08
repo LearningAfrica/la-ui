@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Building, Loader2, Plus, Save, Search, Settings } from 'lucide-react';
-import { useOrganization } from '@/domains/organizations/use-organizations';
+import { useOrganization } from '@/lib/features/organizations/use-organizations';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { createOrganizationResolver } from '@/lib/validators/organization-schema';

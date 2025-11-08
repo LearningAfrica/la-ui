@@ -11,7 +11,7 @@ import {
 } from '@tanstack/react-table';
 import { AlertCircle, Calendar, Mail } from 'lucide-react';
 
-import { useAdminRequisitions } from '@/domains/requisitions/admin-requisitions';
+import { useAdminRequisitions } from '@/lib/features/requisitions/admin-requisitions';
 import type { Inquiry } from '@/pages/dashboard/super-admin/dashboard/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

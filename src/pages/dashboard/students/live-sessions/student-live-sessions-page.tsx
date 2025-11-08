@@ -77,7 +77,7 @@ export default function StudentLiveSessionsPage() {
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Users className="h-4 w-4" />
-                        <span>{session.participants}/{session.maxParticipants} participants</span>
+                        <span>{session.participants}/{session.max_participants} participants</span>
                       </div>
                     </div>
 
@@ -129,7 +129,7 @@ export default function StudentLiveSessionsPage() {
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Users className="h-4 w-4" />
-                        <span>{session.participants}/{session.maxParticipants} participants</span>
+                        <span>{session.participants}/{session.max_participants} participants</span>
                       </div>
                     </div>
 

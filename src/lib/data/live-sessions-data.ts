@@ -12,7 +12,7 @@ export const mockLiveSessions: LiveSession[] = [
     duration: '60 minutes',
     status: 'upcoming',
     participants: 0,
-    maxParticipants: 100,
+    max_participants: 100,
     meetingLink: 'https://us04web.zoom.us/j/77642471979?pwd=6E1v39MSPub2Z4NhOmFO5wISe8AFd5.1'
   },
   {
@@ -25,7 +25,7 @@ export const mockLiveSessions: LiveSession[] = [
     duration: '60 minutes',
     status: 'upcoming',
     participants: 0,
-    maxParticipants: 100,
+    max_participants: 100,
     meetingLink: 'https://us04web.zoom.us/j/73275594647?pwd=zwcBdTqQBmLlyp3eJi7AjzMsm3Wa6H.1'
   },
   {
@@ -38,7 +38,7 @@ export const mockLiveSessions: LiveSession[] = [
     duration: '60 minutes',
     status: 'upcoming',
     participants: 0,
-    maxParticipants: 100,
+    max_participants: 100,
     meetingLink: 'https://us04web.zoom.us/j/74874536623?pwd=u0aBAmczPFDU04QiLlbDFhYOm0PNzJ.1'
   },
   {
@@ -51,7 +51,7 @@ export const mockLiveSessions: LiveSession[] = [
     duration: '121 minutes',
     status: 'upcoming',
     participants: 0,
-    maxParticipants: 100,
+    max_participants: 100,
     meetingLink: 'https://us04web.zoom.us/j/74098259185?pwd=CYbXSAPasXUY4PzuHQbY8aIPPH1Fm1.1'
   }
 ];

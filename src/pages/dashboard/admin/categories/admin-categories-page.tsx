@@ -37,7 +37,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Edit, MoreHorizontal, Plus, Search, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useCourseCategories } from '@/domains/categories/use-course-categories';
+import { useCourseCategories } from '@/lib/features/categories/use-course-categories';
 import { format } from 'date-fns';
 
 export default function CategoriesPage() {

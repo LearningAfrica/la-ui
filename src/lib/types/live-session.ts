@@ -1,27 +1,16 @@
 export interface LiveSession {
   id: string;
-  title: string;
-  instructor: string;
-  course: string;
-  date: string;
-  time: string;
-  duration: string;
-  status: 'upcoming' | 'ongoing' | 'completed' | 'cancelled';
-  participants: number;
-  maxParticipants: number;
-  meetingLink?: string;
-  recordingLink?: string;
-  description?: string;
-}
-
-export interface CreateSessionData {
-  id?: string;
-  title: string;
-  course: string;
-  date: string;
-  time: string;
-  duration: string;
-  maxParticipants: number;
-  description?: string;
-  meetingLink?: string;
+  host: {
+    id: string;
+    title: string;
+    first_name: string;
+    last_name: string;
+  };
+  status: 'upcoming' | 'ongoing' | 'past';
+  topic: string;
+  start_time: string; // date-time format
+  duration: number; // integer, duration in minutes
+  join_url: string;
+  created_at: string; // date-time format
+  updated_at: string; // date-time format
 }

@@ -39,7 +39,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import type { OrgUserRole } from '@/lib/validators/auth-schema';
-import { useOrganization } from '@/domains/organizations/use-organizations';
+import { useOrganization } from '@/lib/features/organizations/use-organizations';
 import { inviteUsersToOrganizationResolver } from '@/lib/validators/organization-schema';
 import { apiErrorMsg } from '@/lib/utils/axios-err';
 

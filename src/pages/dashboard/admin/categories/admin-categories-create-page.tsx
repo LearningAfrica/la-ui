@@ -24,7 +24,7 @@ import {
 import { ArrowLeft, Loader2, SaveIcon, Upload } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createCourseCategoryResolver } from '@/lib/validators/course-categories-page';
-import { useCourseCategories } from '@/domains/categories/use-course-categories';
+import { useCourseCategories } from '@/lib/features/categories/use-course-categories';
 import { apiErrorMsg } from '@/lib/utils/axios-err';
 import { useAuth } from '@/hooks/use-auth';
 

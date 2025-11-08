@@ -24,7 +24,7 @@ import { Separator } from '@/components/ui/separator';
 import { ArrowLeft, Save, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link, useParams } from 'react-router-dom';
-import { useOrganization } from '@/domains/organizations/use-organizations';
+import { useOrganization } from '@/lib/features/organizations/use-organizations';
 import { useAuth } from '@/hooks/use-auth';
 import { apiErrorMsg } from '@/lib/utils/axios-err';
 import type { OrgUserRole } from '@/lib/validators/auth-schema';

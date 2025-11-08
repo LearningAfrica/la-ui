@@ -1,46 +1,25 @@
-import { useState, useEffect } from 'react';
-import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Video, Maximize2, Minimize2, ArrowLeft, Users, Clock, Calendar } from 'lucide-react';
-import { convertToEmbedUrl, formatDate, getStatusBadgeVariant, getSessionById, mockLiveSessions } from '@/lib/data/live-sessions-data';
+import { convertToEmbedUrl, formatDate, getStatusBadgeVariant } from '@/lib/data/live-sessions-data';
+import { useSession } from '@/lib/features/live-sessions/queries';
 import type { LiveSession } from '@/lib/types/live-session';
 
 export default function AdminMeetingPage() {
   const { meetingId } = useParams();
-  const location = useLocation();
   const navigate = useNavigate();
   const [isFullScreen, setIsFullScreen] = useState(false);
-  const [session, setSession] = useState<LiveSession | null>(null);
 
-  useEffect(() => {
-    if (location.state?.session) {
-      setSession(location.state.session);
-    } else {
-      // Fallback to mock data if state is not available (e.g., direct URL access)
-      const fallbackSession = getSessionById(mockLiveSessions, meetingId || '1');
-      if (fallbackSession) {
-        setSession(fallbackSession);
-      } else {
-        // Create a default session if not found
-        const defaultSession: LiveSession = {
-          id: meetingId || '1',
-          title: 'Advanced JavaScript Concepts',
-          instructor: 'Dr. Sarah Johnson',
-          course: 'JavaScript Fundamentals',
-          date: '2024-01-15',
-          time: '14:00',
-          duration: '90 minutes',
-          status: 'upcoming',
-          participants: 12,
-          maxParticipants: 20,
-          meetingLink: 'https://zoom.us/j/1234567890?pwd=abcdefghijklmnop'
-        };
-        setSession(defaultSession);
-      }
-    }
-  }, [meetingId, location.state]);
+  // Use TanStack Query to fetch session data
+  const {
+    data: session,
+    isLoading,
+    error,
+    isError,
+  } = useSession(meetingId || '');
 
   const getStatusBadge = (status: LiveSession['status']) => {
     return <Badge className={getStatusBadgeVariant(status)}>{status}</Badge>;
@@ -50,7 +29,20 @@ export default function AdminMeetingPage() {
     navigate('/dashboard/admin/live-sessions');
   };
 
-  if (!session) {
+  // Format date and time from session.start_time
+  const formatDateTime = (startTime: string) => {
+    const date = new Date(startTime);
+    return {
+      date: formatDate(startTime),
+      time: date.toTimeString().slice(0, 5), // HH:MM format
+    };
+  };
+
+  const getInstructorName = (session: LiveSession) => {
+    return `${session.host.first_name} ${session.host.last_name}`;
+  };
+
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
@@ -62,6 +54,44 @@ export default function AdminMeetingPage() {
     );
   }
 
+  if (isError) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <Video className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-foreground mb-2">Error Loading Meeting</h2>
+          <p className="text-muted-foreground mb-4">
+            {error?.message || 'Failed to load meeting details. Please try again.'}
+          </p>
+          <Button onClick={handleBack} variant="outline">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Sessions
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <Video className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-foreground mb-2">Meeting Not Found</h2>
+          <p className="text-muted-foreground mb-4">
+            The requested meeting could not be found.
+          </p>
+          <Button onClick={handleBack} variant="outline">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Sessions
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const { date, time } = formatDateTime(session.start_time);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -72,8 +102,8 @@ export default function AdminMeetingPage() {
             Back to Sessions
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">{session.title}</h1>
-            <p className="text-muted-foreground">{session.course} • {session.instructor}</p>
+            <h1 className="text-2xl font-bold text-foreground">{session.topic}</h1>
+            <p className="text-muted-foreground">Meeting • {getInstructorName(session)}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -110,15 +140,15 @@ export default function AdminMeetingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{formatDate(session.date)}</span>
+              <span className="text-sm">{date}</span>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{session.time} ({session.duration})</span>
+              <span className="text-sm">{time} ({session.duration} min)</span>
             </div>
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{session.participants}/{session.maxParticipants} participants</span>
+              <span className="text-sm">Meeting participants</span>
             </div>
           </div>
         </CardContent>
@@ -131,8 +161,8 @@ export default function AdminMeetingPage() {
             <div className="flex items-center gap-3">
               <Video className="h-5 w-5 text-primary" />
               <div>
-                <h2 className="text-lg font-semibold text-foreground">{session.title}</h2>
-                <p className="text-sm text-muted-foreground">{session.course} • {session.instructor}</p>
+                <h2 className="text-lg font-semibold text-foreground">{session.topic}</h2>
+                <p className="text-sm text-muted-foreground">Meeting • {getInstructorName(session)}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -149,7 +179,7 @@ export default function AdminMeetingPage() {
 
         <div className={`${isFullScreen ? 'h-[calc(100vh-80px)]' : 'h-[600px]'}`}>
           <iframe
-            src={convertToEmbedUrl(session.meetingLink!)}
+            src={convertToEmbedUrl(session.join_url)}
             className="w-full h-full border-0"
             allow="camera; microphone; fullscreen; speaker; display-capture"
             allowFullScreen

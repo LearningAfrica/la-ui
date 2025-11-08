@@ -17,22 +17,3 @@ export type FormData = Record<string, TSFixMe>;
 
 // Common component props
 export type ComponentProps = Record<string, TSFixMe>;
-
-export type Nullable<T> = T | null | undefined;
-
-export type Optional<T> = T | undefined;
-export type PaginationMetaData = {
-  totalDocs: number;
-  totalPages: number;
-  page: number;
-  limit: number;
-  hasNextPage: boolean;
-  hasPrevPage: boolean;
-  nextPage: number | null;
-  prevPage: number | null;
-};
-
-export type Paginated<T> = {
-  meta: PaginationMetaData;
-  data: T[];
-};

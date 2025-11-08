@@ -21,7 +21,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useOrganization } from '@/domains/organizations/use-organizations';
+import { useOrganization } from '@/lib/features/organizations/use-organizations';
 import { useAuth } from '@/hooks/use-auth';
 
 import type { ApiOrganizationInterface } from '@/lib/types/organization';

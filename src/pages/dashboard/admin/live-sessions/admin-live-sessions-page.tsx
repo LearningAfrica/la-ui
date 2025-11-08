@@ -1,18 +1,29 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, Clock, Users, Video, ExternalLink, Plus, Edit, Trash2, BarChart3, TrendingUp } from 'lucide-react';
+import { Users, Video, Plus, BarChart3, TrendingUp } from 'lucide-react';
 import { CreateSessionDialog } from '@/components/live-sessions/create-session-dialog';
 import { DeleteSessionDialog } from '@/components/live-sessions/delete-session-dialog';
-import { mockLiveSessions, getSessionsByStatus, formatDate, getStatusBadgeVariant } from '@/lib/data/live-sessions-data';
-import type { LiveSession, CreateSessionData } from '@/lib/types/live-session';
+import { CallCard } from '@/components/live-sessions/call-card';
+import {
+  useUpcomingSessions,
+  useOngoingSessions,
+  usePastSessions,
+} from '@/lib/features/live-sessions/queries';
+import { useDeleteSession } from '@/lib/features/live-sessions/mutations';
+import type { LiveSession } from '@/lib/types/live-session';
+import { toast } from 'sonner';
 
 export default function AdminLiveSessionsPage() {
   const [activeTab, setActiveTab] = useState('overview');
-  const [sessions, setSessions] = useState<LiveSession[]>(mockLiveSessions);
+
+  // TanStack Query hooks for data fetching
+  const { data: upcomingSessions = [] } = useUpcomingSessions();
+  const { data: ongoingSessions = [] } = useOngoingSessions();
+  const { data: pastSessions = [] } = usePastSessions();
+  const deleteSessionMutation = useDeleteSession();
 
   // Dialog states
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -23,53 +34,24 @@ export default function AdminLiveSessionsPage() {
 
   const navigate = useNavigate();
 
-  // Simple toast implementation
-  const toast = ({ title, description }: { title: string; description: string }) => {
-    console.log(`Toast: ${title} - ${description}`);
-    // In a real app, this would show a toast notification
-  };
-
-  const getStatusBadge = (status: LiveSession['status']) => {
-    return <Badge className={getStatusBadgeVariant(status)}>{status}</Badge>;
-  };
-
-  const handleCreateSession = (sessionData: CreateSessionData) => {
-    const newSession: LiveSession = {
-      ...sessionData,
-      id: Date.now().toString(), // Simple ID generation
-      status: 'upcoming',
-      participants: 0,
-      instructor: 'Admin User', // Default instructor for admin-created sessions
-    };
-
-    setSessions(prev => [newSession, ...prev]);
-    toast({
-      title: "Session Created",
-      description: `"${sessionData.title}" has been successfully created.`,
-    });
-  };
-
-  const handleEditSession = (sessionData: CreateSessionData) => {
-    setSessions(prev => prev.map(session =>
-      session.id === sessionData.id
-        ? { ...session, ...sessionData }
-        : session
-    ));
-    toast({
-      title: "Session Updated",
-      description: `"${sessionData.title}" has been successfully updated.`,
-    });
-  };
-
+  // Simple toast implementation is now handled by the dialog internally
   const handleDeleteSession = () => {
     if (!sessionToDelete) return;
 
-    setSessions(prev => prev.filter(session => session.id !== sessionToDelete.id));
-    toast({
-      title: "Session Deleted",
-      description: `"${sessionToDelete.title}" has been successfully deleted.`,
+    deleteSessionMutation.mutate(sessionToDelete.id, {
+      onSuccess: () => {
+        toast.success("Session Deleted", {
+          description: `"${sessionToDelete.topic}" has been successfully deleted.`,
+        });
+        setDeleteDialogOpen(false);
+        setSessionToDelete(null);
+      },
+      onError: (error) => {
+        toast.error("Error", {
+          description: `Failed to delete session: ${error.message}`,
+        });
+      },
     });
-    setSessionToDelete(null);
   };
 
   const openEditDialog = (session: LiveSession) => {
@@ -88,13 +70,11 @@ export default function AdminLiveSessionsPage() {
     });
   };
 
-  const upcomingSessions = getSessionsByStatus(sessions, 'upcoming');
-  const ongoingSessions = getSessionsByStatus(sessions, 'ongoing');
-  const pastSessions = getSessionsByStatus(sessions, 'completed');
-
-  const totalSessions = sessions.length;
-  const totalParticipants = sessions.reduce((sum, session) => sum + session.participants, 0);
-  const avgAttendance = totalSessions > 0 ? totalParticipants / totalSessions : 0;
+  // Combine all sessions for calculations
+  const allSessions = [...upcomingSessions, ...ongoingSessions, ...pastSessions];
+  const totalSessions = allSessions.length;
+  const totalParticipants = 0; // Participant count not available in current LiveSession type
+  const avgAttendance = 0; // Will be 0 until participant data is available
 
   return (
     <div className="space-y-6">
@@ -173,58 +153,19 @@ export default function AdminLiveSessionsPage() {
 
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {sessions
-              .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+            {allSessions
+              .sort((a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime())
               .slice(0, 6)
               .map((session) => (
-                <Card key={session.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <CardTitle className="text-lg">{session.title}</CardTitle>
-                        <CardDescription>{session.course}</CardDescription>
-                        <p className="text-xs text-muted-foreground">{session.instructor}</p>
-                      </div>
-                      {getStatusBadge(session.status)}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="h-4 w-4" />
-                        <span>{formatDate(session.date)}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        <span>{session.time} ({session.duration})</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Users className="h-4 w-4" />
-                        <span>{session.participants}/{session.maxParticipants} participants</span>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      {session.meetingLink && (
-                        <Button variant="outline" className="flex-1" onClick={() => joinSession(session)}>
-                          <Video className="h-4 w-4 mr-2" />
-                          Join Session
-                        </Button>
-                      )}
-                      {session.recordingLink && (
-                        <Button variant="outline" className="flex-1" asChild>
-                          <a href={session.recordingLink} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-4 w-4 mr-2" />
-                            Recording
-                          </a>
-                        </Button>
-                      )}
-                      <Button variant="outline" size="icon" onClick={() => openEditDialog(session)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <CallCard
+                  key={session.id}
+                  session={session}
+                  onJoinSession={joinSession}
+                  onEditSession={openEditDialog}
+                  showInstructor={true}
+                  showCourse={true}
+                  showParticipantCount={true}
+                />
               ))}
           </div>
         </TabsContent>
@@ -247,44 +188,16 @@ export default function AdminLiveSessionsPage() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {upcomingSessions.map((session) => (
-                <Card key={session.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <CardTitle className="text-lg">{session.title}</CardTitle>
-                        <CardDescription>{session.course}</CardDescription>
-                        <p className="text-xs text-muted-foreground">{session.instructor}</p>
-                      </div>
-                      {getStatusBadge(session.status)}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="h-4 w-4" />
-                        <span>{formatDate(session.date)}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        <span>{session.time} ({session.duration})</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Users className="h-4 w-4" />
-                        <span>{session.participants}/{session.maxParticipants} participants</span>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button variant="outline" className="flex-1" onClick={() => joinSession(session)}>
-                        <Video className="h-4 w-4 mr-2" />
-                        Join Session
-                      </Button>
-                      <Button variant="outline" size="icon" onClick={() => openEditDialog(session)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <CallCard
+                  key={session.id}
+                  session={session}
+                  onJoinSession={joinSession}
+                  onEditSession={openEditDialog}
+                  showInstructor={true}
+                  showCourse={true}
+                  showParticipantCount={true}
+                  joinButtonText="Join Session"
+                />
               ))}
             </div>
           )}
@@ -304,44 +217,17 @@ export default function AdminLiveSessionsPage() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {ongoingSessions.map((session) => (
-                <Card key={session.id} className="hover:shadow-md transition-shadow border-green-200 dark:border-green-800">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <CardTitle className="text-lg">{session.title}</CardTitle>
-                        <CardDescription>{session.course}</CardDescription>
-                        <p className="text-xs text-muted-foreground">{session.instructor}</p>
-                      </div>
-                      {getStatusBadge(session.status)}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="h-4 w-4" />
-                        <span>{formatDate(session.date)}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        <span>{session.time} ({session.duration})</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Users className="h-4 w-4" />
-                        <span>{session.participants}/{session.maxParticipants} participants</span>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button className="flex-1" onClick={() => joinSession(session)}>
-                        <Video className="h-4 w-4 mr-2" />
-                        Join Session
-                      </Button>
-                      <Button variant="outline" size="icon" onClick={() => openEditDialog(session)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <CallCard
+                  key={session.id}
+                  session={session}
+                  onJoinSession={joinSession}
+                  onEditSession={openEditDialog}
+                  showInstructor={true}
+                  showCourse={true}
+                  showParticipantCount={true}
+                  variant="highlighted"
+                  joinButtonText="Join Session"
+                />
               ))}
             </div>
           )}
@@ -361,49 +247,17 @@ export default function AdminLiveSessionsPage() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {pastSessions.map((session) => (
-                <Card key={session.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="space-y-1">
-                        <CardTitle className="text-lg">{session.title}</CardTitle>
-                        <CardDescription>{session.course}</CardDescription>
-                        <p className="text-xs text-muted-foreground">{session.instructor}</p>
-                      </div>
-                      {getStatusBadge(session.status)}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="h-4 w-4" />
-                        <span>{formatDate(session.date)}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        <span>{session.time} ({session.duration})</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Users className="h-4 w-4" />
-                        <span>{session.participants}/{session.maxParticipants} participants</span>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button variant="outline" className="flex-1" asChild>
-                        <a href={session.recordingLink} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="h-4 w-4 mr-2" />
-                          View Recording
-                        </a>
-                      </Button>
-                      <Button variant="outline" size="icon" onClick={() => openEditDialog(session)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="outline" size="icon" onClick={() => openDeleteDialog(session)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <CallCard
+                  key={session.id}
+                  session={session}
+                  onJoinSession={joinSession}
+                  onEditSession={openEditDialog}
+                  onDeleteSession={openDeleteDialog}
+                  showInstructor={true}
+                  showCourse={true}
+                  showParticipantCount={true}
+                  joinButtonText="View Recording"
+                />
               ))}
             </div>
           )}
@@ -414,7 +268,6 @@ export default function AdminLiveSessionsPage() {
       <CreateSessionDialog
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
-        onSave={handleCreateSession}
         mode="create"
       />
 
@@ -423,7 +276,6 @@ export default function AdminLiveSessionsPage() {
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
         session={selectedSession}
-        onSave={handleEditSession}
         mode="edit"
       />
 
@@ -431,7 +283,7 @@ export default function AdminLiveSessionsPage() {
       <DeleteSessionDialog
         open={deleteDialogOpen}
         onOpenChange={setDeleteDialogOpen}
-        sessionTitle={sessionToDelete?.title || ''}
+        sessionTitle={sessionToDelete?.topic || ''}
         onConfirm={handleDeleteSession}
       />
     </div>

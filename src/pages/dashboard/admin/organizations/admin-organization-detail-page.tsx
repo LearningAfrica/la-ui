@@ -48,7 +48,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { Link, useParams } from 'react-router-dom';
-import { useOrganization } from '@/domains/organizations/use-organizations';
+import { useOrganization } from '@/lib/features/organizations/use-organizations';
 import { useAuth } from '@/hooks/use-auth';
 import type {  OrgUserRole } from '@/lib/validators/auth-schema';
 import OrganizationsInviteUsersModal from '@/components/organizations/organizations-invite-users-modal';

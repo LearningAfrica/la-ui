@@ -1,11 +1,25 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar, Clock, Users, Video } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Calendar, Video } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -14,25 +28,24 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import type { CreateSessionData } from '@/lib/types/live-session';
-import { createSessionSchemaResolver, type CreateSessionFormData } from '@/lib/validators/live-session-schema';
+import {
+  createSessionSchemaResolver,
+  type CreateSessionData,
+  type CreateSessionFormData,
+} from '@/lib/validators/live-session-schema';
+import {
+  useCreateSession,
+  useUpdateSession,
+} from '@/lib/features/live-sessions';
+import { toast } from 'sonner';
+import type { LiveSession } from '@/lib/types/live-session';
 
 interface CreateSessionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  session?: CreateSessionData | null;
-  onSave: (session: CreateSessionData) => void;
+  session?: LiveSession | null;
   mode: 'create' | 'edit';
 }
-
-const mockCourses = [
-  { id: '1', title: 'JavaScript Fundamentals' },
-  { id: '2', title: 'React Development' },
-  { id: '3', title: 'TypeScript Basics' },
-  { id: '4', title: 'CSS Mastery' },
-  { id: '5', title: 'Data Science Basics' },
-  { id: '6', title: 'AI Fundamentals' },
-];
 
 const durationOptions = [
   { value: '30', label: '30 minutes' },
@@ -42,67 +55,93 @@ const durationOptions = [
   { value: '180', label: '3 hours' },
 ];
 
-export function CreateSessionDialog({ open, onOpenChange, session, onSave, mode }: CreateSessionDialogProps) {
+export function CreateSessionDialog({
+  open,
+  onOpenChange,
+  session,
+  mode,
+}: CreateSessionDialogProps) {
+  // TanStack Query mutations
+  const createSessionMutation = useCreateSession();
+  const updateSessionMutation = useUpdateSession();
+
   const form = useForm<CreateSessionFormData>({
     resolver: createSessionSchemaResolver,
     defaultValues: {
-      title: '',
-      course: '',
-      date: '',
-      time: '',
-      duration: '60',
-      maxParticipants: 20,
+      topic: '',
+      course: 'General Session',
+      start_time: '',
+      duration: 60,
+      max_participants: 20,
       description: '',
-      meetingLink: '',
     },
   });
 
   useEffect(() => {
     if (session && mode === 'edit') {
+      // For edit mode, convert the LiveSession back to form format
+      const start_time = session.start_time || '';
+
+      // Duration is already a number in the new format
+      const durationNumber = session.duration || 60;
+
       form.reset({
-        title: session.title,
-        course: session.course,
-        date: session.date,
-        time: session.time,
-        duration: session.duration,
-        maxParticipants: session.maxParticipants,
-        description: session.description || '',
-        meetingLink: session.meetingLink || '',
+        topic: session.topic,
+        start_time: start_time.slice(0, 16), // Remove seconds and timezone info for datetime-local input
+        duration: durationNumber,
       });
     } else {
       form.reset({
-        title: '',
-        course: '',
-        date: '',
-        time: '',
-        duration: '60',
-        maxParticipants: 20,
+        topic: '',
+        course: 'General Session',
+        start_time: '',
+        duration: 60,
+        max_participants: 20,
         description: '',
-        meetingLink: '',
       });
     }
   }, [session, mode, open, form]);
 
   const onSubmit = form.handleSubmit((data) => {
-    // Ensure all required fields are present
-    if (!data.title || !data.course || !data.date || !data.time || !data.duration || !data.maxParticipants) {
-      return;
-    }
-
     const sessionData: CreateSessionData = {
       id: mode === 'edit' ? session?.id : undefined,
-      title: data.title,
-      course: data.course,
-      date: data.date,
-      time: data.time,
+      topic: data.topic,
+      course: data.course || 'General Session',
+      start_time: data.start_time,
       duration: data.duration,
-      maxParticipants: data.maxParticipants,
-      description: data.description,
-      meetingLink: data.meetingLink,
+      max_participants: data.max_participants || 20,
+      description: data.description || '',
     };
 
-    onSave(sessionData);
-    onOpenChange(false);
+    if (mode === 'create') {
+      createSessionMutation.mutate(sessionData, {
+        onSuccess: () => {
+          toast.success('Session Created', {
+            description: `"${sessionData.topic}" has been successfully created.`,
+          });
+          onOpenChange(false);
+        },
+        onError: (error) => {
+          toast.error('Error', {
+            description: `Failed to create session: ${error.message}`,
+          });
+        },
+      });
+    } else {
+      updateSessionMutation.mutate(sessionData, {
+        onSuccess: () => {
+          toast.success('Session Updated', {
+            description: `"${sessionData.topic}" has been successfully updated.`,
+          });
+          onOpenChange(false);
+        },
+        onError: (error) => {
+          toast.error('Error', {
+            description: `Failed to update session: ${error.message}`,
+          });
+        },
+      });
+    }
   });
 
   return (
@@ -116,69 +155,69 @@ export function CreateSessionDialog({ open, onOpenChange, session, onSave, mode 
           <DialogDescription>
             {mode === 'create'
               ? 'Schedule a new live learning session for your students.'
-              : 'Update the details of this live session.'
-            }
+              : 'Update the details of this live session.'}
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={onSubmit} className="space-y-4">
+            {/* Session Topic */}
+            <FormField
+              control={form.control}
+              name="topic"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Topic *</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="e.g., Advanced JavaScript Concepts"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Course Selection - Commented Out */}
+            {/* <FormField
+              control={form.control}
+              name="course"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Course *</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a course" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {mockCourses.map((course) => (
+                        <SelectItem key={course.id} value={course.title}>
+                          {course.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            /> */}
+
+            {/* Start Time and Duration */}
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="title"
+                name="start_time"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Session Title *</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="e.g., Advanced JavaScript Concepts"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="course"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Course *</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a course" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {mockCourses.map((course) => (
-                          <SelectItem key={course.id} value={course.title}>
-                            {course.title}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              <FormField
-                control={form.control}
-                name="date"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Date *</FormLabel>
-                    <FormControl>
+                    <FormLabel>Start Date *</FormLabel>
+                    <FormControl className="w-full">
                       <div className="relative">
-                        <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Calendar className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
                         <Input
-                          type="date"
+                          type="datetime-local"
                           className="pl-10"
                           {...field}
                         />
@@ -189,45 +228,47 @@ export function CreateSessionDialog({ open, onOpenChange, session, onSave, mode 
                 )}
               />
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="time"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Time *</FormLabel>
+                    <FormLabel>Start Time *</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Clock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                        <Input
-                          type="time"
-                          className="pl-10"
-                          {...field}
-                        />
+                        <Clock className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
+                        <Input type="time" className="pl-10" {...field} />
                       </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
 
               <FormField
                 control={form.control}
                 name="duration"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Duration</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
+                    <FormLabel>Duration *</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value.toString()}
+                    >
+                      <FormControl className="w-full">
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {durationOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
+                        <SelectGroup>
+                          <SelectLabel>Duration</SelectLabel>
+                          {durationOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -236,7 +277,8 @@ export function CreateSessionDialog({ open, onOpenChange, session, onSave, mode 
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* Max Participants and Meeting Link - Commented Out */}
+            {/* <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="maxParticipants"
@@ -278,9 +320,10 @@ export function CreateSessionDialog({ open, onOpenChange, session, onSave, mode 
                   </FormItem>
                 )}
               />
-            </div>
+            </div> */}
 
-            <FormField
+            {/* Description - Commented Out */}
+            {/* <FormField
               control={form.control}
               name="description"
               render={({ field }) => (
@@ -296,14 +339,35 @@ export function CreateSessionDialog({ open, onOpenChange, session, onSave, mode 
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={
+                  createSessionMutation.isPending ||
+                  updateSessionMutation.isPending
+                }
+              >
                 Cancel
               </Button>
-              <Button type="submit">
-                {mode === 'create' ? 'Create Session' : 'Update Session'}
+              <Button
+                type="submit"
+                disabled={
+                  createSessionMutation.isPending ||
+                  updateSessionMutation.isPending
+                }
+              >
+                {createSessionMutation.isPending ||
+                updateSessionMutation.isPending
+                  ? mode === 'create'
+                    ? 'Creating...'
+                    : 'Updating...'
+                  : mode === 'create'
+                    ? 'Create Session'
+                    : 'Update Session'}
               </Button>
             </DialogFooter>
           </form>

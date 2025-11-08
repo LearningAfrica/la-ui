@@ -34,7 +34,7 @@ export default function StudentMeetingPage() {
           duration: '90 minutes',
           status: 'upcoming',
           participants: 12,
-          maxParticipants: 20,
+          max_participants: 20,
           meetingLink: 'https://zoom.us/j/1234567890?pwd=abcdefghijklmnop'
         };
         setSession(defaultSession);
@@ -118,7 +118,7 @@ export default function StudentMeetingPage() {
             </div>
             <div className="flex items-center gap-2">
               <Users className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{session.participants}/{session.maxParticipants} participants</span>
+              <span className="text-sm">{session.participants}/{session.max_participants} participants</span>
             </div>
           </div>
         </CardContent>
