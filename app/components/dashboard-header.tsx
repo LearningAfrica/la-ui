@@ -32,7 +32,9 @@ export function DashboardHeader({
 
   const getThemeIcon = () => {
     if (theme === "light") return <Sun className="size-4" />;
+
     if (theme === "dark") return <Moon className="size-4" />;
+
     return <Monitor className="size-4" />;
   };
 

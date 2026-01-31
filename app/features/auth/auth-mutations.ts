@@ -141,3 +141,24 @@ export const useLogout = () => {
     },
   });
 };
+
+// Verify Email Mutation
+export const useVerifyEmail = () => {
+  return useMutation<{ message: string }, ErrorResponse, { token: string }>({
+    mutationKey: authMutationKeys.verifyEmail(),
+    mutationFn: async ({ token }) => {
+      const response = await apiClient.post<{ message: string }>(
+        `/api/auth/verify-email/?token=${token}`,
+        { token }
+      );
+
+      return response.data;
+    },
+    onError: (error) => {
+      toast.error({
+        message: extractError(error, "Email verification failed"),
+        description: "Email verification failed, Please try again.",
+      });
+    },
+  });
+};

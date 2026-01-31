@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
+import { href, Link, useNavigate } from "react-router";
 import { useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,7 @@ interface LoginFormProps {
 export function LoginForm({ searchParams }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuthStore();
+  const { login, isVerified } = useAuthStore();
 
   const form = useForm({
     resolver: loginResolver,
@@ -40,15 +40,24 @@ export function LoginForm({ searchParams }: LoginFormProps) {
 
   const onSubmit = form.handleSubmit(async (data) => {
     await loginMutation.mutateAsync(data, {
-      onSuccess: (result) => {
+      onSuccess: async (result) => {
         // Update auth store
         login(result);
 
+        if (!isVerified) {
+          navigate(
+            "/email-verification-pending" +
+              (data.email ? `?email=${encodeURIComponent(data.email)}` : "")
+          );
+
+          return;
+        }
+
         // Navigate based on user role
         if (result.user_role === "super_admin") {
-          navigate("/system/dashboard");
+          navigate(href("/system/dashboard"));
         } else {
-          navigate("/client/dashboard");
+          navigate(href("/client/dashboard"));
         }
       },
       onError: (error) => {

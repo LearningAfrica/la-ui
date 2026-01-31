@@ -9,8 +9,10 @@ export function extractError(error: unknown, fallbackMessage?: string): string {
       "An unknown error occurred"
     );
   }
+
   if (error instanceof Error) {
     return error.message;
   }
+
   return fallbackMessage || "An unknown error occurred";
 }

@@ -1,25 +1,13 @@
-import { Link } from "react-router";
+import { href, Link } from "react-router";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/stores/auth/auth-store";
 
-function getDashboardPath(role: string | undefined): string {
-  switch (role) {
-    case "super_admin":
-      return "/super-admin";
-    case "user":
-      return "/dashboard";
-    default:
-      return "/";
-  }
-}
-
 export default function HeroSection() {
-  const { user, isAuthenticated } = useAuthStore();
+  const { isAuthenticated, role, canCreateOrg } = useAuthStore();
 
   // Check if user can access a dashboard
-  const isSuperAdmin = user?.role === "super_admin";
-  const canCreateOrg = user?.canCreateOrg;
+  const isSuperAdmin = role === "super_admin";
 
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -67,9 +55,9 @@ export default function HeroSection() {
       </div>
 
       {/* Decorative Elements */}
-      <div className="absolute top-20 left-10 h-32 w-32 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-500/20 blur-3xl" />
-      <div className="absolute right-10 bottom-20 h-48 w-48 rounded-full bg-gradient-to-br from-green-400/20 to-emerald-500/20 blur-3xl" />
-      <div className="absolute top-1/3 right-1/4 h-24 w-24 rounded-full bg-gradient-to-br from-red-400/20 to-red-500/20 blur-2xl" />
+      <div className="absolute top-20 left-10 h-32 w-32 rounded-full bg-linear-to-br from-amber-400/20 to-orange-500/20 blur-3xl" />
+      <div className="absolute right-10 bottom-20 h-48 w-48 rounded-full bg-linear-to-br from-green-400/20 to-emerald-500/20 blur-3xl" />
+      <div className="absolute top-1/3 right-1/4 h-24 w-24 rounded-full bg-linear-to-br from-red-400/20 to-red-500/20 blur-2xl" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-2">
@@ -155,15 +143,15 @@ export default function HeroSection() {
               ) : (
                 // Not logged in - show onboard and sign in
                 <>
-                  <Link to="/auth/register">
+                  <Link to={href("/sign-up")}>
                     <Button
                       size="lg"
-                      className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30 transition-all duration-300 hover:from-amber-600 hover:to-orange-700 hover:shadow-amber-500/50 sm:w-auto"
+                      className="w-full bg-linear-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30 transition-all duration-300 hover:from-amber-600 hover:to-orange-700 hover:shadow-amber-500/50 sm:w-auto"
                     >
                       Get Started
                     </Button>
                   </Link>
-                  <Link to="/auth/login">
+                  <Link to={href("/sign-in")}>
                     <Button
                       size="lg"
                       variant="outline"

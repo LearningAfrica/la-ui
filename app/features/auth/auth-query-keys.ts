@@ -13,4 +13,5 @@ export const authMutationKeys = {
   logout: () => ["logout"] as const,
   forgotPassword: () => ["forgotPassword"] as const,
   resetPassword: () => ["resetPassword"] as const,
+  verifyEmail: () => ["verifyEmail"] as const,
 };

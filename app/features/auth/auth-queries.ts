@@ -23,6 +23,7 @@ export const useCurrentUser = () => {
     queryKey: authQueryKeys.currentUser(),
     queryFn: async () => {
       const token = localStorage.getItem("auth_token");
+
       if (!token) return null;
 
       const response = await axios.get<User>("/api/auth/me", {
@@ -30,6 +31,7 @@ export const useCurrentUser = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+
       return response.data;
     },
     retry: false,
@@ -46,6 +48,7 @@ export const useVerifyEmail = (token: string) => {
         "/api/auth/verify-email",
         { token }
       );
+
       return response.data;
     },
     enabled: !!token,
@@ -60,6 +63,7 @@ export const useAuthStatus = () => {
     queryFn: async () => {
       try {
         await apiClient.get("/api/auth/verify");
+
         return true;
       } catch {
         return false;

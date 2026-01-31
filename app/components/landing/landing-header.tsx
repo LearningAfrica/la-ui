@@ -23,13 +23,17 @@ export function LandingHeader() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
+
     window.addEventListener("scroll", handleScroll);
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const getThemeIcon = () => {
     if (theme === "light") return <Sun className="size-4" />;
+
     if (theme === "dark") return <Moon className="size-4" />;
+
     return <Monitor className="size-4" />;
   };
 
@@ -40,10 +44,12 @@ export function LandingHeader() {
   const handleNavClick = (href: string) => {
     if (href.startsWith("#")) {
       const element = document.querySelector(href);
+
       if (element) {
         element.scrollIntoView({ behavior: "smooth" });
       }
     }
+
     setIsMobileMenuOpen(false);
   };
 
@@ -153,6 +159,7 @@ export function LandingHeader() {
                     if (item.href.startsWith("#")) {
                       e.preventDefault();
                     }
+
                     handleNavClick(item.href);
                   }}
                   className="text-foreground/80 hover:text-primary hover:bg-primary/5 rounded-lg px-4 py-2 text-sm font-medium transition-colors"

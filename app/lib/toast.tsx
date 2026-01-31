@@ -129,6 +129,7 @@ class ToastManager {
   private ensureContainer(position: ToastPosition) {
     if (!this.containers.has(position)) {
       const container = document.createElement("div");
+
       container.className = this.getPositionClasses(position);
       container.style.zIndex = "9999";
       document.body.appendChild(container);
@@ -148,12 +149,14 @@ class ToastManager {
       if (!toastsByPosition.has(toast.position)) {
         toastsByPosition.set(toast.position, []);
       }
+
       toastsByPosition.get(toast.position)!.push(toast);
     });
 
     // Render toasts for each position
     toastsByPosition.forEach((toasts, position) => {
       this.ensureContainer(position);
+
       const root = this.roots.get(position);
 
       if (root) {
@@ -179,8 +182,10 @@ class ToastManager {
     // Clean up empty containers
     this.containers.forEach((_, position) => {
       const positionToasts = toastsByPosition.get(position);
+
       if (!positionToasts || positionToasts.length === 0) {
         const root = this.roots.get(position);
+
         if (root) {
           root.render(<div className="flex flex-col gap-3"></div>);
         }

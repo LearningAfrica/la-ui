@@ -12,6 +12,11 @@ export default [
     route("dashboard", "routes/dashboard.tsx"),
     route("/sign-in", "routes/sign-in.tsx"),
     route("/sign-up", "routes/sign-up.tsx"),
+    route("/verify-email", "routes/verify-email.tsx"),
+    route(
+      "/email-verification-pending",
+      "routes/email-verification-pending.tsx"
+    ),
     ...prefix("system", [
       layout("layouts/system-dashboard-layout.tsx", [
         route("dashboard", "routes/system.dashboard.tsx"),

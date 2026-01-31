@@ -10,6 +10,7 @@ type State = {
   isAuthenticated: boolean;
   role?: AuthResponseInterface["user_role"] | null;
   user: AuthResponseInterface["user"] | null;
+  canCreateOrg?: AuthResponseInterface["can_create_organization"];
   organizations: AuthResponseInterface["organizations"];
   isVerified?: boolean;
   isActive?: boolean;
@@ -18,7 +19,7 @@ type State = {
 };
 
 type Actions = {
-  login: (user: AuthResponseInterface) => void;
+  login: (payload: AuthResponseInterface) => void;
   logout: () => void;
 };
 
@@ -31,16 +32,17 @@ export const useAuthStore = create<State & Actions>()(
       accessToken: undefined,
       refreshToken: undefined,
 
-      login: (user: AuthResponseInterface) =>
+      login: (payload: AuthResponseInterface) =>
         set(() => ({
           isAuthenticated: true,
-          role: user.user_role,
-          user: user.user,
-          organizations: user.organizations,
-          isVerified: user.user.is_verified,
-          isActive: user.user.is_active,
-          accessToken: user.access,
-          refreshToken: user.refresh,
+          role: payload.user_role,
+          user: payload.user,
+          organizations: payload.organizations,
+          isVerified: payload.user.is_verified,
+          isActive: payload.user.is_active,
+          accessToken: payload.access,
+          refreshToken: payload.refresh,
+          canCreateOrg: payload.can_create_organization,
         })),
 
       logout: () =>
