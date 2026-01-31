@@ -25,7 +25,7 @@ interface LoginFormProps {
 export function LoginForm({ searchParams }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { login, isVerified } = useAuthStore();
+  const { login } = useAuthStore();
 
   const form = useForm({
     resolver: loginResolver,
