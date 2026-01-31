@@ -127,7 +127,7 @@ function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
 
 export default function LandingStatsSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 py-20">
+    <section className="relative overflow-hidden bg-linear-to-r from-amber-600 via-orange-500 to-red-500 py-20">
       {/* African Pattern Overlay */}
       <div className="absolute inset-0 opacity-10">
         <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
@@ -150,7 +150,7 @@ export default function LandingStatsSection() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
-          {stats.map((stat, index) => (
+          {stats.map((stat) => (
             <div key={stat.label} className="text-center">
               <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white/20 text-white">
                 {stat.icon}

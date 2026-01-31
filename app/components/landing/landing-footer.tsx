@@ -77,14 +77,14 @@ export default function LandingFooter() {
   return (
     <footer className="bg-gray-900 text-gray-300 dark:bg-gray-950 dark:text-gray-400">
       {/* African Pattern Top Border */}
-      <div className="h-2 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500" />
+      <div className="h-2 bg-linear-to-r from-amber-500 via-orange-500 to-red-500" />
 
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-3 lg:grid-cols-5 lg:gap-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-3 lg:col-span-1">
             <Link to="/" className="mb-6 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-600">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-amber-500 to-orange-600">
                 <span className="text-lg font-bold text-white">LA</span>
               </div>
               <span className="text-xl font-bold text-white">

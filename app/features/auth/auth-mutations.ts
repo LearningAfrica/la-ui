@@ -162,3 +162,31 @@ export const useVerifyEmail = () => {
     },
   });
 };
+
+// Resend Verification Email
+export const useResendVerificationEmail = () => {
+  return useMutation<{ message: string }, ErrorResponse, string>({
+    mutationFn: async (email: string) => {
+      const response = await apiClient.post<{ message: string }>(
+        "/api/auth/resend-verification-email/",
+        { email }
+      );
+
+      return response.data;
+    },
+    retry: false,
+    onSuccess: () => {
+      toast.success({
+        message: "Verification Email Sent",
+        description:
+          "A new verification email has been sent to your email address.",
+      });
+    },
+    onError: (error) => {
+      toast.error({
+        message: extractError(error, "Resend failed"),
+        description: "Resending verification email failed, Please try again.",
+      });
+    },
+  });
+};

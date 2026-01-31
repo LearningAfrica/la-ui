@@ -95,7 +95,7 @@ export default function FeaturesSection() {
           </span>
           <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl dark:text-white">
             Everything You Need to
-            <span className="block bg-gradient-to-r from-amber-600 to-orange-500 bg-clip-text text-transparent">
+            <span className="block bg-linear-to-r from-amber-600 to-orange-500 bg-clip-text text-transparent">
               Deliver Exceptional Learning
             </span>
           </h2>
@@ -112,7 +112,7 @@ export default function FeaturesSection() {
               className="group relative rounded-2xl border border-gray-100 bg-white p-8 shadow-lg shadow-gray-200/50 transition-all duration-300 hover:border-amber-200 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900 dark:shadow-gray-900/50 dark:hover:border-amber-800"
             >
               <div
-                className={`inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br ${feature.color} mb-6 text-white transition-transform duration-300 group-hover:scale-110`}
+                className={`inline-flex h-14 w-14 items-center justify-center rounded-xl bg-linear-to-br ${feature.color} mb-6 text-white transition-transform duration-300 group-hover:scale-110`}
               >
                 {<feature.FeatureIcon className="h-7 w-7" />}
               </div>

@@ -5,7 +5,7 @@ export default function LandingCTASection() {
   return (
     <section className="relative overflow-hidden py-24">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-amber-600 via-orange-500 to-red-500" />
+      <div className="absolute inset-0 bg-linear-to-br from-amber-600 via-orange-500 to-red-500" />
 
       {/* African Pattern Overlay */}
       <div className="absolute inset-0 opacity-10">
@@ -96,7 +96,7 @@ export default function LandingCTASection() {
                     key={index}
                     className="flex items-center gap-3 text-white"
                   >
-                    <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-white/20">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/20">
                       <svg
                         className="h-4 w-4 text-white"
                         fill="none"

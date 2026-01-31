@@ -1,6 +1,7 @@
 import { href, Link } from "react-router";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { PatternLayout } from "@/components/pattern-layout";
 import { useAuthStore } from "@/stores/auth/auth-store";
 
 export default function HeroSection() {
@@ -10,56 +11,19 @@ export default function HeroSection() {
   const isSuperAdmin = role === "super_admin";
 
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      {/* African Pattern Background */}
-      <div className="absolute inset-0 opacity-5">
-        <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern
-              id="african-pattern"
-              x="0"
-              y="0"
-              width="60"
-              height="60"
-              patternUnits="userSpaceOnUse"
-            >
-              <path
-                d="M30 0L60 30L30 60L0 30Z"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1"
-              />
-              <circle
-                cx="30"
-                cy="30"
-                r="8"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1"
-              />
-              <path
-                d="M15 15L45 15L45 45L15 45Z"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="0.5"
-              />
-            </pattern>
-          </defs>
-          <rect
-            width="100%"
-            height="100%"
-            fill="url(#african-pattern)"
-            className="text-amber-900"
-          />
-        </svg>
-      </div>
-
-      {/* Decorative Elements */}
-      <div className="absolute top-20 left-10 h-32 w-32 rounded-full bg-linear-to-br from-amber-400/20 to-orange-500/20 blur-3xl" />
-      <div className="absolute right-10 bottom-20 h-48 w-48 rounded-full bg-linear-to-br from-green-400/20 to-emerald-500/20 blur-3xl" />
-      <div className="absolute top-1/3 right-1/4 h-24 w-24 rounded-full bg-linear-to-br from-red-400/20 to-red-500/20 blur-2xl" />
-
-      <div className="relative z-10 mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+    <PatternLayout
+      patternId="hero-pattern"
+      className="flex items-center justify-center"
+      additionalPatternPaths={
+        <path
+          d="M15 15L45 15L45 45L15 45Z"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="0.5"
+        />
+      }
+    >
+      <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           {/* Text Content */}
           <div className="text-center lg:text-left">
@@ -73,7 +37,7 @@ export default function HeroSection() {
 
             <h1 className="mb-6 text-4xl leading-tight font-bold text-gray-900 sm:text-5xl lg:text-6xl dark:text-white">
               Transform Your
-              <span className="block bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 bg-clip-text text-transparent">
+              <span className="block bg-linear-to-r from-amber-600 via-orange-500 to-red-500 bg-clip-text text-transparent">
                 Organization&apos;s Learning
               </span>
             </h1>
@@ -92,7 +56,7 @@ export default function HeroSection() {
                   <Link to="/super-admin/inquiries">
                     <Button
                       size="lg"
-                      className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30 transition-all duration-300 hover:from-amber-600 hover:to-orange-700 hover:shadow-amber-500/50 sm:w-auto"
+                      className="w-full bg-linear-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30 transition-all duration-300 hover:from-amber-600 hover:to-orange-700 hover:shadow-amber-500/50 sm:w-auto"
                     >
                       Manage Inquiries
                     </Button>
@@ -113,7 +77,7 @@ export default function HeroSection() {
                   <Link to="/dashboard">
                     <Button
                       size="lg"
-                      className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30 transition-all duration-300 hover:from-amber-600 hover:to-orange-700 hover:shadow-amber-500/50 sm:w-auto"
+                      className="w-full bg-linear-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30 transition-all duration-300 hover:from-amber-600 hover:to-orange-700 hover:shadow-amber-500/50 sm:w-auto"
                     >
                       Go to Dashboard
                     </Button>
@@ -125,7 +89,7 @@ export default function HeroSection() {
                   <Link to="/inquiry">
                     <Button
                       size="lg"
-                      className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30 transition-all duration-300 hover:from-amber-600 hover:to-orange-700 hover:shadow-amber-500/50 sm:w-auto"
+                      className="w-full bg-linear-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30 transition-all duration-300 hover:from-amber-600 hover:to-orange-700 hover:shadow-amber-500/50 sm:w-auto"
                     >
                       Onboard Your Organization
                     </Button>
@@ -169,7 +133,7 @@ export default function HeroSection() {
                 {[1, 2, 3, 4, 5].map((i) => (
                   <div
                     key={i}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-amber-400 to-orange-500 text-xs font-medium text-white"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-linear-to-br from-amber-400 to-orange-500 text-xs font-medium text-white"
                   >
                     {String.fromCharCode(64 + i)}
                   </div>
@@ -190,7 +154,7 @@ export default function HeroSection() {
           <div className="relative hidden lg:block">
             <div className="relative mx-auto aspect-square w-full max-w-lg">
               {/* Main Circle */}
-              <div className="absolute inset-0 animate-pulse rounded-full bg-gradient-to-br from-amber-400 via-orange-400 to-red-400 opacity-20" />
+              <div className="absolute inset-0 animate-pulse rounded-full bg-linear-to-br from-amber-400 via-orange-400 to-red-400 opacity-20" />
 
               {/* Content Cards */}
               <motion.div
@@ -203,7 +167,7 @@ export default function HeroSection() {
                 className="absolute top-10 left-10 rounded-2xl border border-amber-100 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-green-400 to-emerald-500">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-green-400 to-emerald-500">
                     <svg
                       className="h-6 w-6 text-white"
                       fill="none"
@@ -240,7 +204,7 @@ export default function HeroSection() {
                 className="absolute right-0 bottom-20 rounded-2xl border border-amber-100 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-amber-400 to-orange-500">
                     <svg
                       className="h-6 w-6 text-white"
                       fill="none"
@@ -277,7 +241,7 @@ export default function HeroSection() {
                 className="absolute top-1/3 right-10 rounded-2xl border border-amber-100 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-400 to-violet-500">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-purple-400 to-violet-500">
                     <svg
                       className="h-6 w-6 text-white"
                       fill="none"
@@ -304,7 +268,7 @@ export default function HeroSection() {
               </motion.div>
 
               {/* Center Logo */}
-              <div className="absolute top-1/2 left-1/2 flex h-32 w-32 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 to-orange-600 shadow-2xl shadow-amber-500/50">
+              <div className="absolute top-1/2 left-1/2 flex h-32 w-32 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-linear-to-br from-amber-500 to-orange-600 shadow-2xl shadow-amber-500/50">
                 <span className="text-4xl font-bold text-white">LA</span>
               </div>
             </div>
@@ -322,6 +286,6 @@ export default function HeroSection() {
           <div className="h-2 w-1 rounded-full bg-amber-400" />
         </motion.div>
       </div>
-    </section>
+    </PatternLayout>
   );
 }

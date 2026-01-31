@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Mail, RefreshCw } from "lucide-react";
 import { useState } from "react";
+import { useResendVerificationEmail } from "@/features/auth/auth-mutations";
 
 interface EmailVerificationPendingProps {
   email?: string;
@@ -18,23 +19,30 @@ interface EmailVerificationPendingProps {
 export function EmailVerificationPending({
   email,
 }: EmailVerificationPendingProps) {
-  const [isResending, setIsResending] = useState(false);
-
-  const handleResendEmail = async () => {
-    setIsResending(true);
-    // TODO: Implement resend verification email API call
-    // For now, just simulate the action
-    setTimeout(() => {
-      setIsResending(false);
-      // You can add a toast notification here
-    }, 2000);
+  // const navigate = useNavigate();
+  const [isSent, setIsSent] = useState(false);
+  const { mutateAsync: resendVerificationEmail, status: resendStatus } =
+    useResendVerificationEmail();
+  const handleResendVerificationEmail = async () => {
+    if (email) {
+      await resendVerificationEmail(email, {
+        onSuccess: () => {
+          // navigate(
+          //   "/email-verification-pending" +
+          //     (email ? `?email=${encodeURIComponent(email)}` : "")
+          // );
+          setIsSent(true);
+        },
+      });
+      // Optionally, you can show a toast notification here
+    }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20">
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-amber-100 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20">
             <Mail className="h-10 w-10 text-orange-600" />
           </div>
           <CardTitle className="text-2xl">Verify Your Email Address</CardTitle>
@@ -65,23 +73,26 @@ export function EmailVerificationPending({
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-2">
-          <Button
-            onClick={handleResendEmail}
-            disabled={isResending}
-            className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
-          >
-            {isResending ? (
-              <>
-                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                Sending...
-              </>
-            ) : (
-              <>
-                <Mail className="mr-2 h-4 w-4" />
-                Resend Verification Email
-              </>
-            )}
-          </Button>
+          {!isSent && (
+            <Button
+              onClick={handleResendVerificationEmail}
+              disabled={resendStatus === "pending" || !email}
+              variant="gradient"
+              className="w-full disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {resendStatus === "pending" ? (
+                <>
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Mail className="mr-2 h-4 w-4" />
+                  Resend Verification Email
+                </>
+              )}
+            </Button>
+          )}
           <Link to="/sign-in" className="w-full">
             <Button variant="outline" className="w-full">
               Back to Sign In

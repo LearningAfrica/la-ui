@@ -1,5 +1,6 @@
 import { useSearchParams } from "react-router";
 import { RegisterForm } from "@/components/auth/register-form";
+import { PatternLayout } from "@/components/pattern-layout";
 import { generateSEOTags } from "@/lib/utils/seo";
 
 export function meta() {
@@ -17,56 +18,15 @@ export default function SignUpPage() {
   const [searchParams] = useSearchParams();
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 py-12 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      {/* African Pattern Background */}
-      <div className="absolute inset-0 opacity-5">
-        <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern
-              id="auth-pattern"
-              x="0"
-              y="0"
-              width="60"
-              height="60"
-              patternUnits="userSpaceOnUse"
-            >
-              <path
-                d="M30 0L60 30L30 60L0 30Z"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1"
-              />
-              <circle
-                cx="30"
-                cy="30"
-                r="8"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1"
-              />
-            </pattern>
-          </defs>
-          <rect
-            width="100%"
-            height="100%"
-            fill="url(#auth-pattern)"
-            className="text-amber-900 dark:text-gray-700"
-          />
-        </svg>
-      </div>
-
-      {/* Decorative Elements */}
-      <div className="absolute top-20 left-10 h-32 w-32 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-500/20 blur-3xl" />
-      <div className="absolute right-10 bottom-20 h-48 w-48 rounded-full bg-gradient-to-br from-orange-400/20 to-red-500/20 blur-3xl" />
-
+    <PatternLayout className="flex items-center justify-center py-12">
       {/* Auth Container */}
-      <div className="relative z-10 w-full max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div className="w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
           {/* Left Side - Branding */}
           <div className="hidden items-center lg:flex">
             <div className="space-y-6">
               <div className="flex items-center gap-3">
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-amber-500 to-orange-600 shadow-lg">
                   <span className="text-2xl font-bold text-white">LA</span>
                 </div>
                 <div>
@@ -81,7 +41,7 @@ export default function SignUpPage() {
 
               <div className="space-y-4">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
                     <svg
                       className="h-5 w-5 text-amber-600 dark:text-amber-400"
                       fill="none"
@@ -108,7 +68,7 @@ export default function SignUpPage() {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/30">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-100 dark:bg-orange-900/30">
                     <svg
                       className="h-5 w-5 text-orange-600 dark:text-orange-400"
                       fill="none"
@@ -135,7 +95,7 @@ export default function SignUpPage() {
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30">
                     <svg
                       className="h-5 w-5 text-green-600 dark:text-green-400"
                       fill="none"
@@ -167,7 +127,7 @@ export default function SignUpPage() {
                     {[1, 2, 3, 4].map((i) => (
                       <div
                         key={i}
-                        className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-gradient-to-br from-amber-400 to-orange-500 text-xs font-medium text-white dark:border-gray-800"
+                        className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-linear-to-br from-amber-400 to-orange-500 text-xs font-medium text-white dark:border-gray-800"
                       >
                         {String.fromCharCode(64 + i)}
                       </div>
@@ -193,6 +153,6 @@ export default function SignUpPage() {
           </div>
         </div>
       </div>
-    </div>
+    </PatternLayout>
   );
 }

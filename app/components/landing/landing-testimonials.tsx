@@ -76,7 +76,7 @@ export default function LandingTestimonials() {
           </span>
           <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl dark:text-white">
             Trusted by Organizations
-            <span className="block bg-gradient-to-r from-amber-600 to-orange-500 bg-clip-text text-transparent">
+            <span className="block bg-linear-to-r from-amber-600 to-orange-500 bg-clip-text text-transparent">
               Across Africa
             </span>
           </h2>
@@ -84,7 +84,7 @@ export default function LandingTestimonials() {
 
         {/* Featured Testimonial */}
         <div key={activeIndex} className="mx-auto mb-12 max-w-4xl">
-          <div className="relative rounded-3xl border border-amber-100 bg-gradient-to-br from-amber-50 to-orange-50 p-8 sm:p-12 dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
+          <div className="relative rounded-3xl border border-amber-100 bg-linear-to-br from-amber-50 to-orange-50 p-8 sm:p-12 dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
             {/* Quote Icon */}
             <div className="absolute top-8 left-8 text-amber-200">
               <svg
@@ -102,7 +102,7 @@ export default function LandingTestimonials() {
               </p>
 
               <div className="flex items-center gap-4">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 to-orange-600 text-lg font-bold text-white">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-linear-to-br from-amber-500 to-orange-600 text-lg font-bold text-white">
                   {testimonials[activeIndex].avatar}
                 </div>
                 <div>
@@ -130,7 +130,7 @@ export default function LandingTestimonials() {
               onClick={() => setActiveIndex(index)}
               className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 ${
                 activeIndex === index
-                  ? "scale-110 bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30"
+                  ? "scale-110 bg-linear-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30"
                   : "bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-gray-800 dark:text-amber-300 dark:hover:bg-gray-700"
               }`}
             >

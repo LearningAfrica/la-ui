@@ -33,7 +33,7 @@ const steps: StepType[] = [
 
 export default function LandingHowItWorks() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-gray-50 to-amber-50 py-24 dark:from-gray-900 dark:to-gray-800">
+    <section className="relative overflow-hidden bg-linear-to-br from-gray-50 to-amber-50 py-24 dark:from-gray-900 dark:to-gray-800">
       {/* African-inspired decorative elements */}
       <div className="absolute top-20 left-10 h-64 w-64 opacity-5">
         <svg
@@ -81,7 +81,7 @@ export default function LandingHowItWorks() {
           </span>
           <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl dark:text-white">
             Get Started in
-            <span className="bg-gradient-to-r from-amber-600 to-orange-500 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-amber-600 to-orange-500 bg-clip-text text-transparent">
               {" "}
               Three Simple Steps
             </span>
@@ -94,14 +94,14 @@ export default function LandingHowItWorks() {
 
         <div className="relative">
           {/* Connection Line */}
-          <div className="absolute top-1/2 right-0 left-0 hidden h-1 -translate-y-1/2 bg-gradient-to-r from-amber-200 via-orange-200 to-red-200 lg:block" />
+          <div className="absolute top-1/2 right-0 left-0 hidden h-1 -translate-y-1/2 bg-linear-to-r from-amber-200 via-orange-200 to-red-200 lg:block" />
 
           <div className="grid gap-8 lg:grid-cols-3 lg:gap-12">
             {steps.map((step, index) => (
               <div key={step.number} className="relative">
                 <div className="relative z-10 rounded-2xl border border-amber-100 bg-white p-8 shadow-lg shadow-amber-100/50 dark:border-gray-700 dark:bg-gray-900 dark:shadow-gray-900/50">
                   {/* Step Number */}
-                  <div className="absolute -top-6 left-8 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-lg font-bold text-white shadow-lg shadow-amber-500/30">
+                  <div className="absolute -top-6 left-8 flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-amber-500 to-orange-600 text-lg font-bold text-white shadow-lg shadow-amber-500/30">
                     {step.number}
                   </div>
 

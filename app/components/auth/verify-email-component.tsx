@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import { useNavigate, Link } from "react-router";
-import { useVerifyEmail } from "@/features/auth/auth-mutations";
+import {
+  useResendVerificationEmail,
+  useVerifyEmail,
+} from "@/features/auth/auth-mutations";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,20 +13,32 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CheckCircle2, XCircle, Loader2, Mail } from "lucide-react";
+import {
+  CheckCircle2,
+  XCircle,
+  Loader2,
+  Mail,
+  Loader2Icon,
+} from "lucide-react";
 
 interface VerifyEmailComponentProps {
   token: string | null;
+  email: string;
 }
 
-export function VerifyEmailComponent({ token }: VerifyEmailComponentProps) {
+export function VerifyEmailComponent({
+  token,
+  email,
+}: VerifyEmailComponentProps) {
   const navigate = useNavigate();
   const [verificationStatus, setVerificationStatus] = useState<
     "verifying" | "success" | "error"
   >("verifying");
+  const { mutateAsync: resendVerificationEmail, status: resendStatus } =
+    useResendVerificationEmail();
   const verifyEmailMutation = useVerifyEmail();
 
-  useEffect(() => {
+  const verifyEmailEvent = useEffectEvent(async (token: string) => {
     if (!token) {
       setVerificationStatus("error");
 
@@ -31,7 +46,7 @@ export function VerifyEmailComponent({ token }: VerifyEmailComponentProps) {
     }
 
     // Automatically verify email when component mounts
-    verifyEmailMutation.mutate(
+    await verifyEmailMutation.mutateAsync(
       { token },
       {
         onSuccess: () => {
@@ -42,17 +57,35 @@ export function VerifyEmailComponent({ token }: VerifyEmailComponentProps) {
         },
       }
     );
+  });
+
+  useEffect(() => {
+    verifyEmailEvent(token!);
   }, [token]);
 
   const handleContinueToLogin = () => {
     navigate("/sign-in");
   };
 
+  const handleResendVerificationEmail = async () => {
+    if (email) {
+      await resendVerificationEmail(email, {
+        onSuccess: () => {
+          navigate(
+            "/email-verification-pending" +
+              (email ? `?email=${encodeURIComponent(email)}` : "")
+          );
+        },
+      });
+      // Optionally, you can show a toast notification here
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20">
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-amber-100 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20">
             {verificationStatus === "verifying" && (
               <Loader2 className="h-10 w-10 animate-spin text-orange-600" />
             )}
@@ -89,7 +122,8 @@ export function VerifyEmailComponent({ token }: VerifyEmailComponentProps) {
           {verificationStatus === "success" && (
             <Button
               onClick={handleContinueToLogin}
-              className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
+              variant="gradient"
+              className="w-full"
             >
               Continue to Sign In
             </Button>
@@ -97,10 +131,16 @@ export function VerifyEmailComponent({ token }: VerifyEmailComponentProps) {
           {verificationStatus === "error" && (
             <>
               <Button
-                onClick={() => navigate("/sign-up")}
-                className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600"
+                onClick={handleResendVerificationEmail}
+                variant="gradient"
+                className="w-full"
               >
-                Register Again
+                {resendStatus === "pending" ? (
+                  <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                {resendStatus === "pending"
+                  ? "Resending..."
+                  : "Resend Verification Email"}
               </Button>
               <Link to="/sign-in" className="w-full">
                 <Button variant="outline" className="w-full">
