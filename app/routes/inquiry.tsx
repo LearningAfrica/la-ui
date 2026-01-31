@@ -9,7 +9,7 @@ export function meta() {
       title: "Organization Onboarding | Learning Africa",
       description:
         "Submit an inquiry to onboard your organization to Learning Africa. Get started with our data science and AI-powered learning solutions.",
-      url: href("/inquiries"),
+      url: href("/inquiry"),
       image: "/og.png",
       keywords:
         "inquiries,organization onboarding,setup,learning africa,artificial intelligence,AI solutions,Africa,education,edtech",
