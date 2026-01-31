@@ -81,12 +81,12 @@ export function AppSidebar() {
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2">
           <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-lg font-bold">
-            F
+            LA
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="text-sm font-semibold">Learing Africa</span>
+            <span className="text-sm font-semibold">Learning Africa</span>
             <span className="text-muted-foreground text-xs">
-              Farm Management
+              Empowering Learning
             </span>
           </div>
         </div>
