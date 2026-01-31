@@ -107,10 +107,10 @@ export function LandingHeader() {
             ) : (
               <>
                 <Button variant="ghost" asChild>
-                  <Link to="/login">Sign In</Link>
+                  <Link to="/sign-in">Sign In</Link>
                 </Button>
                 <Button asChild>
-                  <Link to="/register">Get Started</Link>
+                  <Link to="/sign-up">Get Started</Link>
                 </Button>
               </>
             )}
@@ -168,10 +168,10 @@ export function LandingHeader() {
                 ) : (
                   <>
                     <Button variant="ghost" className="w-full" asChild>
-                      <Link to="/login">Sign In</Link>
+                      <Link to="/sign-in">Sign In</Link>
                     </Button>
                     <Button className="w-full" asChild>
-                      <Link to="/register">Get Started</Link>
+                      <Link to="/sign-up">Get Started</Link>
                     </Button>
                   </>
                 )}

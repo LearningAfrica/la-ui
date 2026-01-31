@@ -10,6 +10,8 @@ export default [
   layout("layouts/app-layout.tsx", [
     index("routes/home.tsx"),
     route("dashboard", "routes/dashboard.tsx"),
+    route("/sign-in", "routes/sign-in.tsx"),
+    route("/sign-up", "routes/sign-up.tsx"),
     ...prefix("system", [
       layout("layouts/system-dashboard-layout.tsx", [
         route("dashboard", "routes/system.dashboard.tsx"),

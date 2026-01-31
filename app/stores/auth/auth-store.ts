@@ -1,3 +1,4 @@
+import { setAuthHelpers } from "@/lib/api/index";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
@@ -9,10 +10,12 @@ type AuthUser = {
 type State = {
   isAuthenticated: boolean;
   user: AuthUser | null;
+  accessToken?: string;
+  refreshToken?: string;
 };
 
 type Actions = {
-  login: (user: AuthUser) => void;
+  login: (user: AuthUser, accessToken: string, refreshToken: string) => void;
   logout: () => void;
 };
 
@@ -22,16 +25,20 @@ export const useAuthStore = create<State & Actions>()(
       isAuthenticated: false,
       user: null,
 
-      login: (user: AuthUser) =>
+      login: (user: AuthUser, accessToken: string, refreshToken: string) =>
         set(() => ({
           isAuthenticated: true,
           user,
+          accessToken,
+          refreshToken,
         })),
 
       logout: () =>
         set(() => ({
           isAuthenticated: false,
           user: null,
+          accessToken: undefined,
+          refreshToken: undefined,
         })),
     }),
     {
@@ -41,3 +48,17 @@ export const useAuthStore = create<State & Actions>()(
     }
   )
 );
+
+// Set up the auth helpers for the API client
+setAuthHelpers(
+  () => useAuthStore.getState().accessToken!,
+  () => useAuthStore.getState().logout()
+);
+
+// Subscribe to auth state changes to update API client helpers
+useAuthStore.subscribe((state) => {
+  setAuthHelpers(
+    () => state.accessToken!,
+    () => state.logout()
+  );
+});
