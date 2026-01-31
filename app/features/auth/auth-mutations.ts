@@ -1,27 +1,32 @@
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+
 import type {
   LoginFormData,
-  RegisterFormData,
   ForgotPasswordFormData,
   ResetPasswordFormData,
+  RegisterFormData,
 } from "@/lib/schema/auth-schema";
 import { authMutationKeys } from "./auth-query-keys";
 import { apiClient } from "@/lib/api";
 import toast from "@/lib/toast";
 import { extractError } from "@/lib/error";
 
-interface AuthResponse {
+export type SystemUserRole = "super_admin" | "user";
+
+export interface AuthResponseInterface {
+  refresh: string;
+  access: string;
+  user_role: SystemUserRole;
+  can_create_organization: false;
+  organizations: [];
   user: {
     id: string;
     email: string;
-    firstName: string;
-    lastName: string;
-    role: string;
-    canCreateOrg?: boolean;
+    first_name: string;
+    last_name: string;
+    is_verified: boolean;
+    is_active: boolean;
   };
-  token: string;
-  refreshToken?: string;
 }
 
 interface ErrorResponse {
@@ -31,13 +36,14 @@ interface ErrorResponse {
 
 // Login Mutation
 export const useLogin = () => {
-  return useMutation<AuthResponse, ErrorResponse, LoginFormData>({
+  return useMutation({
     mutationKey: authMutationKeys.login(),
-    mutationFn: async (data) => {
-      const response = await apiClient.post<AuthResponse>(
+    mutationFn: async (data: LoginFormData) => {
+      const response = await apiClient.post<AuthResponseInterface>(
         "/api/auth/login/",
         data
       );
+
       return response.data;
     },
     onError: (error) => {
@@ -51,13 +57,14 @@ export const useLogin = () => {
 
 // Register Mutation
 export const useRegister = () => {
-  return useMutation<AuthResponse, ErrorResponse, RegisterFormData>({
+  return useMutation({
     mutationKey: authMutationKeys.register(),
-    mutationFn: async (data) => {
-      const response = await apiClient.post<AuthResponse>(
+    mutationFn: async (data: RegisterFormData) => {
+      const response = await apiClient.post<AuthResponseInterface["user"]>(
         "/api/auth/register/",
         data
       );
+
       return response.data;
     },
     onError: (error) => {
@@ -82,6 +89,7 @@ export const useForgotPassword = () => {
         "/api/auth/forgot-password/",
         data
       );
+
       return response.data;
     },
     onError: (error) => {
@@ -106,6 +114,7 @@ export const useResetPassword = () => {
         "/api/auth/reset-password/",
         data
       );
+
       return response.data;
     },
     onError: (error) => {

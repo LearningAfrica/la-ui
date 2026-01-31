@@ -42,14 +42,10 @@ export function LoginForm({ searchParams }: LoginFormProps) {
     await loginMutation.mutateAsync(data, {
       onSuccess: (result) => {
         // Update auth store
-        // login({
-        //   role: result.user.role,
-        //   name: `${result.user.firstName} ${result.user.lastName}`,
-        //   canCreateOrg: result.user.canCreateOrg || false,
-        // });
+        login(result);
 
         // Navigate based on user role
-        if (result.user.role === "super_admin") {
+        if (result.user_role === "super_admin") {
           navigate("/system/dashboard");
         } else {
           navigate("/client/dashboard");
@@ -93,6 +89,7 @@ export function LoginForm({ searchParams }: LoginFormProps) {
                     placeholder="you@example.com"
                     {...field}
                     disabled={loginMutation.isPending}
+                    autoComplete="email"
                   />
                 </FormControl>
                 <FormMessage />
@@ -113,6 +110,7 @@ export function LoginForm({ searchParams }: LoginFormProps) {
                       placeholder="••••••••"
                       {...field}
                       disabled={loginMutation.isPending}
+                      autoComplete="current-password"
                     />
                     <button
                       type="button"

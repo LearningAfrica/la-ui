@@ -19,7 +19,6 @@ import {
   type RegisterFormData,
 } from "@/lib/schema/auth-schema";
 import { useRegister } from "@/features/auth/auth-mutations";
-import { useAuthStore } from "@/stores/auth/auth-store";
 import { extractError } from "@/lib/error";
 
 interface RegisterFormProps {
@@ -30,35 +29,29 @@ export function RegisterForm({ searchParams }: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuthStore();
 
   const form = useForm<RegisterFormData>({
     resolver: registerResolver,
     defaultValues: {
-      firstName: "",
-      lastName: "",
+      first_name: "",
+      last_name: "",
       email: "",
       password: "",
-      confirmPassword: "",
-      organizationName: "",
-      acceptTerms: false,
+      confirm_password: "",
+      username: "",
+      accept_terms: false,
     },
   });
 
   const registerMutation = useRegister();
 
-  const onSubmit = form.handleSubmit(async (data: RegisterFormData) => {
+  const onSubmit = form.handleSubmit(async (data) => {
     await registerMutation.mutateAsync(data, {
-      onSuccess: (result) => {
-        // Update auth store
-        // login({
-        //   role: result.user.role,
-        //   name: `${result.user.firstName} ${result.user.lastName}`,
-        //   canCreateOrg: result.user.canCreateOrg || false,
-        // });
-
-        // Navigate to appropriate dashboard or onboarding
-        navigate("/client/dashboard");
+      onSuccess: () => {
+        // Navigate to sign-in page after successful registration
+        navigate(
+          `/sign-in${searchParams ? `?${searchParams.toString()}` : ""}`
+        );
       },
       onError: (error) => {
         // Reset password field on error
@@ -89,7 +82,7 @@ export function RegisterForm({ searchParams }: RegisterFormProps) {
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="firstName"
+              name="first_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>First Name</FormLabel>
@@ -107,13 +100,13 @@ export function RegisterForm({ searchParams }: RegisterFormProps) {
 
             <FormField
               control={form.control}
-              name="lastName"
+              name="last_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Last Name</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Doe"
+                      placeholder="Maina"
                       {...field}
                       disabled={registerMutation.isPending}
                     />
@@ -145,16 +138,16 @@ export function RegisterForm({ searchParams }: RegisterFormProps) {
 
           <FormField
             control={form.control}
-            name="organizationName"
+            name="username"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  Organization Name{" "}
-                  <span className="text-muted-foreground">(Optional)</span>
+                  Username{" "}
+                  {/* <span className="text-muted-foreground">(Optional)</span> */}
                 </FormLabel>
                 <FormControl>
                   <Input
-                    placeholder="Your Organization"
+                    placeholder="Your Username"
                     {...field}
                     disabled={registerMutation.isPending}
                   />
@@ -204,7 +197,7 @@ export function RegisterForm({ searchParams }: RegisterFormProps) {
 
           <FormField
             control={form.control}
-            name="confirmPassword"
+            name="confirm_password"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
@@ -238,7 +231,7 @@ export function RegisterForm({ searchParams }: RegisterFormProps) {
 
           <FormField
             control={form.control}
-            name="acceptTerms"
+            name="accept_terms"
             render={({ field }) => (
               <FormItem className="flex flex-row items-start space-y-0 space-x-3">
                 <FormControl>

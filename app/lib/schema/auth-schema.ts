@@ -12,16 +12,17 @@ export const loginSchema = z.object({
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
+
 export const loginResolver = zodResolver(loginSchema);
 
 // Register Schema
 export const registerSchema = z
   .object({
-    firstName: z
+    first_name: z
       .string()
       .min(2, "First name must be at least 2 characters")
       .max(50, "First name is too long"),
-    lastName: z
+    last_name: z
       .string()
       .min(2, "Last name must be at least 2 characters")
       .max(50, "Last name is too long"),
@@ -34,22 +35,23 @@ export const registerSchema = z
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
         "Password must contain at least one uppercase letter, one lowercase letter, and one number"
       ),
-    confirmPassword: z.string(),
-    organizationName: z
+    confirm_password: z.string(),
+    username: z
       .string()
-      .min(2, "Organization name must be at least 2 characters")
-      .max(100, "Organization name is too long")
+      .min(2, "Username must be at least 2 characters")
+      .max(100, "Username is too long")
       .optional(),
-    acceptTerms: z.boolean().refine((val) => val === true, {
+    accept_terms: z.boolean().refine((val) => val === true, {
       message: "You must accept the terms and conditions",
     }),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine((data) => data.password === data.confirm_password, {
     message: "Passwords do not match",
-    path: ["confirmPassword"],
+    path: ["confirm_password"],
   });
 
 export type RegisterFormData = z.infer<typeof registerSchema>;
+
 export const registerResolver = zodResolver(registerSchema);
 
 // Password Reset Schema
@@ -58,6 +60,7 @@ export const forgotPasswordSchema = z.object({
 });
 
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+
 export const forgotPasswordResolver = zodResolver(forgotPasswordSchema);
 
 // Reset Password Schema
@@ -79,4 +82,5 @@ export const resetPasswordSchema = z
   });
 
 export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+
 export const resetPasswordResolver = zodResolver(resetPasswordSchema);

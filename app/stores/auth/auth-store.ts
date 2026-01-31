@@ -1,21 +1,24 @@
+import type { AuthResponseInterface } from "@/features/auth/auth-mutations";
 import { setAuthHelpers } from "@/lib/api/index";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-type AuthUser = {
-  role: string;
-  name: string;
-  canCreateOrg: boolean;
-};
+/**
+ * Represents the authentication state structure
+ */
 type State = {
   isAuthenticated: boolean;
-  user: AuthUser | null;
+  role?: AuthResponseInterface["user_role"] | null;
+  user: AuthResponseInterface["user"] | null;
+  organizations: AuthResponseInterface["organizations"];
+  isVerified?: boolean;
+  isActive?: boolean;
   accessToken?: string;
   refreshToken?: string;
 };
 
 type Actions = {
-  login: (user: AuthUser, accessToken: string, refreshToken: string) => void;
+  login: (user: AuthResponseInterface) => void;
   logout: () => void;
 };
 
@@ -24,19 +27,30 @@ export const useAuthStore = create<State & Actions>()(
     (set) => ({
       isAuthenticated: false,
       user: null,
+      organizations: [],
+      accessToken: undefined,
+      refreshToken: undefined,
 
-      login: (user: AuthUser, accessToken: string, refreshToken: string) =>
+      login: (user: AuthResponseInterface) =>
         set(() => ({
           isAuthenticated: true,
-          user,
-          accessToken,
-          refreshToken,
+          role: user.user_role,
+          user: user.user,
+          organizations: user.organizations,
+          isVerified: user.user.is_verified,
+          isActive: user.user.is_active,
+          accessToken: user.access,
+          refreshToken: user.refresh,
         })),
 
       logout: () =>
         set(() => ({
           isAuthenticated: false,
+          role: null,
           user: null,
+          organizations: [],
+          isVerified: undefined,
+          isActive: undefined,
           accessToken: undefined,
           refreshToken: undefined,
         })),
@@ -48,6 +62,43 @@ export const useAuthStore = create<State & Actions>()(
     }
   )
 );
+
+/**
+ * Hook to get the authentication status
+ * @returns {boolean} True if the user is authenticated, false otherwise
+ */
+export const useIsAuthenticated = () => {
+  return useAuthStore((state) => state.isAuthenticated);
+};
+
+/**
+ * Hook to get the current authenticated user
+ * @returns {AuthResponseInterface["user"] | null} The current user object or null if not authenticated
+ */
+export const useCurrentUser = () => {
+  return useAuthStore((state) => state.user);
+};
+
+/**
+ * Hook to get the current user's role
+ * @returns {AuthResponseInterface["user_role"] | null | undefined} The user's role or null/undefined if not available
+ */
+export const useUserRole = () => {
+  return useAuthStore((state) => state.role);
+};
+
+/**
+ * Hook to check if the user is both authenticated and verified
+ * @returns {boolean} True if the user is authenticated and their account is verified
+ */
+export const useIsLoggedInAndVerified = () => {
+  const { isAuthenticated, isVerified } = useAuthStore((state) => ({
+    isAuthenticated: state.isAuthenticated,
+    isVerified: state.isVerified,
+  }));
+
+  return isAuthenticated && isVerified;
+};
 
 // Set up the auth helpers for the API client
 setAuthHelpers(
