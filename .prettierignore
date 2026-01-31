@@ -1,21 +1,29 @@
-# Build outputs
-dist/
-dist-ssr/
-
 # Dependencies
-node_modules/
+node_modules
+pnpm-lock.yaml
 
-# Test outputs
-test-results/
-playwright-report/
-coverage/
-node_modules/.vitest/
-.nyc_output/
-html/
+# Build output
+dist
+build
+.next
+out
 
-# Generated files
-*.d.ts
-*.js.map
+# Cache
+.cache
+.turbo
 
-# Public directory
-public/
+# Environment
+.env
+.env.local
+.env*.local
+
+# IDE
+.idea
+.vscode
+
+# OS
+.DS_Store
+
+# Other
+coverage
+*.log

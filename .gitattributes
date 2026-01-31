@@ -1,0 +1,106 @@
+# Git Attributes - https://git-scm.com/docs/gitattributes
+# Ensure consistent line endings and file handling across platforms
+
+# Auto detect text files and perform LF normalization
+* text=auto eol=lf
+
+# =====================
+# Source Code
+# =====================
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+
+# =====================
+# Web Assets
+# =====================
+*.html text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.sass text eol=lf
+*.svg text eol=lf
+
+# =====================
+# Configuration
+# =====================
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+*.xml text eol=lf
+*.env text eol=lf
+.editorconfig text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf
+.prettierrc text eol=lf
+.prettierignore text eol=lf
+
+# =====================
+# Documentation
+# =====================
+*.md text eol=lf
+*.txt text eol=lf
+LICENSE text eol=lf
+README text eol=lf
+
+# =====================
+# Scripts
+# =====================
+*.sh text eol=lf
+*.bash text eol=lf
+*.zsh text eol=lf
+
+# =====================
+# Database
+# =====================
+*.sql text eol=lf
+
+# =====================
+# Binary Files (no line ending conversion)
+# =====================
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.avif binary
+*.pdf binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.7z binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+*.mp3 binary
+*.mp4 binary
+*.webm binary
+*.ogg binary
+*.wav binary
+
+# =====================
+# Lock Files (do not diff)
+# =====================
+pnpm-lock.yaml -diff
+package-lock.json -diff
+yarn.lock -diff
+
+# =====================
+# Generated Files (do not diff)
+# =====================
+*.min.js -diff
+*.min.css -diff
+dist/** -diff
+build/** -diff
+
+# =====================
+# Linguist Overrides (for GitHub language stats)
+# =====================
+*.sql linguist-detectable=true
+*.md linguist-documentation=true
