@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router";
+import { href, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,7 +24,7 @@ import {
   inquiryResolver,
 } from "@/lib/schema/inquiry-schema";
 import { useCreateInquiry } from "@/features/inquiries/inquiry-mutations";
-import { Building2, MessageSquare } from "lucide-react";
+import { Building2, InfoIcon, Loader2, MessageSquare } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -33,6 +33,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { COMPANY_CATEGORIES, COMPANY_SIZES } from "@/lib/constants/company";
+import { Checkbox } from "../ui/checkbox";
 
 export function InquiryForm() {
   const navigate = useNavigate();
@@ -48,18 +49,18 @@ export function InquiryForm() {
     },
   });
 
-  const onSubmit = async (data: InquiryFormData) => {
-    createInquiryMutation.mutate(data, {
+  const onSubmit = form.handleSubmit(async (data: InquiryFormData) => {
+    await createInquiryMutation.mutateAsync(data, {
       onSuccess: () => {
         form.reset();
         // Redirect to a success page or home
-        navigate("/");
+        navigate(href("/dashboard"));
       },
     });
-  };
+  });
 
   return (
-    <Card className="w-full">
+    <Card className="w-full max-w-2xl">
       <CardHeader>
         <CardTitle className="text-2xl">
           Organization Onboarding Inquiry
@@ -71,7 +72,7 @@ export function InquiryForm() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={onSubmit} className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
               {/* Organization Name */}
               <FormField
@@ -103,7 +104,11 @@ export function InquiryForm() {
                   <FormItem>
                     <FormLabel>Organization Type *</FormLabel>
                     <FormControl>
-                      <Select {...field}>
+                      <Select
+                        {...field}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select organization type" />
                         </SelectTrigger>
@@ -127,9 +132,16 @@ export function InquiryForm() {
                 name="company_size"
                 render={({ field }) => (
                   <FormItem className="md:col-span-2">
-                    <FormLabel>Expected Number of Users *</FormLabel>
+                    <FormLabel>
+                      Company Size
+                      <span className="text-red-500">*</span>
+                    </FormLabel>
                     <FormControl>
-                      <Select {...field}>
+                      <Select
+                        {...field}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      >
                         <SelectTrigger className="w-full">
                           <SelectValue placeholder="Select user range" />
                         </SelectTrigger>
@@ -151,14 +163,43 @@ export function InquiryForm() {
                 )}
               />
             </div>
-
-            {/* Message */}
+            {/* Company Description */}
+            <FormField
+              control={form.control}
+              name="company_description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Please provide a brief description of your organization{" "}
+                    <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <InfoIcon className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
+                      <Textarea
+                        placeholder="Tell us more about your organization and specific requirements..."
+                        className="min-h-25 pt-3 pl-10"
+                        {...field}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormDescription>
+                    Include your mission, target audience, and learning goals
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* Reasons */}
             <FormField
               control={form.control}
               name="reason"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Additional Information (Optional)</FormLabel>
+                  <FormLabel>
+                    Why are you interested in Learning Africa?{" "}
+                    <span className="text-red-500">*</span>
+                  </FormLabel>
                   <FormControl>
                     <div className="relative">
                       <MessageSquare className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
@@ -170,7 +211,7 @@ export function InquiryForm() {
                     </div>
                   </FormControl>
                   <FormDescription>
-                    Share any specific requirements or questions you may have
+                    This helps us understand your needs better
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -184,11 +225,15 @@ export function InquiryForm() {
               render={({ field }) => (
                 <FormItem className="flex flex-row items-start space-y-0 space-x-3">
                   <FormControl>
-                    <input
+                    {/* <input
                       type="checkbox"
                       className="h-4 w-4 rounded border-gray-300"
                       checked={field.value}
                       onChange={field.onChange}
+                    /> */}
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
@@ -211,6 +256,9 @@ export function InquiryForm() {
                 disabled={createInquiryMutation.isPending}
                 className="w-full sm:w-auto"
               >
+                {createInquiryMutation.status === "pending" ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
                 {createInquiryMutation.isPending
                   ? "Submitting..."
                   : "Submit Inquiry"}
