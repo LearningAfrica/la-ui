@@ -86,15 +86,15 @@ export default function HeroSection() {
               ) : isAuthenticated ? (
                 // Logged in user without canCreateOrg - can submit/check inquiry
                 <>
-                  <Link to="/inquiry">
+                  <Link to={href("/dashboard")}>
                     <Button
                       size="lg"
                       className="w-full bg-linear-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30 transition-all duration-300 hover:from-amber-600 hover:to-orange-700 hover:shadow-amber-500/50 sm:w-auto"
                     >
-                      Onboard Your Organization
+                      Go to Dashboard
                     </Button>
                   </Link>
-                  <Link to="/inquiry/status">
+                  {/* <Link to={href("/inquiry")}>
                     <Button
                       size="lg"
                       variant="outline"
@@ -102,7 +102,7 @@ export default function HeroSection() {
                     >
                       Check Inquiry Status
                     </Button>
-                  </Link>
+                  </Link> */}
                 </>
               ) : (
                 // Not logged in - show onboard and sign in

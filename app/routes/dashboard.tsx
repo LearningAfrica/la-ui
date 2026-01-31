@@ -23,6 +23,7 @@ import {
   AlertCircle,
   CheckCircle2,
   MailOpen,
+  ArrowLeft,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -85,11 +86,17 @@ export default function Dashboard() {
                       </Badge>
                     )}
                   </div>
-                  <div className="text-muted-foreground mt-1 flex flex-col gap-1 text-sm">
+                  <div className="text-muted-foreground mt-1 flex flex-col gap-4 text-sm">
                     <div className="flex items-center gap-2">
                       <Mail className="h-4 w-4" />
                       <span>{user?.email}</span>
                     </div>
+                    <Link to={href("/")}>
+                      <Button variant="default" size="sm">
+                        <ArrowLeft className="mr-2 h-4 w-4" />
+                        Go back to Home
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>
