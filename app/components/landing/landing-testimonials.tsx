@@ -43,7 +43,7 @@ export default function LandingTestimonials() {
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <section className="relative overflow-hidden bg-white py-24">
+    <section className="relative overflow-hidden bg-white py-24 dark:bg-gray-950">
       {/* Decorative Background */}
       <div className="absolute inset-0 opacity-5">
         <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
@@ -71,10 +71,10 @@ export default function LandingTestimonials() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
-          <span className="mb-4 inline-block rounded-full bg-amber-100 px-4 py-2 text-sm font-medium text-amber-800">
+          <span className="mb-4 inline-block rounded-full bg-amber-100 px-4 py-2 text-sm font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
             Testimonials
           </span>
-          <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl">
+          <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl dark:text-white">
             Trusted by Organizations
             <span className="block bg-gradient-to-r from-amber-600 to-orange-500 bg-clip-text text-transparent">
               Across Africa
@@ -84,7 +84,7 @@ export default function LandingTestimonials() {
 
         {/* Featured Testimonial */}
         <div key={activeIndex} className="mx-auto mb-12 max-w-4xl">
-          <div className="relative rounded-3xl border border-amber-100 bg-gradient-to-br from-amber-50 to-orange-50 p-8 sm:p-12">
+          <div className="relative rounded-3xl border border-amber-100 bg-gradient-to-br from-amber-50 to-orange-50 p-8 sm:p-12 dark:border-gray-700 dark:from-gray-800 dark:to-gray-900">
             {/* Quote Icon */}
             <div className="absolute top-8 left-8 text-amber-200">
               <svg
@@ -97,7 +97,7 @@ export default function LandingTestimonials() {
             </div>
 
             <div className="relative z-10">
-              <p className="mb-8 pt-8 text-xl leading-relaxed text-gray-700 sm:text-2xl">
+              <p className="mb-8 pt-8 text-xl leading-relaxed text-gray-700 sm:text-2xl dark:text-gray-200">
                 &ldquo;{testimonials[activeIndex].quote}&rdquo;
               </p>
 
@@ -106,13 +106,13 @@ export default function LandingTestimonials() {
                   {testimonials[activeIndex].avatar}
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900">
+                  <p className="font-bold text-gray-900 dark:text-white">
                     {testimonials[activeIndex].author}
                   </p>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-gray-300">
                     {testimonials[activeIndex].role}
                   </p>
-                  <p className="text-sm text-amber-600">
+                  <p className="text-sm text-amber-600 dark:text-amber-400">
                     {testimonials[activeIndex].organization} •{" "}
                     {testimonials[activeIndex].country}
                   </p>
@@ -131,7 +131,7 @@ export default function LandingTestimonials() {
               className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 ${
                 activeIndex === index
                   ? "scale-110 bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30"
-                  : "bg-amber-100 text-amber-700 hover:bg-amber-200"
+                  : "bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-gray-800 dark:text-amber-300 dark:hover:bg-gray-700"
               }`}
             >
               {testimonial.avatar}

@@ -136,7 +136,7 @@ const features: Feature[] = [
 
 export default function FeaturesSection() {
   return (
-    <section className="relative overflow-hidden bg-white py-24">
+    <section className="relative overflow-hidden bg-white py-24 dark:bg-gray-950">
       {/* Background Pattern */}
       <div className="absolute top-0 right-0 h-full w-1/3 opacity-5">
         <svg
@@ -155,16 +155,16 @@ export default function FeaturesSection() {
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
-          <span className="mb-4 inline-block rounded-full bg-amber-100 px-4 py-2 text-sm font-medium text-amber-800">
+          <span className="mb-4 inline-block rounded-full bg-amber-100 px-4 py-2 text-sm font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
             Features
           </span>
-          <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl">
+          <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl lg:text-5xl dark:text-white">
             Everything You Need to
             <span className="block bg-gradient-to-r from-amber-600 to-orange-500 bg-clip-text text-transparent">
               Deliver Exceptional Learning
             </span>
           </h2>
-          <p className="mx-auto max-w-2xl text-lg text-gray-600">
+          <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-300">
             Powerful tools designed specifically for African organizations to
             create, manage, and deliver impactful learning experiences.
           </p>
@@ -174,17 +174,17 @@ export default function FeaturesSection() {
           {features.map((feature, index) => (
             <div
               key={feature.title}
-              className="group relative rounded-2xl border border-gray-100 bg-white p-8 shadow-lg shadow-gray-200/50 transition-all duration-300 hover:border-amber-200 hover:shadow-xl"
+              className="group relative rounded-2xl border border-gray-100 bg-white p-8 shadow-lg shadow-gray-200/50 transition-all duration-300 hover:border-amber-200 hover:shadow-xl dark:border-gray-800 dark:bg-gray-900 dark:shadow-gray-900/50 dark:hover:border-amber-800"
             >
               <div
                 className={`inline-flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br ${feature.color} mb-6 text-white transition-transform duration-300 group-hover:scale-110`}
               >
                 {feature.icon}
               </div>
-              <h3 className="mb-3 text-xl font-bold text-gray-900">
+              <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">
                 {feature.title}
               </h3>
-              <p className="leading-relaxed text-gray-600">
+              <p className="leading-relaxed text-gray-600 dark:text-gray-300">
                 {feature.description}
               </p>
 

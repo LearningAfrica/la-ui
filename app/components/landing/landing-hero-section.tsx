@@ -22,7 +22,7 @@ export default function HeroSection() {
   const canCreateOrg = user?.canCreateOrg;
 
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* African Pattern Background */}
       <div className="absolute inset-0 opacity-5">
         <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
@@ -75,7 +75,7 @@ export default function HeroSection() {
         <div className="grid items-center gap-12 lg:grid-cols-2">
           {/* Text Content */}
           <div className="text-center lg:text-left">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-amber-100 px-4 py-2 text-sm font-medium text-amber-800">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-amber-100 px-4 py-2 text-sm font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-200">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-500"></span>
@@ -83,14 +83,14 @@ export default function HeroSection() {
               Empowering Africa Through Learning
             </div>
 
-            <h1 className="mb-6 text-4xl leading-tight font-bold text-gray-900 sm:text-5xl lg:text-6xl">
+            <h1 className="mb-6 text-4xl leading-tight font-bold text-gray-900 sm:text-5xl lg:text-6xl dark:text-white">
               Transform Your
               <span className="block bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 bg-clip-text text-transparent">
                 Organization&apos;s Learning
               </span>
             </h1>
 
-            <p className="mb-8 max-w-2xl text-lg text-gray-600 sm:text-xl">
+            <p className="mb-8 max-w-2xl text-lg text-gray-600 sm:text-xl dark:text-gray-300">
               The complete learning management platform designed for African
               organizations. Create courses, track progress, and issue
               certificates - all in one place.
@@ -188,8 +188,12 @@ export default function HeroSection() {
                 ))}
               </div>
               <div className="text-left">
-                <p className="text-2xl font-bold text-gray-900">500+</p>
-                <p className="text-sm text-gray-500">Organizations trust us</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                  500+
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Organizations trust us
+                </p>
               </div>
             </div>
           </div>
@@ -208,7 +212,7 @@ export default function HeroSection() {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="absolute top-10 left-10 rounded-2xl border border-amber-100 bg-white p-4 shadow-xl"
+                className="absolute top-10 left-10 rounded-2xl border border-amber-100 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-green-400 to-emerald-500">
@@ -227,8 +231,12 @@ export default function HeroSection() {
                     </svg>
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">150+ Courses</p>
-                    <p className="text-sm text-gray-500">Active learning</p>
+                    <p className="font-semibold text-gray-900 dark:text-white">
+                      150+ Courses
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Active learning
+                    </p>
                   </div>
                 </div>
               </motion.div>
@@ -241,7 +249,7 @@ export default function HeroSection() {
                   ease: "easeInOut",
                   delay: 0.5,
                 }}
-                className="absolute right-0 bottom-20 rounded-2xl border border-amber-100 bg-white p-4 shadow-xl"
+                className="absolute right-0 bottom-20 rounded-2xl border border-amber-100 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-400 to-orange-500">
@@ -260,10 +268,12 @@ export default function HeroSection() {
                     </svg>
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">
+                    <p className="font-semibold text-gray-900 dark:text-white">
                       10K+ Certificates
                     </p>
-                    <p className="text-sm text-gray-500">Issued to date</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Issued to date
+                    </p>
                   </div>
                 </div>
               </motion.div>
@@ -276,7 +286,7 @@ export default function HeroSection() {
                   ease: "easeInOut",
                   delay: 1,
                 }}
-                className="absolute top-1/3 right-10 rounded-2xl border border-amber-100 bg-white p-4 shadow-xl"
+                className="absolute top-1/3 right-10 rounded-2xl border border-amber-100 bg-white p-4 shadow-xl dark:border-gray-700 dark:bg-gray-800"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-purple-400 to-violet-500">
@@ -295,8 +305,12 @@ export default function HeroSection() {
                     </svg>
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">50K+ Learners</p>
-                    <p className="text-sm text-gray-500">Across Africa</p>
+                    <p className="font-semibold text-gray-900 dark:text-white">
+                      50K+ Learners
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Across Africa
+                    </p>
                   </div>
                 </div>
               </motion.div>

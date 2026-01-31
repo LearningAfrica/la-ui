@@ -12,12 +12,12 @@ export default [
     route("dashboard", "routes/dashboard.tsx"),
     ...prefix("system", [
       layout("layouts/system-dashboard-layout.tsx", [
-    route("dashboard", "routes/system.dashboard.tsx"),
+        route("dashboard", "routes/system.dashboard.tsx"),
       ]),
     ]),
     ...prefix("client", [
       layout("layouts/client-dashboard-layout.tsx", [
-    route("dashboard", "routes/client.dashboard.tsx"),
+        route("dashboard", "routes/client.dashboard.tsx"),
       ]),
     ]),
     route("inquiries", "routes/inquiries.tsx"),

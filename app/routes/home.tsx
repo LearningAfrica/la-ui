@@ -1,6 +1,7 @@
 import { generateSEOTags } from "@/lib/utils/seo";
 // import type { Route } from "./+types/home";
 import { href } from "react-router";
+import { LandingHeader } from "@/components/landing/landing-header";
 import HeroSection from "@/components/landing/landing-hero-section";
 import LandingStatsSection from "@/components/landing/landing-stats-section";
 import FeaturesSection from "@/components/landing/features-section";
@@ -27,14 +28,23 @@ export function meta() {
 export default function Home() {
   return (
     <>
+      <LandingHeader />
       <main>
         <HeroSection />
         <LandingStatsSection />
-        <FeaturesSection />
-        <LandingHowItWorks />
-        <LandingTestimonials />
+        <section id="features">
+          <FeaturesSection />
+        </section>
+        <section id="how-it-works">
+          <LandingHowItWorks />
+        </section>
+        <section id="testimonials">
+          <LandingTestimonials />
+        </section>
         <LandingCTASection />
-        <LandingFooter />
+        <section id="contact">
+          <LandingFooter />
+        </section>
       </main>
     </>
   );

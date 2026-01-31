@@ -1,7 +1,7 @@
-import { AppSidebar } from '@/components/app-sidebar';
-import { DashboardHeader } from '@/components/dashboard-header';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { Outlet } from 'react-router';
+import { AppSidebar } from "@/components/app-sidebar";
+import { DashboardHeader } from "@/components/dashboard-header";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Outlet } from "react-router";
 
 export default function SystemDashboardLayout() {
   return (
@@ -17,5 +17,5 @@ export default function SystemDashboardLayout() {
         <Outlet />
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }

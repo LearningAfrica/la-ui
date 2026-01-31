@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,20 +6,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { SidebarTrigger } from '@/components/ui/sidebar';
-import { useTheme } from '@/providers/theme-provider';
-import {
-  Bell,
-  LogOut,
-  Monitor,
-  Moon,
-  Settings,
-  Sun,
-  User,
-} from 'lucide-react';
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useTheme } from "@/providers/theme-provider";
+import { Bell, LogOut, Monitor, Moon, Settings, Sun, User } from "lucide-react";
 
 interface DashboardHeaderProps {
   title?: string;
@@ -30,29 +22,29 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({
-  title = 'Dashboard',
-  userName = 'John Doe',
-  userEmail = 'john@example.com',
+  title = "Dashboard",
+  userName = "John Doe",
+  userEmail = "john@example.com",
   userAvatar,
   notificationCount = 0,
 }: DashboardHeaderProps) {
   const { setTheme, theme } = useTheme();
 
   const getThemeIcon = () => {
-    if (theme === 'light') return <Sun className="size-4" />;
-    if (theme === 'dark') return <Moon className="size-4" />;
+    if (theme === "light") return <Sun className="size-4" />;
+    if (theme === "dark") return <Moon className="size-4" />;
     return <Monitor className="size-4" />;
   };
 
   const toggleTheme = () => {
-    setTheme(theme === 'light' ? 'dark' : 'light');
+    setTheme(theme === "light" ? "dark" : "light");
   };
 
   const getUserInitials = () => {
     return userName
-      .split(' ')
+      .split(" ")
       .map((n) => n[0])
-      .join('')
+      .join("")
       .toUpperCase()
       .slice(0, 2);
   };
@@ -72,9 +64,9 @@ export function DashboardHeader({
             {notificationCount > 0 && (
               <Badge
                 variant="destructive"
-                className="absolute -right-1 -top-1 h-5 w-5 rounded-full p-0 text-xs flex items-center justify-center"
+                className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full p-0 text-xs"
               >
-                {notificationCount > 9 ? '9+' : notificationCount}
+                {notificationCount > 9 ? "9+" : notificationCount}
               </Badge>
             )}
           </Button>
@@ -86,19 +78,19 @@ export function DashboardHeader({
             <>
               <DropdownMenuItem className="flex flex-col items-start py-3">
                 <p className="font-medium">New course available</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Advanced React Patterns is now live
                 </p>
               </DropdownMenuItem>
               <DropdownMenuItem className="flex flex-col items-start py-3">
                 <p className="font-medium">Assignment due</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   Submit your project by tomorrow
                 </p>
               </DropdownMenuItem>
             </>
           ) : (
-            <div className="py-6 text-center text-sm text-muted-foreground">
+            <div className="text-muted-foreground py-6 text-center text-sm">
               No new notifications
             </div>
           )}
@@ -129,8 +121,8 @@ export function DashboardHeader({
         <DropdownMenuContent className="w-56" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">{userName}</p>
-              <p className="text-xs leading-none text-muted-foreground">
+              <p className="text-sm leading-none font-medium">{userName}</p>
+              <p className="text-muted-foreground text-xs leading-none">
                 {userEmail}
               </p>
             </div>

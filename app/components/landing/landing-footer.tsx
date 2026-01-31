@@ -75,7 +75,7 @@ const socialLinks = [
 
 export default function LandingFooter() {
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-gray-900 text-gray-300 dark:bg-gray-950 dark:text-gray-400">
       {/* African Pattern Top Border */}
       <div className="h-2 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500" />
 
@@ -91,7 +91,7 @@ export default function LandingFooter() {
                 Learning Africa
               </span>
             </Link>
-            <p className="mb-6 text-sm text-gray-400">
+            <p className="mb-6 text-sm text-gray-400 dark:text-gray-500">
               Empowering African organizations through transformative learning
               experiences.
             </p>
@@ -102,7 +102,7 @@ export default function LandingFooter() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-800 text-gray-400 transition-colors hover:bg-amber-500 hover:text-white"
+                  className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-800 text-gray-400 transition-colors hover:bg-amber-500 hover:text-white dark:bg-gray-900 dark:text-gray-500"
                 >
                   {link.icon}
                 </a>
@@ -112,13 +112,15 @@ export default function LandingFooter() {
 
           {/* Links */}
           <div>
-            <h3 className="mb-4 font-semibold text-white">Product</h3>
+            <h3 className="mb-4 font-semibold text-white dark:text-gray-200">
+              Product
+            </h3>
             <ul className="space-y-3">
               {footerLinks.product.map((link) => (
                 <li key={link.name}>
                   <Link
                     to={link.href}
-                    className="text-sm text-gray-400 transition-colors hover:text-amber-400"
+                    className="text-sm text-gray-400 transition-colors hover:text-amber-400 dark:text-gray-500"
                   >
                     {link.name}
                   </Link>
@@ -128,13 +130,15 @@ export default function LandingFooter() {
           </div>
 
           <div>
-            <h3 className="mb-4 font-semibold text-white">Company</h3>
+            <h3 className="mb-4 font-semibold text-white dark:text-gray-200">
+              Company
+            </h3>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
                   <Link
                     to={link.href}
-                    className="text-sm text-gray-400 transition-colors hover:text-amber-400"
+                    className="text-sm text-gray-400 transition-colors hover:text-amber-400 dark:text-gray-500"
                   >
                     {link.name}
                   </Link>
@@ -144,13 +148,15 @@ export default function LandingFooter() {
           </div>
 
           <div>
-            <h3 className="mb-4 font-semibold text-white">Resources</h3>
+            <h3 className="mb-4 font-semibold text-white dark:text-gray-200">
+              Resources
+            </h3>
             <ul className="space-y-3">
               {footerLinks.resources.map((link) => (
                 <li key={link.name}>
                   <Link
                     to={link.href}
-                    className="text-sm text-gray-400 transition-colors hover:text-amber-400"
+                    className="text-sm text-gray-400 transition-colors hover:text-amber-400 dark:text-gray-500"
                   >
                     {link.name}
                   </Link>
@@ -160,13 +166,15 @@ export default function LandingFooter() {
           </div>
 
           <div>
-            <h3 className="mb-4 font-semibold text-white">Legal</h3>
+            <h3 className="mb-4 font-semibold text-white dark:text-gray-200">
+              Legal
+            </h3>
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.name}>
                   <Link
                     to={link.href}
-                    className="text-sm text-gray-400 transition-colors hover:text-amber-400"
+                    className="text-sm text-gray-400 transition-colors hover:text-amber-400 dark:text-gray-500"
                   >
                     {link.name}
                   </Link>
@@ -177,12 +185,12 @@ export default function LandingFooter() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-gray-800 pt-8 sm:flex-row">
-          <p className="text-sm text-gray-500">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-gray-800 pt-8 sm:flex-row dark:border-gray-900">
+          <p className="text-sm text-gray-500 dark:text-gray-600">
             &copy; {new Date().getFullYear()} Learning Africa. All rights
             reserved.
           </p>
-          <p className="flex items-center gap-2 text-sm text-gray-500">
+          <p className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-600">
             Made with
             <svg
               className="h-4 w-4 text-red-500"
