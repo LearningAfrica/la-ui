@@ -59,18 +59,18 @@ export function InquiryDetailsDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
-        <DialogHeader>
+        <DialogHeader className="py-4">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <DialogTitle className="text-2xl">
-                {inquiry.company_name}
+                {inquiry?.company_name}
               </DialogTitle>
               <DialogDescription className="mt-1">
                 Organization onboarding request details
               </DialogDescription>
             </div>
-            <Badge className={getStatusColor(inquiry.status)}>
-              {inquiry.status}
+            <Badge className={getStatusColor(inquiry?.status)}>
+              {inquiry?.status}
             </Badge>
           </div>
         </DialogHeader>
@@ -85,16 +85,16 @@ export function InquiryDetailsDialog({
               <div className="flex items-center gap-3 text-sm">
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500/10">
                   <span className="font-medium text-orange-500">
-                    {inquiry.user.first_name[0]}
-                    {inquiry.user.last_name[0]}
+                    {inquiry?.user.first_name[0]}
+                    {inquiry?.user.last_name[0]}
                   </span>
                 </div>
                 <div>
                   <p className="font-medium">
-                    {inquiry.user.first_name} {inquiry.user.last_name}
+                    {inquiry?.user.first_name} {inquiry?.user.last_name}
                   </p>
                   <p className="text-muted-foreground text-xs">
-                    {inquiry.user.is_verified
+                    {inquiry?.user.is_verified
                       ? "Verified Account"
                       : "Unverified Account"}
                   </p>
@@ -102,7 +102,7 @@ export function InquiryDetailsDialog({
               </div>
               <div className="text-muted-foreground flex items-center gap-2 text-sm">
                 <Mail className="h-4 w-4" />
-                <span>{inquiry.user.email}</span>
+                <span>{inquiry?.user.email}</span>
               </div>
             </div>
           </div>
@@ -114,19 +114,19 @@ export function InquiryDetailsDialog({
             <h3 className="text-muted-foreground mb-3 text-sm font-semibold">
               Organization Information
             </h3>
-            <div className="space-y-3">
+            <div className="grid gap-4 md:grid-cols-2">
               <div className="flex items-start gap-2 text-sm">
                 <Building2 className="text-muted-foreground mt-0.5 h-4 w-4" />
                 <div className="flex-1">
                   <p className="text-muted-foreground text-xs">Category</p>
-                  <p className="font-medium">{inquiry.company_category}</p>
+                  <p className="font-medium">{inquiry?.company_category}</p>
                 </div>
               </div>
               <div className="flex items-start gap-2 text-sm">
                 <Users className="text-muted-foreground mt-0.5 h-4 w-4" />
                 <div className="flex-1">
                   <p className="text-muted-foreground text-xs">Company Size</p>
-                  <p className="font-medium">{inquiry.company_size}</p>
+                  <p className="font-medium">{inquiry?.company_size}</p>
                 </div>
               </div>
             </div>
@@ -140,7 +140,7 @@ export function InquiryDetailsDialog({
               Description
             </h3>
             <p className="text-sm leading-relaxed">
-              {inquiry.company_description}
+              {inquiry?.company_description}
             </p>
           </div>
 
@@ -148,7 +148,7 @@ export function InquiryDetailsDialog({
             <h3 className="text-muted-foreground mb-2 text-sm font-semibold">
               Reason for Request
             </h3>
-            <p className="text-sm leading-relaxed">{inquiry.reason}</p>
+            <p className="text-sm leading-relaxed">{inquiry?.reason}</p>
           </div>
 
           <Separator />
@@ -157,19 +157,19 @@ export function InquiryDetailsDialog({
           <div className="space-y-2">
             <div className="text-muted-foreground flex items-center gap-2 text-sm">
               <Calendar className="h-4 w-4" />
-              <span>Submitted: {formatDate(inquiry.created_at)}</span>
+              <span>Submitted: {formatDate(inquiry?.created_at)}</span>
             </div>
-            {inquiry.reviewed_at && (
+            {inquiry?.reviewed_at && (
               <div className="text-muted-foreground flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4" />
-                <span>Reviewed: {formatDate(inquiry.reviewed_at)}</span>
+                <span>Reviewed: {formatDate(inquiry?.reviewed_at)}</span>
               </div>
             )}
           </div>
         </div>
 
         {/* Actions */}
-        {inquiry.status.toLowerCase() === "pending" &&
+        {inquiry?.status.toLowerCase() === "pending" &&
           (onApprove || onReject) && (
             <>
               <Separator />

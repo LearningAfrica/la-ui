@@ -58,8 +58,11 @@ export const useApproveInquiry = () => {
   return useMutation<void, ErrorResponse, number>({
     mutationKey: inquiryMutationKeys.approveInquiry(),
     mutationFn: async (inquiryId) => {
-      await apiClient.post(
-        `/api/invite/organization-permission-requests/${inquiryId}/approve/`
+      await apiClient.patch(
+        `/api/invite/admin-action-to-organization-request/${inquiryId}/`,
+        {
+          status: "approved",
+        }
       );
     },
     onSuccess: () => {
@@ -82,13 +85,16 @@ export const useRejectInquiry = () => {
   return useMutation<
     void,
     ErrorResponse,
-    { inquiryId: number; reason?: string }
+    { inquiryId: number; reason: string }
   >({
     mutationKey: inquiryMutationKeys.rejectInquiry(),
     mutationFn: async ({ inquiryId, reason }) => {
       await apiClient.post(
-        `/api/invite/organization-permission-requests/${inquiryId}/reject/`,
-        { reason }
+        `/api/invite/admin-action-to-organization-request/${inquiryId}/`,
+        {
+          status: "rejected",
+          rejection_reason: reason,
+        }
       );
     },
     onSuccess: () => {

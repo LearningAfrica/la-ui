@@ -13,20 +13,29 @@ import { InquiryStatsCards } from "@/components/dashboard/inquiry-stats-cards";
 import { AdminInquiriesTable } from "@/components/dashboard/admin-inquiries-table";
 import { InquiryDetailsDialog } from "@/components/dashboard/inquiry-details-dialog";
 import { ConfirmationDialog } from "@/components/dashboard/confirmation-dialog";
+import { RejectInquiryDialog } from "@/components/dashboard/reject-inquiry-dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useInquiryModalStore } from "@/stores/inquiries/inquiry-modal-store";
 
 export default function SystemDashboardInquiries() {
   const [page, setPage] = useState(1);
   const [search] = useState("");
-  const [selectedInquiry, setSelectedInquiry] =
-    useState<InquiryInterface | null>(null);
-  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
-  const [approveDialogOpen, setApproveDialogOpen] = useState(false);
-  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
-  const [pendingAction, setPendingAction] = useState<InquiryInterface | null>(
-    null
-  );
+
+  const {
+    selectedInquiry,
+    detailsDialogOpen,
+    approveDialogOpen,
+    rejectDialogOpen,
+    pendingAction,
+    openDetailsDialog,
+    closeDetailsDialog,
+    setDetailsDialogOpen,
+    openApproveDialog,
+    closeApproveDialog,
+    openRejectDialog,
+    closeRejectDialog,
+  } = useInquiryModalStore();
 
   const queryClient = useQueryClient();
   const { data: inquiriesData, isLoading: inquiriesLoading } = useAllInquiries(
@@ -62,20 +71,15 @@ export default function SystemDashboardInquiries() {
   }, [inquiriesData]);
 
   const handleViewDetails = (inquiry: InquiryInterface) => {
-    setSelectedInquiry(inquiry);
-    setDetailsDialogOpen(true);
+    openDetailsDialog(inquiry);
   };
 
   const handleApproveClick = (inquiry: InquiryInterface) => {
-    setPendingAction(inquiry);
-    setApproveDialogOpen(true);
-    setDetailsDialogOpen(false);
+    openApproveDialog(inquiry);
   };
 
   const handleRejectClick = (inquiry: InquiryInterface) => {
-    setPendingAction(inquiry);
-    setRejectDialogOpen(true);
-    setDetailsDialogOpen(false);
+    openRejectDialog(inquiry);
   };
 
   const handleApproveConfirm = async () => {
@@ -87,24 +91,25 @@ export default function SystemDashboardInquiries() {
       queryClient.invalidateQueries({
         queryKey: inquiryQueryKeys.allInquiries(page, search),
       });
-      setApproveDialogOpen(false);
-      setPendingAction(null);
+      closeApproveDialog();
     } catch {
       // Error is handled by the mutation
     }
   };
 
-  const handleRejectConfirm = async () => {
+  const handleRejectConfirm = async (reason: string) => {
     if (!pendingAction) return;
 
     try {
-      await rejectMutation.mutateAsync({ inquiryId: pendingAction.id });
+      await rejectMutation.mutateAsync({
+        inquiryId: pendingAction.id,
+        reason,
+      });
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({
         queryKey: inquiryQueryKeys.allInquiries(page, search),
       });
-      setRejectDialogOpen(false);
-      setPendingAction(null);
+      closeRejectDialog();
     } catch {
       // Error is handled by the mutation
     }
@@ -188,7 +193,10 @@ export default function SystemDashboardInquiries() {
       <InquiryDetailsDialog
         inquiry={selectedInquiry}
         open={detailsDialogOpen}
-        onOpenChange={setDetailsDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) closeDetailsDialog();
+          else setDetailsDialogOpen(true);
+        }}
         onApprove={handleApproveClick}
         onReject={handleRejectClick}
         isApproving={approveMutation.isPending}
@@ -198,7 +206,9 @@ export default function SystemDashboardInquiries() {
       {/* Approve Confirmation Dialog */}
       <ConfirmationDialog
         open={approveDialogOpen}
-        onOpenChange={setApproveDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) closeApproveDialog();
+        }}
         onConfirm={handleApproveConfirm}
         title="Approve Organization Request"
         description={`Are you sure you want to approve the request from ${pendingAction?.company_name}? This will create a new organization and notify the requester.`}
@@ -209,16 +219,14 @@ export default function SystemDashboardInquiries() {
       />
 
       {/* Reject Confirmation Dialog */}
-      <ConfirmationDialog
+      <RejectInquiryDialog
         open={rejectDialogOpen}
-        onOpenChange={setRejectDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) closeRejectDialog();
+        }}
         onConfirm={handleRejectConfirm}
-        title="Reject Organization Request"
-        description={`Are you sure you want to reject the request from ${pendingAction?.company_name}? The requester will be notified of this decision.`}
-        confirmText="Reject"
-        cancelText="Cancel"
+        companyName={pendingAction?.company_name}
         isLoading={rejectMutation.isPending}
-        variant="destructive"
       />
     </div>
   );
