@@ -13,6 +13,7 @@ export default [
     route("/sign-in", "routes/sign-in.tsx"),
     route("/sign-up", "routes/sign-up.tsx"),
     route("/verify-email", "routes/verify-email.tsx"),
+    route("/inquiry", "routes/inquiry.tsx"),
     route(
       "/email-verification-pending",
       "routes/email-verification-pending.tsx"
@@ -27,7 +28,6 @@ export default [
         route("dashboard", "routes/client.dashboard.tsx"),
       ]),
     ]),
-    route("inquiries", "routes/inquiries.tsx"),
     route("sitemap.xml", "routes/sitemap.xml.ts"),
     route(
       ".well-known/appspecific/com.chrome.devtools.json",
