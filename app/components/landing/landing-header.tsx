@@ -1,8 +1,16 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/providers/theme-provider";
-import { Menu, X, Moon, Sun, Monitor } from "lucide-react";
+import { Menu, X, Moon, Sun, Monitor, LogOut, User } from "lucide-react";
 import { useAuthStore } from "@/stores/auth/auth-store";
 
 const navItems = [
@@ -17,7 +25,13 @@ export function LandingHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { setTheme, theme } = useTheme();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user, logout: logoutStore } = useAuthStore();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logoutStore();
+    navigate("/");
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -107,9 +121,41 @@ export function LandingHeader() {
               {getThemeIcon()}
             </Button>
             {isAuthenticated ? (
-              <Button asChild>
-                <Link to="/dashboard">Dashboard</Link>
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="gradient" className="gap-2">
+                    <User className="h-4 w-4" />
+                    {/* {user?.first_name || "Account"} */}
+                    Dashboard
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm leading-none font-medium">
+                        {user?.first_name} {user?.last_name}
+                      </p>
+                      <p className="text-muted-foreground text-xs leading-none">
+                        {user?.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/dashboard" className="cursor-pointer">
+                      Dashboard
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="cursor-pointer text-red-600 focus:text-red-600"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               <>
                 <Button variant="ghost" asChild>
@@ -169,9 +215,19 @@ export function LandingHeader() {
               ))}
               <div className="mt-4 space-y-2 border-t pt-4">
                 {isAuthenticated ? (
-                  <Button className="w-full" asChild>
-                    <Link to="/dashboard">Dashboard</Link>
-                  </Button>
+                  <>
+                    <Button className="w-full" asChild>
+                      <Link to="/dashboard">Dashboard</Link>
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      className="w-full"
+                      onClick={handleLogout}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </Button>
+                  </>
                 ) : (
                   <>
                     <Button variant="ghost" className="w-full" asChild>

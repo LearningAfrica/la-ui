@@ -21,6 +21,7 @@ export default [
     ...prefix("system", [
       layout("layouts/system-dashboard-layout.tsx", [
         route("dashboard", "routes/system.dashboard.tsx"),
+        route("inquiries", "routes/system.dashboard.inquiries.tsx"),
       ]),
     ]),
     ...prefix("client", [

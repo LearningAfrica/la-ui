@@ -9,7 +9,7 @@ export default function SystemDashboardLayout() {
       <AppSidebar />
       <SidebarInset>
         <DashboardHeader
-          title="System Dashboard"
+          title="Admin Dashboard"
           userName="Admin User"
           userEmail="admin@example.com"
           notificationCount={5}

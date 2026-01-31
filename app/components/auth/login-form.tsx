@@ -44,7 +44,7 @@ export function LoginForm({ searchParams }: LoginFormProps) {
         // Update auth store
         login(result);
 
-        if (!isVerified) {
+        if (!result.user.is_verified) {
           navigate(
             "/email-verification-pending" +
               (data.email ? `?email=${encodeURIComponent(data.email)}` : "")
@@ -57,7 +57,7 @@ export function LoginForm({ searchParams }: LoginFormProps) {
         if (result.user_role === "super_admin") {
           navigate(href("/system/dashboard"));
         } else {
-          navigate(href("/client/dashboard"));
+          navigate(href("/dashboard"));
         }
       },
       onError: (error) => {

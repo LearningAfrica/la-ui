@@ -52,3 +52,56 @@ export const useCreateInquiry = () => {
     },
   });
 };
+
+// Approve Inquiry Mutation (Admin)
+export const useApproveInquiry = () => {
+  return useMutation<void, ErrorResponse, number>({
+    mutationKey: inquiryMutationKeys.approveInquiry(),
+    mutationFn: async (inquiryId) => {
+      await apiClient.post(
+        `/api/invite/organization-permission-requests/${inquiryId}/approve/`
+      );
+    },
+    onSuccess: () => {
+      toast.success({
+        message: "Inquiry approved successfully",
+        description: "The organization request has been approved.",
+      });
+    },
+    onError: (error) => {
+      toast.error({
+        message: extractError(error, "Failed to approve inquiry"),
+        description: "Please try again or contact support.",
+      });
+    },
+  });
+};
+
+// Reject Inquiry Mutation (Admin)
+export const useRejectInquiry = () => {
+  return useMutation<
+    void,
+    ErrorResponse,
+    { inquiryId: number; reason?: string }
+  >({
+    mutationKey: inquiryMutationKeys.rejectInquiry(),
+    mutationFn: async ({ inquiryId, reason }) => {
+      await apiClient.post(
+        `/api/invite/organization-permission-requests/${inquiryId}/reject/`,
+        { reason }
+      );
+    },
+    onSuccess: () => {
+      toast.success({
+        message: "Inquiry rejected",
+        description: "The organization request has been rejected.",
+      });
+    },
+    onError: (error) => {
+      toast.error({
+        message: extractError(error, "Failed to reject inquiry"),
+        description: "Please try again or contact support.",
+      });
+    },
+  });
+};

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { generateSEOTags } from "@/lib/utils/seo";
 import { useMemo, useState } from "react";
-import { href, Link } from "react-router";
+import { href, Link, useNavigate } from "react-router";
 import { useAuthStore } from "@/stores/auth/auth-store";
 import { useMyOrganizations } from "@/features/organizations/organization-queries";
 import {
@@ -12,6 +12,7 @@ import {
   type InquiryInterface,
 } from "@/features/inquiries/inquiry-queries";
 import { useMyInvites } from "@/features/invites/invites-queries";
+
 import { OrganizationCard } from "@/components/dashboard/organization-card";
 import { InquiriesTable } from "@/components/dashboard/inquiries-table";
 import { InvitesTable } from "@/components/dashboard/invites-table";
@@ -24,6 +25,7 @@ import {
   CheckCircle2,
   MailOpen,
   ArrowLeft,
+  LogOut,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -42,7 +44,13 @@ type TabType = "organizations" | "inquiries" | "invites";
 
 export default function Dashboard() {
   const [selectedTab, setSelectedTab] = useState<TabType>("organizations");
-  const { user, canCreateOrg, isVerified } = useAuthStore();
+  const {
+    user,
+    canCreateOrg,
+    isVerified,
+    logout: logoutStore,
+  } = useAuthStore();
+  const navigate = useNavigate();
   const {
     data: inquiriesData,
     isLoading: inquiriesLoading,
@@ -52,6 +60,11 @@ export default function Dashboard() {
 
   const handleTabChange = (value: string) => {
     setSelectedTab(value as TabType);
+  };
+
+  const handleLogout = () => {
+    logoutStore();
+    navigate("/");
   };
 
   return (
@@ -91,12 +104,22 @@ export default function Dashboard() {
                       <Mail className="h-4 w-4" />
                       <span>{user?.email}</span>
                     </div>
-                    <Link to={href("/")}>
-                      <Button variant="default" size="sm">
-                        <ArrowLeft className="mr-2 h-4 w-4" />
-                        Go back to Home
+                    <div className="flex gap-2">
+                      <Link to={href("/")}>
+                        <Button variant="default" size="sm">
+                          <ArrowLeft className="mr-2 h-4 w-4" />
+                          Go back to Home
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={handleLogout}
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        Logout
                       </Button>
-                    </Link>
+                    </div>
                   </div>
                 </div>
               </div>
