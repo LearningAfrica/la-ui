@@ -27,6 +27,7 @@ export default [
     ...prefix("client", [
       layout("layouts/client-dashboard-layout.tsx", [
         route("dashboard", "routes/client.dashboard.tsx"),
+        route("dashboard/members", "routes/client.dashboard.members.tsx"),
       ]),
     ]),
     route("sitemap.xml", "routes/sitemap.xml.ts"),
