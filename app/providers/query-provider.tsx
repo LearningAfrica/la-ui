@@ -1,7 +1,8 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-// import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
+// import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+// import { EmbeddedDevTools } from "react-router-devtools";
 
 type Props = {
   children: React.ReactNode;
@@ -21,6 +22,12 @@ export default function ReactQueryProvider({ children }: Props) {
             render: <ReactQueryDevtoolsPanel />,
             defaultOpen: false,
           },
+
+          // {
+          //   name: "React Router",
+          //   render: <EmbeddedDevTools />,
+          //   defaultOpen: false,
+          // // },
         ]}
       />
     </QueryClientProvider>

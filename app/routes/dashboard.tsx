@@ -17,6 +17,7 @@ import { useMyInvites } from "@/features/invites/invites-queries";
 import { OrganizationCard } from "@/components/dashboard/organization-card";
 import { InquiriesTable } from "@/components/dashboard/inquiries-table";
 import { InvitesTable } from "@/components/dashboard/invites-table";
+import { CreateOrganizationModal } from "@/components/dashboard/create-organization-modal";
 import {
   Building2,
   Mail,
@@ -126,12 +127,12 @@ export default function Dashboard() {
                   </div>
                 </div>
                 {canCreateOrg && (
-                  <Link to={href("/dashboard")}>
+                  <CreateOrganizationModal>
                     <Button variant="gradient" size="lg">
                       <Plus className="mr-2 h-4 w-4" />
                       Create Organization
                     </Button>
-                  </Link>
+                  </CreateOrganizationModal>
                 )}
               </div>
             </CardContent>
@@ -226,12 +227,21 @@ function OrganizationsTab() {
               ? "Get started by creating your first organization."
               : "Submit an inquiry to create your first organization."}
           </p>
-          <Link to={href("/inquiry")}>
-            <Button variant="gradient">
-              <Plus className="mr-2 h-4 w-4" />
-              {canCreateOrg ? "Create Organization" : "Submit Inquiry"}
-            </Button>
-          </Link>
+          {canCreateOrg ? (
+            <CreateOrganizationModal>
+              <Button variant="gradient">
+                <Plus className="mr-2 h-4 w-4" />
+                Create Organization
+              </Button>
+            </CreateOrganizationModal>
+          ) : (
+            <Link to={href("/inquiry")}>
+              <Button variant="gradient">
+                <Plus className="mr-2 h-4 w-4" />
+                Submit Inquiry
+              </Button>
+            </Link>
+          )}
         </CardContent>
       </Card>
     );
@@ -244,12 +254,12 @@ function OrganizationsTab() {
           Your Organizations ({organizations.length})
         </h3>
         {canCreateOrg && (
-          <Link to={href("/inquiry")}>
+          <CreateOrganizationModal>
             <Button variant="outline" size="sm">
               <Plus className="mr-2 h-4 w-4" />
               Add New
             </Button>
-          </Link>
+          </CreateOrganizationModal>
         )}
       </div>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
