@@ -27,7 +27,6 @@ import { ChipInput } from "@/components/ui/chip-input";
 import { useInviteMember } from "@/features/organizations/organization-mutations";
 import { useForm, useWatch } from "react-hook-form";
 import { inviteMemberResolver, emailSchema } from "@/lib/schema/invite-schema";
-import toast from "@/lib/toast";
 import { Loader2 } from "lucide-react";
 import { useEffect, useEffectEvent } from "react";
 
@@ -71,11 +70,6 @@ export function InviteMemberDialog({
   const handleSubmit = form.handleSubmit(async (data) => {
     await inviteMemberMutation.mutateAsync(data, {
       onSuccess: () => {
-        toast.success({
-          message: "Invitations sent successfully.",
-          description:
-            "The invited members will receive an email with instructions to join the organization.",
-        });
         form.reset();
         onOpenChange(false);
       },

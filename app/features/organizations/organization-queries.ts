@@ -112,3 +112,62 @@ export const useMyOrganizationMembers = (params: MembersQueryParams) => {
     enabled: !!organizationId,
   });
 };
+
+export interface OrganizationInvite {
+  id: string;
+  email: string;
+  role: OrganizationMembershipRole;
+  status: "pending" | "accepted" | "declined" | "expired";
+  invited_at: string;
+  invited_by: string;
+  expires_at: string;
+}
+
+export interface InvitesFilters {
+  page?: number;
+  page_size?: number;
+  role?: OrganizationMembershipRole;
+  status?: "pending" | "accepted" | "declined" | "expired";
+  search?: string;
+}
+
+export interface InvitesQueryParams {
+  organizationId: string;
+  filters?: InvitesFilters;
+}
+
+// Get organization invites
+export const useOrganizationInvites = (params: InvitesQueryParams) => {
+  const { organizationId, filters = {} } = params;
+  const { page = 1, page_size = 10, role, status, search } = filters;
+
+  return useQuery({
+    queryKey: organizationQueryKeys.organizationInvites(
+      organizationId,
+      filters
+    ),
+    queryFn: async () => {
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: page_size.toString(),
+      });
+
+      if (role) queryParams.append("role", role);
+
+      if (status) queryParams.append("status", status);
+
+      if (search) queryParams.append("search", search);
+
+      if (organizationId) {
+        queryParams.append("organization_id", organizationId);
+      }
+
+      const response = await apiClient.get<Paginated<OrganizationInvite>>(
+        `/api/invite/organization-user-invites/?${queryParams.toString()}`
+      );
+
+      return response.data;
+    },
+    enabled: !!organizationId,
+  });
+};
