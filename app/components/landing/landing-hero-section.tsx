@@ -53,7 +53,7 @@ export default function HeroSection() {
               {isSuperAdmin ? (
                 // Super Admin sees dashboard and inquiries links
                 <>
-                  <Link to="/super-admin/inquiries">
+                  <Link to={href("/system/inquiries")}>
                     <Button
                       size="lg"
                       className="w-full bg-linear-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/30 transition-all duration-300 hover:from-amber-600 hover:to-orange-700 hover:shadow-amber-500/50 sm:w-auto"
@@ -61,7 +61,7 @@ export default function HeroSection() {
                       Manage Inquiries
                     </Button>
                   </Link>
-                  <Link to="/super-admin">
+                  <Link to={href("/system/dashboard")}>
                     <Button
                       size="lg"
                       variant="outline"

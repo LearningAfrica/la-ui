@@ -11,24 +11,25 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useTheme } from "@/providers/theme-provider";
+import { useAuthStore } from "@/stores/auth/auth-store";
 import { Bell, LogOut, Monitor, Moon, Settings, Sun, User } from "lucide-react";
 
 interface DashboardHeaderProps {
   title?: string;
-  userName?: string;
-  userEmail?: string;
-  userAvatar?: string;
   notificationCount?: number;
 }
 
 export function DashboardHeader({
   title = "Dashboard",
-  userName = "John Doe",
-  userEmail = "john@example.com",
-  userAvatar,
   notificationCount = 0,
 }: DashboardHeaderProps) {
   const { setTheme, theme } = useTheme();
+  const { user } = useAuthStore();
+
+  const userName = user
+    ? `${user.first_name} ${user.last_name}`.trim()
+    : "User";
+  const userEmail = user?.email ?? "";
 
   const getThemeIcon = () => {
     if (theme === "light") return <Sun className="size-4" />;
@@ -115,7 +116,7 @@ export function DashboardHeader({
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={userAvatar} alt={userName} />
+              <AvatarImage alt={userName} />
               <AvatarFallback>{getUserInitials()}</AvatarFallback>
             </Avatar>
           </Button>

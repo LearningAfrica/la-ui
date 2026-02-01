@@ -21,6 +21,7 @@ type State = {
 type Actions = {
   login: (payload: AuthResponseInterface) => void;
   logout: () => void;
+  updateTokens: (access: string, refresh: string) => void;
 };
 
 export const useAuthStore = create<State & Actions>()(
@@ -55,6 +56,12 @@ export const useAuthStore = create<State & Actions>()(
           isActive: undefined,
           accessToken: undefined,
           refreshToken: undefined,
+        })),
+
+      updateTokens: (access: string, refresh: string) =>
+        set(() => ({
+          accessToken: access,
+          refreshToken: refresh,
         })),
     }),
     {
@@ -105,13 +112,17 @@ export const useIsLoggedInAndVerified = () => {
 // Set up the auth helpers for the API client
 setAuthHelpers(
   () => useAuthStore.getState().accessToken!,
-  () => useAuthStore.getState().logout()
+  () => useAuthStore.getState().logout(),
+  () => useAuthStore.getState().refreshToken!,
+  (access, refresh) => useAuthStore.getState().updateTokens(access, refresh)
 );
 
 // Subscribe to auth state changes to update API client helpers
 useAuthStore.subscribe((state) => {
   setAuthHelpers(
     () => state.accessToken!,
-    () => state.logout()
+    () => state.logout(),
+    () => state.refreshToken!,
+    (access, refresh) => state.updateTokens(access, refresh)
   );
 });

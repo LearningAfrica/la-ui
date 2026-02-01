@@ -6,6 +6,7 @@ import { generateSEOTags } from "@/lib/utils/seo";
 import { useMemo, useState } from "react";
 import { href, Link, useNavigate } from "react-router";
 import { useAuthStore } from "@/stores/auth/auth-store";
+import { RouteGuard } from "@/components/auth/route-guard";
 import { useMyOrganizations } from "@/features/organizations/organization-queries";
 import {
   useMyInquiries,
@@ -68,108 +69,110 @@ export default function Dashboard() {
   };
 
   return (
-    <main className="container mx-auto min-h-screen px-4 py-8">
-      {/* User Info Section */}
-      <section className="mb-8">
-        <Card className="border-orange-200 dark:border-orange-900">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-              <div className="flex items-center gap-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-br from-orange-400 to-amber-500 text-2xl font-bold text-white">
-                  {user?.first_name?.[0]}
-                  {user?.last_name?.[0]}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {user?.first_name} {user?.last_name}
-                    </h2>
-                    {isVerified ? (
-                      <Badge
-                        variant="default"
-                        className="bg-green-600 hover:bg-green-700"
-                      >
-                        <CheckCircle2 className="mr-1 h-3 w-3" />
-                        Verified
-                      </Badge>
-                    ) : (
-                      <Badge variant="secondary">
-                        <AlertCircle className="mr-1 h-3 w-3" />
-                        Not Verified
-                      </Badge>
-                    )}
+    <RouteGuard>
+      <main className="container mx-auto min-h-screen px-4 py-8">
+        {/* User Info Section */}
+        <section className="mb-8">
+          <Card className="border-orange-200 dark:border-orange-900">
+            <CardContent className="pt-6">
+              <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-br from-orange-400 to-amber-500 text-2xl font-bold text-white">
+                    {user?.first_name?.[0]}
+                    {user?.last_name?.[0]}
                   </div>
-                  <div className="text-muted-foreground mt-1 flex flex-col gap-4 text-sm">
+                  <div>
                     <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4" />
-                      <span>{user?.email}</span>
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {user?.first_name} {user?.last_name}
+                      </h2>
+                      {isVerified ? (
+                        <Badge
+                          variant="default"
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          <CheckCircle2 className="mr-1 h-3 w-3" />
+                          Verified
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary">
+                          <AlertCircle className="mr-1 h-3 w-3" />
+                          Not Verified
+                        </Badge>
+                      )}
                     </div>
-                    <div className="flex gap-2">
-                      <Link to={href("/")}>
-                        <Button variant="default" size="sm">
-                          <ArrowLeft className="mr-2 h-4 w-4" />
-                          Go back to Home
+                    <div className="text-muted-foreground mt-1 flex flex-col gap-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <Mail className="h-4 w-4" />
+                        <span>{user?.email}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <Link to={href("/")}>
+                          <Button variant="default" size="sm">
+                            <ArrowLeft className="mr-2 h-4 w-4" />
+                            Go back to Home
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={handleLogout}
+                        >
+                          <LogOut className="mr-2 h-4 w-4" />
+                          Logout
                         </Button>
-                      </Link>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={handleLogout}
-                      >
-                        <LogOut className="mr-2 h-4 w-4" />
-                        Logout
-                      </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
+                {canCreateOrg && (
+                  <Link to={href("/dashboard")}>
+                    <Button variant="gradient" size="lg">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Create Organization
+                    </Button>
+                  </Link>
+                )}
               </div>
-              {canCreateOrg && (
-                <Link to={href("/dashboard")}>
-                  <Button variant="gradient" size="lg">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Create Organization
-                  </Button>
-                </Link>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </section>
+            </CardContent>
+          </Card>
+        </section>
 
-      {/* Tabs Section */}
-      <section>
-        <Tabs value={selectedTab} onValueChange={handleTabChange}>
-          <TabsList className="mb-6">
-            <TabsTrigger value="organizations">
-              <Building2 className="mr-2 h-4 w-4" />
-              Organizations
-            </TabsTrigger>
+        {/* Tabs Section */}
+        <section>
+          <Tabs value={selectedTab} onValueChange={handleTabChange}>
+            <TabsList className="mb-6">
+              <TabsTrigger value="organizations">
+                <Building2 className="mr-2 h-4 w-4" />
+                Organizations
+              </TabsTrigger>
 
-            <TabsTrigger value="invites">
-              <MailOpen className="mr-2 h-4 w-4" />
-              Invitations
-            </TabsTrigger>
-            <TabsTrigger value="inquiries">
-              <User className="mr-2 h-4 w-4" />
-              Inquiries ({inquiriesData?.meta?.total_docs ?? 0})
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="organizations">
-            <OrganizationsTab />
-          </TabsContent>
-          <TabsContent value="inquiries">
-            <InquiriesTab
-              inquiries={inquiries! || []}
-              isLoading={inquiriesLoading}
-              error={inquiriesError}
-            />
-          </TabsContent>
-          <TabsContent value="invites">
-            <InvitesTab />
-          </TabsContent>
-        </Tabs>
-      </section>
-    </main>
+              <TabsTrigger value="invites">
+                <MailOpen className="mr-2 h-4 w-4" />
+                Invitations
+              </TabsTrigger>
+              <TabsTrigger value="inquiries">
+                <User className="mr-2 h-4 w-4" />
+                Inquiries ({inquiriesData?.meta?.total_docs ?? 0})
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="organizations">
+              <OrganizationsTab />
+            </TabsContent>
+            <TabsContent value="inquiries">
+              <InquiriesTab
+                inquiries={inquiries ?? []}
+                isLoading={inquiriesLoading}
+                error={inquiriesError}
+              />
+            </TabsContent>
+            <TabsContent value="invites">
+              <InvitesTab />
+            </TabsContent>
+          </Tabs>
+        </section>
+      </main>
+    </RouteGuard>
   );
 }
 

@@ -148,7 +148,7 @@ export const useVerifyEmail = () => {
     mutationKey: authMutationKeys.verifyEmail(),
     mutationFn: async ({ token }) => {
       const response = await apiClient.post<{ message: string }>(
-        `/api/auth/verify-email/?token=${token}`,
+        "/api/auth/verify-email/",
         { token }
       );
 

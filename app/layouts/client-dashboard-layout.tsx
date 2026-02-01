@@ -1,17 +1,19 @@
 import { AppSidebar } from "@/components/app-sidebar";
+import { RouteGuard } from "@/components/auth/route-guard";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import React from "react";
 import { Outlet } from "react-router";
 
 export default function ClientDashboardLayout() {
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <DashboardHeader title="Client Dashboard" notificationCount={3} />
-        <Outlet />
-      </SidebarInset>
-    </SidebarProvider>
+    <RouteGuard allowedRoles={["user"]} requireVerified>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <DashboardHeader title="Client Dashboard" />
+          <Outlet />
+        </SidebarInset>
+      </SidebarProvider>
+    </RouteGuard>
   );
 }

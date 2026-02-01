@@ -1,6 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { InquiryFormData } from "@/lib/schema/inquiry-schema";
-import { inquiryMutationKeys } from "./inquiry-query-keys";
+import { inquiryMutationKeys, inquiryQueryKeys } from "./inquiry-query-keys";
 import { apiClient } from "@/lib/api";
 import toast from "@/lib/toast";
 import { extractError } from "@/lib/error";
@@ -26,6 +26,8 @@ interface ErrorResponse {
 
 // Create Inquiry Mutation
 export const useCreateInquiry = () => {
+  const queryClient = useQueryClient();
+
   return useMutation<InquiryResponse, ErrorResponse, InquiryFormData>({
     mutationKey: inquiryMutationKeys.createInquiry(),
     mutationFn: async (data) => {
@@ -37,6 +39,12 @@ export const useCreateInquiry = () => {
       return response.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: inquiryQueryKeys.myInquiries(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: inquiryQueryKeys.inquiries(),
+      });
       toast.success({
         message: "Inquiry submitted successfully",
         description:
@@ -55,6 +63,8 @@ export const useCreateInquiry = () => {
 
 // Approve Inquiry Mutation (Admin)
 export const useApproveInquiry = () => {
+  const queryClient = useQueryClient();
+
   return useMutation<void, ErrorResponse, number>({
     mutationKey: inquiryMutationKeys.approveInquiry(),
     mutationFn: async (inquiryId) => {
@@ -66,6 +76,12 @@ export const useApproveInquiry = () => {
       );
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: inquiryQueryKeys.inquiries(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: inquiryQueryKeys.inquiryStats(),
+      });
       toast.success({
         message: "Inquiry approved successfully",
         description: "The organization request has been approved.",
@@ -82,6 +98,8 @@ export const useApproveInquiry = () => {
 
 // Reject Inquiry Mutation (Admin)
 export const useRejectInquiry = () => {
+  const queryClient = useQueryClient();
+
   return useMutation<
     void,
     ErrorResponse,
@@ -98,6 +116,12 @@ export const useRejectInquiry = () => {
       );
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: inquiryQueryKeys.inquiries(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: inquiryQueryKeys.inquiryStats(),
+      });
       toast.success({
         message: "Inquiry rejected",
         description: "The organization request has been rejected.",

@@ -44,7 +44,7 @@ const columns = [
   }),
 
   columnHelper.accessor("company_size", {
-    header: "Users",
+    header: "Company Size",
   }),
   columnHelper.accessor("status", {
     header: "Status",
@@ -85,6 +85,19 @@ const columns = [
         </span>
       ) : (
         <span className="text-muted-foreground text-sm">-</span>
+      );
+    },
+  }),
+  columnHelper.accessor("user", {
+    header: "Submitted By",
+    cell: ({ row }) => {
+      const user = row.getValue("user") as { name: string; email: string };
+
+      return (
+        <div>
+          <div className="font-medium">{user.name}</div>
+          <div className="text-muted-foreground text-sm">{user.email}</div>
+        </div>
       );
     },
   }),

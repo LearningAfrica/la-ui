@@ -53,8 +53,16 @@ export function LoginForm({ searchParams }: LoginFormProps) {
           return;
         }
 
-        // Navigate based on user role
-        if (result.user_role === "super_admin") {
+        // Check for a safe redirect param, otherwise navigate by role
+        const redirectTo = searchParams?.get("redirect");
+        const isSafeRedirect =
+          redirectTo &&
+          redirectTo.startsWith("/") &&
+          !redirectTo.startsWith("//");
+
+        if (isSafeRedirect) {
+          navigate(redirectTo);
+        } else if (result.user_role === "super_admin") {
           navigate(href("/system/dashboard"));
         } else {
           navigate(href("/dashboard"));
