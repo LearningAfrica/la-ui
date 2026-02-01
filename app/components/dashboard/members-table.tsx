@@ -14,7 +14,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, RefreshCw, X, UsersIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Search,
+  RefreshCw,
+  X,
+  UsersIcon,
+  MoreVertical,
+  UserCog,
+  Ban,
+  CheckCircle,
+} from "lucide-react";
 import type {
   OrganizationMember,
   OrganizationMembershipRole,
@@ -29,6 +46,9 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "../ui/empty";
+import { ChangeMemberRoleDialog } from "./change-member-role-dialog";
+import { ToggleMemberStatusDialog } from "./toggle-member-status-dialog";
+import { useState } from "react";
 
 interface MembersTableProps {
   members: OrganizationMember[];
@@ -38,11 +58,16 @@ interface MembersTableProps {
   isLoading?: boolean;
   error?: Error | null;
   onRefresh?: () => void;
+  onInvite?: () => void;
+  organizationId: string;
 }
 
 const columnHelper = createColumnHelper<OrganizationMember>();
 
-const columns = [
+const createColumns = (
+  onRoleChange?: (member: OrganizationMember) => void,
+  onToggleStatus?: (member: OrganizationMember) => void
+) => [
   columnHelper.display({
     id: "index",
     header: "#",
@@ -110,20 +135,44 @@ const columns = [
       </span>
     ),
   }),
-  // columnHelper.accessor("", {
-  //   header: "Last Login",
-  //   cell: ({ row }) => {
-  //     const lastLogin = row.getValue("last_login") as string | null;
+  columnHelper.display({
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      const member = row.original;
 
-  //     return lastLogin ? (
-  //       <span className="text-muted-foreground text-sm">
-  //         {moment(lastLogin).fromNow()}
-  //       </span>
-  //     ) : (
-  //       <span className="text-muted-foreground text-sm">Never</span>
-  //     );
-  //   },
-  // }),
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="sm">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => onRoleChange?.(member)}>
+              <UserCog className="mr-2 h-4 w-4" />
+              Change Role
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onToggleStatus?.(member)}>
+              {member.is_active ? (
+                <>
+                  <Ban className="mr-2 h-4 w-4" />
+                  Deactivate
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Activate
+                </>
+              )}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  }),
 ];
 
 export function MembersTable({
@@ -134,7 +183,14 @@ export function MembersTable({
   isLoading = false,
   error = null,
   onRefresh,
+  onInvite,
+  organizationId,
 }: MembersTableProps) {
+  const [roleDialogOpen, setRoleDialogOpen] = useState(false);
+  const [statusDialogOpen, setStatusDialogOpen] = useState(false);
+  const [selectedMember, setSelectedMember] =
+    useState<OrganizationMember | null>(null);
+
   const {
     search,
     role,
@@ -147,6 +203,18 @@ export function MembersTable({
     setPageSize,
     resetFilters,
   } = useMembersFilterStore();
+
+  const handleRoleChangeClick = (member: OrganizationMember) => {
+    setSelectedMember(member);
+    setRoleDialogOpen(true);
+  };
+
+  const handleToggleStatusClick = (member: OrganizationMember) => {
+    setSelectedMember(member);
+    setStatusDialogOpen(true);
+  };
+
+  const columns = createColumns(handleRoleChangeClick, handleToggleStatusClick);
 
   const table = useReactTable({
     data: members,
@@ -161,6 +229,33 @@ export function MembersTable({
 
   return (
     <div className="space-y-4">
+      {/* Toolbar */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          {onInvite && (
+            <Button onClick={onInvite} size="sm">
+              <UserCog className="mr-2 h-4 w-4" />
+              Invite Members
+            </Button>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {onRefresh && (
+            <Button
+              onClick={onRefresh}
+              variant="outline"
+              size="sm"
+              disabled={isLoading}
+            >
+              <RefreshCw
+                className={`mr-2 h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+              />
+              Refresh
+            </Button>
+          )}
+        </div>
+      </div>
+
       {/* Filters */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-1 items-center gap-2">
@@ -207,7 +302,7 @@ export function MembersTable({
               setIsActive(value === "all" ? undefined : value === "active")
             }
           >
-            <SelectTrigger className="w-[150px]">
+            <SelectTrigger className="w-37.5">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -394,6 +489,28 @@ export function MembersTable({
           </Button>
         </div>
       </div>
+
+      {/* Dialogs */}
+      {selectedMember && (
+        <>
+          <ChangeMemberRoleDialog
+            open={roleDialogOpen}
+            onOpenChange={setRoleDialogOpen}
+            memberName={`${selectedMember.first_name} ${selectedMember.last_name}`}
+            memberId={selectedMember.id}
+            organizationId={organizationId}
+            currentRole={selectedMember.role}
+          />
+          <ToggleMemberStatusDialog
+            open={statusDialogOpen}
+            onOpenChange={setStatusDialogOpen}
+            memberName={`${selectedMember.first_name} ${selectedMember.last_name}`}
+            memberId={selectedMember.id}
+            organizationId={organizationId}
+            isActive={selectedMember.is_active}
+          />
+        </>
+      )}
     </div>
   );
 }

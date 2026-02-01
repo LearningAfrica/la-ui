@@ -3,13 +3,13 @@ import { useOrganizationStore } from "@/stores/organization/organization-store";
 import { useMembersFilterStore } from "@/stores/members/members-filter-store";
 import { MemberStatsCards } from "@/components/dashboard/member-stats-cards";
 import { MembersTable } from "@/components/dashboard/members-table";
-import { RefreshCw } from "lucide-react";
-import { useMemo } from "react";
-import { Button } from "@/components/ui/button";
+import { InviteMemberDialog } from "@/components/dashboard/invite-member-dialog";
+import { useMemo, useState } from "react";
 
 export default function ClientDashboardMembers() {
   const { selectedOrganization } = useOrganizationStore();
   const { page, page_size, role, is_active, search } = useMembersFilterStore();
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
   const {
     data: membersData,
@@ -41,24 +41,11 @@ export default function ClientDashboardMembers() {
 
   return (
     <div className="container mx-auto space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Members</h1>
-          <p className="text-muted-foreground">
-            Manage and view all organization members
-          </p>
-        </div>
-        <Button
-          onClick={() => refetch()}
-          variant="outline"
-          size="sm"
-          disabled={isLoading}
-        >
-          <RefreshCw
-            className={`mr-2 h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
-          />
-          Refresh
-        </Button>
+      <div>
+        <h1 className="text-3xl font-bold">Members</h1>
+        <p className="text-muted-foreground">
+          Manage and view all organization members
+        </p>
       </div>
 
       {/* Stats Cards */}
@@ -73,6 +60,15 @@ export default function ClientDashboardMembers() {
         isLoading={isLoading}
         error={error}
         onRefresh={() => refetch()}
+        onInvite={() => setInviteDialogOpen(true)}
+        organizationId={selectedOrganization?.id || ""}
+      />
+
+      {/* Invite Members Dialog */}
+      <InviteMemberDialog
+        open={inviteDialogOpen}
+        onOpenChange={setInviteDialogOpen}
+        organizationId={selectedOrganization?.id || ""}
       />
     </div>
   );
