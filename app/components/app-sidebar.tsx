@@ -7,6 +7,7 @@ import {
   LogOut,
   type LucideIcon,
 } from "lucide-react";
+import { OrganizationSelector } from "@/components/dashboard/organization-selector";
 import {
   Sidebar,
   SidebarContent,
@@ -102,6 +103,8 @@ export function AppSidebar() {
     return location.pathname.startsWith(path);
   };
 
+  const isClientDashboard = location.pathname.startsWith("/client");
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -116,6 +119,11 @@ export function AppSidebar() {
             </span>
           </div>
         </div>
+        {isClientDashboard && (
+          <div className="px-2 pt-2 group-data-[collapsible=icon]:hidden">
+            <OrganizationSelector />
+          </div>
+        )}
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
