@@ -1,23 +1,22 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
-import tailwindcss from "@tailwindcss/vite"
-import { fileURLToPath } from 'url'
-// https://vite.dev/config/
+import { reactRouter } from "@react-router/dev/vite";
+import tailwindcss from "@tailwindcss/vite";
+import { defineConfig } from "vite";
+import tsconfigPaths from "vite-tsconfig-paths";
+import { devtools } from "@tanstack/devtools-vite";
+
+import netlifyReactRouter from "@netlify/vite-plugin-react-router";
+
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
-  resolve:{
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-    }
-  },
+  plugins: [
+    // reactRouterDevTools(),
+    tailwindcss(),
+    reactRouter(),
+    tsconfigPaths(),
+    devtools(),
+    netlifyReactRouter(),
+  ],
   server: {
     port: 3000,
-    proxy: {
-      '/api': {
-        target: process.env.VITE_BACKEND_URL || 'http://localhost:3000',
-        changeOrigin: true,
-        secure: false,
-      },
-    },
+    open: true,
   },
-})
+});
