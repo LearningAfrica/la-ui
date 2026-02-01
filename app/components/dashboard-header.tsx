@@ -24,7 +24,7 @@ export function DashboardHeader({
   notificationCount = 0,
 }: DashboardHeaderProps) {
   const { setTheme, theme } = useTheme();
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
 
   const userName = user
     ? `${user.first_name} ${user.last_name}`.trim()
@@ -140,7 +140,7 @@ export function DashboardHeader({
             <span>Settings</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-destructive">
+          <DropdownMenuItem className="text-destructive" onClick={logout}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
           </DropdownMenuItem>
