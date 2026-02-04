@@ -86,7 +86,7 @@ export const useForgotPassword = () => {
     mutationKey: authMutationKeys.forgotPassword(),
     mutationFn: async (data) => {
       const response = await apiClient.post<{ message: string }>(
-        "/api/auth/forgot-password/",
+        "/api/auth/password-reset/",
         data
       );
 
@@ -111,7 +111,7 @@ export const useResetPassword = () => {
     mutationKey: authMutationKeys.resetPassword(),
     mutationFn: async (data) => {
       const response = await apiClient.post<{ message: string }>(
-        "/api/auth/reset-password/",
+        "/api/auth/password-reset-complete/",
         data
       );
 

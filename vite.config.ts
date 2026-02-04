@@ -15,8 +15,11 @@ export default defineConfig({
     devtools(),
     netlifyReactRouter(),
   ],
+  build: {
+    sourcemap: false,
+  },
   server: {
     port: 3000,
-    open: true,
+    // open: true,
   },
 });
