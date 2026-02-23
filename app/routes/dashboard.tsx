@@ -344,7 +344,9 @@ function InquiriesTab({ inquiries, isLoading, error }: InquirysTabProps) {
 }
 
 function InvitesTab() {
-  const { data: invites, isLoading, error } = useMyInvites();
+  const { data: response, isLoading, error } = useMyInvites();
+
+  const invites = response?.data ?? [];
 
   if (isLoading) {
     return (
@@ -373,7 +375,7 @@ function InvitesTab() {
     );
   }
 
-  if (!invites || invites.length === 0) {
+  if (invites.length === 0) {
     return (
       <Card>
         <CardContent className="flex flex-col items-center justify-center py-12">
@@ -388,7 +390,9 @@ function InvitesTab() {
     );
   }
 
-  const pendingInvites = invites.filter((inv) => inv.status === "pending");
+  const pendingInvites = invites.filter(
+    (inv) => !inv.is_used && new Date(inv.expiration_time) > new Date()
+  );
 
   return (
     <div>

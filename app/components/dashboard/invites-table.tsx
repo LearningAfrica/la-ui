@@ -11,12 +11,13 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Check, X, Clock, Building2 } from "lucide-react";
+import { Search, Check, X, Clock, Mail } from "lucide-react";
 import {
   useAcceptInvite,
   useDeclineInvite,
 } from "@/features/invites/invites-mutations";
 import type { Invite } from "@/features/invites/invites-queries";
+import moment from "moment";
 
 interface InvitesTableProps {
   invites: Invite[];
@@ -29,40 +30,13 @@ export function InvitesTable({ invites }: InvitesTableProps) {
 
   const columns: ColumnDef<Invite>[] = [
     {
-      accessorKey: "organization_name",
-      header: "Organization",
+      accessorKey: "email",
+      header: "Email",
       cell: ({ row }) => (
-        <div className="flex items-center gap-3">
-          {row.original.organization_logo ? (
-            <img
-              src={row.original.organization_logo}
-              alt={row.original.organization_name}
-              className="h-10 w-10 rounded-lg object-cover"
-            />
-          ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-linear-to-br from-orange-400 to-amber-500">
-              <Building2 className="h-5 w-5 text-white" />
-            </div>
-          )}
-          <div>
-            <div className="font-medium">{row.original.organization_name}</div>
-            <div className="text-muted-foreground text-sm">
-              Invited by {row.original.inviter_name}
-            </div>
-          </div>
+        <div className="flex items-center gap-2">
+          <Mail className="text-muted-foreground h-4 w-4" />
+          <span className="font-medium">{row.getValue("email")}</span>
         </div>
-      ),
-    },
-    {
-      accessorKey: "inviter_email",
-      header: "Inviter Email",
-      cell: ({ row }) => (
-        <a
-          href={`mailto:${row.getValue("inviter_email")}`}
-          className="text-orange-600 hover:underline dark:text-orange-400"
-        >
-          {row.getValue("inviter_email")}
-        </a>
       ),
     },
     {
@@ -79,52 +53,42 @@ export function InvitesTable({ invites }: InvitesTableProps) {
       },
     },
     {
-      accessorKey: "invited_at",
-      header: "Invited",
-      cell: ({ row }) => (
-        <div className="text-muted-foreground flex items-center gap-2 text-sm">
-          <Clock className="h-4 w-4" />
-          <span>
-            {new Date(row.getValue("invited_at")).toLocaleDateString()}
-          </span>
-        </div>
-      ),
-    },
-    {
-      accessorKey: "expires_at",
-      header: "Expires",
+      accessorKey: "is_used",
+      header: "Status",
       cell: ({ row }) => {
-        const expiresAt = new Date(row.getValue("expires_at"));
-        const isExpired = expiresAt < new Date();
-
-        return (
-          <span
-            className={`text-sm ${isExpired ? "text-red-600" : "text-muted-foreground"}`}
-          >
-            {expiresAt.toLocaleDateString()}
-            {isExpired && " (Expired)"}
-          </span>
+        const isUsed = row.getValue("is_used") as boolean;
+        const isExpired = moment(row.original.expiration_time).isBefore(
+          moment()
         );
+
+        if (isUsed) {
+          return <Badge variant="default">Used</Badge>;
+        }
+
+        if (isExpired) {
+          return <Badge variant="outline">Expired</Badge>;
+        }
+
+        return <Badge variant="secondary">Pending</Badge>;
       },
     },
     {
-      accessorKey: "status",
-      header: "Status",
+      accessorKey: "expiration_time",
+      header: "Expires",
       cell: ({ row }) => {
-        const status = row.getValue("status") as string;
+        const expiresAt = moment(row.getValue("expiration_time"));
+        const isExpired = expiresAt.isBefore(moment());
 
         return (
-          <Badge
-            variant={
-              status === "accepted"
-                ? "default"
-                : status === "declined"
-                  ? "destructive"
-                  : "secondary"
-            }
+          <div
+            className={`flex items-center gap-2 text-sm ${isExpired ? "text-red-600 dark:text-red-400" : "text-muted-foreground"}`}
           >
-            {status.charAt(0).toUpperCase() + status.slice(1)}
-          </Badge>
+            <Clock className="h-4 w-4" />
+            <span>
+              {expiresAt.fromNow()}
+              {isExpired && " (Expired)"}
+            </span>
+          </div>
         );
       },
     },
@@ -133,15 +97,15 @@ export function InvitesTable({ invites }: InvitesTableProps) {
       header: "Actions",
       cell: ({ row }) => {
         const invite = row.original;
-        const isExpired = new Date(invite.expires_at) < new Date();
-        const isPending = invite.status === "pending";
+        const isExpired = moment(invite.expiration_time).isBefore(moment());
+        const isPending = !invite.is_used && !isExpired;
         const isProcessing =
           acceptInviteMutation.isPending || declineInviteMutation.isPending;
 
-        if (!isPending || isExpired) {
+        if (!isPending) {
           return (
             <span className="text-muted-foreground text-sm">
-              {isExpired ? "Expired" : "Processed"}
+              {invite.is_used ? "Used" : "Expired"}
             </span>
           );
         }

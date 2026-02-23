@@ -6,10 +6,12 @@ import { useMyInvites } from "@/features/invites/invites-queries";
 import { InvitesTable } from "@/components/dashboard/invites-table";
 
 export default function ClientDashboardInvitations() {
-  const { data: invites, isLoading, error } = useMyInvites();
+  const { data: response, isLoading, error } = useMyInvites();
 
-  const pendingCount =
-    invites?.filter((inv) => inv.status === "pending").length ?? 0;
+  const invites = response?.data ?? [];
+  const pendingCount = invites.filter(
+    (inv) => !inv.is_used && new Date(inv.expiration_time) > new Date()
+  ).length;
 
   if (isLoading) {
     return (
@@ -56,7 +58,7 @@ export default function ClientDashboardInvitations() {
         )}
       </div>
 
-      {!invites || invites.length === 0 ? (
+      {invites.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <MailOpen className="text-muted-foreground mb-4 h-12 w-12" />

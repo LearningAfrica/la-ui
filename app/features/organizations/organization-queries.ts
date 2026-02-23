@@ -114,13 +114,12 @@ export const useMyOrganizationMembers = (params: MembersQueryParams) => {
 };
 
 export interface OrganizationInvite {
-  id: string;
+  id: number;
+  organization_id: string;
   email: string;
   role: OrganizationMembershipRole;
-  status: "pending" | "accepted" | "declined" | "expired";
-  invited_at: string;
-  invited_by: string;
-  expires_at: string;
+  is_used: boolean;
+  expiration_time: string;
 }
 
 export interface InvitesFilters {

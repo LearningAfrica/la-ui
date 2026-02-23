@@ -29,7 +29,6 @@ import {
   Mail,
   MoreVertical,
   Copy,
-  Trash2,
   UserPlus,
 } from "lucide-react";
 import type {
@@ -90,54 +89,27 @@ const columns = [
       );
     },
   }),
-  columnHelper.accessor("status", {
+  columnHelper.accessor("is_used", {
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("status") as string;
-      const statusConfig = {
-        pending: {
-          variant: "secondary" as const,
-          label: "Pending",
-        },
-        accepted: {
-          variant: "default" as const,
-          label: "Accepted",
-        },
-        declined: {
-          variant: "destructive" as const,
-          label: "Declined",
-        },
-        expired: {
-          variant: "outline" as const,
-          label: "Expired",
-        },
-      };
+      const isUsed = row.getValue("is_used") as boolean;
+      const isExpired = moment(row.original.expiration_time).isBefore(moment());
 
-      const config = statusConfig[status as keyof typeof statusConfig];
+      if (isUsed) {
+        return <Badge variant="default">Used</Badge>;
+      }
 
-      return <Badge variant={config.variant}>{config.label}</Badge>;
+      if (isExpired) {
+        return <Badge variant="outline">Expired</Badge>;
+      }
+
+      return <Badge variant="secondary">Pending</Badge>;
     },
   }),
-  columnHelper.accessor("invited_by", {
-    header: "Invited By",
-    cell: ({ row }) => (
-      <span className="text-muted-foreground text-sm">
-        {row.getValue("invited_by")}
-      </span>
-    ),
-  }),
-  columnHelper.accessor("invited_at", {
-    header: "Invited",
-    cell: ({ row }) => (
-      <span className="text-muted-foreground text-sm">
-        {moment(row.getValue("invited_at")).fromNow()}
-      </span>
-    ),
-  }),
-  columnHelper.accessor("expires_at", {
+  columnHelper.accessor("expiration_time", {
     header: "Expires",
     cell: ({ row }) => {
-      const expiresAt = moment(row.getValue("expires_at"));
+      const expiresAt = moment(row.getValue("expiration_time"));
       const isExpired = expiresAt.isBefore(moment());
 
       return (
@@ -154,7 +126,6 @@ const columns = [
     header: "Actions",
     cell: ({ row }) => {
       const invite = row.original;
-      const isPending = invite.status === "pending";
 
       return (
         <DropdownMenu>
@@ -172,19 +143,6 @@ const columns = [
               <Copy className="mr-2 h-4 w-4" />
               Copy Email
             </DropdownMenuItem>
-            {isPending && (
-              <>
-                <DropdownMenuItem>
-                  <Mail className="mr-2 h-4 w-4" />
-                  Resend Invite
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-destructive">
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Cancel Invite
-                </DropdownMenuItem>
-              </>
-            )}
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -260,7 +218,7 @@ export function OrganizationInvitesTable({
           <div className="relative max-w-sm flex-1">
             <Search className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
             <Input
-              placeholder="Search by email or inviter..."
+              placeholder="Search by email..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10"

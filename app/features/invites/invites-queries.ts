@@ -1,26 +1,23 @@
 import { useQuery } from "@tanstack/react-query";
 import { invitesQueryKeys } from "./invites-query-keys";
 import { apiClient } from "@/lib/api";
+import type { Paginated } from "@/lib/types/api";
 
 export interface Invite {
-  id: string;
+  id: number;
   organization_id: string;
-  organization_name: string;
-  organization_logo?: string;
-  inviter_name: string;
-  inviter_email: string;
   role: "admin" | "instructor" | "learner";
-  status: "pending" | "accepted" | "declined";
-  invited_at: string;
-  expires_at: string;
+  email: string;
+  is_used: boolean;
+  expiration_time: string;
 }
 
-// Get user's pending invites
+// Get user's invites (paginated)
 export const useMyInvites = () => {
-  return useQuery<Invite[]>({
+  return useQuery<Paginated<Invite>>({
     queryKey: invitesQueryKeys.myInvites(),
     queryFn: async () => {
-      const response = await apiClient.get<Invite[]>(
+      const response = await apiClient.get<Paginated<Invite>>(
         "/api/invite/my-organization-invites/"
       );
 

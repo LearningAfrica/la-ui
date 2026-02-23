@@ -18,9 +18,9 @@ interface ErrorResponse {
 export const useAcceptInvite = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<AcceptInviteResponse, ErrorResponse, string>({
+  return useMutation<AcceptInviteResponse, ErrorResponse, number>({
     mutationKey: invitesMutationKeys.acceptInvite(),
-    mutationFn: async (inviteId: string) => {
+    mutationFn: async (inviteId: number) => {
       const response = await apiClient.post<AcceptInviteResponse>(
         `/api/invite/my-organization-invites/${inviteId}/accept/`
       );
@@ -49,9 +49,9 @@ export const useAcceptInvite = () => {
 export const useDeclineInvite = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<{ message: string }, ErrorResponse, string>({
+  return useMutation<{ message: string }, ErrorResponse, number>({
     mutationKey: invitesMutationKeys.declineInvite(),
-    mutationFn: async (inviteId: string) => {
+    mutationFn: async (inviteId: number) => {
       const response = await apiClient.post<{ message: string }>(
         `/api/invite/my-organization-invites/${inviteId}/decline/`
       );
