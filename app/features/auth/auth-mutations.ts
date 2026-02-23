@@ -86,7 +86,7 @@ export const useForgotPassword = () => {
     mutationKey: authMutationKeys.forgotPassword(),
     mutationFn: async (data) => {
       const response = await apiClient.post<{ message: string }>(
-        "/api/auth/forgot-password/",
+        "/api/auth/password-reset/",
         data
       );
 
@@ -103,27 +103,25 @@ export const useForgotPassword = () => {
 
 // Reset Password Mutation
 export const useResetPassword = () => {
-  return useMutation<
-    { message: string },
-    ErrorResponse,
-    ResetPasswordFormData & { token: string }
-  >({
-    mutationKey: authMutationKeys.resetPassword(),
-    mutationFn: async (data) => {
-      const response = await apiClient.post<{ message: string }>(
-        "/api/auth/reset-password/",
-        data
-      );
+  return useMutation<{ message: string }, ErrorResponse, ResetPasswordFormData>(
+    {
+      mutationKey: authMutationKeys.resetPassword(),
+      mutationFn: async (data) => {
+        const response = await apiClient.post<{ message: string }>(
+          "/api/auth/password-reset-complete/",
+          data
+        );
 
-      return response.data;
-    },
-    onError: (error) => {
-      toast.error({
-        message: extractError(error, "Password reset failed"),
-        description: "Password reset failed, Please try again.",
-      });
-    },
-  });
+        return response.data;
+      },
+      onError: (error) => {
+        toast.error({
+          message: extractError(error, "Password reset failed"),
+          description: "Password reset failed, Please try again.",
+        });
+      },
+    }
+  );
 };
 
 // Logout

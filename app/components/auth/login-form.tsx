@@ -167,7 +167,7 @@ export function LoginForm({ searchParams }: LoginFormProps) {
               )}
             />
             <Link
-              to="/auth/forgot-password"
+              to={href("/forgot-password")}
               className="text-primary text-sm hover:underline"
             >
               Forgot password?

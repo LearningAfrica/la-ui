@@ -66,7 +66,11 @@ export const forgotPasswordResolver = zodResolver(forgotPasswordSchema);
 // Reset Password Schema
 export const resetPasswordSchema = z
   .object({
-    password: z
+    otp_code: z
+      .string()
+      .min(6, "OTP must be 6 digits")
+      .max(6, "OTP must be 6 digits"),
+    new_password: z
       .string()
       .min(8, "Password must be at least 8 characters")
       .max(100, "Password is too long")
@@ -76,7 +80,7 @@ export const resetPasswordSchema = z
       ),
     confirmPassword: z.string(),
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine((data) => data.new_password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });

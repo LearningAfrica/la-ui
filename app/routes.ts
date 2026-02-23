@@ -13,6 +13,11 @@ export default [
     route("/sign-in", "routes/sign-in.tsx"),
     route("/sign-up", "routes/sign-up.tsx"),
     route("/verify-email", "routes/verify-email.tsx"),
+    route("/forgot-password", "routes/auth.forgot-password.tsx"),
+    route(
+      "/reset-password-confirmation",
+      "routes/auth.reset-password-confirmation.tsx"
+    ),
     route("/inquiry", "routes/inquiry.tsx"),
     route(
       "/email-verification-pending",
