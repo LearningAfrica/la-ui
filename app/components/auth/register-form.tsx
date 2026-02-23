@@ -1,9 +1,7 @@
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
-import { useState } from "react";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -12,7 +10,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import {
   registerResolver,
@@ -20,14 +17,14 @@ import {
 } from "@/lib/schema/auth-schema";
 import { useRegister } from "@/features/auth/auth-mutations";
 import { extractError } from "@/lib/error";
+import { FormTextField } from "@/components/form-fields/form-text-field";
+import { FormPasswordField } from "@/components/form-fields/form-password-field";
 
 interface RegisterFormProps {
   searchParams?: URLSearchParams;
 }
 
 export function RegisterForm({ searchParams }: RegisterFormProps) {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
   const form = useForm<RegisterFormData>({
@@ -80,153 +77,56 @@ export function RegisterForm({ searchParams }: RegisterFormProps) {
           )}
 
           <div className="grid grid-cols-2 gap-4">
-            <FormField
+            <FormTextField
               control={form.control}
               name="first_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="John"
-                      {...field}
-                      disabled={registerMutation.isPending}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="First Name"
+              placeholder="John"
+              disabled={registerMutation.isPending}
             />
 
-            <FormField
+            <FormTextField
               control={form.control}
               name="last_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Maina"
-                      {...field}
-                      disabled={registerMutation.isPending}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Last Name"
+              placeholder="Maina"
+              disabled={registerMutation.isPending}
             />
           </div>
 
-          <FormField
+          <FormTextField
             control={form.control}
             name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email Address</FormLabel>
-                <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="you@example.com"
-                    {...field}
-                    disabled={registerMutation.isPending}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Email Address"
+            type="email"
+            placeholder="you@example.com"
+            disabled={registerMutation.isPending}
           />
 
-          <FormField
+          <FormTextField
             control={form.control}
             name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Username{" "}
-                  {/* <span className="text-muted-foreground">(Optional)</span> */}
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Your Username"
-                    {...field}
-                    disabled={registerMutation.isPending}
-                  />
-                </FormControl>
-                <FormDescription className="text-xs">
-                  You can add this later if you&apos;re not sure yet
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Username"
+            placeholder="Your Username"
+            disabled={registerMutation.isPending}
+            description="You can add this later if you're not sure yet"
           />
 
-          <FormField
+          <FormPasswordField
             control={form.control}
             name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      {...field}
-                      disabled={registerMutation.isPending}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                </FormControl>
-                <FormDescription className="text-xs">
-                  Must contain uppercase, lowercase, and number
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Password"
+            disabled={registerMutation.isPending}
+            autoComplete="new-password"
+            description="Must contain uppercase, lowercase, and number"
           />
 
-          <FormField
+          <FormPasswordField
             control={form.control}
             name="confirm_password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Input
-                      type={showConfirmPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      {...field}
-                      disabled={registerMutation.isPending}
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
-                      className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Confirm Password"
+            disabled={registerMutation.isPending}
+            autoComplete="new-password"
           />
 
           <FormField

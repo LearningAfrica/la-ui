@@ -37,14 +37,8 @@ export default [
         route("dashboard", "routes/client.dashboard.tsx"),
         route("dashboard/members", "routes/client.dashboard.members.tsx"),
         route("dashboard/courses", "routes/client.dashboard.courses.tsx"),
-        route(
-          "dashboard/categories",
-          "routes/client.dashboard.categories.tsx"
-        ),
-        route(
-          "dashboard/my-courses",
-          "routes/client.dashboard.my-courses.tsx"
-        ),
+        route("dashboard/categories", "routes/client.dashboard.categories.tsx"),
+        route("dashboard/my-courses", "routes/client.dashboard.my-courses.tsx"),
         route(
           "dashboard/my-learning",
           "routes/client.dashboard.my-learning.tsx"
@@ -52,6 +46,10 @@ export default [
         route(
           "dashboard/certificates",
           "routes/client.dashboard.certificates.tsx"
+        ),
+        route(
+          "dashboard/invitations",
+          "routes/client.dashboard.invitations.tsx"
         ),
         route("profile", "routes/client.profile.tsx"),
       ]),

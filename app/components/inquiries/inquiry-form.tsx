@@ -17,23 +17,17 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   type InquiryFormData,
   inquiryResolver,
 } from "@/lib/schema/inquiry-schema";
 import { useCreateInquiry } from "@/features/inquiries/inquiry-mutations";
-import { Building2, InfoIcon, Loader2, MessageSquare } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
+import { Loader2 } from "lucide-react";
 import { COMPANY_CATEGORIES, COMPANY_SIZES } from "@/lib/constants/company";
 import { Checkbox } from "../ui/checkbox";
+import { FormTextField } from "@/components/form-fields/form-text-field";
+import { FormTextareaField } from "@/components/form-fields/form-textarea-field";
+import { FormAsyncSelectField } from "@/components/form-fields/form-async-select-field";
 
 export function InquiryForm() {
   const navigate = useNavigate();
@@ -74,148 +68,51 @@ export function InquiryForm() {
         <Form {...form}>
           <form onSubmit={onSubmit} className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
-              {/* Organization Name */}
-              <FormField
+              <FormTextField
                 control={form.control}
                 name="company_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Organization Name *</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Building2 className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
-                        <Input
-                          placeholder="Enter organization name"
-                          className="pl-10"
-                          {...field}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Organization Name"
+                placeholder="Enter organization name"
+                required
               />
 
-              {/* Organization Type */}
-              <FormField
+              <FormAsyncSelectField
                 control={form.control}
                 name="company_category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Organization Type *</FormLabel>
-                    <FormControl>
-                      <Select
-                        {...field}
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select organization type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {COMPANY_CATEGORIES.map((type) => (
-                            <SelectItem key={type.value} value={type.value}>
-                              {type.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Organization Type"
+                placeholder="Select organization type"
+                required
+                options={[...COMPANY_CATEGORIES]}
               />
 
-              {/* Number of Users */}
-              <FormField
+              <FormAsyncSelectField
                 control={form.control}
                 name="company_size"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>
-                      Company Size
-                      <span className="text-red-500">*</span>
-                    </FormLabel>
-                    <FormControl>
-                      <Select
-                        {...field}
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select user range" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {COMPANY_SIZES.map((range) => (
-                            <SelectItem key={range.value} value={range.value}>
-                              {range.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormDescription>
-                      This helps us prepare the right resources for your
-                      organization
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Company Size"
+                placeholder="Select user range"
+                required
+                className="md:col-span-2"
+                description="This helps us prepare the right resources for your organization"
+                options={[...COMPANY_SIZES]}
               />
             </div>
-            {/* Company Description */}
-            <FormField
+
+            <FormTextareaField
               control={form.control}
               name="company_description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Please provide a brief description of your organization{" "}
-                    <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <InfoIcon className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
-                      <Textarea
-                        placeholder="Tell us more about your organization and specific requirements..."
-                        className="min-h-25 pt-3 pl-10"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormDescription>
-                    Include your mission, target audience, and learning goals
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Please provide a brief description of your organization"
+              placeholder="Tell us more about your organization and specific requirements..."
+              required
+              description="Include your mission, target audience, and learning goals"
             />
-            {/* Reasons */}
-            <FormField
+
+            <FormTextareaField
               control={form.control}
               name="reason"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Why are you interested in Learning Africa?{" "}
-                    <span className="text-red-500">*</span>
-                  </FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <MessageSquare className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
-                      <Textarea
-                        placeholder="Tell us more about your organization and specific requirements..."
-                        className="min-h-25 pt-3 pl-10"
-                        {...field}
-                      />
-                    </div>
-                  </FormControl>
-                  <FormDescription>
-                    This helps us understand your needs better
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Why are you interested in Learning Africa?"
+              placeholder="Tell us more about your organization and specific requirements..."
+              required
+              description="This helps us understand your needs better"
             />
 
             {/* Terms and Conditions */}

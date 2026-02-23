@@ -1,242 +1,728 @@
-import * as React from "react";
-import { Check, ChevronsUpDown, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { Loader2, ChevronDown, X } from "lucide-react";
 
-export interface AsyncSelectOption {
-  value: string;
+/**
+ * Represents a single selectable option in the dropdown.
+ *
+ * @interface SelectOption
+ * @property {string | number} value - Unique identifier for the option
+ * @property {string} label - Display text shown to the user
+ */
+export interface SelectOption {
+  value: string | number;
   label: string;
-  [key: string]: unknown;
 }
 
-interface AsyncSelectProps {
-  options?: AsyncSelectOption[];
-  value?: string | string[];
-  onChange?: (value: string | string[]) => void;
-  onSearch?: (query: string) => void;
-  searchFn?: (query: string) => Promise<AsyncSelectOption[]>;
+/**
+ * Type helper that determines the onChange callback signature based on whether
+ * the select is in multiple mode or not.
+ *
+ * @template T - Boolean indicating if multiple mode is enabled
+ */
+type SelectOnChange<T extends boolean> = T extends true
+  ? (value: (string | number)[]) => void
+  : (value: string | number | null) => void;
+
+/**
+ * Base props shared between single and multi-select modes.
+ *
+ * @interface BaseSelectProps
+ */
+interface BaseSelectProps {
+  /** Placeholder text displayed when no value is selected */
   placeholder?: string;
-  emptyText?: string;
-  multiple?: boolean;
+  /** Whether the select component is disabled */
   disabled?: boolean;
+  /** Local options array for client-side filtering (local mode) */
+  options?: SelectOption[];
+  /** Async function to fetch options from server (server mode) */
+  onSearch?: (query: string) => Promise<SelectOption[]>;
+  /** Debounce delay in milliseconds for server searches */
+  searchDebounceMs?: number;
+  /** Minimum number of characters required before triggering server search */
+  minSearchLength?: number;
+  /** Additional CSS classes to apply to the container */
   className?: string;
-  isLoading?: boolean;
+  /** External loading state override */
+  loading?: boolean;
+  /** Message displayed when no options are available */
+  noOptionsMessage?: string;
 }
 
-export function AsyncSelect({
-  options = [],
-  value,
-  onChange,
-  onSearch,
-  searchFn,
-  placeholder = "Select...",
-  emptyText = "No results found",
-  multiple = false,
-  disabled = false,
-  className,
-  isLoading = false,
-}: AsyncSelectProps) {
-  const [open, setOpen] = React.useState(false);
-  const [searchQuery, setSearchQuery] = React.useState("");
-  const [filteredOptions, setFilteredOptions] =
-    React.useState<AsyncSelectOption[]>(options);
-  const [remoteOptions, setRemoteOptions] = React.useState<AsyncSelectOption[]>(
-    []
-  );
-  const [loading, setLoading] = React.useState(false);
-  const searchTimeoutRef = React.useRef<NodeJS.Timeout>(null!);
+/**
+ * Props for single-select mode.
+ * When multiple is false or omitted, value and onChange use single value types.
+ *
+ * @interface SingleSelectProps
+ * @extends BaseSelectProps
+ */
+interface SingleSelectProps extends BaseSelectProps {
+  /** Must be false or omitted for single-select mode */
+  multiple?: false;
+  /** Currently selected value (single value or null) */
+  value?: string | number | null;
+  /** Callback fired when selection changes (receives single value) */
+  onChange?: (value: string | number | null) => void;
+}
 
-  // Normalize value to array for easier handling
-  const selectedValues = React.useMemo(() => {
-    if (!value) return [];
+/**
+ * Props for multi-select mode.
+ * When multiple is true, value and onChange use array types.
+ *
+ * @interface MultiSelectProps
+ * @extends BaseSelectProps
+ */
+interface MultiSelectProps extends BaseSelectProps {
+  /** Must be true for multi-select mode */
+  multiple: true;
+  /** Currently selected values (array) */
+  value?: (string | number)[];
+  /** Callback fired when selection changes (receives array of values) */
+  onChange?: (value: (string | number)[]) => void;
+}
 
-    return Array.isArray(value) ? value : [value];
-  }, [value]);
+/**
+ * Union type representing either single or multi-select props.
+ * TypeScript uses discriminated unions to ensure type safety.
+ */
+type SelectProps = SingleSelectProps | MultiSelectProps;
 
-  // Get selected options
-  const selectedOptions = React.useMemo(() => {
-    const allOptions = searchFn ? remoteOptions : options;
+/**
+ * A flexible select component supporting both single and multi-select modes,
+ * with local or server-side option fetching.
+ *
+ * Features:
+ * - Single and multi-select modes with type-safe props
+ * - Local mode: Client-side filtering with options array
+ * - Server mode: Async fetching with debouncing and caching
+ * - Keyboard navigation (Arrow keys, Enter, Escape)
+ * - Loading states and error handling
+ * - Accessible with ARIA labels
+ *
+ * @component
+ * @param {SelectProps} props - Component props (single or multi-select)
+ * @returns {JSX.Element} The rendered select component
+ *
+ * @example
+ * // Single select with local options
+ * <AsyncSelect
+ *   value={selected}
+ *   onChange={setSelected}
+ *   options={localOptions}
+ *   placeholder="Choose an option..."
+ * />
+ *
+ * @example
+ * // Multi-select with server search
+ * <AsyncSelect
+ *   multiple
+ *   value={selected}
+ *   onChange={setSelected}
+ *   onSearch={fetchOptions}
+ *   minSearchLength={2}
+ * />
+ */
+export default function AsyncSelect(props: SelectProps) {
+  const {
+    placeholder = "Select an option...",
+    disabled = false,
+    options: localOptions,
+    onSearch,
+    searchDebounceMs = 300,
+    minSearchLength = 0,
+    className = "",
+    loading: externalLoading,
+    noOptionsMessage = "No options found",
+    multiple = false,
+    value,
+    onChange,
+  } = props;
 
-    return allOptions.filter((opt) => selectedValues.includes(opt.value));
-  }, [selectedValues, options, remoteOptions, searchFn]);
+  /** Controls dropdown open/closed state */
+  const [isOpen, setIsOpen] = useState(false);
+  /** Current search query text */
+  const [searchQuery, setSearchQuery] = useState("");
+  /** Options fetched from server (only used in server mode) */
+  const [serverOptions, setServerOptions] = useState<SelectOption[]>([]);
+  /** Internal loading state for async operations */
+  const [loading, setLoading] = useState(false);
+  /** Index of currently highlighted option for keyboard navigation */
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  /**
+   * Cache of selected options by value.
+   * Critical for server mode: stores selected option labels even when
+   * they're not in current search results, ensuring proper display.
+   */
+  const [selectedOptionsCache, setSelectedOptionsCache] = useState<
+    Map<string | number, SelectOption>
+  >(new Map());
 
-  // Handle remote search
-  React.useEffect(() => {
-    if (!searchFn) {
-      // Local filtering
-      const filtered = options.filter((opt) =>
-        opt.label.toLowerCase().includes(searchQuery.toLowerCase())
+  /** Ref to the container div for click-outside detection */
+  const containerRef = useRef<HTMLDivElement>(null);
+  /** Ref to the search input element */
+  const inputRef = useRef<HTMLInputElement>(null);
+  /** Ref to the options container for scrolling */
+  const optionsRef = useRef<HTMLDivElement>(null);
+  /** Ref to store debounce timer ID for cleanup */
+  const debounceTimerRef = useRef<number | undefined>(undefined);
+
+  /** Determines if component is in server search mode (has onSearch prop) */
+  const isServerMode = !!onSearch;
+  /** Options to display: server options in server mode, local options otherwise */
+  const displayOptions = isServerMode ? serverOptions : localOptions || [];
+
+  /**
+   * Converts the value prop to a normalized array format.
+   * In single mode: converts single value to array, null/undefined to empty array.
+   * In multi mode: returns the array directly, or empty array if invalid.
+   *
+   * @returns {Array<string | number>} Array of selected values
+   */
+  const selectedValues = useMemo((): (string | number)[] => {
+    if (multiple) {
+      return Array.isArray(value) ? value : [];
+    } else {
+      return value !== null && value !== undefined
+        ? [value as string | number]
+        : [];
+    }
+  }, [multiple, value]);
+
+  /**
+   * Retrieves the full SelectOption objects for currently selected values.
+   * In server mode: uses the cache to look up options by value.
+   * In local mode: filters the local options array.
+   *
+   * @returns {SelectOption[]} Array of selected option objects with labels
+   */
+  const getSelectedOptions = useCallback((): SelectOption[] => {
+    if (isServerMode) {
+      // Use cache for server mode - ensures we have labels even when option
+      // is not in current search results
+      return selectedValues
+        .map((val: string | number) => selectedOptionsCache.get(val))
+        .filter((opt): opt is SelectOption => opt !== undefined);
+    } else {
+      // Use local options - simple filter operation
+      return (localOptions || []).filter((opt) =>
+        selectedValues.includes(opt.value)
       );
-
-      setFilteredOptions(filtered);
-
-      return;
     }
+  }, [selectedValues, isServerMode, selectedOptionsCache, localOptions]);
 
-    // Remote search with debounce
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
+  const selectedOptions = getSelectedOptions();
 
-    if (!searchQuery) {
-      setRemoteOptions([]);
+  /**
+   * Display text for single-select mode.
+   * Shows the label of the selected option, or empty string if none selected.
+   */
+  const displayValue =
+    !multiple && selectedOptions.length > 0 ? selectedOptions[0].label : "";
 
-      return;
-    }
+  /**
+   * Filters local options based on search query (case-insensitive).
+   * Only used in local mode - server mode uses serverOptions instead.
+   */
+  const filteredLocalOptions =
+    localOptions?.filter((opt) =>
+      opt.label.toLowerCase().includes(searchQuery.toLowerCase())
+    ) || [];
 
-    setLoading(true);
-    searchTimeoutRef.current = setTimeout(async () => {
+  /** Final list of options to display in the dropdown */
+  const finalOptions = isServerMode ? displayOptions : filteredLocalOptions;
+
+  /**
+   * Handles selection of an option from the dropdown.
+   *
+   * Behavior differs by mode:
+   * - Single mode: Sets value and closes dropdown
+   * - Multi mode: Toggles option (adds if not selected, removes if selected)
+   *
+   * In server mode, updates the cache to store the selected option's label.
+   *
+   * @param {SelectOption} option - The option that was selected
+   */
+  const handleSelect = useCallback(
+    (option: SelectOption) => {
+      if (multiple) {
+        const currentValues = Array.isArray(value) ? value : [];
+        const isSelected = currentValues.includes(option.value);
+
+        let newValues: (string | number)[];
+
+        if (isSelected) {
+          newValues = currentValues.filter((v) => v !== option.value);
+        } else {
+          newValues = [...currentValues, option.value];
+        }
+
+        // Update cache
+        if (isServerMode) {
+          setSelectedOptionsCache((prev) => {
+            const newCache = new Map(prev);
+
+            if (isSelected) {
+              newCache.delete(option.value);
+            } else {
+              newCache.set(option.value, option);
+            }
+
+            return newCache;
+          });
+        }
+
+        (onChange as SelectOnChange<true>)?.(newValues);
+
+        // Don't close dropdown in multiselect mode
+        if (!isSelected) {
+          setSearchQuery("");
+          setHighlightedIndex(-1);
+        }
+      } else {
+        // Update cache for server mode
+        if (isServerMode) {
+          setSelectedOptionsCache((prev) => {
+            const newCache = new Map(prev);
+
+            newCache.set(option.value, option);
+
+            return newCache;
+          });
+        }
+
+        (onChange as SelectOnChange<false>)?.(option.value);
+        setIsOpen(false);
+        setSearchQuery("");
+        setHighlightedIndex(-1);
+        inputRef.current?.blur();
+      }
+    },
+    [multiple, value, onChange, isServerMode]
+  );
+
+  /**
+   * Fetches options from the server using the onSearch function.
+   *
+   * - Respects minSearchLength (returns empty if query too short)
+   * - Updates serverOptions with results
+   * - Updates cache if fetched results include selected values
+   * - Handles errors gracefully (logs and sets empty array)
+   *
+   * @param {string} query - Search query string
+   * @returns {Promise<void>}
+   */
+  const fetchServerOptions = useCallback(
+    async (query: string) => {
+      if (!onSearch) return;
+
+      if (query.length < minSearchLength) {
+        setServerOptions([]);
+
+        return;
+      }
+
+      setLoading(true);
+
       try {
-        const results = await searchFn(searchQuery);
+        const results = await onSearch(query);
 
-        setRemoteOptions(results);
+        setServerOptions(results);
+
+        // Update cache with fetched results if they match selected values
+        setSelectedOptionsCache((prev) => {
+          const newCache = new Map(prev);
+
+          results.forEach((opt) => {
+            if (selectedValues.includes(opt.value)) {
+              newCache.set(opt.value, opt);
+            }
+          });
+
+          return newCache;
+        });
       } catch (error) {
-        console.error("Search error:", error);
-        setRemoteOptions([]);
+        console.error("Error fetching options:", error);
+        setServerOptions([]);
       } finally {
         setLoading(false);
       }
-    }, 300);
+    },
+    [onSearch, minSearchLength, selectedValues]
+  );
+
+  /**
+   * Debounced search effect for server mode.
+   *
+   * Waits for user to stop typing (debounceMs) before fetching.
+   * Cleans up previous timer if query changes before debounce completes.
+   * Only runs in server mode.
+   *
+   * @effect
+   * @dependencies searchQuery, isServerMode, fetchServerOptions, searchDebounceMs
+   */
+  useEffect(() => {
+    if (!isServerMode) return;
+
+    if (debounceTimerRef.current) {
+      window.clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = window.setTimeout(() => {
+      fetchServerOptions(searchQuery);
+    }, searchDebounceMs);
 
     return () => {
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
+      if (debounceTimerRef.current) {
+        window.clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [searchQuery, searchFn, options]);
+  }, [searchQuery, isServerMode, fetchServerOptions, searchDebounceMs]);
 
-  const displayOptions = searchFn ? remoteOptions : filteredOptions;
+  /**
+   * Closes dropdown when user clicks outside the component.
+   *
+   * Uses mousedown event (instead of click) for better UX.
+   * Resets search query and highlighted index when closing.
+   *
+   * @effect
+   * @dependencies [] - Only runs once on mount, cleanup on unmount
+   */
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+        setSearchQuery("");
+        setHighlightedIndex(-1);
+      }
+    };
 
-  const handleSelect = (optionValue: string) => {
-    if (multiple) {
-      const newValues = selectedValues.includes(optionValue)
-        ? selectedValues.filter((v) => v !== optionValue)
-        : [...selectedValues, optionValue];
+    document.addEventListener("mousedown", handleClickOutside);
 
-      onChange?.(newValues);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  /**
+   * Keyboard navigation handler.
+   *
+   * Supported keys:
+   * - ArrowDown: Move highlight down (wraps at bottom)
+   * - ArrowUp: Move highlight up (stops at top)
+   * - Enter: Select highlighted option
+   * - Escape: Close dropdown and reset
+   *
+   * Only active when dropdown is open.
+   *
+   * @effect
+   * @dependencies isOpen, highlightedIndex, finalOptions, handleSelect
+   */
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          setHighlightedIndex((prev) =>
+            prev < finalOptions.length - 1 ? prev + 1 : prev
+          );
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+          break;
+        case "Enter":
+          e.preventDefault();
+
+          if (highlightedIndex >= 0 && finalOptions[highlightedIndex]) {
+            handleSelect(finalOptions[highlightedIndex]);
+          }
+
+          break;
+        case "Escape":
+          setIsOpen(false);
+          setSearchQuery("");
+          setHighlightedIndex(-1);
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, highlightedIndex, finalOptions, handleSelect]);
+
+  /**
+   * Auto-scrolls highlighted option into view when navigating with keyboard.
+   *
+   * Uses 'nearest' block to minimize scrolling, 'smooth' for better UX.
+   * Only scrolls if option is not already visible.
+   *
+   * @effect
+   * @dependencies highlightedIndex
+   */
+  useEffect(() => {
+    if (highlightedIndex >= 0 && optionsRef.current) {
+      const optionElement = optionsRef.current.children[
+        highlightedIndex
+      ] as HTMLElement;
+
+      if (optionElement) {
+        optionElement.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      }
+    }
+  }, [highlightedIndex]);
+
+  /**
+   * Toggles dropdown open/closed state.
+   *
+   * When opening:
+   * - Focuses the input for immediate typing
+   * - Triggers server fetch if in server mode and query meets min length
+   *
+   * When closing:
+   * - Resets search query and highlighted index
+   */
+  const handleToggle = () => {
+    if (disabled) return;
+
+    setIsOpen(!isOpen);
+
+    if (!isOpen) {
+      inputRef.current?.focus();
+
+      if (isServerMode && searchQuery.length >= minSearchLength) {
+        fetchServerOptions(searchQuery);
+      }
     } else {
-      onChange?.(optionValue);
-      setOpen(false);
+      setSearchQuery("");
+      setHighlightedIndex(-1);
     }
   };
 
-  const handleRemove = (optionValue: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+  /**
+   * Handles search input changes.
+   *
+   * - Updates search query state
+   * - Opens dropdown if closed
+   * - Resets highlighted index (new search = start from top)
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - Input change event
+   */
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
 
-    if (multiple) {
-      const newValues = selectedValues.filter((v) => v !== optionValue);
-
-      onChange?.(newValues);
-    } else {
-      onChange?.("");
-    }
+    setSearchQuery(query);
+    setIsOpen(true);
+    setHighlightedIndex(-1);
   };
 
+  /**
+   * Clears all selections.
+   *
+   * - Resets value to null (single) or [] (multi)
+   * - Clears the options cache
+   * - Closes dropdown and resets search
+   *
+   * @param {React.MouseEvent} e - Click event
+   */
   const handleClear = (e: React.MouseEvent) => {
     e.stopPropagation();
-    onChange?.(multiple ? [] : "");
+
+    if (multiple) {
+      (onChange as SelectOnChange<true>)?.([]);
+    } else {
+      (onChange as SelectOnChange<false>)?.(null);
+    }
+
+    setSelectedOptionsCache(new Map());
+    setSearchQuery("");
+    setIsOpen(false);
   };
 
+  /**
+   * Removes a single tag in multi-select mode.
+   *
+   * - Filters out the value from the selected array
+   * - Updates cache in server mode
+   * - Prevents event propagation to avoid toggling dropdown
+   *
+   * @param {React.MouseEvent} e - Click event
+   * @param {string | number} valueToRemove - Value of the tag to remove
+   */
+  const handleRemoveTag = (
+    e: React.MouseEvent,
+    valueToRemove: string | number
+  ) => {
+    e.stopPropagation();
+
+    if (multiple) {
+      const currentValues = Array.isArray(value) ? value : [];
+      const newValues = currentValues.filter((v) => v !== valueToRemove);
+
+      (onChange as SelectOnChange<true>)?.(newValues);
+
+      // Update cache
+      if (isServerMode) {
+        setSelectedOptionsCache((prev) => {
+          const newCache = new Map(prev);
+
+          newCache.delete(valueToRemove);
+
+          return newCache;
+        });
+      }
+    }
+  };
+
+  /** Combined loading state: external prop or internal async loading */
+  const isLoading = externalLoading || loading;
+
+  /** Whether any value is currently selected */
+  const hasValue = multiple
+    ? Array.isArray(value) && value.length > 0
+    : value !== null && value !== undefined;
+
+  /** Whether to show the search input (open or has search query) */
+  const showInput = isOpen || searchQuery.length > 0;
+
   return (
-    <div className={cn("relative", className)}>
-      <Button
-        type="button"
-        variant="outline"
-        role="combobox"
-        aria-expanded={open}
-        onClick={() => !disabled && setOpen(!open)}
-        disabled={disabled}
-        className={cn(
-          "w-full justify-between",
-          !selectedValues.length && "text-muted-foreground"
-        )}
+    <div className={`relative w-full ${className}`} ref={containerRef}>
+      <div
+        className={`box-border flex min-h-[40px] w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 transition-all duration-200 ${multiple ? "min-h-0 py-1.5" : ""} ${!disabled && "hover:border-gray-400"} ${isOpen ? "border-blue-500 shadow-[0_0_0_3px_rgba(59,130,246,0.1)]" : ""} ${disabled ? "cursor-not-allowed bg-gray-100 opacity-60" : ""} `}
+        onClick={handleToggle}
       >
-        <div className="flex flex-1 flex-wrap items-center gap-1">
-          {selectedOptions.length > 0 ? (
-            multiple ? (
-              selectedOptions.map((opt) => (
-                <Badge
-                  key={opt.value}
-                  variant="secondary"
-                  className="mr-1"
-                  onClick={(e) => e.stopPropagation()}
+        <div className="flex min-w-0 flex-1 items-center">
+          {multiple && selectedOptions.length > 0 ? (
+            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1">
+              {selectedOptions.map((option) => (
+                <span
+                  key={option.value}
+                  className="inline-flex flex-shrink-0 items-center gap-1 rounded bg-indigo-100 px-2 py-1 text-sm leading-5 text-indigo-800"
                 >
-                  {opt.label}
+                  <span className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap">
+                    {option.label}
+                  </span>
                   <button
                     type="button"
-                    onClick={(e) => handleRemove(opt.value, e)}
-                    className="hover:bg-muted ml-1 rounded-full"
+                    className="flex flex-shrink-0 cursor-pointer items-center justify-center rounded border-none bg-transparent p-0 text-indigo-500 transition-all duration-150 hover:bg-indigo-50 hover:text-indigo-600"
+                    onClick={(e) => handleRemoveTag(e, option.value)}
+                    aria-label={`Remove ${option.label}`}
                   >
-                    <X className="h-3 w-3" />
+                    <X size={12} />
                   </button>
-                </Badge>
-              ))
-            ) : (
-              <span>{selectedOptions[0]?.label}</span>
-            )
+                </span>
+              ))}
+              {showInput && (
+                <input
+                  ref={inputRef}
+                  type="text"
+                  className="font-inherit min-w-[80px] flex-auto border-none bg-transparent p-0 text-gray-900 text-inherit outline-none placeholder:text-gray-400"
+                  value={searchQuery}
+                  onChange={handleInputChange}
+                  placeholder={selectedOptions.length === 0 ? placeholder : ""}
+                  disabled={disabled}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              )}
+            </div>
+          ) : !showInput ? (
+            <span
+              className={`flex-1 overflow-hidden text-left text-ellipsis whitespace-nowrap text-gray-900 ${!hasValue ? "text-gray-400" : ""}`}
+            >
+              {hasValue ? displayValue : placeholder}
+            </span>
           ) : (
-            placeholder
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          {selectedValues.length > 0 && (
-            <X
-              className="h-4 w-4 opacity-50 hover:opacity-100"
-              onClick={handleClear}
-            />
-          )}
-          <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
-        </div>
-      </Button>
-
-      {open && (
-        <div className="border-border bg-popover text-popover-foreground absolute top-full z-50 mt-2 w-full rounded-md border shadow-md">
-          <div className="p-2">
-            <Input
-              placeholder="Search..."
+            <input
+              ref={inputRef}
+              type="text"
+              className="font-inherit w-full min-w-[50px] flex-1 border-none bg-transparent p-0 text-gray-900 text-inherit outline-none placeholder:text-gray-400"
               value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                onSearch?.(e.target.value);
-              }}
-              className="h-9"
-              autoFocus
+              onChange={handleInputChange}
+              placeholder={placeholder}
+              disabled={disabled}
+              onClick={(e) => e.stopPropagation()}
             />
-          </div>
+          )}
+        </div>
+        <div className="ml-2 flex items-center gap-2">
+          {isLoading && (
+            <Loader2 className="animate-spin text-blue-500" size={16} />
+          )}
+          {hasValue && !disabled && !isLoading && (
+            <button
+              type="button"
+              className="flex h-5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-0.5 text-gray-400 transition-all duration-200 hover:bg-gray-200 hover:text-gray-700"
+              onClick={handleClear}
+              aria-label="Clear selection"
+            >
+              <X size={16} />
+            </button>
+          )}
+          <ChevronDown
+            className={`flex-shrink-0 text-gray-500 transition-transform duration-200 select-none ${isOpen ? "rotate-180" : ""}`}
+            size={16}
+          />
+        </div>
+      </div>
 
-          <div className="max-h-60 overflow-y-auto p-1">
-            {loading || isLoading ? (
-              <div className="py-6 text-center text-sm">Loading...</div>
-            ) : displayOptions.length === 0 ? (
-              <div className="py-6 text-center text-sm">{emptyText}</div>
-            ) : (
-              displayOptions.map((option) => {
-                const isSelected = selectedValues.includes(option.value);
+      {isOpen && (
+        <div className="absolute top-[calc(100%+4px)] right-0 left-0 z-[1000] max-h-[300px] animate-[slideDown_0.2s_ease_forwards] overflow-hidden rounded-md border border-gray-300 bg-white shadow-lg">
+          {isLoading ? (
+            <div className="flex items-center justify-center gap-2 p-4 text-center text-sm text-blue-500">
+              <Loader2 className="animate-spin" size={20} />
+              <span>Loading...</span>
+            </div>
+          ) : finalOptions.length === 0 ? (
+            <div className="flex items-center justify-center gap-2 p-4 text-center text-sm text-gray-500">
+              {noOptionsMessage}
+            </div>
+          ) : (
+            <div
+              className="max-h-[300px] overflow-y-auto p-1 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-thumb]:bg-gray-300 hover:[&::-webkit-scrollbar-thumb]:bg-gray-400 [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar-track]:bg-gray-50"
+              ref={optionsRef}
+            >
+              {finalOptions.map((option, index) => {
+                const isSelected = multiple
+                  ? Array.isArray(value) && value.includes(option.value)
+                  : value === option.value;
 
                 return (
                   <div
                     key={option.value}
-                    onClick={() => handleSelect(option.value)}
-                    className={cn(
-                      "relative flex cursor-pointer items-center rounded-sm px-2 py-1.5 text-sm transition-colors outline-none select-none",
-                      "hover:bg-accent hover:text-accent-foreground",
-                      isSelected && "bg-accent"
-                    )}
+                    className={`flex cursor-pointer items-center gap-2 rounded px-3 py-2.5 text-gray-900 transition-colors duration-150 ${
+                      isSelected
+                        ? "bg-blue-50 font-medium text-blue-800"
+                        : "hover:bg-gray-100"
+                    } ${
+                      index === highlightedIndex
+                        ? isSelected
+                          ? "bg-blue-200"
+                          : "bg-gray-100"
+                        : ""
+                    } `}
+                    onClick={() => handleSelect(option)}
+                    onMouseEnter={() => setHighlightedIndex(index)}
                   >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        isSelected ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    {option.label}
+                    {multiple && (
+                      <span
+                        className={`inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border-2 text-xs text-white transition-all duration-150 ${
+                          isSelected
+                            ? "border-blue-500 bg-blue-500"
+                            : "border-gray-300 bg-white"
+                        } `}
+                      >
+                        {isSelected ? "✓" : ""}
+                      </span>
+                    )}
+                    <span>{option.label}</span>
                   </div>
                 );
-              })
-            )}
-          </div>
+              })}
+            </div>
+          )}
         </div>
       )}
     </div>

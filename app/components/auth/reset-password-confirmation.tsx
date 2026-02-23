@@ -2,7 +2,6 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   InputOTP,
   InputOTPGroup,
@@ -22,6 +21,7 @@ import {
   type ResetPasswordFormData,
 } from "@/lib/schema/auth-schema";
 import { useResetPassword } from "@/features/auth/auth-mutations";
+import { FormPasswordField } from "@/components/form-fields/form-password-field";
 
 export function ResetPasswordConfirmation() {
   const navigate = useNavigate();
@@ -93,41 +93,19 @@ export function ResetPasswordConfirmation() {
               </FormItem>
             )}
           />
-          <FormField
+          <FormPasswordField
             control={form.control}
             name="new_password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>New Password</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="••••••••"
-                    {...field}
-                    disabled={resetMutation.isPending}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="New Password"
+            disabled={resetMutation.isPending}
+            autoComplete="new-password"
           />
-          <FormField
+          <FormPasswordField
             control={form.control}
             name="confirmPassword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="••••••••"
-                    {...field}
-                    disabled={resetMutation.isPending}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Confirm Password"
+            disabled={resetMutation.isPending}
+            autoComplete="new-password"
           />
           <Button
             type="submit"

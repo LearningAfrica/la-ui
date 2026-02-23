@@ -25,46 +25,50 @@ export interface ProfileUpdateResponse {
 
 // Update Profile Mutation
 export const useUpdateProfile = () => {
-  return useMutation<ProfileUpdateResponse, ErrorResponse, UpdateProfileFormData>(
-    {
-      mutationKey: profileMutationKeys.updateProfile(),
-      mutationFn: async (data) => {
-        const response = await apiClient.patch<ProfileUpdateResponse>(
-          "/api/auth/profile/",
-          data
-        );
+  return useMutation<
+    ProfileUpdateResponse,
+    ErrorResponse,
+    UpdateProfileFormData
+  >({
+    mutationKey: profileMutationKeys.updateProfile(),
+    mutationFn: async (data) => {
+      const response = await apiClient.patch<ProfileUpdateResponse>(
+        "/api/auth/profile/",
+        data
+      );
 
-        return response.data;
-      },
-      onError: (error) => {
-        toast.error({
-          message: extractError(error, "Profile update failed"),
-          description: "Please try again.",
-        });
-      },
-    }
-  );
+      return response.data;
+    },
+    onError: (error) => {
+      toast.error({
+        message: extractError(error, "Profile update failed"),
+        description: "Please try again.",
+      });
+    },
+  });
 };
 
 // Change Password Mutation
 export const useChangePassword = () => {
-  return useMutation<{ message: string }, ErrorResponse, ChangePasswordFormData>(
-    {
-      mutationKey: profileMutationKeys.changePassword(),
-      mutationFn: async (data) => {
-        const response = await apiClient.post<{ message: string }>(
-          "/api/auth/change-password/",
-          data
-        );
+  return useMutation<
+    { message: string },
+    ErrorResponse,
+    ChangePasswordFormData
+  >({
+    mutationKey: profileMutationKeys.changePassword(),
+    mutationFn: async (data) => {
+      const response = await apiClient.post<{ message: string }>(
+        "/api/auth/change-password/",
+        data
+      );
 
-        return response.data;
-      },
-      onError: (error) => {
-        toast.error({
-          message: extractError(error, "Password change failed"),
-          description: "Please try again.",
-        });
-      },
-    }
-  );
+      return response.data;
+    },
+    onError: (error) => {
+      toast.error({
+        message: extractError(error, "Password change failed"),
+        description: "Please try again.",
+      });
+    },
+  });
 };

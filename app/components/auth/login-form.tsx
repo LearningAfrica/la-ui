@@ -1,9 +1,7 @@
 import { useForm } from "react-hook-form";
 import { href, Link, useNavigate } from "react-router";
-import { useState } from "react";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
@@ -11,19 +9,19 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { loginResolver } from "@/lib/schema/auth-schema";
 import { useLogin } from "@/features/auth/auth-mutations";
 import { useAuthStore } from "@/stores/auth/auth-store";
 import { extractError } from "@/lib/error";
+import { FormTextField } from "@/components/form-fields/form-text-field";
+import { FormPasswordField } from "@/components/form-fields/form-password-field";
 
 interface LoginFormProps {
   searchParams?: URLSearchParams;
 }
 
 export function LoginForm({ searchParams }: LoginFormProps) {
-  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuthStore();
 
@@ -94,57 +92,22 @@ export function LoginForm({ searchParams }: LoginFormProps) {
             </div>
           )}
 
-          <FormField
+          <FormTextField
             control={form.control}
             name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email Address</FormLabel>
-                <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="you@example.com"
-                    {...field}
-                    disabled={loginMutation.isPending}
-                    autoComplete="email"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Email Address"
+            type="email"
+            placeholder="you@example.com"
+            disabled={loginMutation.isPending}
+            inputProps={{ autoComplete: "email" }}
           />
 
-          <FormField
+          <FormPasswordField
             control={form.control}
             name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      placeholder="••••••••"
-                      {...field}
-                      disabled={loginMutation.isPending}
-                      autoComplete="current-password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Password"
+            disabled={loginMutation.isPending}
+            autoComplete="current-password"
           />
 
           <div className="flex items-center justify-between">

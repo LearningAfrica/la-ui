@@ -2,20 +2,13 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import {
   forgotPasswordResolver,
   type ForgotPasswordFormData,
 } from "@/lib/schema/auth-schema";
 import { useForgotPassword } from "@/features/auth/auth-mutations";
+import { FormTextField } from "@/components/form-fields/form-text-field";
 
 interface ForgotPasswordFormProps {
   searchParams?: URLSearchParams;
@@ -57,23 +50,13 @@ export function ForgotPasswordForm({ searchParams }: ForgotPasswordFormProps) {
               {form.formState.errors.root.message}
             </div>
           )}
-          <FormField
+          <FormTextField
             control={form.control}
             name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email Address</FormLabel>
-                <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="you@example.com"
-                    {...field}
-                    disabled={forgotMutation.isPending}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Email Address"
+            type="email"
+            placeholder="you@example.com"
+            disabled={forgotMutation.isPending}
           />
           <Button
             type="submit"

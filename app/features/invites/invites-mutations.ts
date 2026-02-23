@@ -22,7 +22,7 @@ export const useAcceptInvite = () => {
     mutationKey: invitesMutationKeys.acceptInvite(),
     mutationFn: async (inviteId: string) => {
       const response = await apiClient.post<AcceptInviteResponse>(
-        `/api/invites/${inviteId}/accept/`
+        `/api/invite/my-organization-invites/${inviteId}/accept/`
       );
 
       return response.data;
@@ -53,7 +53,7 @@ export const useDeclineInvite = () => {
     mutationKey: invitesMutationKeys.declineInvite(),
     mutationFn: async (inviteId: string) => {
       const response = await apiClient.post<{ message: string }>(
-        `/api/invites/${inviteId}/decline/`
+        `/api/invite/my-organization-invites/${inviteId}/decline/`
       );
 
       return response.data;

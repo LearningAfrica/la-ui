@@ -27,9 +27,7 @@ export function DashboardHeader({
   const { setTheme, theme } = useTheme();
   const { user, logout, role } = useAuthStore();
   const profileHref =
-    role === "super_admin"
-      ? href("/system/profile")
-      : href("/client/profile");
+    role === "super_admin" ? href("/system/profile") : href("/client/profile");
 
   const userName = user
     ? `${user.first_name} ${user.last_name}`.trim()
@@ -60,7 +58,14 @@ export function DashboardHeader({
       <div className="flex items-center gap-2">
         <SidebarTrigger className="-ml-1" />
         <div className="bg-border h-6 w-px" />
-        <h1 className="text-lg font-semibold">{title}</h1>
+        <Link
+          to={href("/")}
+          className="text-primary hover:text-primary/80 text-lg font-bold transition-colors"
+        >
+          Learning Africa
+        </Link>
+        <div className="bg-border h-6 w-px" />
+        <h1 className="text-muted-foreground text-sm font-medium">{title}</h1>
       </div>
 
       <div className="flex items-center gap-4">

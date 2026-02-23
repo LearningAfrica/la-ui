@@ -6,27 +6,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Form } from "@/components/ui/form";
+import { FormAsyncSelectField } from "@/components/form-fields/form-async-select-field";
+import { FormChipField } from "@/components/form-fields/form-chip-field";
 import { Button } from "@/components/ui/button";
-import { ChipInput } from "@/components/ui/chip-input";
 import { useInviteMember } from "@/features/organizations/organization-mutations";
 import { useForm, useWatch } from "react-hook-form";
-import { inviteMemberResolver, emailSchema } from "@/lib/schema/invite-schema";
+import { inviteMemberResolver } from "@/lib/schema/invite-schema";
 import { Loader2 } from "lucide-react";
 import { useEffect, useEffectEvent } from "react";
 
@@ -63,10 +49,6 @@ export function InviteMemberDialog({
   const emails = useWatch({ control: form.control, name: "receiver_emails" });
   const role = useWatch({ control: form.control, name: "role" });
 
-  const validateEmail = (email: string): boolean => {
-    return emailSchema.safeParse(email).success;
-  };
-
   const handleSubmit = form.handleSubmit(async (data) => {
     await inviteMemberMutation.mutateAsync(data, {
       onSuccess: () => {
@@ -99,77 +81,25 @@ export function InviteMemberDialog({
 
         <Form {...form}>
           <form onSubmit={handleSubmit} className="space-y-4 py-4">
-            <FormField
+            <FormChipField
               control={form.control}
               name="receiver_emails"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email Addresses</FormLabel>
-                  <FormControl>
-                    <ChipInput
-                      value={field.value}
-                      onChange={field.onChange}
-                      placeholder="Enter email addresses (press Enter or comma to add)"
-                      validate={validateEmail}
-                      errorMessage="Please enter a valid email address"
-                      disabled={inviteMemberMutation.isPending}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    You can paste multiple emails separated by commas,
-                    semicolons, or spaces.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Email Addresses"
+              placeholder="Enter email addresses (press Enter or comma to add)"
+              disabled={inviteMemberMutation.isPending}
+              description="You can paste multiple emails separated by commas or semicolons."
             />
 
-            <FormField
+            <FormAsyncSelectField
               control={form.control}
               name="role"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Role</FormLabel>
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                    disabled={isLoading}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="learner">
-                        <div>
-                          <div className="font-medium">Learner</div>
-                          <div className="text-muted-foreground text-xs">
-                            Can access and enroll in courses
-                          </div>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="instructor">
-                        <div>
-                          <div className="font-medium">Instructor</div>
-                          <div className="text-muted-foreground text-xs">
-                            Can create and manage courses
-                          </div>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="admin">
-                        <div>
-                          <div className="font-medium">Admin</div>
-                          <div className="text-muted-foreground text-xs">
-                            Full access to organization management
-                          </div>
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Role"
+              disabled={isLoading}
+              options={[
+                { value: "learner", label: "Learner" },
+                { value: "instructor", label: "Instructor" },
+                { value: "admin", label: "Admin" },
+              ]}
             />
 
             {emails.length > 0 && (

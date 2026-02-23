@@ -16,8 +16,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   type OrganizationFormData,
   organizationResolver,
@@ -26,6 +24,8 @@ import { Building2, ImageIcon, Loader2, Upload } from "lucide-react";
 import { useState, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useCreateOrganization } from "@/features/organizations/organization-mutations";
+import { FormTextField } from "@/components/form-fields/form-text-field";
+import { FormTextareaField } from "@/components/form-fields/form-textarea-field";
 
 interface CreateOrganizationModalProps {
   children?: React.ReactNode;
@@ -164,43 +164,22 @@ export function CreateOrganizationModal({
               )}
             />
 
-            {/* Organization Name */}
-            <FormField
+            <FormTextField
               control={form.control}
               name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Organization Name *</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter organization name"
-                      {...field}
-                      disabled={isLoading}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Organization Name"
+              placeholder="Enter organization name"
+              required
+              disabled={isLoading}
             />
 
-            {/* Description */}
-            <FormField
+            <FormTextareaField
               control={form.control}
               name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description *</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Describe your organization's mission, vision, and goals..."
-                      className="min-h-32 resize-none"
-                      {...field}
-                      disabled={isLoading}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Description"
+              placeholder="Describe your organization's mission, vision, and goals..."
+              required
+              disabled={isLoading}
             />
 
             {/* Form Actions */}

@@ -11,9 +11,7 @@ import { useAuthStore } from "@/stores/auth/auth-store";
 export default function SidebarUserFooter() {
   const { user, logout, role } = useAuthStore();
   const profileHref =
-    role === "super_admin"
-      ? href("/system/profile")
-      : href("/client/profile");
+    role === "super_admin" ? href("/system/profile") : href("/client/profile");
 
   return (
     <SidebarFooter>

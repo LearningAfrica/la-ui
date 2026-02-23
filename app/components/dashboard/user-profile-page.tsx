@@ -1,6 +1,5 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Eye, EyeOff, Loader2, User } from "lucide-react";
+import { Loader2, User } from "lucide-react";
 import { useAuthStore } from "@/stores/auth/auth-store";
 import {
   useUpdateProfile,
@@ -28,15 +27,9 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
+import { FormTextField } from "@/components/form-fields/form-text-field";
+import { FormPasswordField } from "@/components/form-fields/form-password-field";
 
 function EditProfileForm() {
   const { user, updateUser } = useAuthStore();
@@ -77,40 +70,20 @@ function EditProfileForm() {
           </div>
         )}
 
-        <FormField
+        <FormTextField
           control={form.control}
           name="first_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>First Name</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="John"
-                  {...field}
-                  disabled={updateProfileMutation.isPending}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="First Name"
+          placeholder="John"
+          disabled={updateProfileMutation.isPending}
         />
 
-        <FormField
+        <FormTextField
           control={form.control}
           name="last_name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Last Name</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Doe"
-                  {...field}
-                  disabled={updateProfileMutation.isPending}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Last Name"
+          placeholder="Doe"
+          disabled={updateProfileMutation.isPending}
         />
 
         <Button type="submit" disabled={updateProfileMutation.isPending}>
@@ -129,8 +102,6 @@ function EditProfileForm() {
 }
 
 function ChangePasswordForm() {
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
   const changePasswordMutation = useChangePassword();
 
   const form = useForm<ChangePasswordFormData>({
@@ -166,92 +137,31 @@ function ChangePasswordForm() {
           </div>
         )}
 
-        <FormField
+        <FormPasswordField
           control={form.control}
           name="current_password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Current Password</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Input
-                    type={showCurrentPassword ? "text" : "password"}
-                    placeholder="Enter current password"
-                    {...field}
-                    disabled={changePasswordMutation.isPending}
-                    autoComplete="current-password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setShowCurrentPassword(!showCurrentPassword)
-                    }
-                    className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-                  >
-                    {showCurrentPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Current Password"
+          placeholder="Enter current password"
+          disabled={changePasswordMutation.isPending}
+          autoComplete="current-password"
         />
 
-        <FormField
+        <FormPasswordField
           control={form.control}
           name="new_password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>New Password</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Input
-                    type={showNewPassword ? "text" : "password"}
-                    placeholder="Enter new password"
-                    {...field}
-                    disabled={changePasswordMutation.isPending}
-                    autoComplete="new-password"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-                  >
-                    {showNewPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="New Password"
+          placeholder="Enter new password"
+          disabled={changePasswordMutation.isPending}
+          autoComplete="new-password"
         />
 
-        <FormField
+        <FormPasswordField
           control={form.control}
           name="confirm_new_password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Confirm New Password</FormLabel>
-              <FormControl>
-                <Input
-                  type="password"
-                  placeholder="Confirm new password"
-                  {...field}
-                  disabled={changePasswordMutation.isPending}
-                  autoComplete="new-password"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          label="Confirm New Password"
+          placeholder="Confirm new password"
+          disabled={changePasswordMutation.isPending}
+          autoComplete="new-password"
         />
 
         <Button type="submit" disabled={changePasswordMutation.isPending}>
@@ -353,8 +263,8 @@ export default function UserProfilePage() {
             <CardHeader>
               <CardTitle>Change Password</CardTitle>
               <CardDescription>
-                Update your password. You will need your current password to make
-                changes.
+                Update your password. You will need your current password to
+                make changes.
               </CardDescription>
             </CardHeader>
             <CardContent>
