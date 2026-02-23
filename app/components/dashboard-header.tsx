@@ -12,7 +12,8 @@ import { Badge } from "@/components/ui/badge";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useTheme } from "@/providers/theme-provider";
 import { useAuthStore } from "@/stores/auth/auth-store";
-import { Bell, LogOut, Moon, Settings, Sun, User } from "lucide-react";
+import { Bell, LogOut, Moon, Sun, User } from "lucide-react";
+import { Link, href } from "react-router";
 
 interface DashboardHeaderProps {
   title?: string;
@@ -24,7 +25,11 @@ export function DashboardHeader({
   notificationCount = 0,
 }: DashboardHeaderProps) {
   const { setTheme, theme } = useTheme();
-  const { user, logout } = useAuthStore();
+  const { user, logout, role } = useAuthStore();
+  const profileHref =
+    role === "super_admin"
+      ? href("/system/profile")
+      : href("/client/profile");
 
   const userName = user
     ? `${user.first_name} ${user.last_name}`.trim()
@@ -138,13 +143,11 @@ export function DashboardHeader({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <User className="mr-2 h-4 w-4" />
-              <span>Profile</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
+            <DropdownMenuItem asChild>
+              <Link to={profileHref}>
+                <User className="mr-2 h-4 w-4" />
+                <span>Profile</span>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={logout} className="text-red-600">

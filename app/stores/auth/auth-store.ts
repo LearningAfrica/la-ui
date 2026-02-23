@@ -22,6 +22,7 @@ type Actions = {
   login: (payload: AuthResponseInterface) => void;
   logout: () => void;
   updateTokens: (access: string, refresh: string) => void;
+  updateUser: (updates: Partial<AuthResponseInterface["user"]>) => void;
 };
 
 export const useAuthStore = create<State & Actions>()(
@@ -62,6 +63,11 @@ export const useAuthStore = create<State & Actions>()(
         set(() => ({
           accessToken: access,
           refreshToken: refresh,
+        })),
+
+      updateUser: (updates) =>
+        set((state) => ({
+          user: state.user ? { ...state.user, ...updates } : state.user,
         })),
     }),
     {

@@ -29,6 +29,7 @@ export default [
         route("inquiries", "routes/system.dashboard.inquiries.tsx"),
         route("users", "routes/system.dashboard.users.tsx"),
         route("organizations", "routes/system.dashboard.organizations.tsx"),
+        route("profile", "routes/system.profile.tsx"),
       ]),
     ]),
     ...prefix("client", [
@@ -52,6 +53,7 @@ export default [
           "dashboard/certificates",
           "routes/client.dashboard.certificates.tsx"
         ),
+        route("profile", "routes/client.profile.tsx"),
       ]),
     ]),
     route("*", "routes/catch-all.tsx"),

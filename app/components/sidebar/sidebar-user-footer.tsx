@@ -4,12 +4,16 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "../ui/sidebar";
-import { Link } from "react-router";
+import { Link, href } from "react-router";
 import { LogOut, Settings, User } from "lucide-react";
 import { useAuthStore } from "@/stores/auth/auth-store";
 
 export default function SidebarUserFooter() {
-  const { user, logout } = useAuthStore();
+  const { user, logout, role } = useAuthStore();
+  const profileHref =
+    role === "super_admin"
+      ? href("/system/profile")
+      : href("/client/profile");
 
   return (
     <SidebarFooter>
@@ -34,7 +38,7 @@ export default function SidebarUserFooter() {
         </SidebarMenuItem>
         <SidebarMenuItem>
           <SidebarMenuButton asChild tooltip="Settings">
-            <Link to="/dashboard">
+            <Link to={profileHref}>
               <Settings />
               <span>Settings</span>
             </Link>
