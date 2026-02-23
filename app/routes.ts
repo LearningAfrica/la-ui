@@ -35,6 +35,7 @@ export default [
         route("dashboard/members", "routes/client.dashboard.members.tsx"),
       ]),
     ]),
+    route("*", "routes/catch-all.tsx"),
     route("sitemap.xml", "routes/sitemap.xml.ts"),
     route(
       ".well-known/appspecific/com.chrome.devtools.json",
