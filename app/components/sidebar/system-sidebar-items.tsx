@@ -13,7 +13,13 @@ import { Link } from "react-router";
 import SidebarUserFooter from "./sidebar-user-footer";
 import { useAuthStore } from "@/stores/auth/auth-store";
 import { useLocation } from "react-router";
-import { Home, LayoutDashboard, type LucideIcon } from "lucide-react";
+import {
+  Home,
+  LayoutDashboard,
+  Users,
+  Building2,
+  type LucideIcon,
+} from "lucide-react";
 import { href } from "react-router";
 import type { SystemUserRole } from "@/features/auth/auth-mutations";
 
@@ -46,34 +52,18 @@ export default function SystemSidebarItems() {
             url: href("/system/inquiries"),
             NavItemIcon: LayoutDashboard,
           },
-          // {
-          //   title: "Features",
-          //   url: "/features",
-          //   NavItemIcon: Sparkles,
-          // },
-          // {
-          //   title: "Contact",
-          //   url: "/contact",
-          //   NavItemIcon: Mail,
-          // },
+          {
+            title: "Users",
+            url: href("/system/users"),
+            NavItemIcon: Users,
+          },
+          {
+            title: "Organizations",
+            url: href("/system/organizations"),
+            NavItemIcon: Building2,
+          },
         ],
-        dashboardItems: [
-          // {
-          //   title: "Analytics",
-          //   url: "/dashboard",
-          //   NavItemIcon: BarChart3,
-          // },
-          // {
-          //   title: "Users",
-          //   url: "/dashboard",
-          //   NavItemIcon: Users,
-          // },
-          // {
-          //   title: "Activity",
-          //   url: "/dashboard",
-          //   NavItemIcon: Activity,
-          // },
-        ],
+        dashboardItems: [],
       },
       user: {
         navItems: [],

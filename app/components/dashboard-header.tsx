@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useTheme } from "@/providers/theme-provider";
 import { useAuthStore } from "@/stores/auth/auth-store";
-import { Bell, LogOut, Monitor, Moon, Settings, Sun, User } from "lucide-react";
+import { Bell, LogOut, Moon, Settings, Sun, User } from "lucide-react";
 
 interface DashboardHeaderProps {
   title?: string;
@@ -32,11 +32,9 @@ export function DashboardHeader({
   const userEmail = user?.email ?? "";
 
   const getThemeIcon = () => {
-    if (theme === "light") return <Sun className="size-4" />;
-
     if (theme === "dark") return <Moon className="size-4" />;
 
-    return <Monitor className="size-4" />;
+    return <Sun className="size-4" />;
   };
 
   const toggleTheme = () => {

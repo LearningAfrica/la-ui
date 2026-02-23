@@ -70,7 +70,7 @@ export default function Dashboard() {
   };
 
   return (
-    <RouteGuard>
+    <RouteGuard allowedRoles={["user"]} requireVerified>
       <main className="container mx-auto min-h-screen px-4 py-8">
         {/* User Info Section */}
         <section className="mb-8">

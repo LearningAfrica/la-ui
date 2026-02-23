@@ -27,12 +27,31 @@ export default [
       layout("layouts/system-dashboard-layout.tsx", [
         route("dashboard", "routes/system.dashboard.tsx"),
         route("inquiries", "routes/system.dashboard.inquiries.tsx"),
+        route("users", "routes/system.dashboard.users.tsx"),
+        route("organizations", "routes/system.dashboard.organizations.tsx"),
       ]),
     ]),
     ...prefix("client", [
       layout("layouts/client-dashboard-layout.tsx", [
         route("dashboard", "routes/client.dashboard.tsx"),
         route("dashboard/members", "routes/client.dashboard.members.tsx"),
+        route("dashboard/courses", "routes/client.dashboard.courses.tsx"),
+        route(
+          "dashboard/categories",
+          "routes/client.dashboard.categories.tsx"
+        ),
+        route(
+          "dashboard/my-courses",
+          "routes/client.dashboard.my-courses.tsx"
+        ),
+        route(
+          "dashboard/my-learning",
+          "routes/client.dashboard.my-learning.tsx"
+        ),
+        route(
+          "dashboard/certificates",
+          "routes/client.dashboard.certificates.tsx"
+        ),
       ]),
     ]),
     route("*", "routes/catch-all.tsx"),

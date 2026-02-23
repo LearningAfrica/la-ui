@@ -14,12 +14,13 @@ import { href, Link, useLocation } from "react-router";
 import { useAuthStore } from "@/stores/auth/auth-store";
 import { useMemo } from "react";
 import {
-  ActivityIcon,
-  BarChart3Icon,
   Home,
   LayoutDashboard,
-  TvMinimalIcon,
   UsersIcon,
+  BookOpen,
+  GraduationCap,
+  Award,
+  FolderOpen,
   type LucideIcon,
 } from "lucide-react";
 import { useOrganizationStore } from "@/stores/organization/organization-store";
@@ -74,39 +75,53 @@ export default function ClientSidebarItems() {
         NavItemIcon: LayoutDashboard,
         roles: "*",
       },
+      // Admin items
       {
         title: "Members",
         url: href("/client/dashboard/members"),
         NavItemIcon: UsersIcon,
         roles: ["admin"],
       },
+      {
+        title: "Courses",
+        url: href("/client/dashboard/courses"),
+        NavItemIcon: BookOpen,
+        roles: ["admin"],
+      },
+      {
+        title: "Categories",
+        url: href("/client/dashboard/categories"),
+        NavItemIcon: FolderOpen,
+        roles: ["admin"],
+      },
+      // Instructor items
+      {
+        title: "My Courses",
+        url: href("/client/dashboard/my-courses"),
+        NavItemIcon: BookOpen,
+        roles: ["instructor"],
+      },
+      // Learner items
+      {
+        title: "Browse Courses",
+        url: href("/client/dashboard/courses"),
+        NavItemIcon: BookOpen,
+        roles: ["learner"],
+      },
+      {
+        title: "My Learning",
+        url: href("/client/dashboard/my-learning"),
+        NavItemIcon: GraduationCap,
+        roles: ["learner"],
+      },
+      {
+        title: "Certificates",
+        url: href("/client/dashboard/certificates"),
+        NavItemIcon: Award,
+        roles: ["learner"],
+      },
     ];
-    const baseDashboardItems: NavItem[] = [
-      {
-        title: "Analytics",
-        url: href("/client/dashboard"),
-        NavItemIcon: BarChart3Icon,
-        roles: ["admin"],
-      },
-      {
-        title: "Users",
-        url: href("/client/dashboard"),
-        NavItemIcon: UsersIcon,
-        roles: ["admin"],
-      },
-      {
-        title: "Activity",
-        url: href("/client/dashboard"),
-        NavItemIcon: ActivityIcon,
-        roles: ["admin"],
-      },
-      {
-        title: "Live sessions",
-        url: href("/client/dashboard"),
-        NavItemIcon: TvMinimalIcon,
-        roles: ["instructor", "learner"],
-      },
-    ];
+    const baseDashboardItems: NavItem[] = [];
     const baseMoreInfoItems: NavItem[] = [];
     const navs: NavSection = {
       navItems: baseNavItems.filter((item) =>

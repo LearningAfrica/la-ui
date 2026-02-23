@@ -9,7 +9,7 @@ import { LogOut, Settings, User } from "lucide-react";
 import { useAuthStore } from "@/stores/auth/auth-store";
 
 export default function SidebarUserFooter() {
-  const { user } = useAuthStore();
+  const { user, logout } = useAuthStore();
 
   return (
     <SidebarFooter>
@@ -42,7 +42,7 @@ export default function SidebarUserFooter() {
         </SidebarMenuItem>
         <SidebarMenuItem>
           <SidebarMenuButton asChild tooltip="Logout">
-            <button type="button">
+            <button type="button" onClick={logout}>
               <LogOut />
               <span>Logout</span>
             </button>

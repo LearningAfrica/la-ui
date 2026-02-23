@@ -40,7 +40,7 @@ export const useCreateOrganization = () => {
       }
 
       const response = await apiClient.post<CreateOrganizationResponse>(
-        "/api/organizations/",
+        "/api/organizations/mine/",
         formData,
         {
           headers: {
