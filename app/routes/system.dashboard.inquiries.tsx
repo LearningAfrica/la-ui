@@ -15,7 +15,7 @@ import { InquiryDetailsDialog } from "@/components/dashboard/inquiry-details-dia
 import { ConfirmationDialog } from "@/components/dashboard/confirmation-dialog";
 import { RejectInquiryDialog } from "@/components/dashboard/reject-inquiry-dialog";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import { useInquiryModalStore } from "@/stores/inquiries/inquiry-modal-store";
 
 export default function SystemDashboardInquiries() {
@@ -38,10 +38,12 @@ export default function SystemDashboardInquiries() {
   } = useInquiryModalStore();
 
   const queryClient = useQueryClient();
-  const { data: inquiriesData, isLoading: inquiriesLoading } = useAllInquiries(
-    page,
-    search
-  );
+  const {
+    data: inquiriesData,
+    isLoading: inquiriesLoading,
+    isFetching,
+    refetch,
+  } = useAllInquiries(page, search);
   const approveMutation = useApproveInquiry();
   const rejectMutation = useRejectInquiry();
 
@@ -122,11 +124,24 @@ export default function SystemDashboardInquiries() {
   return (
     <div className="space-y-6 p-6">
       {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Organization Inquiries</h1>
-        <p className="text-muted-foreground mt-1">
-          Review and manage organization onboarding requests
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Organization Inquiries</h1>
+          <p className="text-muted-foreground mt-1">
+            Review and manage organization onboarding requests
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => refetch()}
+          disabled={isFetching}
+        >
+          <RefreshCw
+            className={`mr-1 h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
+          />
+          Refresh
+        </Button>
       </div>
 
       {/* Stats Cards */}

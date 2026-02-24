@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { InquiryInterface } from "@/features/inquiries/inquiry-queries";
+import { getCategoryLabel, getSizeLabel } from "@/lib/constants/company";
 import { Search, Eye, CheckCircle, XCircle, X } from "lucide-react";
 
 interface AdminInquiriesTableProps {
@@ -76,7 +77,7 @@ export function AdminInquiriesTable({
           <div>
             <p className="font-medium">{row.original.company_name}</p>
             <p className="text-muted-foreground text-xs">
-              {row.original.company_category}
+              {getCategoryLabel(row.original.company_category)}
             </p>
           </div>
         ),
@@ -97,7 +98,9 @@ export function AdminInquiriesTable({
       columnHelper.accessor("company_size", {
         header: "Size",
         cell: ({ row }) => (
-          <span className="text-sm">{row.original.company_size}</span>
+          <span className="text-sm">
+            {getSizeLabel(row.original.company_size)}
+          </span>
         ),
       }),
       columnHelper.accessor("status", {

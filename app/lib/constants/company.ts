@@ -21,3 +21,9 @@ export const COMPANY_SIZES = [
   { label: "501-1000 employees", value: "501-1000" },
   { label: "1001+ employees", value: "1001+" },
 ] as const;
+
+export const getCategoryLabel = (value: string) =>
+  COMPANY_CATEGORIES.find((c) => c.value === value)?.label ?? value;
+
+export const getSizeLabel = (value: string) =>
+  COMPANY_SIZES.find((s) => s.value === value)?.label ?? value;

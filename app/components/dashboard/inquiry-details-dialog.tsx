@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { InquiryInterface } from "@/features/inquiries/inquiry-queries";
+import { getCategoryLabel, getSizeLabel } from "@/lib/constants/company";
 import { Calendar, Mail, Building2, Users } from "lucide-react";
 
 interface InquiryDetailsDialogProps {
@@ -119,14 +120,14 @@ export function InquiryDetailsDialog({
                 <Building2 className="text-muted-foreground mt-0.5 h-4 w-4" />
                 <div className="flex-1">
                   <p className="text-muted-foreground text-xs">Category</p>
-                  <p className="font-medium">{inquiry?.company_category}</p>
+                  <p className="font-medium">{getCategoryLabel(inquiry?.company_category)}</p>
                 </div>
               </div>
               <div className="flex items-start gap-2 text-sm">
                 <Users className="text-muted-foreground mt-0.5 h-4 w-4" />
                 <div className="flex-1">
                   <p className="text-muted-foreground text-xs">Company Size</p>
-                  <p className="font-medium">{inquiry?.company_size}</p>
+                  <p className="font-medium">{getSizeLabel(inquiry?.company_size)}</p>
                 </div>
               </div>
             </div>

@@ -5,7 +5,8 @@ import type {
 
 // Organizations Query Keys
 export const organizationQueryKeys = {
-  organizations: () => ["organizations"] as const,
+  organizations: (page?: number, search?: string) =>
+    ["organizations", page, search] as const,
   organization: (id: string) => ["organization", id] as const,
   myOrganizations: () => ["myOrganizations"] as const,
   organizationMembers: (

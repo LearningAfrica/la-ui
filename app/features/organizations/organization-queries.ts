@@ -10,10 +10,6 @@ export interface Organization {
   name: string;
   description?: string;
   logo?: string;
-  type: string;
-  country: string;
-  member_count: number;
-  course_count: number;
   created_at: string;
   is_active: boolean;
 }
@@ -53,12 +49,13 @@ export interface MembersQueryParams {
   filters?: MembersFilters;
 }
 
-export const useOrganizations = () => {
-  return useQuery<Organization[]>({
-    queryKey: organizationQueryKeys.organizations(),
+export const useOrganizations = (page: number = 1, search?: string) => {
+  return useQuery({
+    queryKey: organizationQueryKeys.organizations(page, search),
     queryFn: async () => {
-      const response = await apiClient.get<Organization[]>(
-        "/api/organizations/"
+      const response = await apiClient.get<Paginated<Organization>>(
+        "/api/organizations/",
+        { params: { page, search } }
       );
 
       return response.data;
