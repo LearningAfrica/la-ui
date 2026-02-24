@@ -21,7 +21,6 @@ import {
   GraduationCap,
   Award,
   FolderOpen,
-  MailOpen,
   type LucideIcon,
 } from "lucide-react";
 import { useOrganizationStore } from "@/stores/organization/organization-store";
@@ -76,12 +75,12 @@ export default function ClientSidebarItems() {
         NavItemIcon: LayoutDashboard,
         roles: "*",
       },
-      {
-        title: "Invitations",
-        url: href("/client/dashboard/invitations"),
-        NavItemIcon: MailOpen,
-        roles: "*",
-      },
+      // {
+      //   title: "Invitations",
+      //   url: href("/client/dashboard/invitations"),
+      //   NavItemIcon: MailOpen,
+      //   roles: "*",
+      // },
       // Admin items
       {
         title: "Members",
