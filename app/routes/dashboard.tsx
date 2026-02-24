@@ -271,13 +271,13 @@ function OrganizationsTab() {
   );
 }
 
-type InquirysTabProps = {
+type InquiriesTabProps = {
   inquiries: InquiryInterface[];
   isLoading: boolean;
   error: unknown;
 };
 
-function InquiriesTab({ inquiries, isLoading, error }: InquirysTabProps) {
+function InquiriesTab({ inquiries, isLoading, error }: InquiriesTabProps) {
   if (isLoading) {
     return (
       <Card>

@@ -3,6 +3,7 @@ import { invitesMutationKeys, invitesQueryKeys } from "./invites-query-keys";
 import { apiClient } from "@/lib/api";
 import toast from "@/lib/toast";
 import { extractError } from "@/lib/error";
+import { organizationQueryKeys } from "../organizations/organization-query-keys";
 
 interface AcceptInviteResponse {
   message: string;
@@ -65,6 +66,9 @@ export const useDeclineInvite = () => {
       });
       // Invalidate invites query to refetch
       queryClient.invalidateQueries({ queryKey: invitesQueryKeys.myInvites() });
+      queryClient.invalidateQueries({
+        queryKey: organizationQueryKeys.myOrganizations(),
+      });
     },
     onError: (error) => {
       toast.error({
