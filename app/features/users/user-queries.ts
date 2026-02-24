@@ -17,7 +17,7 @@ export interface User {
   first_name: string;
   last_name: string;
   is_verified: boolean;
-  profile: UserProfile;
+  profile: UserProfile | null;
 }
 
 export const useUsers = (page: number = 1, search?: string) => {

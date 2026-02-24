@@ -16,14 +16,9 @@ import { AdminUsersTable } from "@/components/dashboard/admin-users-table";
 
 export default function SystemDashboardUsers() {
   const [page, setPage] = useState(1);
-  const {
-    data: usersData,
-    isLoading,
-    isFetching,
-    refetch,
-  } = useUsers(page);
+  const { data: usersData, isLoading, isFetching, refetch } = useUsers(page);
 
-  const users = usersData?.data ?? [];
+  const users = useMemo(() => usersData?.data ?? [], [usersData?.data]);
 
   const stats = useMemo(() => {
     if (!usersData?.meta) {
@@ -34,7 +29,7 @@ export default function SystemDashboardUsers() {
     const unverified = users.filter((u) => !u.is_verified).length;
 
     return { total: usersData.meta.total_docs, verified, unverified };
-  }, [users, usersData?.meta]);
+  }, [users, usersData]);
 
   const totalPages = usersData?.meta?.total_pages || 1;
   const hasNext = usersData?.meta?.has_next_page || false;
@@ -146,8 +141,8 @@ export default function SystemDashboardUsers() {
               {users.length > 0 && (
                 <div className="mt-4 flex items-center justify-between">
                   <div className="text-muted-foreground text-sm">
-                    Page {page} of {totalPages} •{" "}
-                    {usersData?.meta?.total_docs} total users
+                    Page {page} of {totalPages} • {usersData?.meta?.total_docs}{" "}
+                    total users
                   </div>
                   <div className="flex items-center gap-2">
                     <Button

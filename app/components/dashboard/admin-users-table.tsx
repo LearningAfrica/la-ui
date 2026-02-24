@@ -56,8 +56,8 @@ export function AdminUsersTable({ users }: AdminUsersTableProps) {
               />
             ) : (
               <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-full text-xs font-semibold">
-                {row.original.first_name[0]}
-                {row.original.last_name[0]}
+                {row.original?.first_name?.[0]}
+                {row.original?.last_name?.[0]}
               </div>
             )}
             <div>
@@ -76,9 +76,7 @@ export function AdminUsersTable({ users }: AdminUsersTableProps) {
       }),
       columnHelper.accessor("email", {
         header: "Email",
-        cell: ({ getValue }) => (
-          <span className="text-sm">{getValue()}</span>
-        ),
+        cell: ({ getValue }) => <span className="text-sm">{getValue()}</span>,
       }),
       columnHelper.display({
         id: "phone",
