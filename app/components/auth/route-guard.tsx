@@ -1,8 +1,6 @@
 import { useAuthStore } from "@/stores/auth/auth-store";
 import type { SystemUserRole } from "@/features/auth/auth-mutations";
 import { Navigate, useLocation } from "react-router";
-import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
 
 interface RouteGuardProps {
   children: React.ReactNode;
@@ -22,30 +20,7 @@ function getRoleHome(role: SystemUserRole | null | undefined): string {
 }
 
 /**
- * Waits for Zustand persist to finish rehydrating from localStorage.
- * Starts false on server (SSR) and resolves on the client once hydration completes.
- */
-function useHasHydrated() {
-  const [hasHydrated, setHasHydrated] = useState(() => {
-    if (typeof window === "undefined") return false;
-
-    return useAuthStore.persist.hasHydrated();
-  });
-
-  useEffect(() => {
-    if (hasHydrated) return;
-
-    return useAuthStore.persist.onFinishHydration(() => {
-      setHasHydrated(true);
-    });
-  }, [hasHydrated]);
-
-  return hasHydrated;
-}
-
-/**
  * Protects routes by checking authentication state and optionally role/verification.
- * Waits for store hydration before making redirect decisions.
  * Redirects unauthenticated users to /sign-in with a redirect back parameter.
  * Redirects unauthorized users (wrong role) to their role-appropriate dashboard.
  * Redirects unverified users to /email-verification-pending.
@@ -55,17 +30,8 @@ export function RouteGuard({
   allowedRoles,
   requireVerified = false,
 }: RouteGuardProps) {
-  const hasHydrated = useHasHydrated();
   const { isAuthenticated, role, isVerified, user } = useAuthStore();
   const location = useLocation();
-
-  if (!hasHydrated) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
 
   if (!isAuthenticated) {
     const redirectParam = encodeURIComponent(

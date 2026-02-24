@@ -23,7 +23,10 @@ export default function SystemDashboardOrganizations() {
     refetch,
   } = useOrganizations(page);
 
-  const organizations = organizationsData?.data ?? [];
+  const organizations = useMemo(
+    () => organizationsData?.data ?? [],
+    [organizationsData]
+  );
 
   const stats = useMemo(() => {
     if (!organizationsData?.meta) {
@@ -34,7 +37,7 @@ export default function SystemDashboardOrganizations() {
     const deactivated = organizations.filter((org) => !org.is_active).length;
 
     return { total: organizationsData.meta.total_docs, active, deactivated };
-  }, [organizations, organizationsData?.meta]);
+  }, [organizations, organizationsData]);
 
   const totalPages = organizationsData?.meta?.total_pages || 1;
   const hasNext = organizationsData?.meta?.has_next_page || false;

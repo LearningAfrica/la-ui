@@ -2,6 +2,7 @@ import type { AuthResponseInterface } from "@/features/auth/auth-mutations";
 import { setAuthHelpers } from "@/lib/api/index";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import { cookieStorage } from "@/lib/utils/cookie-storage";
 
 /**
  * Represents the authentication state structure
@@ -71,9 +72,9 @@ export const useAuthStore = create<State & Actions>()(
         })),
     }),
     {
-      name: "auth-storage",
+      name: "__b98e774a8e41b3fcf09a___au",
       version: 1,
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => cookieStorage),
     }
   )
 );
