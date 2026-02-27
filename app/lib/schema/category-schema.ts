@@ -11,6 +11,24 @@ export const categorySchema = z.object({
     .string()
     .min(5, "Description must be at least 5 characters")
     .max(500, "Description must be less than 500 characters"),
+  category_image: z
+    .instanceof(File)
+    .superRefine((file, ctx) => {
+      if (file.size > 5000000) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "File size must be less than 5MB",
+        });
+      }
+
+      if (!["image/jpeg", "image/png"].includes(file.type)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Only JPEG and PNG images are allowed",
+        });
+      }
+    })
+    .optional(),
 });
 
 export type CategoryFormData = z.infer<typeof categorySchema>;

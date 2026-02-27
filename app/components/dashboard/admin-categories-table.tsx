@@ -17,7 +17,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { Category } from "@/features/categories/category-queries";
-import { Search, X } from "lucide-react";
+import { ImageIcon, Search, X } from "lucide-react";
+import moment from "moment";
 
 interface AdminCategoriesTableProps {
   categories: Category[];
@@ -37,6 +38,21 @@ export function AdminCategoriesTable({
         header: "#",
         cell: ({ row }) => <span>{row.index + 1}</span>,
       }),
+      columnHelper.accessor("category_image_url", {
+        header: "Image",
+        cell: ({ getValue }) =>
+          getValue() ? (
+            <img
+              src={getValue()!}
+              alt="Category"
+              className="h-10 w-10 rounded object-cover"
+            />
+          ) : (
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded">
+              <ImageIcon className="text-muted-foreground h-4 w-4" />
+            </div>
+          ),
+      }),
       columnHelper.accessor("category_name", {
         header: "Name",
         cell: ({ getValue }) => (
@@ -51,16 +67,10 @@ export function AdminCategoriesTable({
           </p>
         ),
       }),
-      columnHelper.accessor("created_at", {
+      columnHelper.accessor("created", {
         header: "Created",
         cell: ({ getValue }) => (
-          <span className="text-sm">
-            {new Date(getValue()).toLocaleDateString("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            })}
-          </span>
+          <span className="text-sm">{moment(getValue()).fromNow()}</span>
         ),
       }),
     ],

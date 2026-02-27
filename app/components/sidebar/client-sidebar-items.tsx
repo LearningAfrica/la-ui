@@ -95,13 +95,13 @@ export default function ClientSidebarItems() {
         title: "Courses",
         url: href("/client/dashboard/courses"),
         NavItemIcon: BookOpen,
-        roles: ["admin"],
+        roles: ["admin", "instructor"],
       },
       {
         title: "Categories",
         url: href("/client/dashboard/categories"),
         NavItemIcon: FolderOpen,
-        roles: ["admin"],
+        roles: ["admin", "instructor"],
       },
       // Instructor items
       {

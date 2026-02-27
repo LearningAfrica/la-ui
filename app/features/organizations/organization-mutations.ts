@@ -168,6 +168,9 @@ export const useInviteMember = (organizationId: string) => {
       queryClient.invalidateQueries({
         queryKey: organizationQueryKeys.organizationMembers(organizationId),
       });
+      queryClient.invalidateQueries({
+        queryKey: organizationQueryKeys.organizationInvites(organizationId),
+      });
 
       const count = variables.receiver_emails.length;
 

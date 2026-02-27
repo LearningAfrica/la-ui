@@ -5,11 +5,11 @@ import type { Paginated } from "@/lib/types/api";
 
 export interface Category {
   id: string;
-  organization: string;
   category_name: string;
+  category_image_url: string | null;
   description: string;
-  created_at: string;
-  updated_at: string;
+  created: string;
+  updated: string;
 }
 
 export const useCategories = (page: number = 1, search?: string) => {

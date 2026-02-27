@@ -12,13 +12,21 @@ export const useCreateCategory = () => {
   return useMutation({
     mutationKey: categoryMutationKeys.createCategory(),
     mutationFn: async (data: CategoryFormData) => {
-      const response = await apiClient.post<Category>("/api/categories/", data);
+      const response = await apiClient.post<Category>(
+        "/api/categories/",
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       return response.data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: categoryQueryKeys.categories(),
+        queryKey: categoryQueryKeys.all,
       });
       toast.success({
         message: `Category "${data.category_name}" has been created successfully.`,

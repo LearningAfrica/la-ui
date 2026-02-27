@@ -13,9 +13,12 @@ import {
 import { useCourses } from "@/features/courses/course-queries";
 import { AdminCoursesTable } from "@/components/dashboard/admin-courses-table";
 import { CreateCourseDialog } from "@/components/dashboard/create-course-dialog";
+import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 
 export default function ClientDashboardCourses() {
   const [page, setPage] = useState(1);
+  const { selectedOrganization } = useOrganizationStore();
+  const isInstructor = selectedOrganization?.role === "instructor";
   const {
     data: coursesData,
     isLoading,
@@ -46,11 +49,13 @@ export default function ClientDashboardCourses() {
         <div>
           <h1 className="text-3xl font-bold">Courses</h1>
           <p className="text-muted-foreground mt-1">
-            Browse and manage courses in your workspace
+            {isInstructor
+              ? "Create and manage courses in your workspace"
+              : "Browse and oversee courses in your workspace"}
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <CreateCourseDialog />
+          {isInstructor && <CreateCourseDialog />}
           <Button
             variant="outline"
             size="sm"

@@ -1,6 +1,7 @@
 export const categoryQueryKeys = {
+  all: ["categories"] as const,
   categories: (page?: number, search?: string) =>
-    ["categories", page, search] as const,
+    [categoryQueryKeys.all, page, search] as const,
   category: (id: string) => ["category", id] as const,
 };
 
