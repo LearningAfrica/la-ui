@@ -5,6 +5,7 @@ import type { MyOrganization } from "@/features/organizations/organization-queri
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
+import { createLogoItemUrl } from "@/lib/utils/create-image-url";
 
 interface OrganizationCardProps {
   organization: MyOrganization;
@@ -19,6 +20,11 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
     navigate("/client/dashboard");
   };
 
+  const logoUrl = createLogoItemUrl(
+    organization!.logo_url!,
+    organization.logo!
+  );
+
   return (
     <Card className="group transition-all hover:border-orange-300 hover:shadow-lg dark:hover:border-orange-700">
       <CardHeader>
@@ -26,9 +32,9 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
           <div className="flex items-center gap-3">
             {organization.logo_url ? (
               <img
-                src={organization.logo_url}
+                src={logoUrl}
                 alt={organization.name}
-                className="h-12 w-12 rounded-lg object-cover"
+                className="h-12 w-12 rounded-lg border object-cover"
               />
             ) : (
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-linear-to-br from-orange-400 to-amber-500">
