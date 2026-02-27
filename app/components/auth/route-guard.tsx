@@ -1,4 +1,4 @@
-import { useAuthStore } from "@/stores/auth/auth-store";
+import { useAuthStore } from "@/stores/auth/auth-hooks";
 import type { SystemUserRole } from "@/features/auth/auth-mutations";
 import { Navigate, useLocation } from "react-router";
 

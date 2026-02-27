@@ -19,6 +19,7 @@ export interface MyOrganization {
   name: string;
   description: string;
   logo_url: string | null;
+  logo: string | null;
   is_active: boolean;
   date_joined: string;
   role: OrganizationMembershipRole;

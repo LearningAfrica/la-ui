@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { generateSEOTags } from "@/lib/utils/seo";
 import { useMemo, useState } from "react";
 import { href, Link, useNavigate } from "react-router";
-import { useAuthStore } from "@/stores/auth/auth-store";
+import { useAuthStore } from "@/stores/auth/auth-hooks";
 import { RouteGuard } from "@/components/auth/route-guard";
 import { useMyOrganizations } from "@/features/organizations/organization-queries";
 import {

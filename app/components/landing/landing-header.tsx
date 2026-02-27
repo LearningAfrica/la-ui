@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/providers/theme-provider";
 import { Menu, X, Moon, Sun, Monitor, LogOut, User } from "lucide-react";
-import { useAuthStore } from "@/stores/auth/auth-store";
+import { useAuthStore } from "@/stores/auth/auth-hooks";
 
 const navItems = [
   { name: "Home", href: "/" },

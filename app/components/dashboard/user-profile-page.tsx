@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { Loader2, User } from "lucide-react";
-import { useAuthStore } from "@/stores/auth/auth-store";
+import { useAuthStore } from "@/stores/auth/auth-hooks";
 import {
   useUpdateProfile,
   useChangePassword,

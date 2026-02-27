@@ -13,7 +13,7 @@ import { courseResolver } from "@/lib/schema/course-schema";
 import { BookOpen, Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 import { useCreateCourse } from "@/features/courses/course-mutations";
-import { useOrganizationStore } from "@/stores/organization/organization-store";
+import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { useCategories } from "@/features/categories/category-queries";
 import {
   FormTextField,

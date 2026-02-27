@@ -11,7 +11,7 @@ import {
 } from "../ui/sidebar";
 import { OrganizationSelector } from "../dashboard/organization-selector";
 import { href, Link, useLocation } from "react-router";
-import { useAuthStore } from "@/stores/auth/auth-store";
+import { useAuthStore } from "@/stores/auth/auth-hooks";
 import { useMemo } from "react";
 import {
   Home,
@@ -23,7 +23,7 @@ import {
   FolderOpen,
   type LucideIcon,
 } from "lucide-react";
-import { useOrganizationStore } from "@/stores/organization/organization-store";
+import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import type {
   MyOrganization,
   OrganizationMembershipRole,
@@ -47,6 +47,9 @@ export default function ClientSidebarItems() {
   const { role } = useAuthStore();
   const location = useLocation();
   const { selectedOrganization } = useOrganizationStore();
+
+  useOrganizationStore();
+
   const filterUserRole = (
     org?: MyOrganization,
     itemRoles: RoleCheckType = []

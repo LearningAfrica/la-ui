@@ -2,7 +2,7 @@ import {
   useMyOrganizationMembers,
   useOrganizationInvites,
 } from "@/features/organizations/organization-queries";
-import { useOrganizationStore } from "@/stores/organization/organization-store";
+import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { useMembersFilterStore } from "@/stores/members/members-filter-store";
 import { useInvitesFilterStore } from "@/stores/invites/invites-filter-store";
 import { MemberStatsCards } from "@/components/dashboard/member-stats-cards";

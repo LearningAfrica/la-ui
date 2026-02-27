@@ -2,7 +2,7 @@ import { href, Link } from "react-router";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { PatternLayout } from "@/components/pattern-layout";
-import { useAuthStore } from "@/stores/auth/auth-store";
+import { useAuthStore } from "@/stores/auth/auth-hooks";
 
 export default function HeroSection() {
   const { isAuthenticated, role, canCreateOrg } = useAuthStore();

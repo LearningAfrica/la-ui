@@ -11,7 +11,7 @@ import {
   UserPlus,
   FolderOpen,
 } from "lucide-react";
-import { useOrganizationStore } from "@/stores/organization/organization-store";
+import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import {
   useMyOrganizationMembers,
   type OrganizationMembershipRole,

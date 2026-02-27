@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/form";
 import { loginResolver } from "@/lib/schema/auth-schema";
 import { useLogin } from "@/features/auth/auth-mutations";
-import { useAuthStore } from "@/stores/auth/auth-store";
+import { useAuthStore } from "@/stores/auth/auth-hooks";
 import { extractError } from "@/lib/error";
 import { FormTextField } from "@/components/form-fields/form-text-field";
 import { FormPasswordField } from "@/components/form-fields/form-password-field";

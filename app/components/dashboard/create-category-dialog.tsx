@@ -16,7 +16,7 @@ import {
 import { FolderOpen, Loader2, Plus } from "lucide-react";
 import { useState } from "react";
 import { useCreateCategory } from "@/features/categories/category-mutations";
-import { useOrganizationStore } from "@/stores/organization/organization-store";
+import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { FormTextField, FormTextareaField } from "@/components/form-fields";
 
 interface CreateCategoryDialogProps {

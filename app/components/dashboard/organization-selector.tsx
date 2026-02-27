@@ -1,4 +1,4 @@
-import { useOrganizationStore } from "@/stores/organization/organization-store";
+import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { useMyOrganizations } from "@/features/organizations/organization-queries";
 import {
   DropdownMenu,
@@ -18,10 +18,15 @@ import { Building2, ChevronsUpDown } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { createLogoItemUrl } from "@/lib/utils/create-image-url";
 
 export function OrganizationSelector() {
   const { selectedOrganization, setSelectedOrganization } =
     useOrganizationStore();
+  const logoUrl = createLogoItemUrl(
+    selectedOrganization!.logo_url!,
+    selectedOrganization!.logo!
+  );
   const { data: organizations, isLoading } = useMyOrganizations();
   const navigate = useNavigate();
   const { isMobile } = useSidebar();
@@ -62,9 +67,9 @@ export function OrganizationSelector() {
               >
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                   {/* <activeTeam.logo className="size-4" /> */}
-                  <Avatar>
+                  <Avatar className="border-primary border">
                     <AvatarImage
-                      src={selectedOrganization!.logo_url!}
+                      src={logoUrl}
                       alt={selectedOrganization?.name}
                     />
                     <AvatarFallback>

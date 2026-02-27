@@ -6,7 +6,7 @@ import {
 } from "../ui/sidebar";
 import { Link, href } from "react-router";
 import { LogOut, Settings, User } from "lucide-react";
-import { useAuthStore } from "@/stores/auth/auth-store";
+import { useAuthStore } from "@/stores/auth/auth-hooks";
 
 export default function SidebarUserFooter() {
   const { user, logout, role } = useAuthStore();
@@ -29,7 +29,7 @@ export default function SidebarUserFooter() {
                 {user?.first_name} {user?.last_name}
               </span>
               <span className="text-sidebar-foreground/70 truncate text-xs">
-                {user?.email}
+                {user?.email}()
               </span>
             </div>
           </SidebarMenuButton>

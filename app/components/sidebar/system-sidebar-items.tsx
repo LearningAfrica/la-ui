@@ -11,7 +11,7 @@ import {
 } from "../ui/sidebar";
 import { Link } from "react-router";
 import SidebarUserFooter from "./sidebar-user-footer";
-import { useAuthStore } from "@/stores/auth/auth-store";
+import { useAuthStore } from "@/stores/auth/auth-hooks";
 import { useLocation } from "react-router";
 import {
   Home,
