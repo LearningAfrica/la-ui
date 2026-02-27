@@ -60,6 +60,13 @@ export default function Dashboard() {
   } = useMyInquiries();
   const inquiries = useMemo(() => inquiriesData?.data || [], [inquiriesData]);
 
+  const { data: organizations } = useMyOrganizations();
+  const { data: invitesData } = useMyInvites();
+
+  const orgCount = organizations?.length ?? 0;
+  const inquiryCount = inquiriesData?.meta?.total_docs ?? 0;
+  const inviteCount = invitesData?.data?.length ?? 0;
+
   const handleTabChange = (value: string) => {
     setSelectedTab(value as TabType);
   };
@@ -146,15 +153,33 @@ export default function Dashboard() {
               <TabsTrigger value="organizations">
                 <Building2 className="mr-2 h-4 w-4" />
                 Organizations
+                <Badge
+                  variant="secondary"
+                  className="ml-2 px-1.5 py-0.5 text-xs"
+                >
+                  {orgCount}
+                </Badge>
               </TabsTrigger>
 
               <TabsTrigger value="invites">
                 <MailOpen className="mr-2 h-4 w-4" />
                 Invitations
+                <Badge
+                  variant="secondary"
+                  className="ml-2 px-1.5 py-0.5 text-xs"
+                >
+                  {inviteCount}
+                </Badge>
               </TabsTrigger>
               <TabsTrigger value="inquiries">
                 <User className="mr-2 h-4 w-4" />
-                Inquiries ({inquiriesData?.meta?.total_docs ?? 0})
+                Inquiries
+                <Badge
+                  variant="secondary"
+                  className="ml-2 px-1.5 py-0.5 text-xs"
+                >
+                  {inquiryCount}
+                </Badge>
               </TabsTrigger>
             </TabsList>
             <TabsContent value="organizations">
