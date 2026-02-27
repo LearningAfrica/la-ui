@@ -12,7 +12,11 @@ export const useCreateCourse = () => {
   return useMutation({
     mutationKey: courseMutationKeys.createCourse(),
     mutationFn: async (data: CourseFormData) => {
-      const response = await apiClient.post<Course>("/api/courses/", data);
+      const response = await apiClient.post<Course>("/api/courses/", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       return response.data;
     },

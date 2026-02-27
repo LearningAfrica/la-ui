@@ -8,10 +8,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Form } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { courseResolver } from "@/lib/schema/course-schema";
-import { BookOpen, Loader2, Plus } from "lucide-react";
-import { useState } from "react";
+import { BookOpen, ImageIcon, Loader2, Plus, Upload } from "lucide-react";
+import { useRef, useState } from "react";
 import { useCreateCourse } from "@/features/courses/course-mutations";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { useCategories } from "@/features/categories/category-queries";
@@ -20,8 +27,8 @@ import {
   FormTextareaField,
   FormNumberField,
   FormCheckboxField,
-  FormSelectField,
   FormChipField,
+  FormAsyncSelectField,
 } from "@/components/form-fields";
 
 interface CreateCourseDialogProps {
@@ -30,6 +37,8 @@ interface CreateCourseDialogProps {
 
 export function CreateCourseDialog({ children }: CreateCourseDialogProps) {
   const [open, setOpen] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { selectedOrganization } = useOrganizationStore();
   const { data: categoriesData } = useCategories();
   const createCourseMutation = useCreateCourse();
@@ -43,13 +52,14 @@ export function CreateCourseDialog({ children }: CreateCourseDialogProps) {
     resolver: courseResolver,
     defaultValues: {
       organization: selectedOrganization?.id ?? "",
-      category: 0,
+      category: "",
       title: "",
       overview: "",
       is_premium: false,
       price: 0,
       is_private: false,
       tags: [],
+      course_image: undefined,
     },
   });
 
@@ -68,6 +78,7 @@ export function CreateCourseDialog({ children }: CreateCourseDialogProps) {
         onSuccess() {
           setOpen(false);
           form.reset();
+          setImagePreview(null);
         },
       }
     );
@@ -75,6 +86,30 @@ export function CreateCourseDialog({ children }: CreateCourseDialogProps) {
 
   const isLoading =
     createCourseMutation.status === "pending" || form.formState.isSubmitting;
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      form.setValue("course_image", file);
+
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    form.setValue("course_image", undefined);
+    setImagePreview(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -99,6 +134,68 @@ export function CreateCourseDialog({ children }: CreateCourseDialogProps) {
 
         <Form {...form}>
           <form onSubmit={handleFormSubmit} className="space-y-4">
+            {/* Course Image Upload */}
+            <FormField
+              control={form.control}
+              name="course_image"
+              render={() => (
+                <FormItem>
+                  <FormLabel>Course Image</FormLabel>
+                  <FormControl>
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-lg border">
+                        {imagePreview ? (
+                          <img
+                            src={imagePreview}
+                            alt="Course preview"
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <ImageIcon className="text-muted-foreground h-8 w-8" />
+                        )}
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          accept="image/jpeg,image/png"
+                          onChange={handleImageChange}
+                          className="hidden"
+                          disabled={isLoading}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => fileInputRef.current?.click()}
+                          disabled={isLoading}
+                        >
+                          <Upload className="mr-2 h-4 w-4" />
+                          {imagePreview ? "Change Image" : "Upload Image"}
+                        </Button>
+                        {imagePreview && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={handleRemoveImage}
+                            className="text-destructive"
+                            disabled={isLoading}
+                          >
+                            Remove
+                          </Button>
+                        )}
+                        <p className="text-muted-foreground text-xs">
+                          JPEG or PNG, max 5MB
+                        </p>
+                      </div>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormTextField
               control={form.control}
               name="title"
@@ -108,16 +205,7 @@ export function CreateCourseDialog({ children }: CreateCourseDialogProps) {
               disabled={isLoading}
             />
 
-            <FormTextareaField
-              control={form.control}
-              name="overview"
-              label="Overview"
-              placeholder="Describe what this course covers..."
-              required
-              disabled={isLoading}
-            />
-
-            <FormSelectField
+            <FormAsyncSelectField
               control={form.control}
               name="category"
               label="Category"
@@ -166,6 +254,15 @@ export function CreateCourseDialog({ children }: CreateCourseDialogProps) {
               placeholder="Type a tag and press Enter"
               disabled={isLoading}
               description="Add tags to help learners discover this course"
+            />
+
+            <FormTextareaField
+              control={form.control}
+              name="overview"
+              label="Overview"
+              placeholder="Describe what this course covers..."
+              required
+              disabled={isLoading}
             />
 
             {/* Form Actions */}

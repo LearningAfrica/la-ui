@@ -113,24 +113,6 @@ export function CreateCategoryDialog({ children }: CreateCategoryDialogProps) {
 
         <Form {...form}>
           <form onSubmit={handleFormSubmit} className="space-y-4">
-            <FormTextField
-              control={form.control}
-              name="category_name"
-              label="Category Name"
-              placeholder="Enter category name"
-              required
-              disabled={isLoading}
-            />
-
-            <FormTextareaField
-              control={form.control}
-              name="description"
-              label="Description"
-              placeholder="Describe this category..."
-              required
-              disabled={isLoading}
-            />
-
             {/* Category Image Upload */}
             <FormField
               control={form.control}
@@ -191,6 +173,24 @@ export function CreateCategoryDialog({ children }: CreateCategoryDialogProps) {
                   <FormMessage />
                 </FormItem>
               )}
+            />
+
+            <FormTextField
+              control={form.control}
+              name="category_name"
+              label="Category Name"
+              placeholder="Enter category name"
+              required
+              disabled={isLoading}
+            />
+
+            <FormTextareaField
+              control={form.control}
+              name="description"
+              label="Description"
+              placeholder="Describe this category..."
+              required
+              disabled={isLoading}
             />
 
             {/* Form Actions */}
