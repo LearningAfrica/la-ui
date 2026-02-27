@@ -3,19 +3,39 @@ import { courseQueryKeys } from "./course-query-keys";
 import { apiClient } from "@/lib/api";
 import type { Paginated } from "@/lib/types/api";
 
+export interface CourseInstructor {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  is_verified: boolean;
+  profile: string | null;
+}
+
+export interface CourseCategory {
+  id: string;
+  category_name: string;
+}
+
+export interface CourseModule {
+  id: string;
+  title: string;
+}
+
 export interface Course {
   id: string;
-  organization: string;
-  category: number;
-  category_name?: string;
+  instructor: CourseInstructor;
   title: string;
+  slug: string;
   overview: string;
   is_premium: boolean;
-  price: number;
   is_private: boolean;
+  price: number;
+  course_image_url: string;
+  created: string;
+  category: CourseCategory;
   tags: string[];
-  created_at: string;
-  updated_at: string;
+  modules: CourseModule[];
 }
 
 export const useCourses = (page: number = 1, search?: string) => {
@@ -28,5 +48,17 @@ export const useCourses = (page: number = 1, search?: string) => {
 
       return response.data;
     },
+  });
+};
+
+export const useCourse = (id: string) => {
+  return useQuery({
+    queryKey: courseQueryKeys.course(id),
+    queryFn: async () => {
+      const response = await apiClient.get<Course>(`/api/courses/${id}/`);
+
+      return response.data;
+    },
+    enabled: !!id,
   });
 };

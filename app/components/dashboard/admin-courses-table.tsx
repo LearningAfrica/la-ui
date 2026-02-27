@@ -60,7 +60,7 @@ export function AdminCoursesTable({ courses }: AdminCoursesTableProps) {
         header: "Category",
         cell: ({ row }) => (
           <span className="text-sm">
-            {row.original.category_name ?? `#${row.original.category}`}
+            {row.original.category?.category_name ?? "—"}
           </span>
         ),
       }),
@@ -109,7 +109,7 @@ export function AdminCoursesTable({ courses }: AdminCoursesTableProps) {
             <span className="text-muted-foreground text-sm">—</span>
           ),
       }),
-      columnHelper.accessor("created_at", {
+      columnHelper.accessor("created", {
         header: "Created",
         cell: ({ getValue }) => (
           <span className="text-sm">
