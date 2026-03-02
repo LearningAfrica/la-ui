@@ -7,6 +7,7 @@ import {
 import { apiClient } from "@/lib/api";
 import toast from "@/lib/toast";
 import { extractError } from "@/lib/error";
+import { toFormData } from "@/lib/utils/to-form-data";
 import type { OrganizationMembershipRole } from "./organization-queries";
 import type { InviteMemberFormData } from "@/lib/schema/invite-schema";
 
@@ -30,18 +31,9 @@ export const useCreateOrganization = () => {
   return useMutation({
     mutationKey: organizationMutationKeys.createOrganization(),
     mutationFn: async (data: OrganizationFormData) => {
-      const formData = new FormData();
-
-      formData.append("name", data.name);
-      formData.append("description", data.description);
-
-      if (data.logo) {
-        formData.append("logo", data.logo);
-      }
-
       const response = await apiClient.post<CreateOrganizationResponse>(
         "/api/organizations/mine/",
-        formData,
+        toFormData(data),
         {
           headers: {
             "Content-Type": "multipart/form-data",

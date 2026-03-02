@@ -4,6 +4,7 @@ import { categoryMutationKeys, categoryQueryKeys } from "./category-query-keys";
 import { apiClient } from "@/lib/api";
 import toast from "@/lib/toast";
 import { extractError } from "@/lib/error";
+import { toFormData } from "@/lib/utils/to-form-data";
 import type { Category } from "./category-queries";
 
 export const useCreateCategory = () => {
@@ -14,7 +15,7 @@ export const useCreateCategory = () => {
     mutationFn: async (data: CategoryFormData) => {
       const response = await apiClient.post<Category>(
         "/api/categories/",
-        data,
+        toFormData(data),
         {
           headers: {
             "Content-Type": "multipart/form-data",
