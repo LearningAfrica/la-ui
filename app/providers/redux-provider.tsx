@@ -1,5 +1,5 @@
 import { Provider } from "react-redux";
-import { PersistGate } from "redux-persist/integration/react";
+import { PersistGate } from "redux-persist/lib/integration/react";
 import { store, persistor } from "@/stores/redux-store";
 
 type Props = {
