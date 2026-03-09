@@ -1,4 +1,6 @@
-export type CustomObject = Record<string, any>;
+import type { TsFixMe } from "../types/any";
+
+export type CustomObject = Record<string, TsFixMe>;
 
 export function isObject(item?: CustomObject | CustomObject[]) {
   return item && typeof item === "object" && !Array.isArray(item);
@@ -26,7 +28,7 @@ export function mergeDeep(target: CustomObject, ...sources: CustomObject[]) {
 
 export const eachRecursive = (
   obj: CustomObject,
-  cb: (k: string, v: any) => void,
+  cb: (k: string, v: TsFixMe) => void,
   parentKey: string = ""
 ) => {
   Object.keys(obj).forEach((key) => {
@@ -49,7 +51,7 @@ export const getAllCookiesStartWith = (startWithKey: string) => {
 
 const isArrayString = (v: string) => v.startsWith("[") && v.endsWith("]");
 
-export function setNestedKeys(keys: string[], value: any) {
+export function setNestedKeys(keys: string[], value: TsFixMe) {
   const decodedValue = decodeURIComponent(value);
 
   if (keys.length === 0) {

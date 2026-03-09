@@ -23,15 +23,22 @@ import {
 import { FolderOpen, ImageIcon, Loader2, Plus, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { useCreateCategory } from "@/features/categories/category-mutations";
+import { useAppModal } from "@/stores/filters/modal-hooks";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { FormTextField, FormTextareaField } from "@/components/form-fields";
+
+declare module "@/stores/filters/modal-slice" {
+  interface ModalRegistry {
+    "create-category": undefined;
+  }
+}
 
 interface CreateCategoryDialogProps {
   children?: React.ReactNode;
 }
 
 export function CreateCategoryDialog({ children }: CreateCategoryDialogProps) {
-  const [open, setOpen] = useState(false);
+  const modal = useAppModal("create-category");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { selectedOrganization } = useOrganizationStore();
@@ -79,7 +86,7 @@ export function CreateCategoryDialog({ children }: CreateCategoryDialogProps) {
       },
       {
         onSuccess() {
-          setOpen(false);
+          modal.close();
           form.reset();
           setImagePreview(null);
         },
@@ -91,7 +98,13 @@ export function CreateCategoryDialog({ children }: CreateCategoryDialogProps) {
     createCategoryMutation.status === "pending" || form.formState.isSubmitting;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={modal.isOpen}
+      onOpenChange={(v) => {
+        if (v) modal.open();
+        else modal.close();
+      }}
+    >
       <DialogTrigger asChild>
         {children || (
           <Button size="sm">
@@ -198,7 +211,7 @@ export function CreateCategoryDialog({ children }: CreateCategoryDialogProps) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setOpen(false)}
+                onClick={() => modal.close()}
                 disabled={isLoading}
               >
                 Cancel

@@ -20,6 +20,7 @@ import { courseResolver } from "@/lib/schema/course-schema";
 import { BookOpen, ImageIcon, Loader2, Plus, Upload } from "lucide-react";
 import { useRef, useState } from "react";
 import { useCreateCourse } from "@/features/courses/course-mutations";
+import { useAppModal } from "@/stores/filters/modal-hooks";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { useCategories } from "@/features/categories/category-queries";
 import {
@@ -31,12 +32,18 @@ import {
   FormAsyncSelectField,
 } from "@/components/form-fields";
 
+declare module "@/stores/filters/modal-slice" {
+  interface ModalRegistry {
+    "create-course": undefined;
+  }
+}
+
 interface CreateCourseDialogProps {
   children?: React.ReactNode;
 }
 
 export function CreateCourseDialog({ children }: CreateCourseDialogProps) {
-  const [open, setOpen] = useState(false);
+  const modal = useAppModal("create-course");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { selectedOrganization } = useOrganizationStore();
@@ -76,7 +83,7 @@ export function CreateCourseDialog({ children }: CreateCourseDialogProps) {
       },
       {
         onSuccess() {
-          setOpen(false);
+          modal.close();
           form.reset();
           setImagePreview(null);
         },
@@ -112,7 +119,13 @@ export function CreateCourseDialog({ children }: CreateCourseDialogProps) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={modal.isOpen}
+      onOpenChange={(v) => {
+        if (v) modal.open();
+        else modal.close();
+      }}
+    >
       <DialogTrigger asChild>
         {children || (
           <Button size="sm">
@@ -270,7 +283,7 @@ export function CreateCourseDialog({ children }: CreateCourseDialogProps) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setOpen(false)}
+                onClick={() => modal.close()}
                 disabled={isLoading}
               >
                 Cancel

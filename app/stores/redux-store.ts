@@ -9,20 +9,15 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
-import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 import authReducer from "@/stores/auth/auth-slice";
 import { authActions } from "@/stores/auth/auth-slice";
 import organizationReducer from "@/stores/organization/organization-slice";
+import tableFiltersReducer from "@/stores/filters/table-filters-slice";
+import modalsReducer from "@/stores/filters/modal-slice";
 import { setAuthHelpers } from "@/lib/api/index";
+import { createCookieStorage } from "@/stores/cookie-storage";
 
-const storage =
-  typeof window !== "undefined"
-    ? createWebStorage("local")
-    : {
-        getItem: () => Promise.resolve(null),
-        setItem: () => Promise.resolve(),
-        removeItem: () => Promise.resolve(),
-      };
+const storage = createCookieStorage();
 
 const authPersistConfig = {
   key: "__b98e774a8e41b3fcf09a___au",
@@ -39,6 +34,8 @@ const organizationPersistConfig = {
 const rootReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),
   organization: persistReducer(organizationPersistConfig, organizationReducer),
+  tableFilters: tableFiltersReducer,
+  modals: modalsReducer,
 });
 
 export const store = configureStore({

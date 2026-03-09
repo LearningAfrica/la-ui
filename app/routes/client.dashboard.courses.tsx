@@ -8,7 +8,6 @@ import {
   Globe,
   ChevronLeft,
   ChevronRight,
-  RefreshCw,
 } from "lucide-react";
 import { useCourses } from "@/features/courses/course-queries";
 import { AdminCoursesTable } from "@/components/dashboard/admin-courses-table";
@@ -45,29 +44,13 @@ export default function ClientDashboardCourses() {
 
   return (
     <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Courses</h1>
-          <p className="text-muted-foreground mt-1">
-            {isInstructor
-              ? "Create and manage courses in your workspace"
-              : "Browse and oversee courses in your workspace"}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {isInstructor && <CreateCourseDialog />}
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => refetch()}
-            disabled={isFetching}
-          >
-            <RefreshCw
-              className={`mr-1 h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
-            />
-            Refresh
-          </Button>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold">Courses</h1>
+        <p className="text-muted-foreground mt-1">
+          {isInstructor
+            ? "Create and manage courses in your workspace"
+            : "Browse and oversee courses in your workspace"}
+        </p>
       </div>
 
       {/* Stats */}
@@ -133,7 +116,14 @@ export default function ClientDashboardCourses() {
             </div>
           ) : (
             <>
-              <AdminCoursesTable courses={courses} />
+              <AdminCoursesTable
+                courses={courses}
+                onRefresh={() => refetch()}
+                isFetching={isFetching}
+                toolbarActions={
+                  isInstructor ? <CreateCourseDialog /> : undefined
+                }
+              />
 
               {/* Pagination */}
               {courses.length > 0 && (

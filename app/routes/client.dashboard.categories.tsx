@@ -1,20 +1,21 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { FolderOpen, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import { FolderOpen, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCategories } from "@/features/categories/category-queries";
 import { AdminCategoriesTable } from "@/components/dashboard/admin-categories-table";
 import { CreateCategoryDialog } from "@/components/dashboard/create-category-dialog";
+import { useTableFilters } from "@/stores/filters/use-table-filters";
 
 export default function ClientDashboardCategories() {
-  const [page, setPage] = useState(1);
+  const { params, state, setPage } = useTableFilters("categoriesFilter");
   const {
     data: categoriesData,
     isLoading,
     isFetching,
     refetch,
-  } = useCategories(page);
+  } = useCategories(params);
 
   const categories = useMemo(
     () => categoriesData?.data ?? [],
@@ -27,27 +28,11 @@ export default function ClientDashboardCategories() {
 
   return (
     <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Content Categories</h1>
-          <p className="text-muted-foreground mt-1">
-            Organize courses and materials into categories
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <CreateCategoryDialog />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => refetch()}
-            disabled={isFetching}
-          >
-            <RefreshCw
-              className={`mr-1 h-4 w-4 ${isFetching ? "animate-spin" : ""}`}
-            />
-            Refresh
-          </Button>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold">Content Categories</h1>
+        <p className="text-muted-foreground mt-1">
+          Organize courses and materials into categories
+        </p>
       </div>
 
       {/* Stats */}
@@ -87,20 +72,25 @@ export default function ClientDashboardCategories() {
             </div>
           ) : (
             <>
-              <AdminCategoriesTable categories={categories} />
+              <AdminCategoriesTable
+                categories={categories}
+                onRefresh={() => refetch()}
+                isFetching={isFetching}
+                toolbarActions={<CreateCategoryDialog />}
+              />
 
               {/* Pagination */}
               {categories.length > 0 && (
                 <div className="mt-4 flex items-center justify-between">
                   <div className="text-muted-foreground text-sm">
-                    Page {page} of {totalPages} •{" "}
+                    Page {state.page} of {totalPages} •{" "}
                     {categoriesData?.meta?.total_docs} total categories
                   </div>
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      onClick={() => setPage(Math.max(1, state.page - 1))}
                       disabled={!hasPrev}
                     >
                       <ChevronLeft className="mr-1 h-4 w-4" />
@@ -109,7 +99,7 @@ export default function ClientDashboardCategories() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setPage((p) => p + 1)}
+                      onClick={() => setPage(state.page + 1)}
                       disabled={!hasNext}
                     >
                       Next

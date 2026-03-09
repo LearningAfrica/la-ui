@@ -12,13 +12,19 @@ export interface Category {
   updated: string;
 }
 
-export const useCategories = (page: number = 1, search?: string) => {
+type FetchCategoriesParams = {
+  page?: number;
+  search?: string;
+  limit?: number;
+};
+
+export const useCategories = (params: FetchCategoriesParams = {}) => {
   return useQuery({
-    queryKey: categoryQueryKeys.categories(page, search),
+    queryKey: categoryQueryKeys.categories(params.page, params.search),
     queryFn: async () => {
       const response = await apiClient.get<Paginated<Category>>(
         "/api/categories/",
-        { params: { page, search } }
+        { params }
       );
 
       return response.data;
