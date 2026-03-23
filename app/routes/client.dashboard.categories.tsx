@@ -2,7 +2,13 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { FolderOpen, ChevronLeft, ChevronRight, BookOpen, Layers } from "lucide-react";
+import {
+  FolderOpen,
+  ChevronLeft,
+  ChevronRight,
+  BookOpen,
+  Layers,
+} from "lucide-react";
 import { useCategories } from "@/features/categories/category-queries";
 import { AdminCategoriesTable } from "@/components/dashboard/admin-categories-table";
 import { CreateCategoryDialog } from "@/components/dashboard/create-category-dialog";
@@ -68,14 +74,14 @@ export default function ClientDashboardCategories() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">0</div>
-            <p className="text-muted-foreground text-xs">Across all categories</p>
+            <p className="text-muted-foreground text-xs">
+              Across all categories
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              This Page
-            </CardTitle>
+            <CardTitle className="text-sm font-medium">This Page</CardTitle>
             <div className="rounded-lg bg-purple-600/10 p-2">
               <Layers className="h-4 w-4 text-purple-600" />
             </div>

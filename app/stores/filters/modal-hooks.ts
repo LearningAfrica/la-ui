@@ -21,10 +21,7 @@ export function useAppModal<K extends string>(key: K) {
 
   const close = useCallback(() => dispatch(closeModal(key)), [dispatch, key]);
 
-  const toggle = useCallback(
-    () => dispatch(toggleModal(key)),
-    [dispatch, key]
-  );
+  const toggle = useCallback(() => dispatch(toggleModal(key)), [dispatch, key]);
 
   return useMemo(
     () => ({

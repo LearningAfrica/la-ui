@@ -112,6 +112,23 @@ declare module "@/stores/filters/modal-slice" {
 }
 ```
 
+### Styling — `cn()` Utility
+
+For conditional or merged class names, always use `cn()` from `@/lib/utils`:
+```ts
+import { cn } from "@/lib/utils";
+// Merge base classes with conditional and override classes
+cn("base-class", isActive && "active-class", className)
+```
+Never use string concatenation or template literals for conditional Tailwind classes.
+
+### After Every Code Change
+
+Always run lint fix first (fixes code issues), then format (fixes style):
+```bash
+npm run lint:fix && npm run format
+```
+
 ### Dev Server
 
 - Run `npm run dev` to start on port 3000

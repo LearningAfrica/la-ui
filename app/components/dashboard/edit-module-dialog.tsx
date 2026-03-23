@@ -48,6 +48,7 @@ export function EditModuleDialog({ coursePk }: EditModuleDialogProps) {
 
   const handleFormSubmit = form.handleSubmit((data) => {
     if (!modal.data) return;
+
     updateModule.mutateAsync(
       { ...data, coursePk, id: modal.data.id },
       {
@@ -75,9 +76,7 @@ export function EditModuleDialog({ coursePk }: EditModuleDialogProps) {
             <Layers className="h-5 w-5" />
             Edit Module
           </DialogTitle>
-          <DialogDescription>
-            Update the module details.
-          </DialogDescription>
+          <DialogDescription>Update the module details.</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>

@@ -65,7 +65,9 @@ export function DashboardHeader({
           Learning Africa
         </Link>
         <div className="bg-border hidden h-6 w-px sm:block" />
-        <h1 className="text-muted-foreground hidden text-sm font-medium sm:block">{title}</h1>
+        <h1 className="text-muted-foreground hidden text-sm font-medium sm:block">
+          {title}
+        </h1>
       </div>
 
       <div className="flex shrink-0 items-center gap-2 sm:gap-4">

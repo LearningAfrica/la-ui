@@ -1,4 +1,6 @@
 import { PatternLayout } from "@/components/pattern-layout";
+import { Link, href } from "react-router";
+import { ArrowLeft } from "lucide-react";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -11,6 +13,15 @@ export function AuthLayout({ children, className }: AuthLayoutProps) {
       className={`flex items-center justify-center ${className ?? ""}`}
     >
       <div className="w-full max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mb-4 lg:hidden">
+          <Link
+            to={href("/")}
+            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Link>
+        </div>
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
           {/* Left Side - Branding */}
           <div className="hidden items-center lg:flex">

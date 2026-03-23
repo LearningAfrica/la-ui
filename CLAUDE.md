@@ -70,6 +70,16 @@ Use `useAppModal("my-modal")` to get `{ isOpen, data, open, close, toggle }`.
 - Table filters/pagination managed via `useTableFilters()` Redux hook
 - Actions column uses dropdown menu with modal triggers
 
+### Conditional / Merged Styling
+Use the `cn()` utility (from `@/lib/utils`) for conditional or merged class names:
+```ts
+import { cn } from "@/lib/utils";
+cn("base-class", isActive && "active-class", className)
+```
+
+### Theme
+Only two themes: `dark` and `light`. System preference is used to determine the initial theme. Toggle simply switches between the two. No "system" option in the UI.
+
 ### Query Key Structure
 Always spread `all` in derived keys for proper cache invalidation:
 ```ts
@@ -88,6 +98,12 @@ export const queryKeys = {
 - `npm run lint:fix` — ESLint with auto-fix
 - `npm run format` — Prettier format
 - `npm run format:check` — Prettier check
+
+## After Code Changes
+Always run lint fix first (may restructure code), then format (cleans up style):
+```bash
+npm run lint:fix && npm run format
+```
 
 ## MCP / Playwright
 

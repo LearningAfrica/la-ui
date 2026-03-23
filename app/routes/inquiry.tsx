@@ -27,7 +27,12 @@ export default function Inquiries() {
     >
       <div className="w-full max-w-4xl px-4 sm:px-6 lg:px-8">
         <div className="mb-6">
-          <Button asChild variant="ghost" size="sm" className="text-white/80 hover:text-white hover:bg-white/10">
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="text-white/80 hover:bg-white/10 hover:text-white"
+          >
             <Link to={href("/")}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Home

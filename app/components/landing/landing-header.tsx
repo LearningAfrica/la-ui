@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/providers/theme-provider";
-import { Menu, X, Moon, Sun, Monitor, LogOut, User } from "lucide-react";
+import { Menu, X, Moon, Sun, LogOut, User } from "lucide-react";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
 
 const navItems = [
@@ -44,11 +44,11 @@ export function LandingHeader() {
   }, []);
 
   const getThemeIcon = () => {
-    if (theme === "light") return <Sun className="size-4" />;
-
-    if (theme === "dark") return <Moon className="size-4" />;
-
-    return <Monitor className="size-4" />;
+    return theme === "dark" ? (
+      <Moon className="size-4" />
+    ) : (
+      <Sun className="size-4" />
+    );
   };
 
   const toggleTheme = () => {
@@ -72,7 +72,7 @@ export function LandingHeader() {
       className={`fixed top-0 right-0 left-0 z-50 transition-all duration-300 ${
         isScrolled
           ? "bg-background/95 shadow-md backdrop-blur-md"
-          : "bg-transparent"
+          : "bg-background/80 backdrop-blur-sm lg:bg-transparent lg:backdrop-blur-none"
       }`}
     >
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -195,7 +195,7 @@ export function LandingHeader() {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="border-t py-4 lg:hidden">
+          <div className="bg-background/95 border-t py-4 backdrop-blur-md lg:hidden">
             <div className="flex flex-col space-y-2">
               {navItems.map((item) => (
                 <a

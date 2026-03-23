@@ -124,9 +124,7 @@ export function EditCategoryDialog() {
             <FolderOpen className="h-5 w-5" />
             Edit Category
           </DialogTitle>
-          <DialogDescription>
-            Update the category details.
-          </DialogDescription>
+          <DialogDescription>Update the category details.</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
