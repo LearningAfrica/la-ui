@@ -1,4 +1,5 @@
 import { useForm, useWatch } from "react-hook-form";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -6,7 +7,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -17,9 +17,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { courseResolver } from "@/lib/schema/course-schema";
-import { BookOpen, ImageIcon, Loader2, Plus, Upload } from "lucide-react";
-import { useRef, useState } from "react";
-import { useCreateCourse } from "@/features/courses/course-mutations";
+import { BookOpen, ImageIcon, Loader2, Upload } from "lucide-react";
+import {
+  useCreateCourse,
+  useUpdateCourse,
+} from "@/features/courses/course-mutations";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { useCategories } from "@/features/categories/category-queries";
@@ -31,24 +33,29 @@ import {
   FormChipField,
   FormAsyncSelectField,
 } from "@/components/form-fields";
+import type { Course } from "@/features/courses/course-queries";
 
 declare module "@/stores/filters/modal-slice" {
   interface ModalRegistry {
     "create-course": undefined;
+    "edit-course": Course;
   }
 }
 
-interface CreateCourseDialogProps {
-  children?: React.ReactNode;
-}
+export function CreateOrUpdateCourseDialog() {
+  const createModal = useAppModal("create-course");
+  const editModal = useAppModal("edit-course");
 
-export function CreateCourseDialog({ children }: CreateCourseDialogProps) {
-  const modal = useAppModal("create-course");
+  const isEditing = editModal.isOpen;
+  const isOpen = createModal.isOpen || editModal.isOpen;
+  const course = editModal.data as Course | null;
+
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { selectedOrganization } = useOrganizationStore();
   const { data: categoriesData } = useCategories();
-  const createCourseMutation = useCreateCourse();
+  const createMutation = useCreateCourse();
+  const updateMutation = useUpdateCourse();
 
   const categoryOptions = (categoriesData?.data ?? []).map((cat) => ({
     value: String(cat.id),
@@ -65,8 +72,8 @@ export function CreateCourseDialog({ children }: CreateCourseDialogProps) {
       is_premium: false,
       price: 0,
       is_private: false,
-      tags: [],
-      course_image: undefined,
+      tags: [] as string[],
+      course_image: undefined as File | undefined,
     },
   });
 
@@ -75,24 +82,36 @@ export function CreateCourseDialog({ children }: CreateCourseDialogProps) {
     name: "is_premium",
   });
 
-  const handleFormSubmit = form.handleSubmit((data) => {
-    createCourseMutation.mutateAsync(
-      {
-        ...data,
-        organization: selectedOrganization?.id ?? data.organization,
-      },
-      {
-        onSuccess() {
-          modal.close();
-          form.reset();
-          setImagePreview(null);
-        },
-      }
-    );
+  const onDialogOpened = useEffectEvent((entity: Course | null) => {
+    if (!entity) return;
+
+    form.reset({
+      organization: selectedOrganization?.id ?? "",
+      category: entity.category?.id ?? "",
+      title: entity.title,
+      overview: entity.overview,
+      is_premium: entity.is_premium,
+      price: entity.price,
+      is_private: entity.is_private,
+      tags: entity.tags,
+      course_image: undefined,
+    });
+    setImagePreview(entity.course_image_url ?? null);
   });
 
-  const isLoading =
-    createCourseMutation.status === "pending" || form.formState.isSubmitting;
+  useEffect(() => {
+    if (isOpen && isEditing) {
+      onDialogOpened(course);
+    }
+  }, [isOpen, isEditing, course]);
+
+  const closeDialog = () => {
+    if (isEditing) editModal.close();
+    else createModal.close();
+
+    form.reset();
+    setImagePreview(null);
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -118,36 +137,49 @@ export function CreateCourseDialog({ children }: CreateCourseDialogProps) {
     }
   };
 
+  const handleFormSubmit = form.handleSubmit((data) => {
+    const payload = {
+      ...data,
+      organization: selectedOrganization?.id ?? data.organization,
+    };
+
+    const mutation = isEditing
+      ? updateMutation.mutateAsync(
+          { id: course!.id, data: payload },
+          { onSuccess: closeDialog }
+        )
+      : createMutation.mutateAsync(payload, { onSuccess: closeDialog });
+
+    return mutation;
+  });
+
+  const isLoading =
+    createMutation.status === "pending" ||
+    updateMutation.status === "pending" ||
+    form.formState.isSubmitting;
+
   return (
     <Dialog
-      open={modal.isOpen}
+      open={isOpen}
       onOpenChange={(v) => {
-        if (v) modal.open();
-        else modal.close();
+        if (!v) closeDialog();
       }}
     >
-      <DialogTrigger asChild>
-        {children || (
-          <Button size="sm">
-            <Plus className="mr-1 h-4 w-4" />
-            Create Course
-          </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <BookOpen className="h-5 w-5" />
-            Create New Course
+            {isEditing ? "Edit Course" : "Create New Course"}
           </DialogTitle>
           <DialogDescription>
-            Fill in the details to create a new course in your workspace.
+            {isEditing
+              ? "Update the course details."
+              : "Fill in the details to create a new course in your workspace."}
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={handleFormSubmit} className="space-y-4">
-            {/* Course Image Upload */}
             <FormField
               control={form.control}
               name="course_image"
@@ -278,19 +310,18 @@ export function CreateCourseDialog({ children }: CreateCourseDialogProps) {
               disabled={isLoading}
             />
 
-            {/* Form Actions */}
             <div className="flex justify-end gap-3 pt-4">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => modal.close()}
+                onClick={closeDialog}
                 disabled={isLoading}
               >
                 Cancel
               </Button>
               <Button type="submit" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create Course
+                {isEditing ? "Save Changes" : "Create Course"}
               </Button>
             </div>
           </form>

@@ -77,6 +77,34 @@ import { cn } from "@/lib/utils";
 cn("base-class", isActive && "active-class", className)
 ```
 
+### useEffectEvent Pattern
+Use `useEffectEvent` (React 19) to separate "what to do" from "when to do it" in effects. This avoids stale closures and keeps dependency arrays clean.
+
+**When to use:** When an effect needs to read the latest props/state but shouldn't re-run when those values change. Common in dialogs that populate forms on open, event handlers in effects, or any effect that reads values it shouldn't synchronize on.
+
+```ts
+import { useEffect, useEffectEvent } from "react";
+
+// The callback always reads latest values, can accept args from useEffect
+const onDialogOpened = useEffectEvent((entity: Entity | null) => {
+  if (!entity) return;
+  form.reset({ name: entity.name }); // reads latest form, selectedOrg, etc.
+});
+
+// Effect only re-runs when isOpen/isEditing change, not when entity details change
+useEffect(() => {
+  if (isOpen && isEditing) {
+    onDialogOpened(entity);
+  }
+}, [isOpen, isEditing, entity]);
+```
+
+**Rules:**
+- Call `useEffectEvent` at the top level of the component
+- Only call the returned function from inside `useEffect` (never during render)
+- Do NOT include it in the effect's dependency array
+- Use early returns inside the callback to offload conditions from useEffect
+
 ### Theme
 Only two themes: `dark` and `light`. System preference is used to determine the initial theme. Toggle simply switches between the two. No "system" option in the UI.
 

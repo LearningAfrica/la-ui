@@ -1,6 +1,7 @@
 import { useState } from "react";
 import {
   type ColumnDef,
+  type VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -16,7 +17,15 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, X, RefreshCw } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Search, X, RefreshCw, SlidersHorizontal } from "lucide-react";
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData, unknown>[];
@@ -29,6 +38,8 @@ interface DataTableProps<TData> {
   filterControls?: React.ReactNode;
   onRefresh?: () => void;
   isFetching?: boolean;
+  /** Columns hidden by default (use column id) */
+  defaultHiddenColumns?: string[];
 }
 
 export function DataTable<TData>({
@@ -40,46 +51,80 @@ export function DataTable<TData>({
   filterControls,
   onRefresh,
   isFetching = false,
+  defaultHiddenColumns = [],
 }: DataTableProps<TData>) {
   const [globalFilter, setGlobalFilter] = useState("");
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    () => Object.fromEntries(defaultHiddenColumns.map((col) => [col, false]))
+  );
 
   const table = useReactTable({
     data,
     columns: columns as ColumnDef<TData, unknown>[],
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    state: { globalFilter },
+    state: { globalFilter, columnVisibility },
     onGlobalFilterChange: setGlobalFilter,
+    onColumnVisibilityChange: setColumnVisibility,
   });
+
+  const toggleableColumns = table
+    .getAllColumns()
+    .filter((col) => col.getCanHide());
 
   return (
     <div className="space-y-4">
       {/* Toolbar: search + filters + actions */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex flex-1 items-center gap-2">
-          <div className="relative min-w-0 flex-1 sm:max-w-sm">
-            <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
-            <Input
-              placeholder={searchPlaceholder}
-              value={globalFilter ?? ""}
-              onChange={(e) => setGlobalFilter(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-          {filterControls}
+      <div className="space-y-2">
+        <div className="relative">
+          <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
+          <Input
+            placeholder={searchPlaceholder}
+            value={globalFilter ?? ""}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            className="pl-9"
+          />
           {globalFilter && (
             <Button
               variant="ghost"
-              size="sm"
+              size="icon"
               onClick={() => setGlobalFilter("")}
-              className="h-10"
+              className="absolute top-1/2 right-1 h-7 w-7 -translate-y-1/2"
             >
-              <X className="mr-2 h-4 w-4" />
-              Reset
+              <X className="h-4 w-4" />
             </Button>
           )}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {filterControls}
+          {toggleableColumns.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <SlidersHorizontal className="mr-1 h-4 w-4" />
+                  Columns
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44">
+                <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {toggleableColumns.map((column) => (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(value) =>
+                      column.toggleVisibility(!!value)
+                    }
+                    className="capitalize"
+                  >
+                    {typeof column.columnDef.header === "string"
+                      ? column.columnDef.header
+                      : column.id}
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
           {toolbarActions}
           {onRefresh && (
             <Button

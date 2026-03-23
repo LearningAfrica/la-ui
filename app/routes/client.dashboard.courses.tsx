@@ -8,16 +8,18 @@ import {
   Globe,
   ChevronLeft,
   ChevronRight,
+  Plus,
 } from "lucide-react";
 import { useCourses } from "@/features/courses/course-queries";
 import { AdminCoursesTable } from "@/components/dashboard/admin-courses-table";
-import { CreateCourseDialog } from "@/components/dashboard/create-course-dialog";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
+import { useAppModal } from "@/stores/filters/modal-hooks";
 
 export default function ClientDashboardCourses() {
   const [page, setPage] = useState(1);
   const { selectedOrganization } = useOrganizationStore();
   const isInstructor = selectedOrganization?.role === "instructor";
+  const createCourseModal = useAppModal("create-course");
   const {
     data: coursesData,
     isLoading,
@@ -121,7 +123,12 @@ export default function ClientDashboardCourses() {
                 onRefresh={() => refetch()}
                 isFetching={isFetching}
                 toolbarActions={
-                  isInstructor ? <CreateCourseDialog /> : undefined
+                  isInstructor ? (
+                    <Button size="sm" onClick={() => createCourseModal.open()}>
+                      <Plus className="mr-1 h-4 w-4" />
+                      Create Course
+                    </Button>
+                  ) : undefined
                 }
               />
 

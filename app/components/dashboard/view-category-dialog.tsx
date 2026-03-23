@@ -38,9 +38,9 @@ export function ViewCategoryDialog() {
         {category && (
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              {category.category_image_url ? (
+              {category.category_image ? (
                 <img
-                  src={category.category_image_url}
+                  src={category.category_image}
                   alt={category.category_name}
                   className="h-20 w-20 rounded-lg object-cover"
                 />
@@ -54,7 +54,7 @@ export function ViewCategoryDialog() {
                   {category.category_name}
                 </h3>
                 <p className="text-muted-foreground text-sm">
-                  Created {moment(category.created).fromNow()}
+                  Created {moment(category.created_at).fromNow()}
                 </p>
               </div>
             </div>
@@ -70,13 +70,13 @@ export function ViewCategoryDialog() {
               <div>
                 <span className="text-muted-foreground">Created</span>
                 <p className="font-medium">
-                  {moment(category.created).format("MMM D, YYYY h:mm A")}
+                  {moment(category.created_at).format("MMM D, YYYY h:mm A")}
                 </p>
               </div>
               <div>
                 <span className="text-muted-foreground">Last Updated</span>
                 <p className="font-medium">
-                  {moment(category.updated).format("MMM D, YYYY h:mm A")}
+                  {moment(category.updated_at).format("MMM D, YYYY h:mm A")}
                 </p>
               </div>
             </div>

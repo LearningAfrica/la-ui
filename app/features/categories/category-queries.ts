@@ -6,10 +6,12 @@ import type { Paginated } from "@/lib/types/api";
 export interface Category {
   id: string;
   category_name: string;
-  category_image_url: string | null;
+  category_image: string | null;
+  category_image_url: string;
   description: string;
-  created: string;
-  updated: string;
+  slug: string;
+  created_at: string;
+  updated_at: string;
 }
 
 type FetchCategoriesParams = {

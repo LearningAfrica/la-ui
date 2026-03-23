@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import { ViewCategoryDialog } from "./view-category-dialog";
-import { EditCategoryDialog } from "./edit-category-dialog";
+import { CreateOrUpdateCategoryDialog } from "./create-or-update-category-dialog";
 import { DeleteCategoryDialog } from "./delete-category-dialog";
 
 interface AdminCategoriesTableProps {
@@ -64,9 +64,10 @@ const columns: ColumnDef<Category, unknown>[] = [
   columnHelper.display({
     id: "index",
     header: "#",
+    enableHiding: false,
     cell: ({ row }) => <span>{row.index + 1}</span>,
   }),
-  columnHelper.accessor("category_image_url", {
+  columnHelper.accessor("category_image", {
     header: "Image",
     cell: ({ getValue }) =>
       getValue() ? (
@@ -83,6 +84,7 @@ const columns: ColumnDef<Category, unknown>[] = [
   }),
   columnHelper.accessor("category_name", {
     header: "Name",
+    enableHiding: false,
     cell: ({ getValue }) => <span className="font-medium">{getValue()}</span>,
   }),
   columnHelper.accessor("description", {
@@ -93,7 +95,7 @@ const columns: ColumnDef<Category, unknown>[] = [
       </p>
     ),
   }),
-  columnHelper.accessor("created", {
+  columnHelper.accessor("created_at", {
     header: "Created",
     cell: ({ getValue }) => (
       <span className="text-sm">{moment(getValue()).fromNow()}</span>
@@ -102,6 +104,7 @@ const columns: ColumnDef<Category, unknown>[] = [
   columnHelper.display({
     id: "actions",
     header: "Actions",
+    enableHiding: false,
     cell: ({ row }) => <CategoryActions category={row.original} />,
   }),
 ] as ColumnDef<Category, unknown>[];
@@ -124,7 +127,7 @@ export function AdminCategoriesTable({
         toolbarActions={toolbarActions}
       />
       <ViewCategoryDialog />
-      <EditCategoryDialog />
+      <CreateOrUpdateCategoryDialog />
       <DeleteCategoryDialog />
     </>
   );

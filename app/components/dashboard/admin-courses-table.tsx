@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -8,10 +9,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { Course } from "@/features/courses/course-queries";
-import { Layers } from "lucide-react";
+import { Eye, Layers, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router";
 import { DataTable } from "@/components/ui/data-table";
+import { useAppModal } from "@/stores/filters/modal-hooks";
+import { ViewCourseDialog } from "./view-course-dialog";
+import { CreateOrUpdateCourseDialog } from "./create-or-update-course-dialog";
+import { DeleteCourseDialog } from "./delete-course-dialog";
 
 interface AdminCoursesTableProps {
   courses: Course[];
@@ -22,14 +34,60 @@ interface AdminCoursesTableProps {
 
 const columnHelper = createColumnHelper<Course>();
 
+function CourseActions({ course }: { course: Course }) {
+  const viewModal = useAppModal("view-course");
+  const editModal = useAppModal("edit-course");
+  const deleteModal = useAppModal("delete-course");
+
+  return (
+    <div className="flex items-center gap-1">
+      <Link
+        to={`/client/dashboard/courses/${course.id}/modules`}
+        className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline"
+      >
+        <Layers className="h-3.5 w-3.5" />
+        Modules
+      </Link>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <MoreHorizontal className="h-4 w-4" />
+            <span className="sr-only">Actions</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => viewModal.open(course)}>
+            <Eye className="mr-2 h-4 w-4" />
+            Preview
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => editModal.open(course)}>
+            <Pencil className="mr-2 h-4 w-4" />
+            Edit
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            className="text-destructive"
+            onClick={() => deleteModal.open(course)}
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+}
+
 const columns: ColumnDef<Course, unknown>[] = [
   columnHelper.display({
     id: "index",
     header: "#",
+    enableHiding: false,
     cell: ({ row }) => <span>{row.index + 1}</span>,
   }),
   columnHelper.accessor("title", {
     header: "Title",
+    enableHiding: false,
     cell: ({ row }) => (
       <div>
         <p className="font-medium">{row.original.title}</p>
@@ -93,7 +151,7 @@ const columns: ColumnDef<Course, unknown>[] = [
         <span className="text-muted-foreground text-sm">{"\u2014"}</span>
       ),
   }),
-  columnHelper.accessor("created", {
+  columnHelper.accessor("created_at", {
     header: "Created",
     cell: ({ getValue }) => (
       <span className="text-sm">
@@ -108,15 +166,8 @@ const columns: ColumnDef<Course, unknown>[] = [
   columnHelper.display({
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => (
-      <Link
-        to={`/client/dashboard/courses/${row.original.id}/modules`}
-        className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline"
-      >
-        <Layers className="h-4 w-4" />
-        Modules
-      </Link>
-    ),
+    enableHiding: false,
+    cell: ({ row }) => <CourseActions course={row.original} />,
   }),
 ] as ColumnDef<Course, unknown>[];
 
@@ -137,26 +188,31 @@ export function AdminCoursesTable({
   }, [courses, typeFilter]);
 
   return (
-    <DataTable
-      columns={columns}
-      data={filteredData}
-      searchPlaceholder="Search courses..."
-      emptyMessage="No courses found."
-      onRefresh={onRefresh}
-      isFetching={isFetching}
-      toolbarActions={toolbarActions}
-      filterControls={
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-45">
-            <SelectValue placeholder="Filter by type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
-            <SelectItem value="premium">Premium</SelectItem>
-            <SelectItem value="free">Free</SelectItem>
-          </SelectContent>
-        </Select>
-      }
-    />
+    <>
+      <DataTable
+        columns={columns}
+        data={filteredData}
+        searchPlaceholder="Search courses..."
+        emptyMessage="No courses found."
+        onRefresh={onRefresh}
+        isFetching={isFetching}
+        toolbarActions={toolbarActions}
+        filterControls={
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger className="w-45">
+              <SelectValue placeholder="Filter by type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="premium">Premium</SelectItem>
+              <SelectItem value="free">Free</SelectItem>
+            </SelectContent>
+          </Select>
+        }
+      />
+      <ViewCourseDialog />
+      <CreateOrUpdateCourseDialog />
+      <DeleteCourseDialog />
+    </>
   );
 }

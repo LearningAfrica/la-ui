@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { useEffect, useEffectEvent, useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -6,7 +7,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -20,29 +20,36 @@ import {
   type CategoryFormData,
   categoryResolver,
 } from "@/lib/schema/category-schema";
-import { FolderOpen, ImageIcon, Loader2, Plus, Upload } from "lucide-react";
-import { useRef, useState } from "react";
-import { useCreateCategory } from "@/features/categories/category-mutations";
+import { FolderOpen, ImageIcon, Loader2, Upload } from "lucide-react";
+import {
+  useCreateCategory,
+  useUpdateCategory,
+} from "@/features/categories/category-mutations";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { FormTextField, FormTextareaField } from "@/components/form-fields";
+import type { Category } from "@/features/categories/category-queries";
 
 declare module "@/stores/filters/modal-slice" {
   interface ModalRegistry {
     "create-category": undefined;
+    "edit-category": Category;
   }
 }
 
-interface CreateCategoryDialogProps {
-  children?: React.ReactNode;
-}
+export function CreateOrUpdateCategoryDialog() {
+  const createModal = useAppModal("create-category");
+  const editModal = useAppModal("edit-category");
 
-export function CreateCategoryDialog({ children }: CreateCategoryDialogProps) {
-  const modal = useAppModal("create-category");
+  const isEditing = editModal.isOpen;
+  const isOpen = createModal.isOpen || editModal.isOpen;
+  const category = editModal.data as Category | null;
+
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { selectedOrganization } = useOrganizationStore();
-  const createCategoryMutation = useCreateCategory();
+  const createMutation = useCreateCategory();
+  const updateMutation = useUpdateCategory();
 
   const form = useForm<CategoryFormData>({
     resolver: categoryResolver,
@@ -53,6 +60,32 @@ export function CreateCategoryDialog({ children }: CreateCategoryDialogProps) {
       category_image: undefined,
     },
   });
+
+  const onDialogOpened = useEffectEvent((entity: Category | null) => {
+    if (!entity) return;
+
+    form.reset({
+      organization: selectedOrganization?.id ?? "",
+      category_name: entity.category_name,
+      description: entity.description,
+      category_image: undefined,
+    });
+    setImagePreview(entity.category_image ?? null);
+  });
+
+  useEffect(() => {
+    if (isOpen && isEditing) {
+      onDialogOpened(category);
+    }
+  }, [isOpen, isEditing, category]);
+
+  const closeDialog = () => {
+    if (isEditing) editModal.close();
+    else createModal.close();
+
+    form.reset();
+    setImagePreview(null);
+  };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -79,54 +112,48 @@ export function CreateCategoryDialog({ children }: CreateCategoryDialogProps) {
   };
 
   const handleFormSubmit = form.handleSubmit((data) => {
-    createCategoryMutation.mutateAsync(
-      {
-        ...data,
-        organization: selectedOrganization?.id ?? data.organization,
-      },
-      {
-        onSuccess() {
-          modal.close();
-          form.reset();
-          setImagePreview(null);
-        },
-      }
-    );
+    const payload = {
+      ...data,
+      organization: selectedOrganization?.id ?? data.organization,
+    };
+
+    const mutation = isEditing
+      ? updateMutation.mutateAsync(
+          { id: category!.id, data: payload },
+          { onSuccess: closeDialog }
+        )
+      : createMutation.mutateAsync(payload, { onSuccess: closeDialog });
+
+    return mutation;
   });
 
   const isLoading =
-    createCategoryMutation.status === "pending" || form.formState.isSubmitting;
+    createMutation.status === "pending" ||
+    updateMutation.status === "pending" ||
+    form.formState.isSubmitting;
 
   return (
     <Dialog
-      open={modal.isOpen}
+      open={isOpen}
       onOpenChange={(v) => {
-        if (v) modal.open();
-        else modal.close();
+        if (!v) closeDialog();
       }}
     >
-      <DialogTrigger asChild>
-        {children || (
-          <Button size="sm">
-            <Plus className="mr-1 h-4 w-4" />
-            Create Category
-          </Button>
-        )}
-      </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FolderOpen className="h-5 w-5" />
-            Create New Category
+            {isEditing ? "Edit Category" : "Create New Category"}
           </DialogTitle>
           <DialogDescription>
-            Add a new category to organize your courses and materials.
+            {isEditing
+              ? "Update the category details."
+              : "Add a new category to organize your courses and materials."}
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={handleFormSubmit} className="space-y-4">
-            {/* Category Image Upload */}
             <FormField
               control={form.control}
               name="category_image"
@@ -206,19 +233,18 @@ export function CreateCategoryDialog({ children }: CreateCategoryDialogProps) {
               disabled={isLoading}
             />
 
-            {/* Form Actions */}
             <div className="flex justify-end gap-3 pt-4">
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => modal.close()}
+                onClick={closeDialog}
                 disabled={isLoading}
               >
                 Cancel
               </Button>
               <Button type="submit" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create Category
+                {isEditing ? "Save Changes" : "Create Category"}
               </Button>
             </div>
           </form>

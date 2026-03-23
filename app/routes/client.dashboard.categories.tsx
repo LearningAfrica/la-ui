@@ -8,13 +8,15 @@ import {
   ChevronRight,
   BookOpen,
   Layers,
+  Plus,
 } from "lucide-react";
 import { useCategories } from "@/features/categories/category-queries";
 import { AdminCategoriesTable } from "@/components/dashboard/admin-categories-table";
-import { CreateCategoryDialog } from "@/components/dashboard/create-category-dialog";
 import { useTableFilters } from "@/stores/filters/use-table-filters";
+import { useAppModal } from "@/stores/filters/modal-hooks";
 
 export default function ClientDashboardCategories() {
+  const createCategoryModal = useAppModal("create-category");
   const { params, state, setPage } = useTableFilters("categoriesFilter");
   const {
     data: categoriesData,
@@ -117,7 +119,12 @@ export default function ClientDashboardCategories() {
                 categories={categories}
                 onRefresh={() => refetch()}
                 isFetching={isFetching}
-                toolbarActions={<CreateCategoryDialog />}
+                toolbarActions={
+                  <Button size="sm" onClick={() => createCategoryModal.open()}>
+                    <Plus className="mr-1 h-4 w-4" />
+                    Create Category
+                  </Button>
+                }
               />
 
               {/* Pagination */}

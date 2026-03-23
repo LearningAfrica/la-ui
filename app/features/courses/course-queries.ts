@@ -17,9 +17,16 @@ export interface CourseCategory {
   category_name: string;
 }
 
+export interface CourseModuleContent {
+  id: string;
+  title?: string;
+}
+
 export interface CourseModule {
   id: string;
   title: string;
+  description: string;
+  contents: CourseModuleContent[];
 }
 
 export interface Course {
@@ -32,7 +39,7 @@ export interface Course {
   is_private: boolean;
   price: number;
   course_image_url: string;
-  created: string;
+  created_at: string;
   category: CourseCategory;
   tags: string[];
   modules: CourseModule[];

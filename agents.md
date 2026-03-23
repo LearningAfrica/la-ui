@@ -112,6 +112,32 @@ declare module "@/stores/filters/modal-slice" {
 }
 ```
 
+### useEffectEvent for Effects with Latest Values
+
+Use `useEffectEvent` (React 19) when an effect needs to read the latest state/props without re-triggering. This replaces ref-based workarounds and avoids stale closures.
+
+**Why:** Prevents unnecessary effect re-runs while still reading fresh values. The callback always sees the latest render values, and the effect only re-synchronizes on its actual dependencies.
+
+**Pattern:**
+```ts
+const onDialogOpened = useEffectEvent((entity: Entity | null) => {
+  if (!entity) return;  // early return offloads conditions from useEffect
+  form.reset({ name: entity.name });
+  setPreview(entity.image_url);
+});
+
+useEffect(() => {
+  if (isOpen && isEditing) {
+    onDialogOpened(entity);  // pass data as args
+  }
+}, [isOpen, isEditing, entity]);
+```
+
+**Rules:**
+- Only call from inside `useEffect`, never during render
+- Do NOT add to dependency arrays
+- Use early returns inside the callback
+
 ### Styling — `cn()` Utility
 
 For conditional or merged class names, always use `cn()` from `@/lib/utils`:
