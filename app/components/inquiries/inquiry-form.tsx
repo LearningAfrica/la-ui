@@ -146,7 +146,7 @@ export function InquiryForm() {
             />
 
             {/* Submit Button */}
-            <div className="flex gap-4">
+            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:gap-4">
               <Button
                 type="submit"
                 variant="gradient"

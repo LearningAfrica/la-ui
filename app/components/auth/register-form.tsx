@@ -133,7 +133,7 @@ export function RegisterForm({ searchParams }: RegisterFormProps) {
             control={form.control}
             name="accept_terms"
             render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-y-0 space-x-3">
+              <FormItem className="flex flex-row items-center space-y-0 space-x-2">
                 <FormControl>
                   <Checkbox
                     checked={field.value}
@@ -141,15 +141,15 @@ export function RegisterForm({ searchParams }: RegisterFormProps) {
                     disabled={registerMutation.isPending}
                   />
                 </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel className="text-sm font-normal">
+                <div className="leading-tight">
+                  <FormLabel className="text-xs font-normal sm:text-sm">
                     I agree to the{" "}
                     <Link
                       to="/terms"
                       className="text-primary hover:underline"
                       target="_blank"
                     >
-                      Terms of Service
+                      Terms
                     </Link>{" "}
                     and{" "}
                     <Link
