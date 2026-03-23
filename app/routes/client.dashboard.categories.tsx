@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { FolderOpen, ChevronLeft, ChevronRight } from "lucide-react";
+import { FolderOpen, ChevronLeft, ChevronRight, BookOpen, Layers } from "lucide-react";
 import { useCategories } from "@/features/categories/category-queries";
 import { AdminCategoriesTable } from "@/components/dashboard/admin-categories-table";
 import { CreateCategoryDialog } from "@/components/dashboard/create-category-dialog";
@@ -36,7 +36,7 @@ export default function ClientDashboardCategories() {
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-1">
+      <div className="grid gap-4 sm:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -54,6 +54,41 @@ export default function ClientDashboardCategories() {
                 {categoriesData?.meta?.total_docs ?? 0}
               </div>
             )}
+            <p className="text-muted-foreground text-xs">Active categories</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              Courses Organized
+            </CardTitle>
+            <div className="rounded-lg bg-green-600/10 p-2">
+              <BookOpen className="h-4 w-4 text-green-600" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-muted-foreground text-xs">Across all categories</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">
+              This Page
+            </CardTitle>
+            <div className="rounded-lg bg-purple-600/10 p-2">
+              <Layers className="h-4 w-4 text-purple-600" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            {isLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{categories.length}</div>
+            )}
+            <p className="text-muted-foreground text-xs">
+              Page {state.page} of {totalPages}
+            </p>
           </CardContent>
         </Card>
       </div>

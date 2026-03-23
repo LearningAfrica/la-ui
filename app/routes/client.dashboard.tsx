@@ -10,6 +10,7 @@ import {
   ArrowRight,
   UserPlus,
   FolderOpen,
+  Plus,
 } from "lucide-react";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import {
@@ -131,12 +132,34 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
 function InstructorOverview({ orgName }: { orgName: string }) {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">{orgName}</h1>
-        <p className="text-muted-foreground mt-1">Instructor dashboard</p>
-      </div>
+      {/* Welcome Banner */}
+      <Card className="border-orange-200 bg-linear-to-r from-orange-50 to-amber-50 dark:border-orange-900 dark:from-orange-950/30 dark:to-amber-950/30">
+        <CardContent className="pt-6">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h1 className="text-2xl font-bold sm:text-3xl">{orgName}</h1>
+              <p className="text-muted-foreground mt-1">
+                Instructor dashboard — manage your courses and track learner
+                progress
+              </p>
+            </div>
+            <Button
+              asChild
+              variant="gradient"
+              size="sm"
+              className="shrink-0 self-start"
+            >
+              <Link to="/client/dashboard/courses">
+                <Plus className="mr-2 h-4 w-4" />
+                New Course
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {/* Stats Grid */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">My Courses</CardTitle>
@@ -145,7 +168,8 @@ function InstructorOverview({ orgName }: { orgName: string }) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-muted-foreground text-sm">Coming soon</div>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-muted-foreground text-xs">Courses created</p>
           </CardContent>
         </Card>
         <Card>
@@ -158,7 +182,8 @@ function InstructorOverview({ orgName }: { orgName: string }) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-muted-foreground text-sm">Coming soon</div>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-muted-foreground text-xs">Enrolled learners</p>
           </CardContent>
         </Card>
         <Card>
@@ -171,25 +196,83 @@ function InstructorOverview({ orgName }: { orgName: string }) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-muted-foreground text-sm">Coming soon</div>
+            <div className="text-2xl font-bold">0%</div>
+            <p className="text-muted-foreground text-xs">Average rate</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Categories</CardTitle>
+            <div className="rounded-lg bg-purple-600/10 p-2">
+              <FolderOpen className="h-4 w-4 text-purple-600" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-muted-foreground text-xs">Content categories</p>
           </CardContent>
         </Card>
       </div>
 
+      {/* Quick Actions Grid */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">Quick Actions</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <Button asChild variant="outline" className="w-full justify-between">
-            <Link to="/client/dashboard/my-courses">
-              <span className="flex items-center gap-2">
-                <BookOpen className="h-4 w-4" />
-                My Courses
-              </span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
+        <CardContent>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <Button
+              asChild
+              variant="outline"
+              className="h-auto justify-start gap-3 p-4"
+            >
+              <Link to="/client/dashboard/my-courses">
+                <div className="rounded-lg bg-blue-600/10 p-2">
+                  <BookOpen className="h-4 w-4 text-blue-600" />
+                </div>
+                <div className="text-left">
+                  <div className="font-medium">My Courses</div>
+                  <div className="text-muted-foreground text-xs">
+                    View and manage your courses
+                  </div>
+                </div>
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="h-auto justify-start gap-3 p-4"
+            >
+              <Link to="/client/dashboard/courses">
+                <div className="rounded-lg bg-green-600/10 p-2">
+                  <BookOpen className="h-4 w-4 text-green-600" />
+                </div>
+                <div className="text-left">
+                  <div className="font-medium">All Courses</div>
+                  <div className="text-muted-foreground text-xs">
+                    Browse organization courses
+                  </div>
+                </div>
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="h-auto justify-start gap-3 p-4"
+            >
+              <Link to="/client/dashboard/categories">
+                <div className="rounded-lg bg-purple-600/10 p-2">
+                  <FolderOpen className="h-4 w-4 text-purple-600" />
+                </div>
+                <div className="text-left">
+                  <div className="font-medium">Categories</div>
+                  <div className="text-muted-foreground text-xs">
+                    Organize course content
+                  </div>
+                </div>
+              </Link>
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
@@ -309,7 +392,7 @@ export default function ClientDashboard() {
   const DashboardComponent = roleComponents[role] || LearnerOverview;
 
   return (
-    <div className="container mx-auto p-6">
+    <div className="p-4 sm:p-6">
       <DashboardComponent orgId={orgId} orgName={orgName} />
     </div>
   );

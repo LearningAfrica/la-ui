@@ -55,9 +55,9 @@ export function DataTable<TData>({
   return (
     <div className="space-y-4">
       {/* Toolbar: search + filters + actions */}
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-1 items-center gap-2">
-          <div className="relative max-w-sm flex-1">
+          <div className="relative min-w-0 flex-1 sm:max-w-sm">
             <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
             <Input
               placeholder={searchPlaceholder}

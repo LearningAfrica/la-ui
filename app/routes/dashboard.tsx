@@ -78,20 +78,20 @@ export default function Dashboard() {
 
   return (
     <RouteGuard allowedRoles={["user"]} requireVerified>
-      <main className="container mx-auto min-h-screen px-4 py-8">
+      <main className="mx-auto min-h-screen max-w-5xl px-3 py-4 sm:px-4 sm:py-8">
         {/* User Info Section */}
         <section className="mb-8">
           <Card className="border-orange-200 dark:border-orange-900">
             <CardContent className="pt-6">
-              <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-linear-to-br from-orange-400 to-amber-500 text-2xl font-bold text-white">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-orange-400 to-amber-500 text-xl font-bold text-white sm:h-16 sm:w-16 sm:text-2xl">
                     {user?.first_name?.[0]}
                     {user?.last_name?.[0]}
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h2 className="text-xl font-bold text-gray-900 sm:text-2xl dark:text-white">
                         {user?.first_name} {user?.last_name}
                       </h2>
                       {isVerified ? (
@@ -109,38 +109,36 @@ export default function Dashboard() {
                         </Badge>
                       )}
                     </div>
-                    <div className="text-muted-foreground mt-1 flex flex-col gap-4 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4" />
-                        <span>{user?.email}</span>
-                      </div>
-                      <div className="flex gap-2">
-                        <Link to={href("/")}>
-                          <Button variant="default" size="sm">
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Go back to Home
-                          </Button>
-                        </Link>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={handleLogout}
-                        >
-                          <LogOut className="mr-2 h-4 w-4" />
-                          Logout
-                        </Button>
-                      </div>
+                    <div className="text-muted-foreground mt-1 flex items-center gap-2 text-sm">
+                      <Mail className="h-4 w-4 shrink-0" />
+                      <span>{user?.email}</span>
                     </div>
                   </div>
                 </div>
-                {canCreateOrg && (
-                  <CreateOrganizationModal>
-                    <Button variant="gradient" size="lg">
-                      <Plus className="mr-2 h-4 w-4" />
-                      Create Organization
+                <div className="flex flex-wrap items-center gap-2">
+                  <Link to={href("/")}>
+                    <Button variant="outline" size="sm">
+                      <ArrowLeft className="mr-2 h-4 w-4" />
+                      Home
                     </Button>
-                  </CreateOrganizationModal>
-                )}
+                  </Link>
+                  {canCreateOrg && (
+                    <CreateOrganizationModal>
+                      <Button variant="gradient" size="sm">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Create Organization
+                      </Button>
+                    </CreateOrganizationModal>
+                  )}
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleLogout}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -151,32 +149,32 @@ export default function Dashboard() {
           <Tabs value={selectedTab} onValueChange={handleTabChange}>
             <TabsList className="mb-6">
               <TabsTrigger value="organizations">
-                <Building2 className="mr-2 h-4 w-4" />
+                <Building2 className="mr-1 hidden h-4 w-4 sm:mr-2 sm:inline-block" />
                 Organizations
                 <Badge
                   variant="secondary"
-                  className="ml-2 px-1.5 py-0.5 text-xs"
+                  className="ml-1 px-1.5 py-0.5 text-xs sm:ml-2"
                 >
                   {orgCount}
                 </Badge>
               </TabsTrigger>
 
               <TabsTrigger value="invites">
-                <MailOpen className="mr-2 h-4 w-4" />
+                <MailOpen className="mr-1 hidden h-4 w-4 sm:mr-2 sm:inline-block" />
                 Invitations
                 <Badge
                   variant="secondary"
-                  className="ml-2 px-1.5 py-0.5 text-xs"
+                  className="ml-1 px-1.5 py-0.5 text-xs sm:ml-2"
                 >
                   {inviteCount}
                 </Badge>
               </TabsTrigger>
               <TabsTrigger value="inquiries">
-                <User className="mr-2 h-4 w-4" />
+                <User className="mr-1 hidden h-4 w-4 sm:mr-2 sm:inline-block" />
                 Inquiries
                 <Badge
                   variant="secondary"
-                  className="ml-2 px-1.5 py-0.5 text-xs"
+                  className="ml-1 px-1.5 py-0.5 text-xs sm:ml-2"
                 >
                   {inquiryCount}
                 </Badge>

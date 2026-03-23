@@ -54,21 +54,21 @@ export function DashboardHeader({
   };
 
   return (
-    <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-2 border-b px-4">
-      <div className="flex items-center gap-2">
-        <SidebarTrigger className="-ml-1" />
-        <div className="bg-border h-6 w-px" />
+    <header className="bg-background sticky top-0 z-10 flex h-16 shrink-0 items-center justify-between gap-2 border-b px-2 sm:px-4">
+      <div className="flex min-w-0 items-center gap-2">
+        <SidebarTrigger className="-ml-1 shrink-0" />
+        <div className="bg-border hidden h-6 w-px sm:block" />
         <Link
           to={href("/")}
-          className="text-primary hover:text-primary/80 text-lg font-bold transition-colors"
+          className="text-primary hover:text-primary/80 shrink-0 text-lg font-bold transition-colors"
         >
           Learning Africa
         </Link>
-        <div className="bg-border h-6 w-px" />
-        <h1 className="text-muted-foreground text-sm font-medium">{title}</h1>
+        <div className="bg-border hidden h-6 w-px sm:block" />
+        <h1 className="text-muted-foreground hidden text-sm font-medium sm:block">{title}</h1>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex shrink-0 items-center gap-2 sm:gap-4">
         {/* Theme Toggle */}
         <Button
           variant="ghost"
