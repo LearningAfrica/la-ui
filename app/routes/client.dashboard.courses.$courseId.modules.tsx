@@ -65,7 +65,7 @@ export default function ClientDashboardCourseModules() {
   return (
     <div className="space-y-6 p-6">
       {/* Header */}
-      <div className="flex items-center gap-3">
+      <div className="space-y-2">
         <Link to="/client/dashboard/courses">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-1 h-4 w-4" />
@@ -73,7 +73,7 @@ export default function ClientDashboardCourseModules() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-2xl font-bold sm:text-3xl">
             {course?.title ?? "Course"} — Modules
           </h1>
           <p className="text-muted-foreground mt-1">
