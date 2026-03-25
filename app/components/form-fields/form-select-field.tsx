@@ -51,6 +51,7 @@ interface FormSelectFieldProps<
   maxSelections?: number;
   searchPlaceholder?: string;
   description?: string;
+  onValueChange?: (value: string) => void;
 }
 
 export function FormSelectField<
@@ -72,6 +73,7 @@ export function FormSelectField<
   maxSelections,
   searchPlaceholder = "Search options...",
   description,
+  onValueChange,
 }: FormSelectFieldProps<TFieldValues, TName>) {
   // Multi-select with search component
   if (multiSelect || searchable) {
@@ -288,7 +290,10 @@ export function FormSelectField<
               {label} {required && <span className="text-destructive">*</span>}
             </FormLabel>
             <Select
-              onValueChange={field.onChange}
+              onValueChange={(val) => {
+                field.onChange(val);
+                onValueChange?.(val);
+              }}
               value={field.value}
               disabled={disabled}
             >

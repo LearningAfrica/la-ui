@@ -41,6 +41,10 @@ export default [
           "dashboard/courses/:courseId/modules",
           "routes/client.dashboard.courses.$courseId.modules.tsx"
         ),
+        route(
+          "dashboard/courses/:courseId/preview",
+          "routes/client.dashboard.courses.$courseId.preview.tsx"
+        ),
         route("dashboard/categories", "routes/client.dashboard.categories.tsx"),
         route("dashboard/my-courses", "routes/client.dashboard.my-courses.tsx"),
         route(

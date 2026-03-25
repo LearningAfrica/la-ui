@@ -3,29 +3,26 @@ import { useParams, Link } from "react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import {
-  Layers,
-  FileText,
-  ChevronLeft,
-  ChevronRight,
-  ArrowLeft,
-} from "lucide-react";
+import { Layers, FileText, ArrowLeft, Plus } from "lucide-react";
 import { useCourseModules } from "@/features/modules/module-queries";
 import { useModuleContents } from "@/features/module-contents/module-content-queries";
 import { useCourse } from "@/features/courses/course-queries";
 import type { CourseModuleDetail } from "@/features/modules/module-queries";
 import { CourseModulesTable } from "@/components/dashboard/course-modules-table";
 import { ModuleContentsTable } from "@/components/dashboard/module-contents-table";
-import { CreateModuleDialog } from "@/components/dashboard/create-module-dialog";
-import { CreateModuleContentDialog } from "@/components/dashboard/create-module-content-dialog";
+import { CreateOrUpdateModuleDialog } from "@/components/dashboard/create-or-update-module-dialog";
+import { CreateOrUpdateContentDialog } from "@/components/dashboard/create-or-update-content-dialog";
+import { ViewContentDialog } from "@/components/dashboard/view-content-dialog";
+import { useAppModal } from "@/stores/filters/modal-hooks";
 
 export default function ClientDashboardCourseModules() {
   const { courseId } = useParams<{ courseId: string }>();
   const [selectedModule, setSelectedModule] =
     useState<CourseModuleDetail | null>(null);
-  const [contentsPage, setContentsPage] = useState(1);
 
   const { data: course } = useCourse(courseId!);
+  const createModuleModal = useAppModal("create-or-update-module");
+  const createContentModal = useAppModal("create-or-update-content");
 
   const {
     data: modules,
@@ -35,31 +32,21 @@ export default function ClientDashboardCourseModules() {
   } = useCourseModules(courseId!);
 
   const {
-    data: contentsData,
+    data: contents,
     isLoading: contentsLoading,
     isFetching: contentsFetching,
     refetch: refetchContents,
-  } = useModuleContents(courseId!, selectedModule?.id ?? "", contentsPage);
+  } = useModuleContents(courseId!, selectedModule?.id ?? "");
 
   const modulesList = useMemo(() => modules ?? [], [modules]);
-
-  const contents = useMemo(
-    () => contentsData?.data ?? [],
-    [contentsData?.data]
-  );
-
-  const contentsTotalPages = contentsData?.meta?.total_pages || 1;
-  const contentsHasNext = contentsData?.meta?.has_next_page || false;
-  const contentsHasPrev = contentsData?.meta?.has_prev_page || false;
+  const contentsList = useMemo(() => contents ?? [], [contents]);
 
   const handleViewContents = useCallback((mod: CourseModuleDetail) => {
     setSelectedModule(mod);
-    setContentsPage(1);
   }, []);
 
   const handleBackToModules = useCallback(() => {
     setSelectedModule(null);
-    setContentsPage(1);
   }, []);
 
   return (
@@ -105,7 +92,7 @@ export default function ClientDashboardCourseModules() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
-                Contents in "{selectedModule.title}"
+                Contents in &ldquo;{selectedModule.title}&rdquo;
               </CardTitle>
               <div className="rounded-lg bg-purple-600/10 p-2">
                 <FileText className="h-4 w-4 text-purple-600" />
@@ -115,9 +102,7 @@ export default function ClientDashboardCourseModules() {
               {contentsLoading ? (
                 <Skeleton className="h-8 w-16" />
               ) : (
-                <div className="text-2xl font-bold">
-                  {contentsData?.meta?.total_docs ?? 0}
-                </div>
+                <div className="text-2xl font-bold">{contentsList.length}</div>
               )}
             </CardContent>
           </Card>
@@ -140,17 +125,20 @@ export default function ClientDashboardCourseModules() {
             ) : (
               <>
                 <ModuleContentsTable
-                  contents={contents}
+                  contents={contentsList}
                   coursePk={courseId!}
                   modulePk={selectedModule.id}
                   onRefresh={() => refetchContents()}
                   isFetching={contentsFetching}
                   toolbarActions={
                     <>
-                      <CreateModuleContentDialog
-                        coursePk={courseId!}
-                        modulePk={selectedModule.id}
-                      />
+                      <Button
+                        size="sm"
+                        onClick={() => createContentModal.open(undefined)}
+                      >
+                        <Plus className="mr-1 h-4 w-4" />
+                        Add Content
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
@@ -162,37 +150,6 @@ export default function ClientDashboardCourseModules() {
                     </>
                   }
                 />
-
-                {contents.length > 0 && (
-                  <div className="mt-4 flex items-center justify-between">
-                    <div className="text-muted-foreground text-sm">
-                      Page {contentsPage} of {contentsTotalPages} •{" "}
-                      {contentsData?.meta?.total_docs} total contents
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          setContentsPage((p) => Math.max(1, p - 1))
-                        }
-                        disabled={!contentsHasPrev}
-                      >
-                        <ChevronLeft className="mr-1 h-4 w-4" />
-                        Previous
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setContentsPage((p) => p + 1)}
-                        disabled={!contentsHasNext}
-                      >
-                        Next
-                        <ChevronRight className="ml-1 h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                )}
               </>
             )}
           </CardContent>
@@ -216,12 +173,30 @@ export default function ClientDashboardCourseModules() {
                 onViewContents={handleViewContents}
                 onRefresh={() => refetch()}
                 isFetching={isFetching}
-                toolbarActions={<CreateModuleDialog coursePk={courseId!} />}
+                toolbarActions={
+                  <Button
+                    size="sm"
+                    onClick={() => createModuleModal.open(undefined)}
+                  >
+                    <Plus className="mr-1 h-4 w-4" />
+                    Add Module
+                  </Button>
+                }
               />
             )}
           </CardContent>
         </Card>
       )}
+
+      {/* Dialogs */}
+      <CreateOrUpdateModuleDialog coursePk={courseId!} />
+      {selectedModule && (
+        <CreateOrUpdateContentDialog
+          coursePk={courseId!}
+          modulePk={selectedModule.id}
+        />
+      )}
+      <ViewContentDialog />
     </div>
   );
 }

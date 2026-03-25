@@ -2,9 +2,22 @@ import { useMemo } from "react";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { ModuleContent } from "@/features/module-contents/module-content-queries";
-import { Trash2, ExternalLink } from "lucide-react";
+import {
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  Eye,
+  ExternalLink,
+} from "lucide-react";
 import { useDeleteModuleContent } from "@/features/module-contents/module-content-mutations";
+import { useAppModal } from "@/stores/filters/modal-hooks";
 import { DataTable } from "@/components/ui/data-table";
 
 interface ModuleContentsTableProps {
@@ -18,6 +31,19 @@ interface ModuleContentsTableProps {
 
 const columnHelper = createColumnHelper<ModuleContent>();
 
+const contentTypeBadgeVariant = (type: string) => {
+  switch (type) {
+    case "text":
+      return "default";
+    case "video":
+      return "secondary";
+    case "file":
+      return "outline";
+    default:
+      return "secondary";
+  }
+};
+
 export function ModuleContentsTable({
   contents,
   coursePk,
@@ -27,6 +53,8 @@ export function ModuleContentsTable({
   toolbarActions,
 }: ModuleContentsTableProps) {
   const deleteContent = useDeleteModuleContent();
+  const editModal = useAppModal("create-or-update-content");
+  const viewModal = useAppModal("view-content");
 
   const columns = useMemo(
     () =>
@@ -38,73 +66,122 @@ export function ModuleContentsTable({
         }),
         columnHelper.accessor("title", {
           header: "Title",
-          cell: ({ getValue }) => <p className="font-medium">{getValue()}</p>,
+          cell: ({ getValue }) => (
+            <p className="max-w-50 truncate font-medium">{getValue()}</p>
+          ),
         }),
         columnHelper.accessor("content_type", {
           header: "Type",
           cell: ({ getValue }) => (
-            <Badge variant="secondary">{getValue()}</Badge>
+            <Badge variant={contentTypeBadgeVariant(getValue())}>
+              {getValue()}
+            </Badge>
           ),
         }),
         columnHelper.accessor("order", {
           header: "Order",
           cell: ({ getValue }) => <Badge variant="outline">{getValue()}</Badge>,
         }),
-        columnHelper.accessor("content_url", {
-          header: "URL",
-          cell: ({ getValue }) => {
-            const url = getValue();
+        columnHelper.display({
+          id: "preview",
+          header: "Preview",
+          cell: ({ row }) => {
+            const content = row.original;
 
-            return url ? (
-              <a
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline"
-              >
-                Open
-                <ExternalLink className="h-3 w-3" />
-              </a>
-            ) : (
-              <span className="text-muted-foreground text-sm">--</span>
-            );
+            if (content.content_type === "video" && content.data.video_url) {
+              return (
+                <a
+                  href={content.data.video_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-sm text-blue-600 hover:underline"
+                >
+                  Open
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              );
+            }
+
+            if (content.content_type === "text") {
+              return (
+                <span className="text-muted-foreground max-w-37.5 truncate text-sm">
+                  {content.data.body?.replace(/<[^>]*>/g, "").slice(0, 50) ??
+                    "—"}
+                </span>
+              );
+            }
+
+            if (content.content_type === "file" && content.data.file_name) {
+              return (
+                <span className="text-muted-foreground text-sm">
+                  {content.data.file_name}
+                </span>
+              );
+            }
+
+            return <span className="text-muted-foreground text-sm">—</span>;
           },
         }),
-        columnHelper.accessor("created", {
+        columnHelper.display({
+          id: "created_at",
           header: "Created",
-          cell: ({ getValue }) => (
+          cell: ({ row }) => (
             <span className="text-sm">
-              {new Date(getValue()).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}
+              {new Date(row.original.data.created_at).toLocaleDateString(
+                "en-US",
+                {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                }
+              )}
             </span>
           ),
         }),
         columnHelper.display({
           id: "actions",
           header: "Actions",
-          cell: ({ row }) => (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() =>
-                deleteContent.mutate({
-                  coursePk,
-                  modulePk,
-                  id: row.original.id,
-                  title: row.original.title,
-                })
-              }
-              disabled={deleteContent.isPending}
-            >
-              <Trash2 className="text-destructive h-4 w-4" />
-            </Button>
-          ),
+          cell: ({ row }) => {
+            const content = row.original;
+
+            return (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">Actions</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => viewModal.open(content)}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    View
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => editModal.open(content)}>
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="text-destructive"
+                    onClick={() =>
+                      deleteContent.mutate({
+                        coursePk,
+                        modulePk,
+                        id: content.id,
+                        title: content.title,
+                      })
+                    }
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            );
+          },
         }),
       ] as ColumnDef<ModuleContent, unknown>[],
-    [coursePk, modulePk, deleteContent]
+    [coursePk, modulePk, deleteContent, editModal, viewModal]
   );
 
   return (

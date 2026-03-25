@@ -1,28 +1,37 @@
 import { useQuery } from "@tanstack/react-query";
 import { moduleContentQueryKeys } from "./module-content-query-keys";
 import { apiClient } from "@/lib/api";
-import type { Paginated } from "@/lib/types/api";
+
+export interface ModuleContentData {
+  id: string;
+  title: string;
+  order: number;
+  created_at: string;
+  updated_at: string;
+  // text content
+  body?: string;
+  // video content
+  video_url?: string;
+  duration_seconds?: number;
+  // file content
+  file_name?: string;
+  file?: string;
+}
 
 export interface ModuleContent {
   id: string;
   title: string;
-  content_type: string;
-  content_url: string;
   order: number;
-  created: string;
+  content_type: "text" | "video" | "file";
+  data: ModuleContentData;
 }
 
-export const useModuleContents = (
-  coursePk: string,
-  modulePk: string,
-  page: number = 1
-) => {
+export const useModuleContents = (coursePk: string, modulePk: string) => {
   return useQuery({
-    queryKey: moduleContentQueryKeys.contents(coursePk, modulePk, page),
+    queryKey: moduleContentQueryKeys.contents(coursePk, modulePk),
     queryFn: async () => {
-      const response = await apiClient.get<Paginated<ModuleContent>>(
-        `/api/courses/${coursePk}/modules/${modulePk}/contents/`,
-        { params: { page } }
+      const response = await apiClient.get<ModuleContent[]>(
+        `/api/courses/${coursePk}/modules/${modulePk}/contents/`
       );
 
       return response.data;

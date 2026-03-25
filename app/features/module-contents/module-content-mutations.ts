@@ -12,9 +12,16 @@ export interface CreateContentPayload {
   coursePk: string;
   modulePk: string;
   title: string;
-  content_type?: string;
-  content_url?: string;
+  content_type: "text" | "video" | "file";
   order?: number;
+  // text
+  body?: string;
+  // video
+  video_url?: string;
+  duration_seconds?: number;
+  // file
+  file_name?: string;
+  file?: string;
 }
 
 export const useCreateModuleContent = () => {
@@ -34,12 +41,9 @@ export const useCreateModuleContent = () => {
 
       return response.data;
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: moduleContentQueryKeys.contents(
-          variables.coursePk,
-          variables.modulePk
-        ),
+        queryKey: moduleContentQueryKeys.all,
       });
       toast.success({
         message: `Content "${data.title}" added successfully.`,
@@ -59,9 +63,13 @@ export interface UpdateContentPayload {
   modulePk: string;
   id: string;
   title?: string;
-  content_type?: string;
-  content_url?: string;
+  content_type?: "text" | "video" | "file";
   order?: number;
+  body?: string;
+  video_url?: string;
+  duration_seconds?: number;
+  file_name?: string;
+  file?: string;
 }
 
 export const useUpdateModuleContent = () => {
@@ -82,19 +90,9 @@ export const useUpdateModuleContent = () => {
 
       return response.data;
     },
-    onSuccess: (data, variables) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: moduleContentQueryKeys.contents(
-          variables.coursePk,
-          variables.modulePk
-        ),
-      });
-      queryClient.invalidateQueries({
-        queryKey: moduleContentQueryKeys.content(
-          variables.coursePk,
-          variables.modulePk,
-          variables.id
-        ),
+        queryKey: moduleContentQueryKeys.all,
       });
       toast.success({
         message: `Content "${data.title}" updated successfully.`,
@@ -128,10 +126,7 @@ export const useDeleteModuleContent = () => {
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: moduleContentQueryKeys.contents(
-          variables.coursePk,
-          variables.modulePk
-        ),
+        queryKey: moduleContentQueryKeys.all,
       });
       toast.success({
         message: `Content${variables.title ? ` "${variables.title}"` : ""} deleted successfully.`,

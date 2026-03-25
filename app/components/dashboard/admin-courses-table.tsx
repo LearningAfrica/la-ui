@@ -56,9 +56,15 @@ function CourseActions({ course }: { course: Course }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
+          <DropdownMenuItem asChild>
+            <Link to={`/client/dashboard/courses/${course.id}/preview`}>
+              <Eye className="mr-2 h-4 w-4" />
+              Preview Course
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => viewModal.open(course)}>
             <Eye className="mr-2 h-4 w-4" />
-            Preview
+            Quick View
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => editModal.open(course)}>
             <Pencil className="mr-2 h-4 w-4" />
