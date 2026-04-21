@@ -16,7 +16,16 @@ interface FormTextFieldProps<
   name: TName;
   label: string;
   placeholder?: string;
-  type?: "text" | "email" | "password" | "number" | "tel" | "url";
+  type?:
+    | "text"
+    | "email"
+    | "password"
+    | "number"
+    | "tel"
+    | "url"
+    | "date"
+    | "time"
+    | "datetime-local";
   required?: boolean;
   disabled?: boolean;
   testId?: string;

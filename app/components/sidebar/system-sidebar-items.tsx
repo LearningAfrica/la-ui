@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import {
   SidebarContent,
   SidebarGroup,
@@ -8,49 +8,53 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
 } from "../ui/sidebar";
-import { Link } from "react-router";
+import { href, Link, useLocation } from "react-router";
 import SidebarUserFooter from "./sidebar-user-footer";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
-import { useLocation } from "react-router";
 import {
-  Home,
   LayoutDashboard,
+  MessageSquare,
   Users,
   Building2,
   type LucideIcon,
 } from "lucide-react";
-import { href } from "react-router";
-import type { SystemUserRole } from "@/features/auth/auth-mutations";
 
-type NavItem = {
+interface NavItem {
   title: string;
   url: string;
   NavItemIcon: LucideIcon;
-};
+}
 
-type NavSection = {
-  navItems: NavItem[];
-  dashboardItems?: NavItem[];
-};
+interface NavSection {
+  label: string;
+  items: NavItem[];
+}
 
 export default function SystemSidebarItems() {
   const { role } = useAuthStore();
   const location = useLocation();
 
-  const { navItems, dashboardItems = [] } = useMemo(() => {
-    const navs: Record<SystemUserRole, NavSection> = {
-      super_admin: {
-        navItems: [
+  const sections = useMemo<NavSection[]>(
+    () => [
+      {
+        label: "Overview",
+        items: [
           {
             title: "Dashboard",
             url: href("/system/dashboard"),
-            NavItemIcon: Home,
+            NavItemIcon: LayoutDashboard,
           },
+        ],
+      },
+      {
+        label: "Manage",
+        items: [
           {
             title: "Inquiries",
             url: href("/system/inquiries"),
-            NavItemIcon: LayoutDashboard,
+            NavItemIcon: MessageSquare,
           },
           {
             title: "Users",
@@ -63,22 +67,14 @@ export default function SystemSidebarItems() {
             NavItemIcon: Building2,
           },
         ],
-        dashboardItems: [],
       },
-      user: {
-        navItems: [],
-      },
-    };
+    ],
+    []
+  );
 
-    if (role && navs[role]) {
-      return navs[role];
-    }
-
-    return { navItems: [], dashboardItems: [] };
-  }, [role]);
-  const isActive = (path: string) => {
-    if (path === "/") {
-      return location.pathname === "/";
+  const isActive = (path: string): boolean => {
+    if (path === href("/system/dashboard")) {
+      return location.pathname === path;
     }
 
     return location.pathname.startsWith(path);
@@ -91,69 +87,46 @@ export default function SystemSidebarItems() {
   return (
     <>
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-2">
+        <div className="flex items-center gap-2 px-2 py-1">
           <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-lg font-bold">
             LA
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
             <span className="text-sm font-semibold">Learning Africa</span>
-            <span className="text-muted-foreground text-xs">
-              Empowering Learning
-            </span>
+            <span className="text-muted-foreground text-xs">System Admin</span>
           </div>
         </div>
       </SidebarHeader>
+      <SidebarSeparator />
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {navItems.map((item) => {
-                const Icon = item.NavItemIcon;
+        {sections.map((section, idx) => (
+          <SidebarGroup key={section.label}>
+            <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {section.items.map((item) => {
+                  const Icon = item.NavItemIcon;
 
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive(item.url)}
-                      tooltip={item.title}
-                    >
-                      <Link to={item.url}>
-                        <Icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {location.pathname.includes("/dashboard") &&
-          dashboardItems.length > 0 && (
-            <SidebarGroup>
-              <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {dashboardItems.map((item) => {
-                    const Icon = item.NavItemIcon;
-
-                    return (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton asChild tooltip={item.title}>
-                          <Link to={item.url}>
-                            <Icon />
-                            <span>{item.title}</span>
-                          </Link>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          )}
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive(item.url)}
+                        tooltip={item.title}
+                      >
+                        <Link to={item.url}>
+                          <Icon />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+            {idx < sections.length - 1 && <SidebarSeparator className="mt-2" />}
+          </SidebarGroup>
+        ))}
       </SidebarContent>
       <SidebarUserFooter />
     </>

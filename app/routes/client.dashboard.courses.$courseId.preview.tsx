@@ -50,11 +50,17 @@ function formatLessonDuration(seconds: number | undefined): string {
 }
 
 function getCompletedSet(progress: CourseMyProgress | undefined): Set<string> {
-  if (!progress) return new Set();
+  if (!progress?.modules) return new Set();
 
-  return new Set(
-    progress.contents.filter((c) => c.is_completed).map((c) => c.content_id)
-  );
+  const ids: string[] = [];
+
+  for (const mod of progress.modules) {
+    for (const content of mod.contents ?? []) {
+      if (content.is_completed) ids.push(content.id);
+    }
+  }
+
+  return new Set(ids);
 }
 
 function ContentRow({
@@ -237,7 +243,13 @@ export default function CoursePreviewPage() {
     }
   }
 
-  const hasProgress = (progress?.completed_contents ?? 0) > 0;
+  const completedCount = completedSet.size;
+  const totalLessons = modulesList.reduce(
+    (sum, m) => sum + (m.contents?.length ?? 0),
+    0
+  );
+  const progressPercent = Math.round(progress?.course_progress ?? 0);
+  const hasProgress = completedCount > 0;
   const ctaLabel = hasProgress ? "Resume course" : "Start the course";
   const ctaTo = nextLesson
     ? `/client/dashboard/courses/${courseId}/lessons/${nextLesson.contentId}`
@@ -334,19 +346,18 @@ export default function CoursePreviewPage() {
               )}
             </div>
 
-            {hasProgress && progress && (
+            {hasProgress && (
               <div className="max-w-md space-y-1.5">
                 <div className="text-muted-foreground flex items-center justify-between text-xs font-medium">
                   <span>Your progress</span>
                   <span>
-                    {progress.completed_contents}/{progress.total_contents}{" "}
-                    lessons · {progress.progress_percent}%
+                    {completedCount}/{totalLessons} lessons · {progressPercent}%
                   </span>
                 </div>
                 <div className="bg-muted h-2 overflow-hidden rounded-full">
                   <div
                     className="h-full bg-emerald-500 transition-all"
-                    style={{ width: `${progress.progress_percent}%` }}
+                    style={{ width: `${progressPercent}%` }}
                   />
                 </div>
               </div>

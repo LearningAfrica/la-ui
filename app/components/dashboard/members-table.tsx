@@ -37,7 +37,9 @@ import type {
   OrganizationMembershipRole,
 } from "@/features/organizations/organization-queries";
 import moment from "moment";
-import { useMembersFilterStore } from "@/stores/members/members-filter-store";
+import { useTableFilters } from "@/stores/filters/use-table-filters";
+import { store } from "@/stores/redux-store";
+import { selectTableFilters } from "@/stores/filters/table-filters-slice";
 import {
   Empty,
   EmptyContent,
@@ -72,9 +74,11 @@ const createColumns = (
     id: "index",
     header: "#",
     cell: ({ row }) => {
-      const { page, page_size } = useMembersFilterStore.getState();
+      const snapshot = selectTableFilters("members")(store.getState());
 
-      return <span>{(page - 1) * page_size + row.index + 1}</span>;
+      return (
+        <span>{(snapshot.page - 1) * snapshot.limit + row.index + 1}</span>
+      );
     },
   }),
   columnHelper.accessor("first_name", {
@@ -191,18 +195,23 @@ export function MembersTable({
   const [selectedMember, setSelectedMember] =
     useState<OrganizationMember | null>(null);
 
-  const {
-    search,
-    role,
-    is_active,
-    page_size,
-    setSearch,
-    setRole,
-    setIsActive,
-    setPage,
-    setPageSize,
-    resetFilters,
-  } = useMembersFilterStore();
+  const { state, setSearch, setFilter, setPage, setLimit, reset } =
+    useTableFilters("members");
+  const search = state.search;
+  const page_size = state.limit;
+  const role = state.filters.role as OrganizationMembershipRole | undefined;
+  const is_active =
+    state.filters.is_active === undefined
+      ? undefined
+      : state.filters.is_active === "true";
+  const setRole = (value?: OrganizationMembershipRole) =>
+    value === undefined ? setFilter("role", "") : setFilter("role", value);
+  const setIsActive = (value?: boolean) =>
+    value === undefined
+      ? setFilter("is_active", "")
+      : setFilter("is_active", String(value));
+  const setPageSize = (value: number) => setLimit(value);
+  const resetFilters = () => reset();
 
   const handleRoleChangeClick = (member: OrganizationMember) => {
     setSelectedMember(member);

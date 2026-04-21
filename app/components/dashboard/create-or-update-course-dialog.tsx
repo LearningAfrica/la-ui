@@ -297,8 +297,9 @@ export function CreateOrUpdateCourseDialog() {
               name="tags"
               label="Tags"
               placeholder="Type a tag and press Enter"
+              required
               disabled={isLoading}
-              description="Add tags to help learners discover this course"
+              description="Add at least one tag to help learners discover this course"
             />
 
             <FormTextareaField

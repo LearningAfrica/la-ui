@@ -2,8 +2,9 @@ import {
   useReactTable,
   getCoreRowModel,
   flexRender,
-  createColumnHelper,
+  type ColumnDef,
 } from "@tanstack/react-table";
+import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,13 +31,19 @@ import {
   MoreVertical,
   Copy,
   UserPlus,
+  Send,
+  Trash2,
 } from "lucide-react";
 import type {
   OrganizationInvite,
   OrganizationMembershipRole,
 } from "@/features/organizations/organization-queries";
+import {
+  useResendInvite,
+  useRevokeInvite,
+} from "@/features/organizations/organization-mutations";
 import moment from "moment";
-import { useInvitesFilterStore } from "@/stores/invites/invites-filter-store";
+import { useTableFilters } from "@/stores/filters/use-table-filters";
 import {
   Empty,
   EmptyContent,
@@ -45,6 +52,16 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "../ui/empty";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface OrganizationInvitesTableProps {
   invites: OrganizationInvite[];
@@ -55,100 +72,13 @@ interface OrganizationInvitesTableProps {
   error?: Error | null;
   onRefresh?: () => void;
   onInvite?: () => void;
+  organizationId: string;
 }
 
-const columnHelper = createColumnHelper<OrganizationInvite>();
-
-const columns = [
-  columnHelper.accessor("email", {
-    header: "Email",
-    cell: ({ row }) => (
-      <div className="flex items-center gap-2">
-        <Mail className="text-muted-foreground h-4 w-4" />
-        <span className="font-medium">{row.getValue("email")}</span>
-      </div>
-    ),
-  }),
-  columnHelper.accessor("role", {
-    header: "Role",
-    cell: ({ row }) => {
-      const role = row.getValue("role") as OrganizationMembershipRole;
-      const roleColors = {
-        admin:
-          "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
-        instructor:
-          "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-        learner:
-          "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-      };
-
-      return (
-        <Badge variant="outline" className={roleColors[role]}>
-          {role.charAt(0).toUpperCase() + role.slice(1)}
-        </Badge>
-      );
-    },
-  }),
-  columnHelper.accessor("is_used", {
-    header: "Status",
-    cell: ({ row }) => {
-      const isUsed = row.getValue("is_used") as boolean;
-      const isExpired = moment(row.original.expiration_time).isBefore(moment());
-
-      if (isUsed) {
-        return <Badge variant="default">Used</Badge>;
-      }
-
-      if (isExpired) {
-        return <Badge variant="outline">Expired</Badge>;
-      }
-
-      return <Badge variant="secondary">Pending</Badge>;
-    },
-  }),
-  columnHelper.accessor("expiration_time", {
-    header: "Expires",
-    cell: ({ row }) => {
-      const expiresAt = moment(row.getValue("expiration_time"));
-      const isExpired = expiresAt.isBefore(moment());
-
-      return (
-        <span
-          className={`text-sm ${isExpired ? "text-red-600 dark:text-red-400" : "text-muted-foreground"}`}
-        >
-          {expiresAt.fromNow()}
-        </span>
-      );
-    },
-  }),
-  columnHelper.display({
-    id: "actions",
-    header: "Actions",
-    cell: ({ row }) => {
-      const invite = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm">
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(invite.email)}
-            >
-              <Copy className="mr-2 h-4 w-4" />
-              Copy Email
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  }),
-];
+type ConfirmAction = {
+  kind: "resend" | "revoke";
+  invite: OrganizationInvite;
+};
 
 export function OrganizationInvitesTable({
   invites,
@@ -159,19 +89,157 @@ export function OrganizationInvitesTable({
   error = null,
   onRefresh,
   onInvite,
+  organizationId,
 }: OrganizationInvitesTableProps) {
-  const {
-    search,
-    role,
-    status,
-    page_size,
-    setSearch,
-    setRole,
-    setStatus,
-    setPage,
-    setPageSize,
-    resetFilters,
-  } = useInvitesFilterStore();
+  const { state, setSearch, setFilter, setPage, setLimit, reset } =
+    useTableFilters("invites");
+  const search = state.search;
+  const page_size = state.limit;
+  const role = state.filters.role as OrganizationMembershipRole | undefined;
+  const status = state.filters.status as
+    | "pending"
+    | "accepted"
+    | "declined"
+    | "expired"
+    | undefined;
+  const setRole = (value?: OrganizationMembershipRole) =>
+    value === undefined ? setFilter("role", "") : setFilter("role", value);
+  const setStatus = (
+    value?: "pending" | "accepted" | "declined" | "expired"
+  ) =>
+    value === undefined ? setFilter("status", "") : setFilter("status", value);
+  const setPageSize = (value: number) => setLimit(value);
+  const resetFilters = () => reset();
+
+  const resendMutation = useResendInvite(organizationId);
+  const revokeMutation = useRevokeInvite(organizationId);
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(
+    null
+  );
+
+  const columns = useMemo<ColumnDef<OrganizationInvite>[]>(
+    () => [
+      {
+        accessorKey: "email",
+        header: "Email",
+        cell: ({ row }) => (
+          <div className="flex items-center gap-2">
+            <Mail className="text-muted-foreground h-4 w-4" />
+            <span className="font-medium">{row.getValue("email")}</span>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "role",
+        header: "Role",
+        cell: ({ row }) => {
+          const inviteRole = row.getValue("role") as OrganizationMembershipRole;
+          const roleColors = {
+            admin:
+              "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300",
+            instructor:
+              "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
+            learner:
+              "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
+          };
+
+          return (
+            <Badge variant="outline" className={roleColors[inviteRole]}>
+              {inviteRole.charAt(0).toUpperCase() + inviteRole.slice(1)}
+            </Badge>
+          );
+        },
+      },
+      {
+        accessorKey: "is_used",
+        header: "Status",
+        cell: ({ row }) => {
+          const isUsed = row.getValue("is_used") as boolean;
+          const isExpired = moment(row.original.expiration_time).isBefore(
+            moment()
+          );
+
+          if (isUsed) {
+            return <Badge variant="default">Used</Badge>;
+          }
+
+          if (isExpired) {
+            return <Badge variant="outline">Expired</Badge>;
+          }
+
+          return <Badge variant="secondary">Pending</Badge>;
+        },
+      },
+      {
+        accessorKey: "expiration_time",
+        header: "Expires",
+        cell: ({ row }) => {
+          const expiresAt = moment(row.getValue("expiration_time"));
+          const isExpired = expiresAt.isBefore(moment());
+
+          return (
+            <span
+              className={`text-sm ${isExpired ? "text-red-600 dark:text-red-400" : "text-muted-foreground"}`}
+            >
+              {expiresAt.fromNow()}
+            </span>
+          );
+        },
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => {
+          const invite = row.original;
+          const isUsed = invite.is_used;
+          const isPending =
+            resendMutation.isPending || revokeMutation.isPending;
+
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" disabled={isPending}>
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => navigator.clipboard.writeText(invite.email)}
+                >
+                  <Copy className="mr-2 h-4 w-4" />
+                  Copy Email
+                </DropdownMenuItem>
+                {!isUsed && (
+                  <>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        setConfirmAction({ kind: "resend", invite })
+                      }
+                    >
+                      <Send className="mr-2 h-4 w-4" />
+                      Resend Invite
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        setConfirmAction({ kind: "revoke", invite })
+                      }
+                      className="text-red-600 focus:text-red-600"
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Revoke Invite
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
+      },
+    ],
+    [resendMutation.isPending, revokeMutation.isPending]
+  );
 
   const table = useReactTable({
     data: invites,
@@ -180,6 +248,40 @@ export function OrganizationInvitesTable({
     manualPagination: true,
     pageCount: totalPages,
   });
+
+  const confirmCopy = useMemo(() => {
+    if (!confirmAction) return null;
+
+    if (confirmAction.kind === "resend") {
+      return {
+        title: "Resend invitation?",
+        description: `A fresh invitation email will be sent to ${confirmAction.invite.email} and the previous link will stop working.`,
+        actionLabel: "Resend",
+        actionClass: "",
+      };
+    }
+
+    return {
+      title: "Revoke invitation?",
+      description: `${confirmAction.invite.email} will no longer be able to use this invite to join the organization.`,
+      actionLabel: "Revoke",
+      actionClass: "bg-red-600 text-white hover:bg-red-700",
+    };
+  }, [confirmAction]);
+
+  const handleConfirm = () => {
+    if (!confirmAction) return;
+
+    if (confirmAction.kind === "resend") {
+      resendMutation.mutate(confirmAction.invite, {
+        onSettled: () => setConfirmAction(null),
+      });
+    } else {
+      revokeMutation.mutate(confirmAction.invite.id, {
+        onSettled: () => setConfirmAction(null),
+      });
+    }
+  };
 
   const hasActiveFilters = search || role !== undefined || status !== undefined;
 
@@ -422,6 +524,34 @@ export function OrganizationInvitesTable({
           </div>
         </div>
       )}
+
+      <AlertDialog
+        open={!!confirmAction}
+        onOpenChange={(open) => !open && setConfirmAction(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{confirmCopy?.title}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmCopy?.description}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              disabled={resendMutation.isPending || revokeMutation.isPending}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirm}
+              disabled={resendMutation.isPending || revokeMutation.isPending}
+              className={confirmCopy?.actionClass}
+            >
+              {confirmCopy?.actionLabel}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

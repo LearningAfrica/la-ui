@@ -28,4 +28,8 @@ export const organizationMutationKeys = {
     ["toggleMemberStatus", organizationId] as const,
   inviteMember: (organizationId: string) =>
     ["inviteMember", organizationId] as const,
+  revokeInvite: (organizationId: string) =>
+    ["revokeInvite", organizationId] as const,
+  resendInvite: (organizationId: string) =>
+    ["resendInvite", organizationId] as const,
 };

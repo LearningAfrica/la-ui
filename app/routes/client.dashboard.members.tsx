@@ -1,10 +1,10 @@
 import {
   useMyOrganizationMembers,
   useOrganizationInvites,
+  type OrganizationMembershipRole,
 } from "@/features/organizations/organization-queries";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
-import { useMembersFilterStore } from "@/stores/members/members-filter-store";
-import { useInvitesFilterStore } from "@/stores/invites/invites-filter-store";
+import { useTableFilters } from "@/stores/filters/use-table-filters";
 import { MemberStatsCards } from "@/components/dashboard/member-stats-cards";
 import { MembersTable } from "@/components/dashboard/members-table";
 import { InviteMemberDialog } from "@/components/dashboard/invite-member-dialog";
@@ -12,16 +12,12 @@ import { OrganizationInvitesTable } from "@/components/dashboard/organization-in
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMemo, useState } from "react";
 
+type InviteStatus = "pending" | "accepted" | "declined" | "expired";
+
 export default function ClientDashboardMembers() {
   const { selectedOrganization } = useOrganizationStore();
-  const { page, page_size, role, is_active, search } = useMembersFilterStore();
-  const {
-    page: invitesPage,
-    page_size: invitesPageSize,
-    role: invitesRole,
-    status: invitesStatus,
-    search: invitesSearch,
-  } = useInvitesFilterStore();
+  const membersFilters = useTableFilters("members");
+  const invitesFilters = useTableFilters("invites");
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("members");
 
@@ -33,11 +29,16 @@ export default function ClientDashboardMembers() {
   } = useMyOrganizationMembers({
     organizationId: selectedOrganization?.id || "",
     filters: {
-      page,
-      page_size,
-      role,
-      is_active,
-      search,
+      page: membersFilters.state.page,
+      page_size: membersFilters.state.limit,
+      role: membersFilters.state.filters.role as
+        | OrganizationMembershipRole
+        | undefined,
+      is_active:
+        membersFilters.state.filters.is_active === undefined
+          ? undefined
+          : membersFilters.state.filters.is_active === "true",
+      search: membersFilters.state.search || undefined,
     },
   });
 
@@ -49,11 +50,13 @@ export default function ClientDashboardMembers() {
   } = useOrganizationInvites({
     organizationId: selectedOrganization?.id || "",
     filters: {
-      page: invitesPage,
-      page_size: invitesPageSize,
-      role: invitesRole,
-      status: invitesStatus,
-      search: invitesSearch,
+      page: invitesFilters.state.page,
+      page_size: invitesFilters.state.limit,
+      role: invitesFilters.state.filters.role as
+        | OrganizationMembershipRole
+        | undefined,
+      status: invitesFilters.state.filters.status as InviteStatus | undefined,
+      search: invitesFilters.state.search || undefined,
     },
   });
 
@@ -135,6 +138,7 @@ export default function ClientDashboardMembers() {
             error={invitesError}
             onRefresh={() => refetchInvites()}
             onInvite={() => setInviteDialogOpen(true)}
+            organizationId={selectedOrganization?.id || ""}
           />
         </TabsContent>
       </Tabs>

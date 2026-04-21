@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,10 +13,19 @@ import {
   ChevronRight,
   Plus,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useCourses } from "@/features/courses/course-queries";
 import { AdminCoursesTable } from "@/components/dashboard/admin-courses-table";
+import { CreateOrUpdateCourseDialog } from "@/components/dashboard/create-or-update-course-dialog";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { useAppModal } from "@/stores/filters/modal-hooks";
+import { useTableFilters } from "@/stores/filters/use-table-filters";
 
 type StatTone = "blue" | "amber" | "violet" | "emerald";
 
@@ -69,7 +78,9 @@ function StatCard({
 }
 
 export default function ClientDashboardCourses() {
-  const [page, setPage] = useState(1);
+  const { state, setPage, setLimit } = useTableFilters("courses");
+  const page = state.page;
+  const pageSize = state.limit;
   const { selectedOrganization } = useOrganizationStore();
   const isInstructor = selectedOrganization?.role === "instructor";
   const createCourseModal = useAppModal("create-course");
@@ -78,7 +89,7 @@ export default function ClientDashboardCourses() {
     isLoading,
     isFetching,
     refetch,
-  } = useCourses(page);
+  } = useCourses({ page, pageSize });
 
   const courses = useMemo(() => coursesData?.data ?? [], [coursesData?.data]);
 
@@ -206,16 +217,31 @@ export default function ClientDashboardCourses() {
 
               {/* Pagination */}
               {courses.length > 0 && (
-                <div className="mt-4 flex items-center justify-between">
+                <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div className="text-muted-foreground text-sm">
                     Page {page} of {totalPages} •{" "}
                     {coursesData?.meta?.total_docs} total courses
                   </div>
                   <div className="flex items-center gap-2">
+                    <Select
+                      value={pageSize.toString()}
+                      onValueChange={(value) => setLimit(Number(value))}
+                    >
+                      <SelectTrigger className="h-8 w-[90px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[5, 10, 20, 50].map((size) => (
+                          <SelectItem key={size} value={size.toString()}>
+                            {size} / page
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      onClick={() => setPage(Math.max(1, page - 1))}
                       disabled={!hasPrev}
                     >
                       <ChevronLeft className="mr-1 h-4 w-4" />
@@ -224,7 +250,7 @@ export default function ClientDashboardCourses() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setPage((p) => p + 1)}
+                      onClick={() => setPage(page + 1)}
                       disabled={!hasNext}
                     >
                       Next
@@ -237,6 +263,8 @@ export default function ClientDashboardCourses() {
           )}
         </CardContent>
       </Card>
+
+      <CreateOrUpdateCourseDialog />
     </div>
   );
 }

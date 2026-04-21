@@ -65,6 +65,10 @@ export default [
           "dashboard/invitations",
           "routes/client.dashboard.invitations.tsx"
         ),
+        route(
+          "dashboard/live-sessions",
+          "routes/client.dashboard.live-sessions.tsx"
+        ),
         route("profile", "routes/client.profile.tsx"),
       ]),
     ]),

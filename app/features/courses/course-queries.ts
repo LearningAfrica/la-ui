@@ -47,15 +47,28 @@ export interface Course {
   modules: CourseModule[];
 }
 
-export const useCourses = (page: number = 1, search?: string) => {
+export interface UseCoursesParams {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+}
+
+export const useCourses = (params: UseCoursesParams = {}) => {
+  const { page = 1, pageSize = 10, search } = params;
   const { selectedOrganization } = useOrganizationStore();
   const organizationId = selectedOrganization?.id;
 
   return useQuery({
-    queryKey: courseQueryKeys.courses(organizationId, page, search),
+    queryKey: courseQueryKeys.courses(organizationId, page, pageSize, search),
     queryFn: async () => {
       const response = await apiClient.get<Paginated<Course>>("/api/courses/", {
-        params: { page, search, organization_id: organizationId },
+        params: {
+          page,
+          page_size: pageSize,
+          limit: pageSize,
+          search,
+          organization_id: organizationId,
+        },
       });
 
       return response.data;
@@ -95,17 +108,31 @@ export const useCourseContents = (id: string) => {
 };
 
 export interface CourseProgressContent {
-  content_id: string;
+  id: string;
+  title: string;
+  order: number;
+  content_type: "text" | "video" | "file";
+  data: Record<string, unknown>;
   is_completed: boolean;
-  completed_at: string | null;
 }
 
-export interface CourseMyProgress {
-  course_id: string;
-  total_contents: number;
-  completed_contents: number;
-  progress_percent: number;
+export interface CourseProgressModule {
+  id: string;
+  title: string;
+  description?: string;
+  order: number;
+  module_progress: number;
   contents: CourseProgressContent[];
+}
+
+// Backend returns the enriched course with nested module → content progress.
+// Individual completion lives on each content row, so the top level surfaces
+// `course_progress` and modules rather than a flat contents array.
+export interface CourseMyProgress {
+  id: string;
+  title: string;
+  course_progress: number;
+  modules: CourseProgressModule[];
 }
 
 export const useCourseMyProgress = (id: string) => {

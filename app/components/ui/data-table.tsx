@@ -2,11 +2,21 @@ import { useState } from "react";
 import {
   type ColumnDef,
   type VisibilityState,
+  type PaginationState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -40,7 +50,11 @@ interface DataTableProps<TData> {
   isFetching?: boolean;
   /** Columns hidden by default (use column id) */
   defaultHiddenColumns?: string[];
+  /** Initial page size. Pagination UI hidden when false. Default: 10. */
+  pageSize?: number | false;
 }
+
+const PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
 
 export function DataTable<TData>({
   columns,
@@ -52,20 +66,34 @@ export function DataTable<TData>({
   onRefresh,
   isFetching = false,
   defaultHiddenColumns = [],
+  pageSize = 10,
 }: DataTableProps<TData>) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
     () => Object.fromEntries(defaultHiddenColumns.map((col) => [col, false]))
   );
+  const paginationEnabled = pageSize !== false;
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: typeof pageSize === "number" ? pageSize : 10,
+  });
 
   const table = useReactTable({
     data,
     columns: columns as ColumnDef<TData, unknown>[],
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    state: { globalFilter, columnVisibility },
+    ...(paginationEnabled
+      ? { getPaginationRowModel: getPaginationRowModel() }
+      : {}),
+    state: {
+      globalFilter,
+      columnVisibility,
+      ...(paginationEnabled ? { pagination } : {}),
+    },
     onGlobalFilterChange: setGlobalFilter,
     onColumnVisibilityChange: setColumnVisibility,
+    onPaginationChange: paginationEnabled ? setPagination : undefined,
   });
 
   const toggleableColumns = table
@@ -188,6 +216,66 @@ export function DataTable<TData>({
           </TableBody>
         </Table>
       </div>
+
+      {paginationEnabled && table.getFilteredRowModel().rows.length > 0 && (
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="text-muted-foreground text-sm">
+            {(() => {
+              const total = table.getFilteredRowModel().rows.length;
+              const start =
+                total === 0
+                  ? 0
+                  : pagination.pageIndex * pagination.pageSize + 1;
+              const end = Math.min(
+                (pagination.pageIndex + 1) * pagination.pageSize,
+                total
+              );
+
+              return `Showing ${start}-${end} of ${total}`;
+            })()}
+          </div>
+          <div className="flex items-center gap-2">
+            <Select
+              value={pagination.pageSize.toString()}
+              onValueChange={(value) =>
+                setPagination({ pageIndex: 0, pageSize: Number(value) })
+              }
+            >
+              <SelectTrigger className="h-8 w-[90px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PAGE_SIZE_OPTIONS.map((size) => (
+                  <SelectItem key={size} value={size.toString()}>
+                    {size} / page
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <ChevronLeft className="mr-1 h-4 w-4" />
+              Previous
+            </Button>
+            <div className="text-muted-foreground text-sm">
+              Page {pagination.pageIndex + 1} of {table.getPageCount() || 1}
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+              <ChevronRight className="ml-1 h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

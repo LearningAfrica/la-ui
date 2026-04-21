@@ -30,7 +30,6 @@ import { Link } from "react-router";
 import { DataTable } from "@/components/ui/data-table";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import { ViewCourseDialog } from "./view-course-dialog";
-import { CreateOrUpdateCourseDialog } from "./create-or-update-course-dialog";
 import { DeleteCourseDialog } from "./delete-course-dialog";
 
 interface AdminCoursesTableProps {
@@ -239,6 +238,7 @@ export function AdminCoursesTable({
         onRefresh={onRefresh}
         isFetching={isFetching}
         toolbarActions={toolbarActions}
+        pageSize={false}
         filterControls={
           <Select value={typeFilter} onValueChange={setTypeFilter}>
             <SelectTrigger className="w-45">
@@ -253,7 +253,6 @@ export function AdminCoursesTable({
         }
       />
       <ViewCourseDialog />
-      <CreateOrUpdateCourseDialog />
       <DeleteCourseDialog />
     </>
   );

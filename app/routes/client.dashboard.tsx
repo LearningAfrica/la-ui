@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router";
+import { useState } from "react";
 import {
   Users,
   BookOpen,
@@ -11,18 +12,21 @@ import {
   UserPlus,
   FolderOpen,
   Plus,
+  Mail,
 } from "lucide-react";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import {
   useMyOrganizationMembers,
   type OrganizationMembershipRole,
 } from "@/features/organizations/organization-queries";
+import { InviteMemberDialog } from "@/components/dashboard/invite-member-dialog";
 
 function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
   const { data: membersData, isLoading } = useMyOrganizationMembers({
     organizationId: orgId,
     filters: { page: 1, page_size: 5 },
   });
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
   const totalMembers = membersData?.meta?.total_docs || 0;
 
@@ -35,7 +39,7 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Members</CardTitle>
@@ -96,6 +100,17 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
           <CardTitle className="text-lg">Quick Actions</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
+          <Button
+            variant="gradient"
+            className="w-full justify-between"
+            onClick={() => setInviteDialogOpen(true)}
+          >
+            <span className="flex items-center gap-2">
+              <Mail className="h-4 w-4" />
+              Invite Members
+            </span>
+            <ArrowRight className="h-4 w-4" />
+          </Button>
           <Button asChild variant="outline" className="w-full justify-between">
             <Link to="/client/dashboard/members">
               <span className="flex items-center gap-2">
@@ -125,6 +140,12 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
           </Button>
         </CardContent>
       </Card>
+
+      <InviteMemberDialog
+        open={inviteDialogOpen}
+        onOpenChange={setInviteDialogOpen}
+        organizationId={orgId}
+      />
     </div>
   );
 }
@@ -159,7 +180,7 @@ function InstructorOverview({ orgName }: { orgName: string }) {
       </Card>
 
       {/* Stats Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">My Courses</CardTitle>
@@ -224,7 +245,7 @@ function InstructorOverview({ orgName }: { orgName: string }) {
             <Button
               asChild
               variant="outline"
-              className="h-auto justify-start gap-3 p-4"
+              className="h-auto justify-start gap-3 p-4 text-left whitespace-normal"
             >
               <Link to="/client/dashboard/my-courses">
                 <div className="rounded-lg bg-blue-600/10 p-2">
@@ -241,7 +262,7 @@ function InstructorOverview({ orgName }: { orgName: string }) {
             <Button
               asChild
               variant="outline"
-              className="h-auto justify-start gap-3 p-4"
+              className="h-auto justify-start gap-3 p-4 text-left whitespace-normal"
             >
               <Link to="/client/dashboard/courses">
                 <div className="rounded-lg bg-green-600/10 p-2">
@@ -258,7 +279,7 @@ function InstructorOverview({ orgName }: { orgName: string }) {
             <Button
               asChild
               variant="outline"
-              className="h-auto justify-start gap-3 p-4"
+              className="h-auto justify-start gap-3 p-4 text-left whitespace-normal"
             >
               <Link to="/client/dashboard/categories">
                 <div className="rounded-lg bg-purple-600/10 p-2">
@@ -287,7 +308,7 @@ function LearnerOverview({ orgName }: { orgName: string }) {
         <p className="text-muted-foreground mt-1">Your learning dashboard</p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">

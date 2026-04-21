@@ -190,10 +190,12 @@ export default function LessonReaderPage() {
     current && current.index < flat.length - 1 ? flat[current.index + 1] : null;
 
   const isCompleted = useMemo(() => {
-    if (!progress || !contentId) return false;
+    if (!progress?.modules || !contentId) return false;
 
-    return progress.contents.some(
-      (c) => c.content_id === contentId && c.is_completed
+    return progress.modules.some((mod) =>
+      mod.contents?.some(
+        (content) => content.id === contentId && content.is_completed
+      )
     );
   }, [progress, contentId]);
 

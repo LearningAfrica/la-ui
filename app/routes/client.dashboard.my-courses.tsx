@@ -74,7 +74,10 @@ function CourseCard({ course }: { course: Course }) {
 
 export default function ClientDashboardMyCourses() {
   const [search, setSearch] = useState("");
-  const { data, isLoading } = useCourses(1, search || undefined);
+  const { data, isLoading } = useCourses({
+    page: 1,
+    search: search || undefined,
+  });
 
   const courses = useMemo(() => data?.data ?? [], [data?.data]);
 

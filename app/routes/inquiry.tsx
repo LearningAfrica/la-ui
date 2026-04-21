@@ -4,6 +4,7 @@ import { PatternLayout } from "@/components/pattern-layout";
 import { InquiryForm } from "@/components/inquiries/inquiry-form";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { useAuthStore } from "@/stores/auth/auth-hooks";
 
 export function meta() {
   return [
@@ -20,6 +21,11 @@ export function meta() {
 }
 
 export default function Inquiries() {
+  const { user } = useAuthStore();
+  const isSignedIn = !!user;
+  const backTarget = isSignedIn ? href("/dashboard") : href("/");
+  const backLabel = isSignedIn ? "Back to Dashboard" : "Back to Home";
+
   return (
     <PatternLayout
       patternId="inquiries-pattern"
@@ -33,9 +39,9 @@ export default function Inquiries() {
             size="sm"
             className="text-white/80 hover:bg-white/10 hover:text-white"
           >
-            <Link to={href("/")}>
+            <Link to={backTarget}>
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Home
+              {backLabel}
             </Link>
           </Button>
         </div>

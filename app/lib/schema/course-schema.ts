@@ -17,7 +17,7 @@ export const courseSchema = z.object({
   is_premium: z.boolean().default(false),
   price: z.coerce.number().min(0, "Price must be 0 or greater").default(0),
   is_private: z.boolean().default(false),
-  tags: z.array(z.string()).default([]),
+  tags: z.array(z.string().min(1)).min(1, "Add at least one tag").default([]),
   course_image: z
     .instanceof(File)
     .superRefine((file, ctx) => {

@@ -8,7 +8,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
 } from "../ui/sidebar";
+import { Badge } from "../ui/badge";
 import { OrganizationSelector } from "../dashboard/organization-selector";
 import { href, Link, useLocation } from "react-router";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
@@ -21,53 +23,61 @@ import {
   GraduationCap,
   Award,
   FolderOpen,
+  MailOpen,
+  Video,
   type LucideIcon,
 } from "lucide-react";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
+import { useMyInvites } from "@/features/invites/invites-queries";
 import type {
   MyOrganization,
   OrganizationMembershipRole,
 } from "@/features/organizations/organization-queries";
 
 type RoleCheckType = OrganizationMembershipRole[] | "*";
-type NavItem = {
+
+interface NavItem {
   title: string;
   url: string;
   NavItemIcon: LucideIcon;
   roles: RoleCheckType;
-};
+  badgeCount?: number;
+}
 
-type NavSection = {
-  navItems: NavItem[];
-  dashboardItems?: NavItem[];
-  moreInfoItems?: NavItem[];
-};
+interface NavSection {
+  label: string;
+  items: NavItem[];
+}
 
 export default function ClientSidebarItems() {
   const { role } = useAuthStore();
   const location = useLocation();
   const { selectedOrganization } = useOrganizationStore();
+  const { data: invitesData } = useMyInvites();
 
-  useOrganizationStore();
+  // Only counts invites that are still open (not used). Expired ones still
+  // show so the user can see the full pending queue until the backend prunes
+  // them — keeps the filter pure and the rendered count stable per query.
+  const pendingInvitesCount = useMemo(
+    () => invitesData?.data?.filter((inv) => !inv.is_used).length ?? 0,
+    [invitesData]
+  );
 
-  const filterUserRole = (
-    org?: MyOrganization,
-    itemRoles: RoleCheckType = []
-  ) => {
-    if (itemRoles === "*") {
-      return true;
-    }
+  const canSee = (
+    org: MyOrganization | null,
+    itemRoles: RoleCheckType
+  ): boolean => {
+    if (itemRoles === "*") return true;
 
-    return org && org.role && itemRoles.includes(org.role);
+    return !!(org && org.role && itemRoles.includes(org.role));
   };
-  const {
-    navItems,
-    dashboardItems = [],
-    moreInfoItems = [],
-  } = useMemo(() => {
-    const baseNavItems: NavItem[] = [
+
+  const sections = useMemo<NavSection[]>(() => {
+    const org = selectedOrganization ?? null;
+
+    const overview: NavItem[] = [
       {
-        title: "Home",
+        title: "Organizations",
         url: href("/dashboard"),
         NavItemIcon: Home,
         roles: "*",
@@ -78,13 +88,16 @@ export default function ClientSidebarItems() {
         NavItemIcon: LayoutDashboard,
         roles: "*",
       },
-      // {
-      //   title: "Invitations",
-      //   url: href("/client/dashboard/invitations"),
-      //   NavItemIcon: MailOpen,
-      //   roles: "*",
-      // },
-      // Admin items
+      {
+        title: "Invitations",
+        url: href("/client/dashboard/invitations"),
+        NavItemIcon: MailOpen,
+        roles: "*",
+        badgeCount: pendingInvitesCount,
+      },
+    ];
+
+    const workspace: NavItem[] = [
       {
         title: "Members",
         url: href("/client/dashboard/members"),
@@ -103,7 +116,15 @@ export default function ClientSidebarItems() {
         NavItemIcon: FolderOpen,
         roles: ["admin", "instructor"],
       },
-      // Enrolment items — available to everyone in the org
+      {
+        title: "Live Sessions",
+        url: href("/client/dashboard/live-sessions"),
+        NavItemIcon: Video,
+        roles: "*",
+      },
+    ];
+
+    const learning: NavItem[] = [
       {
         title: "My Courses",
         url: href("/client/dashboard/my-courses"),
@@ -123,25 +144,22 @@ export default function ClientSidebarItems() {
         roles: "*",
       },
     ];
-    const baseDashboardItems: NavItem[] = [];
-    const baseMoreInfoItems: NavItem[] = [];
-    const navs: NavSection = {
-      navItems: baseNavItems.filter((item) =>
-        filterUserRole(selectedOrganization!, item.roles)
-      ),
-      dashboardItems: baseDashboardItems.filter((item) =>
-        filterUserRole(selectedOrganization!, item.roles)
-      ),
-      moreInfoItems: baseMoreInfoItems.filter((item) =>
-        filterUserRole(selectedOrganization!, item.roles)
-      ),
-    };
 
-    return navs;
-  }, [selectedOrganization]);
-  const isActive = (path: string) => {
-    if (path === "/") {
-      return location.pathname === "/";
+    const filter = (items: NavItem[]) =>
+      items.filter((item) => canSee(org, item.roles));
+
+    return [
+      { label: "Overview", items: filter(overview) },
+      { label: "Workspace", items: filter(workspace) },
+      { label: "Learning", items: filter(learning) },
+    ].filter((section) => section.items.length > 0);
+  }, [selectedOrganization, pendingInvitesCount]);
+
+  const isActive = (path: string): boolean => {
+    if (path === "/") return location.pathname === "/";
+
+    if (path === href("/client/dashboard")) {
+      return location.pathname === path;
     }
 
     return location.pathname.startsWith(path);
@@ -156,47 +174,39 @@ export default function ClientSidebarItems() {
       <SidebarHeader>
         <OrganizationSelector />
       </SidebarHeader>
+      <SidebarSeparator />
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {navItems.map((item) => {
-                const Icon = item.NavItemIcon;
-
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={isActive(item.url)}
-                      tooltip={item.title}
-                    >
-                      <Link to={item.url}>
-                        <Icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {dashboardItems.length > 0 && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
+        {sections.map((section, idx) => (
+          <SidebarGroup key={section.label}>
+            <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {dashboardItems.map((item) => {
+                {section.items.map((item) => {
                   const Icon = item.NavItemIcon;
+                  const showBadge = !!item.badgeCount && item.badgeCount > 0;
 
                   return (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild tooltip={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive(item.url)}
+                        tooltip={
+                          showBadge
+                            ? `${item.title} (${item.badgeCount})`
+                            : item.title
+                        }
+                      >
                         <Link to={item.url}>
                           <Icon />
                           <span>{item.title}</span>
+                          {showBadge && (
+                            <Badge
+                              variant="secondary"
+                              className="ml-auto h-5 min-w-5 px-1.5 text-xs group-data-[collapsible=icon]:hidden"
+                            >
+                              {item.badgeCount}
+                            </Badge>
+                          )}
                         </Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -204,31 +214,9 @@ export default function ClientSidebarItems() {
                 })}
               </SidebarMenu>
             </SidebarGroupContent>
+            {idx < sections.length - 1 && <SidebarSeparator className="mt-2" />}
           </SidebarGroup>
-        )}
-        {moreInfoItems.length > 0 && (
-          <SidebarGroup>
-            <SidebarGroupLabel>More Info</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {moreInfoItems.map((item) => {
-                  const Icon = item.NavItemIcon;
-
-                  return (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild tooltip={item.title}>
-                        <Link to={item.url}>
-                          <Icon />
-                          <span>{item.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
+        ))}
       </SidebarContent>
       <SidebarUserFooter />
     </>
