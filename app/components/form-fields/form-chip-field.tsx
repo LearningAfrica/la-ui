@@ -223,45 +223,49 @@ export function FormChipField<
             </FormLabel>
             <FormControl>
               <div
-                className="border-input bg-background ring-offset-background focus-within:ring-ring min-h-10 w-full rounded-md border px-3 py-2 text-sm focus-within:ring-2 focus-within:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="border-input bg-background ring-offset-background focus-within:ring-ring min-h-10 w-full rounded-md border text-sm focus-within:ring-2 focus-within:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 data-testid={chipFieldTestId}
               >
-                <div className="mb-1 flex flex-wrap gap-1">
-                  {chips.map((chip, index) => (
-                    <Badge
-                      key={index}
-                      variant={chipVariant}
-                      className="flex items-center gap-1 pr-1"
-                      data-testid={`${String(name)}-chip-${index}`}
-                    >
-                      <span>{chip}</span>
-                      {!disabled && (
-                        <button
-                          type="button"
-                          className="ring-offset-background focus:ring-ring ml-1 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none"
-                          onClick={() => {
-                            const newChips = removeChip(index, chips);
+                {chips.length > 0 && (
+                  <div className="border-border/60 flex flex-wrap gap-1.5 border-b px-3 py-2">
+                    {chips.map((chip, index) => (
+                      <Badge
+                        key={index}
+                        variant={chipVariant}
+                        className="flex items-center gap-1 pr-1"
+                        data-testid={`${String(name)}-chip-${index}`}
+                      >
+                        <span>{chip}</span>
+                        {!disabled && (
+                          <button
+                            type="button"
+                            className="ring-offset-background focus:ring-ring ml-1 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none"
+                            onClick={() => {
+                              const newChips = removeChip(index, chips);
 
-                            field.onChange(newChips);
-                          }}
-                          data-testid={`${String(name)}-remove-chip-${index}`}
-                        >
-                          <X className="h-3 w-3" />
-                          <span className="sr-only">Remove {chip}</span>
-                        </button>
-                      )}
-                    </Badge>
-                  ))}
-                </div>
+                              field.onChange(newChips);
+                            }}
+                            data-testid={`${String(name)}-remove-chip-${index}`}
+                          >
+                            <X className="h-3 w-3" />
+                            <span className="sr-only">Remove {chip}</span>
+                          </button>
+                        )}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
 
                 <Input
                   value={inputValue}
                   onChange={handleChange}
                   onKeyDown={handleKeyDown}
                   onBlur={handleBlur}
-                  placeholder={chips.length === 0 ? placeholder : ""}
+                  placeholder={
+                    chips.length === 0 ? placeholder : "Add another…"
+                  }
                   disabled={disabled}
-                  className="h-auto border-0 p-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="h-10 border-0 px-3 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
                   data-testid={chipInputTestId}
                 />
               </div>

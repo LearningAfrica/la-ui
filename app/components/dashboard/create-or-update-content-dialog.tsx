@@ -23,7 +23,7 @@ import {
 } from "@/features/module-contents/module-content-mutations";
 import type { ModuleContent } from "@/features/module-contents/module-content-queries";
 import { useAppModal } from "@/stores/filters/modal-hooks";
-import { TiptapEditor } from "@/components/ui/tiptap-editor";
+import { FormTiptapField } from "@/components/form-fields/form-tiptap-field";
 import {
   FormTextField,
   FormNumberField,
@@ -266,22 +266,14 @@ export function CreateOrUpdateContentDialog({
 
             {/* Dynamic fields based on content type */}
             {contentType === "text" && (
-              <div className="space-y-2">
-                <label className="text-sm font-medium">
-                  Content Body <span className="text-destructive">*</span>
-                </label>
-                <TiptapEditor
-                  content={form.getValues("body") ?? ""}
-                  onChange={(html) => form.setValue("body", html)}
-                  placeholder="Start writing your content..."
-                  disabled={isLoading}
-                />
-                {form.formState.errors.body && (
-                  <p className="text-destructive text-xs">
-                    {form.formState.errors.body.message}
-                  </p>
-                )}
-              </div>
+              <FormTiptapField
+                control={form.control}
+                name="body"
+                label="Content Body"
+                placeholder="Start writing your content..."
+                required
+                disabled={isLoading}
+              />
             )}
 
             {contentType === "video" && (

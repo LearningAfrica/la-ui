@@ -1,8 +1,8 @@
 export { FormTextField } from "./form-text-field";
 
-export { FormSelectField, type SelectOption } from "./form-select-field";
+export { FormSelectField, type SelectOption } from "./_form-select-field";
 
-export { FormAsyncSelectField } from "./form-async-select-field";
+export { FormAsyncSelectField } from "./form-select-field";
 
 export { FormTextareaField } from "./form-textarea-field";
 
@@ -20,3 +20,12 @@ export {
 export { FormCheckboxField, type CheckboxOption } from "./form-checkbox-field";
 
 export { FormDateField } from "./form-date-field";
+
+export { FormImageUploadField } from "./form-image-upload-field";
+
+export {
+  FormFileUploadField,
+  type FormFileUploadValue,
+} from "./form-file-upload-field";
+
+export { FormTiptapField } from "./form-tiptap-field";

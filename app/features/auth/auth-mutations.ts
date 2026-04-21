@@ -13,12 +13,27 @@ import { extractError } from "@/lib/error";
 
 export type SystemUserRole = "super_admin" | "user";
 
+export type OrganizationRole = "admin" | "instructor" | "learner";
+
+/**
+ * Minimal organization shape returned in the login payload.
+ * The full shape lives in `MyOrganization` (from organization-queries.ts) and
+ * comes from `GET /api/organizations/mine/` — these match on id so the UI
+ * can upgrade the light payload to the rich one once available.
+ */
+export interface LoginOrganization {
+  id: string;
+  name: string;
+  is_active: boolean;
+  role: OrganizationRole;
+}
+
 export interface AuthResponseInterface {
   refresh: string;
   access: string;
   user_role: SystemUserRole;
-  can_create_organization: false;
-  organizations: [];
+  can_create_organization: boolean;
+  organizations: LoginOrganization[];
   user: {
     id: string;
     email: string;

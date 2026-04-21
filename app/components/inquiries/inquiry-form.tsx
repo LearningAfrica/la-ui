@@ -27,7 +27,7 @@ import { COMPANY_CATEGORIES, COMPANY_SIZES } from "@/lib/constants/company";
 import { Checkbox } from "../ui/checkbox";
 import { FormTextField } from "@/components/form-fields/form-text-field";
 import { FormTextareaField } from "@/components/form-fields/form-textarea-field";
-import { FormAsyncSelectField } from "@/components/form-fields/form-async-select-field";
+import { FormAsyncSelectField } from "@/components/form-fields/form-select-field";
 
 export function InquiryForm() {
   const navigate = useNavigate();

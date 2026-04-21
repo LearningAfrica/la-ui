@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
-import { FormAsyncSelectField } from "@/components/form-fields/form-async-select-field";
+import { FormAsyncSelectField } from "@/components/form-fields/form-select-field";
 import { FormChipField } from "@/components/form-fields/form-chip-field";
 import { Button } from "@/components/ui/button";
 import { useInviteMember } from "@/features/organizations/organization-mutations";

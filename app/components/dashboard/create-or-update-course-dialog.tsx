@@ -1,5 +1,5 @@
 import { useForm, useWatch } from "react-hook-form";
-import { useEffect, useEffectEvent, useRef, useState } from "react";
+import { useEffect, useEffectEvent } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,16 +8,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import { courseResolver } from "@/lib/schema/course-schema";
-import { BookOpen, ImageIcon, Loader2, Upload } from "lucide-react";
+import { BookOpen, Loader2 } from "lucide-react";
 import {
   useCreateCourse,
   useUpdateCourse,
@@ -32,6 +25,7 @@ import {
   FormCheckboxField,
   FormChipField,
   FormAsyncSelectField,
+  FormImageUploadField,
 } from "@/components/form-fields";
 import type { Course } from "@/features/courses/course-queries";
 
@@ -50,8 +44,6 @@ export function CreateOrUpdateCourseDialog() {
   const isOpen = createModal.isOpen || editModal.isOpen;
   const course = editModal.data as Course | null;
 
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const { selectedOrganization } = useOrganizationStore();
   const { data: categoriesData } = useCategories();
   const createMutation = useCreateCourse();
@@ -96,7 +88,6 @@ export function CreateOrUpdateCourseDialog() {
       tags: entity.tags,
       course_image: undefined,
     });
-    setImagePreview(entity.course_image_url ?? null);
   });
 
   useEffect(() => {
@@ -110,31 +101,6 @@ export function CreateOrUpdateCourseDialog() {
     else createModal.close();
 
     form.reset();
-    setImagePreview(null);
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-
-    if (file) {
-      form.setValue("course_image", file);
-
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleRemoveImage = () => {
-    form.setValue("course_image", undefined);
-    setImagePreview(null);
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
   };
 
   const handleFormSubmit = form.handleSubmit((data) => {
@@ -180,65 +146,11 @@ export function CreateOrUpdateCourseDialog() {
 
         <Form {...form}>
           <form onSubmit={handleFormSubmit} className="space-y-4">
-            <FormField
+            <FormImageUploadField
               control={form.control}
               name="course_image"
-              render={() => (
-                <FormItem>
-                  <FormLabel>Course Image</FormLabel>
-                  <FormControl>
-                    <div className="flex items-center gap-4">
-                      <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-lg border">
-                        {imagePreview ? (
-                          <img
-                            src={imagePreview}
-                            alt="Course preview"
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <ImageIcon className="text-muted-foreground h-8 w-8" />
-                        )}
-                      </div>
-                      <div className="flex flex-col gap-2">
-                        <input
-                          type="file"
-                          ref={fileInputRef}
-                          accept="image/jpeg,image/png"
-                          onChange={handleImageChange}
-                          className="hidden"
-                          disabled={isLoading}
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => fileInputRef.current?.click()}
-                          disabled={isLoading}
-                        >
-                          <Upload className="mr-2 h-4 w-4" />
-                          {imagePreview ? "Change Image" : "Upload Image"}
-                        </Button>
-                        {imagePreview && (
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={handleRemoveImage}
-                            className="text-destructive"
-                            disabled={isLoading}
-                          >
-                            Remove
-                          </Button>
-                        )}
-                        <p className="text-muted-foreground text-xs">
-                          JPEG or PNG, max 5MB
-                        </p>
-                      </div>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Course Image"
+              disabled={isLoading}
             />
 
             <FormTextField

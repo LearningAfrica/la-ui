@@ -28,6 +28,7 @@ import {
   MailOpen,
   ArrowLeft,
   LogOut,
+  RefreshCw,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -56,12 +57,22 @@ export default function Dashboard() {
   const {
     data: inquiriesData,
     isLoading: inquiriesLoading,
+    isFetching: inquiriesFetching,
     error: inquiriesError,
+    refetch: refetchInquiries,
   } = useMyInquiries();
   const inquiries = useMemo(() => inquiriesData?.data || [], [inquiriesData]);
 
-  const { data: organizations } = useMyOrganizations();
-  const { data: invitesData } = useMyInvites();
+  const {
+    data: organizations,
+    isFetching: organizationsFetching,
+    refetch: refetchOrganizations,
+  } = useMyOrganizations();
+  const {
+    data: invitesData,
+    isFetching: invitesFetching,
+    refetch: refetchInvites,
+  } = useMyInvites();
 
   const orgCount = organizations?.length ?? 0;
   const inquiryCount = inquiriesData?.meta?.total_docs ?? 0;
@@ -147,39 +158,73 @@ export default function Dashboard() {
         {/* Tabs Section */}
         <section>
           <Tabs value={selectedTab} onValueChange={handleTabChange}>
-            <TabsList className="mb-6">
-              <TabsTrigger value="organizations">
-                <Building2 className="mr-1 hidden h-4 w-4 sm:mr-2 sm:inline-block" />
-                Organizations
-                <Badge
-                  variant="secondary"
-                  className="ml-1 px-1.5 py-0.5 text-xs sm:ml-2"
-                >
-                  {orgCount}
-                </Badge>
-              </TabsTrigger>
+            <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <TabsList>
+                <TabsTrigger value="organizations">
+                  <Building2 className="mr-1 hidden h-4 w-4 sm:mr-2 sm:inline-block" />
+                  Organizations
+                  <Badge
+                    variant="secondary"
+                    className="ml-1 px-1.5 py-0.5 text-xs sm:ml-2"
+                  >
+                    {orgCount}
+                  </Badge>
+                </TabsTrigger>
 
-              <TabsTrigger value="invites">
-                <MailOpen className="mr-1 hidden h-4 w-4 sm:mr-2 sm:inline-block" />
-                Invitations
-                <Badge
-                  variant="secondary"
-                  className="ml-1 px-1.5 py-0.5 text-xs sm:ml-2"
-                >
-                  {inviteCount}
-                </Badge>
-              </TabsTrigger>
-              <TabsTrigger value="inquiries">
-                <User className="mr-1 hidden h-4 w-4 sm:mr-2 sm:inline-block" />
-                Inquiries
-                <Badge
-                  variant="secondary"
-                  className="ml-1 px-1.5 py-0.5 text-xs sm:ml-2"
-                >
-                  {inquiryCount}
-                </Badge>
-              </TabsTrigger>
-            </TabsList>
+                <TabsTrigger value="invites">
+                  <MailOpen className="mr-1 hidden h-4 w-4 sm:mr-2 sm:inline-block" />
+                  Invitations
+                  <Badge
+                    variant="secondary"
+                    className="ml-1 px-1.5 py-0.5 text-xs sm:ml-2"
+                  >
+                    {inviteCount}
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger value="inquiries">
+                  <User className="mr-1 hidden h-4 w-4 sm:mr-2 sm:inline-block" />
+                  Inquiries
+                  <Badge
+                    variant="secondary"
+                    className="ml-1 px-1.5 py-0.5 text-xs sm:ml-2"
+                  >
+                    {inquiryCount}
+                  </Badge>
+                </TabsTrigger>
+              </TabsList>
+              {(() => {
+                const refreshMap = {
+                  organizations: {
+                    refetch: refetchOrganizations,
+                    fetching: organizationsFetching,
+                  },
+                  invites: {
+                    refetch: refetchInvites,
+                    fetching: invitesFetching,
+                  },
+                  inquiries: {
+                    refetch: refetchInquiries,
+                    fetching: inquiriesFetching,
+                  },
+                };
+                const active = refreshMap[selectedTab];
+
+                return (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => active.refetch()}
+                    disabled={active.fetching}
+                    className="self-start sm:self-auto"
+                  >
+                    <RefreshCw
+                      className={`mr-2 h-4 w-4 ${active.fetching ? "animate-spin" : ""}`}
+                    />
+                    Refresh
+                  </Button>
+                );
+              })()}
+            </div>
             <TabsContent value="organizations">
               <OrganizationsTab />
             </TabsContent>

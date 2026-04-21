@@ -580,10 +580,11 @@ export default function AsyncSelect(props: SelectProps) {
   /** Combined loading state: external prop or internal async loading */
   const isLoading = externalLoading || loading;
 
-  /** Whether any value is currently selected */
+  /** Whether any value is currently selected. Empty strings count as empty
+   *  so the placeholder stays visible for unselected required fields. */
   const hasValue = multiple
     ? Array.isArray(value) && value.length > 0
-    : value !== null && value !== undefined;
+    : value !== null && value !== undefined && value !== "";
 
   /** Whether to show the search input (open or has search query) */
   const showInput = isOpen || searchQuery.length > 0;
@@ -591,7 +592,7 @@ export default function AsyncSelect(props: SelectProps) {
   return (
     <div className={`relative w-full ${className}`} ref={containerRef}>
       <div
-        className={`box-border flex min-h-[40px] w-full cursor-pointer items-center justify-between gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 transition-all duration-200 ${multiple ? "min-h-0 py-1.5" : ""} ${!disabled && "hover:border-gray-400"} ${isOpen ? "border-blue-500 shadow-[0_0_0_3px_rgba(59,130,246,0.1)]" : ""} ${disabled ? "cursor-not-allowed bg-gray-100 opacity-60" : ""} `}
+        className={`border-input bg-background box-border flex min-h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-md border px-3 py-2 transition-all duration-200 ${multiple ? "min-h-0 py-1.5" : ""} ${!disabled && "hover:border-ring/60"} ${isOpen ? "border-ring ring-ring/30 ring-[3px]" : ""} ${disabled ? "bg-muted cursor-not-allowed opacity-60" : ""} `}
         onClick={handleToggle}
       >
         <div className="flex min-w-0 flex-1 items-center">
@@ -600,14 +601,14 @@ export default function AsyncSelect(props: SelectProps) {
               {selectedOptions.map((option) => (
                 <span
                   key={option.value}
-                  className="inline-flex flex-shrink-0 items-center gap-1 rounded bg-indigo-100 px-2 py-1 text-sm leading-5 text-indigo-800"
+                  className="bg-primary/10 text-primary inline-flex shrink-0 items-center gap-1 rounded px-2 py-1 text-sm leading-5"
                 >
-                  <span className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap">
+                  <span className="max-w-37.5 overflow-hidden text-ellipsis whitespace-nowrap">
                     {option.label}
                   </span>
                   <button
                     type="button"
-                    className="flex flex-shrink-0 cursor-pointer items-center justify-center rounded border-none bg-transparent p-0 text-indigo-500 transition-all duration-150 hover:bg-indigo-50 hover:text-indigo-600"
+                    className="text-primary/70 hover:bg-primary/20 hover:text-primary flex shrink-0 cursor-pointer items-center justify-center rounded border-none bg-transparent p-0 transition-all duration-150"
                     onClick={(e) => handleRemoveTag(e, option.value)}
                     aria-label={`Remove ${option.label}`}
                   >
@@ -619,7 +620,7 @@ export default function AsyncSelect(props: SelectProps) {
                 <input
                   ref={inputRef}
                   type="text"
-                  className="font-inherit min-w-[80px] flex-auto border-none bg-transparent p-0 text-gray-900 text-inherit outline-none placeholder:text-gray-400"
+                  className="placeholder:text-muted-foreground text-foreground font-inherit min-w-20 flex-auto border-none bg-transparent p-0 outline-none"
                   value={searchQuery}
                   onChange={handleInputChange}
                   placeholder={selectedOptions.length === 0 ? placeholder : ""}
@@ -630,7 +631,7 @@ export default function AsyncSelect(props: SelectProps) {
             </div>
           ) : !showInput ? (
             <span
-              className={`flex-1 overflow-hidden text-left text-ellipsis whitespace-nowrap text-gray-900 ${!hasValue ? "text-gray-400" : ""}`}
+              className={`text-foreground flex-1 overflow-hidden text-left text-ellipsis whitespace-nowrap ${!hasValue ? "text-muted-foreground" : ""}`}
             >
               {hasValue ? displayValue : placeholder}
             </span>
@@ -638,7 +639,7 @@ export default function AsyncSelect(props: SelectProps) {
             <input
               ref={inputRef}
               type="text"
-              className="font-inherit w-full min-w-[50px] flex-1 border-none bg-transparent p-0 text-gray-900 text-inherit outline-none placeholder:text-gray-400"
+              className="text-foreground placeholder:text-muted-foreground font-inherit w-full min-w-12.5 flex-1 border-none bg-transparent p-0 outline-none"
               value={searchQuery}
               onChange={handleInputChange}
               placeholder={placeholder}
@@ -649,12 +650,12 @@ export default function AsyncSelect(props: SelectProps) {
         </div>
         <div className="ml-2 flex items-center gap-2">
           {isLoading && (
-            <Loader2 className="animate-spin text-blue-500" size={16} />
+            <Loader2 className="text-primary animate-spin" size={16} />
           )}
           {hasValue && !disabled && !isLoading && (
             <button
               type="button"
-              className="flex h-5 w-5 flex-shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-0.5 text-gray-400 transition-all duration-200 hover:bg-gray-200 hover:text-gray-700"
+              className="text-muted-foreground hover:bg-muted hover:text-foreground flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-0.5 transition-all duration-200"
               onClick={handleClear}
               aria-label="Clear selection"
             >
@@ -662,26 +663,26 @@ export default function AsyncSelect(props: SelectProps) {
             </button>
           )}
           <ChevronDown
-            className={`flex-shrink-0 text-gray-500 transition-transform duration-200 select-none ${isOpen ? "rotate-180" : ""}`}
+            className={`text-muted-foreground shrink-0 transition-transform duration-200 select-none ${isOpen ? "rotate-180" : ""}`}
             size={16}
           />
         </div>
       </div>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+4px)] right-0 left-0 z-[1000] max-h-[300px] animate-[slideDown_0.2s_ease_forwards] overflow-hidden rounded-md border border-gray-300 bg-white shadow-lg">
+        <div className="bg-popover text-popover-foreground border-border absolute top-[calc(100%+4px)] right-0 left-0 z-1000 max-h-75 animate-[slideDown_0.2s_ease_forwards] overflow-hidden rounded-md border shadow-lg">
           {isLoading ? (
-            <div className="flex items-center justify-center gap-2 p-4 text-center text-sm text-blue-500">
+            <div className="text-primary flex items-center justify-center gap-2 p-4 text-center text-sm">
               <Loader2 className="animate-spin" size={20} />
               <span>Loading...</span>
             </div>
           ) : finalOptions.length === 0 ? (
-            <div className="flex items-center justify-center gap-2 p-4 text-center text-sm text-gray-500">
+            <div className="text-muted-foreground flex items-center justify-center gap-2 p-4 text-center text-sm">
               {noOptionsMessage}
             </div>
           ) : (
             <div
-              className="max-h-[300px] overflow-y-auto p-1 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-thumb]:bg-gray-300 hover:[&::-webkit-scrollbar-thumb]:bg-gray-400 [&::-webkit-scrollbar-track]:rounded [&::-webkit-scrollbar-track]:bg-gray-50"
+              className="[&::-webkit-scrollbar-thumb]:bg-muted-foreground/30 hover:[&::-webkit-scrollbar-thumb]:bg-muted-foreground/50 [&::-webkit-scrollbar-track]:bg-muted/40 max-h-75 overflow-y-auto p-1 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded [&::-webkit-scrollbar-track]:rounded"
               ref={optionsRef}
             >
               {finalOptions.map((option, index) => {
@@ -692,15 +693,15 @@ export default function AsyncSelect(props: SelectProps) {
                 return (
                   <div
                     key={option.value}
-                    className={`flex cursor-pointer items-center gap-2 rounded px-3 py-2.5 text-gray-900 transition-colors duration-150 ${
+                    className={`text-popover-foreground flex cursor-pointer items-center gap-2 rounded px-3 py-2.5 transition-colors duration-150 ${
                       isSelected
-                        ? "bg-blue-50 font-medium text-blue-800"
-                        : "hover:bg-gray-100"
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "hover:bg-accent hover:text-accent-foreground"
                     } ${
                       index === highlightedIndex
                         ? isSelected
-                          ? "bg-blue-200"
-                          : "bg-gray-100"
+                          ? "bg-primary/20"
+                          : "bg-accent text-accent-foreground"
                         : ""
                     } `}
                     onClick={() => handleSelect(option)}
@@ -708,10 +709,10 @@ export default function AsyncSelect(props: SelectProps) {
                   >
                     {multiple && (
                       <span
-                        className={`inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border-2 text-xs text-white transition-all duration-150 ${
+                        className={`inline-flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 text-xs transition-all duration-150 ${
                           isSelected
-                            ? "border-blue-500 bg-blue-500"
-                            : "border-gray-300 bg-white"
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-input bg-background"
                         } `}
                       >
                         {isSelected ? "✓" : ""}

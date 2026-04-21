@@ -13,6 +13,8 @@ import {
 import { loginResolver } from "@/lib/schema/auth-schema";
 import { useLogin } from "@/features/auth/auth-mutations";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
+import { useOrganizationStore } from "@/stores/organization/organization-hooks";
+import { loginOrganizationToMyOrganization } from "@/features/organizations/organization-adapters";
 import { extractError } from "@/lib/error";
 import { FormTextField } from "@/components/form-fields/form-text-field";
 import { FormPasswordField } from "@/components/form-fields/form-password-field";
@@ -24,6 +26,7 @@ interface LoginFormProps {
 export function LoginForm({ searchParams }: LoginFormProps) {
   const navigate = useNavigate();
   const { login } = useAuthStore();
+  const { setSelectedOrganization } = useOrganizationStore();
 
   const form = useForm({
     resolver: loginResolver,
@@ -51,6 +54,15 @@ export function LoginForm({ searchParams }: LoginFormProps) {
           return;
         }
 
+        // Pre-select the first org from the login payload so the org selector
+        // and role-gated nav work immediately, before /organizations/mine/
+        // loads. Users with multiple orgs still pick via the hub at /dashboard.
+        if (result.user_role === "user" && result.organizations.length > 0) {
+          setSelectedOrganization(
+            loginOrganizationToMyOrganization(result.organizations[0])
+          );
+        }
+
         // Check for a safe redirect param, otherwise navigate by role
         const redirectTo = searchParams?.get("redirect");
         const isSafeRedirect =
@@ -62,6 +74,8 @@ export function LoginForm({ searchParams }: LoginFormProps) {
           navigate(redirectTo);
         } else if (result.user_role === "super_admin") {
           navigate(href("/system/dashboard"));
+        } else if (result.organizations.length === 1) {
+          navigate(href("/client/dashboard"));
         } else {
           navigate(href("/dashboard"));
         }

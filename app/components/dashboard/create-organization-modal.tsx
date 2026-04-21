@@ -8,24 +8,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import {
   type OrganizationFormData,
   organizationResolver,
 } from "@/lib/schema/organization-schema";
-import { Building2, ImageIcon, Loader2, Upload } from "lucide-react";
-import { useState, useRef } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Building2, Loader2 } from "lucide-react";
+import { useState } from "react";
 import { useCreateOrganization } from "@/features/organizations/organization-mutations";
-import { FormTextField } from "@/components/form-fields/form-text-field";
-import { FormTextareaField } from "@/components/form-fields/form-textarea-field";
+import {
+  FormTextField,
+  FormTextareaField,
+  FormImageUploadField,
+} from "@/components/form-fields";
 
 interface CreateOrganizationModalProps {
   children?: React.ReactNode;
@@ -35,8 +30,6 @@ export function CreateOrganizationModal({
   children,
 }: CreateOrganizationModalProps) {
   const [open, setOpen] = useState(false);
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<OrganizationFormData>({
     resolver: organizationResolver,
@@ -49,36 +42,11 @@ export function CreateOrganizationModal({
 
   const createOrganizationMutation = useCreateOrganization();
 
-  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-
-    if (file) {
-      form.setValue("logo", file);
-
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        setLogoPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleRemoveLogo = () => {
-    form.setValue("logo", undefined);
-    setLogoPreview(null);
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  };
-
   const handleFormSubmit = form.handleSubmit((data) => {
     createOrganizationMutation.mutateAsync(data, {
       onSuccess() {
         setOpen(false);
         form.reset();
-        setLogoPreview(null);
       },
     });
   });
@@ -110,58 +78,12 @@ export function CreateOrganizationModal({
 
         <Form {...form}>
           <form onSubmit={handleFormSubmit} className="space-y-6">
-            {/* Logo Upload */}
-            <FormField
+            <FormImageUploadField
               control={form.control}
               name="logo"
-              render={() => (
-                <FormItem>
-                  <FormLabel>Organization Logo</FormLabel>
-                  <FormControl>
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-20 w-20">
-                        {logoPreview ? (
-                          <AvatarImage src={logoPreview} alt="Logo preview" />
-                        ) : (
-                          <AvatarFallback className="bg-muted">
-                            <ImageIcon className="text-muted-foreground h-8 w-8" />
-                          </AvatarFallback>
-                        )}
-                      </Avatar>
-                      <div className="flex flex-col gap-2">
-                        <input
-                          type="file"
-                          ref={fileInputRef}
-                          accept="image/jpeg,image/jpg,image/png,image/webp"
-                          onChange={handleLogoChange}
-                          className="hidden"
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => fileInputRef.current?.click()}
-                        >
-                          <Upload className="mr-2 h-4 w-4" />
-                          {logoPreview ? "Change Logo" : "Upload Logo"}
-                        </Button>
-                        {logoPreview && (
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={handleRemoveLogo}
-                            className="text-destructive"
-                          >
-                            Remove
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Organization Logo"
+              acceptedTypes={["image/jpeg", "image/png", "image/webp"]}
+              disabled={isLoading}
             />
 
             <FormTextField
@@ -182,23 +104,17 @@ export function CreateOrganizationModal({
               disabled={isLoading}
             />
 
-            {/* Form Actions */}
             <div className="flex justify-end gap-3 pt-4">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setOpen(false)}
-                disabled={createOrganizationMutation.isPending}
+                disabled={isLoading}
               >
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={createOrganizationMutation.isPending}
-              >
-                {createOrganizationMutation.isPending && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
+              <Button type="submit" disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Create Organization
               </Button>
             </div>

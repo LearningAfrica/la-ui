@@ -24,8 +24,8 @@ export function OrganizationSelector() {
   const { selectedOrganization, setSelectedOrganization } =
     useOrganizationStore();
   const logoUrl = createLogoItemUrl(
-    selectedOrganization!.logo_url!,
-    selectedOrganization!.logo!
+    selectedOrganization?.logo_url,
+    selectedOrganization?.logo
   );
   const { data: organizations, isLoading } = useMyOrganizations();
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useAllInquiries,
@@ -16,26 +16,26 @@ import { ConfirmationDialog } from "@/components/dashboard/confirmation-dialog";
 import { RejectInquiryDialog } from "@/components/dashboard/reject-inquiry-dialog";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
-import { useInquiryModalStore } from "@/stores/inquiries/inquiry-modal-store";
+import { useAppModal } from "@/stores/filters/modal-hooks";
+
+declare module "@/stores/filters/modal-slice" {
+  interface ModalRegistry {
+    "inquiry-details": InquiryInterface;
+    "inquiry-approve": InquiryInterface;
+    "inquiry-reject": InquiryInterface;
+  }
+}
 
 export default function SystemDashboardInquiries() {
   const [page, setPage] = useState(1);
   const [search] = useState("");
 
-  const {
-    selectedInquiry,
-    detailsDialogOpen,
-    approveDialogOpen,
-    rejectDialogOpen,
-    pendingAction,
-    openDetailsDialog,
-    closeDetailsDialog,
-    setDetailsDialogOpen,
-    openApproveDialog,
-    closeApproveDialog,
-    openRejectDialog,
-    closeRejectDialog,
-  } = useInquiryModalStore();
+  const detailsModal = useAppModal("inquiry-details");
+  const approveModal = useAppModal("inquiry-approve");
+  const rejectModal = useAppModal("inquiry-reject");
+
+  const selectedInquiry = detailsModal.data;
+  const pendingAction = approveModal.data ?? rejectModal.data;
 
   const queryClient = useQueryClient();
   const {
@@ -73,15 +73,17 @@ export default function SystemDashboardInquiries() {
   }, [inquiriesData]);
 
   const handleViewDetails = (inquiry: InquiryInterface) => {
-    openDetailsDialog(inquiry);
+    detailsModal.open(inquiry);
   };
 
   const handleApproveClick = (inquiry: InquiryInterface) => {
-    openApproveDialog(inquiry);
+    detailsModal.close();
+    approveModal.open(inquiry);
   };
 
   const handleRejectClick = (inquiry: InquiryInterface) => {
-    openRejectDialog(inquiry);
+    detailsModal.close();
+    rejectModal.open(inquiry);
   };
 
   const handleApproveConfirm = async () => {
@@ -89,13 +91,12 @@ export default function SystemDashboardInquiries() {
 
     try {
       await approveMutation.mutateAsync(pendingAction.id);
-      // Invalidate queries to refresh data
       queryClient.invalidateQueries({
         queryKey: inquiryQueryKeys.allInquiries(page, search),
       });
-      closeApproveDialog();
+      approveModal.close();
     } catch {
-      // Error is handled by the mutation
+      // Error surfaces via the mutation toast.
     }
   };
 
@@ -107,13 +108,12 @@ export default function SystemDashboardInquiries() {
         inquiryId: pendingAction.id,
         reason,
       });
-      // Invalidate queries to refresh data
       queryClient.invalidateQueries({
         queryKey: inquiryQueryKeys.allInquiries(page, search),
       });
-      closeRejectDialog();
+      rejectModal.close();
     } catch {
-      // Error is handled by the mutation
+      // Error surfaces via the mutation toast.
     }
   };
 
@@ -207,10 +207,9 @@ export default function SystemDashboardInquiries() {
       {/* Inquiry Details Dialog */}
       <InquiryDetailsDialog
         inquiry={selectedInquiry}
-        open={detailsDialogOpen}
+        open={detailsModal.isOpen}
         onOpenChange={(open) => {
-          if (!open) closeDetailsDialog();
-          else setDetailsDialogOpen(true);
+          if (!open) detailsModal.close();
         }}
         onApprove={handleApproveClick}
         onReject={handleRejectClick}
@@ -220,9 +219,9 @@ export default function SystemDashboardInquiries() {
 
       {/* Approve Confirmation Dialog */}
       <ConfirmationDialog
-        open={approveDialogOpen}
+        open={approveModal.isOpen}
         onOpenChange={(open) => {
-          if (!open) closeApproveDialog();
+          if (!open) approveModal.close();
         }}
         onConfirm={handleApproveConfirm}
         title="Approve Organization Request"
@@ -235,9 +234,9 @@ export default function SystemDashboardInquiries() {
 
       {/* Reject Confirmation Dialog */}
       <RejectInquiryDialog
-        open={rejectDialogOpen}
+        open={rejectModal.isOpen}
         onOpenChange={(open) => {
-          if (!open) closeRejectDialog();
+          if (!open) rejectModal.close();
         }}
         onConfirm={handleRejectConfirm}
         companyName={pendingAction?.company_name}
