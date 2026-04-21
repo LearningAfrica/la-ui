@@ -17,7 +17,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Course } from "@/features/courses/course-queries";
-import { Eye, Layers, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import {
+  BookOpen,
+  Eye,
+  Image as ImageIcon,
+  Layers,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import { Link } from "react-router";
 import { DataTable } from "@/components/ui/data-table";
 import { useAppModal } from "@/stores/filters/modal-hooks";
@@ -40,14 +48,13 @@ function CourseActions({ course }: { course: Course }) {
   const deleteModal = useAppModal("delete-course");
 
   return (
-    <div className="flex items-center gap-1">
-      <Link
-        to={`/client/dashboard/courses/${course.id}/modules`}
-        className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline"
-      >
-        <Layers className="h-3.5 w-3.5" />
-        Modules
-      </Link>
+    <div className="flex items-center justify-end gap-1">
+      <Button asChild size="sm" variant="outline" className="h-8">
+        <Link to={`/client/dashboard/courses/${course.id}/modules`}>
+          <Layers className="mr-1 h-3.5 w-3.5" />
+          Manage
+        </Link>
+      </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -84,33 +91,83 @@ function CourseActions({ course }: { course: Course }) {
   );
 }
 
-const columns: ColumnDef<Course, unknown>[] = [
-  columnHelper.display({
-    id: "index",
-    header: "#",
-    enableHiding: false,
-    cell: ({ row }) => <span>{row.index + 1}</span>,
-  }),
-  columnHelper.accessor("title", {
-    header: "Title",
-    enableHiding: false,
-    cell: ({ row }) => (
-      <div>
-        <p className="font-medium">{row.original.title}</p>
-        <p className="text-muted-foreground max-w-xs truncate text-xs">
-          {row.original.overview}
-        </p>
+function CourseTitleCell({ course }: { course: Course }) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="bg-muted relative h-12 w-16 shrink-0 overflow-hidden rounded-md border">
+        {course.course_image_url ? (
+          <img
+            src={course.course_image_url}
+            alt=""
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="text-muted-foreground flex h-full items-center justify-center">
+            <ImageIcon className="h-4 w-4" />
+          </div>
+        )}
       </div>
-    ),
+      <div className="min-w-0">
+        <p className="truncate font-medium">{course.title}</p>
+        {course.overview && (
+          <p className="text-muted-foreground max-w-xs truncate text-xs">
+            {course.overview}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const columns: ColumnDef<Course, unknown>[] = [
+  columnHelper.accessor("title", {
+    header: "Course",
+    enableHiding: false,
+    cell: ({ row }) => <CourseTitleCell course={row.original} />,
   }),
   columnHelper.display({
     id: "category",
     header: "Category",
-    cell: ({ row }) => (
-      <span className="text-sm">
-        {row.original.category?.category_name ?? "\u2014"}
-      </span>
-    ),
+    cell: ({ row }) =>
+      row.original.category ? (
+        <Badge variant="outline" className="font-normal">
+          {row.original.category.category_name}
+        </Badge>
+      ) : (
+        <span className="text-muted-foreground text-sm">{"\u2014"}</span>
+      ),
+  }),
+  columnHelper.display({
+    id: "modules",
+    header: "Modules",
+    cell: ({ row }) => {
+      const count = row.original.modules?.length ?? 0;
+
+      return (
+        <div className="text-muted-foreground flex items-center gap-1.5 text-sm tabular-nums">
+          <Layers className="h-3.5 w-3.5" />
+          <span className="text-foreground font-medium">{count}</span>
+        </div>
+      );
+    },
+  }),
+  columnHelper.display({
+    id: "lessons",
+    header: "Lessons",
+    cell: ({ row }) => {
+      const count =
+        row.original.modules?.reduce(
+          (acc, m) => acc + (m.contents?.length ?? 0),
+          0
+        ) ?? 0;
+
+      return (
+        <div className="text-muted-foreground flex items-center gap-1.5 text-sm tabular-nums">
+          <BookOpen className="h-3.5 w-3.5" />
+          <span className="text-foreground font-medium">{count}</span>
+        </div>
+      );
+    },
   }),
   columnHelper.accessor("is_premium", {
     header: "Type",
@@ -135,27 +192,6 @@ const columns: ColumnDef<Course, unknown>[] = [
         {getValue() ? "Private" : "Public"}
       </Badge>
     ),
-  }),
-  columnHelper.display({
-    id: "tags",
-    header: "Tags",
-    cell: ({ row }) =>
-      row.original.tags.length > 0 ? (
-        <div className="flex flex-wrap gap-1">
-          {row.original.tags.slice(0, 3).map((tag) => (
-            <Badge key={tag} variant="outline" className="text-xs">
-              {tag}
-            </Badge>
-          ))}
-          {row.original.tags.length > 3 && (
-            <Badge variant="outline" className="text-xs">
-              +{row.original.tags.length - 3}
-            </Badge>
-          )}
-        </div>
-      ) : (
-        <span className="text-muted-foreground text-sm">{"\u2014"}</span>
-      ),
   }),
   columnHelper.accessor("created_at", {
     header: "Created",

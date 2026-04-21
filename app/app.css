@@ -136,3 +136,56 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .lesson-prose {
+    @apply text-foreground text-base leading-7;
+  }
+  .lesson-prose > * + * {
+    @apply mt-4;
+  }
+  .lesson-prose h1 {
+    @apply mt-10 mb-4 text-3xl font-bold tracking-tight;
+  }
+  .lesson-prose h2 {
+    @apply mt-10 mb-4 text-2xl font-bold tracking-tight;
+    scroll-margin-top: 6rem;
+  }
+  .lesson-prose h3 {
+    @apply mt-8 mb-3 text-xl font-semibold tracking-tight;
+    scroll-margin-top: 6rem;
+  }
+  .lesson-prose h4 {
+    @apply mt-6 mb-2 text-lg font-semibold;
+  }
+  .lesson-prose p {
+    @apply text-foreground/90 leading-7;
+  }
+  .lesson-prose a {
+    @apply text-primary underline underline-offset-4 hover:opacity-80;
+  }
+  .lesson-prose ul {
+    @apply ml-6 list-disc space-y-2;
+  }
+  .lesson-prose ol {
+    @apply ml-6 list-decimal space-y-2;
+  }
+  .lesson-prose blockquote {
+    @apply border-primary/50 text-muted-foreground border-l-4 pl-4 italic;
+  }
+  .lesson-prose code {
+    @apply bg-muted rounded px-1.5 py-0.5 font-mono text-sm;
+  }
+  .lesson-prose pre {
+    @apply bg-muted overflow-x-auto rounded-lg p-4 text-sm;
+  }
+  .lesson-prose pre code {
+    @apply bg-transparent p-0;
+  }
+  .lesson-prose img {
+    @apply rounded-lg;
+  }
+  .lesson-prose hr {
+    @apply border-border my-8;
+  }
+}

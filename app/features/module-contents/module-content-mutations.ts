@@ -3,6 +3,7 @@ import {
   moduleContentMutationKeys,
   moduleContentQueryKeys,
 } from "./module-content-query-keys";
+import { courseQueryKeys } from "@/features/courses/course-query-keys";
 import { apiClient } from "@/lib/api";
 import toast from "@/lib/toast";
 import { extractError } from "@/lib/error";
@@ -113,6 +114,66 @@ export interface DeleteContentPayload {
   id: string;
   title?: string;
 }
+
+export interface CompletionPayload {
+  coursePk: string;
+  modulePk: string;
+  id: string;
+}
+
+export const useMarkContentComplete = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: moduleContentMutationKeys.markComplete(),
+    mutationFn: async ({ coursePk, modulePk, id }: CompletionPayload) => {
+      await apiClient.post(
+        `/api/courses/${coursePk}/modules/${modulePk}/contents/${id}/mark_complete/`
+      );
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: courseQueryKeys.courseMyProgress(variables.coursePk),
+      });
+      queryClient.invalidateQueries({
+        queryKey: courseQueryKeys.courseContents(variables.coursePk),
+      });
+    },
+    onError: (error) => {
+      toast.error({
+        message: extractError(error),
+        description: "Could not mark lesson complete.",
+      });
+    },
+  });
+};
+
+export const useMarkContentIncomplete = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: moduleContentMutationKeys.markIncomplete(),
+    mutationFn: async ({ coursePk, modulePk, id }: CompletionPayload) => {
+      await apiClient.post(
+        `/api/courses/${coursePk}/modules/${modulePk}/contents/${id}/mark_incomplete/`
+      );
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: courseQueryKeys.courseMyProgress(variables.coursePk),
+      });
+      queryClient.invalidateQueries({
+        queryKey: courseQueryKeys.courseContents(variables.coursePk),
+      });
+    },
+    onError: (error) => {
+      toast.error({
+        message: extractError(error),
+        description: "Could not mark lesson incomplete.",
+      });
+    },
+  });
+};
 
 export const useDeleteModuleContent = () => {
   const queryClient = useQueryClient();

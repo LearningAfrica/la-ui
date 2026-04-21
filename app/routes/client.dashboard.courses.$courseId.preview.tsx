@@ -1,6 +1,6 @@
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useParams, Link } from "react-router";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -13,113 +13,88 @@ import {
   ChevronDown,
   ChevronRight,
   Clock,
-  ExternalLink,
   BookOpen,
-  Tag,
+  CheckCircle2,
+  Circle,
+  PlayCircle,
 } from "lucide-react";
-import { useCourse } from "@/features/courses/course-queries";
+import { cn } from "@/lib/utils";
+import {
+  useCourse,
+  useCourseMyProgress,
+  type CourseMyProgress,
+} from "@/features/courses/course-queries";
 import { useCourseModules } from "@/features/modules/module-queries";
-import { useModuleContents } from "@/features/module-contents/module-content-queries";
+import { useEnrollCourse } from "@/features/courses/course-mutations";
 import type { CourseModuleDetail } from "@/features/modules/module-queries";
 import type { ModuleContent } from "@/features/module-contents/module-content-queries";
 
-function TextContentViewer({ content }: { content: ModuleContent }) {
-  return (
-    <div
-      className="prose dark:prose-invert max-w-none text-sm"
-      dangerouslySetInnerHTML={{ __html: content.data.body ?? "" }}
-    />
+function formatDuration(totalSeconds: number): string {
+  if (!totalSeconds || totalSeconds <= 0) return "";
+
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+  if (hours > 0) return `${hours}h ${minutes}m`;
+
+  return `${minutes}m`;
+}
+
+function formatLessonDuration(seconds: number | undefined): string {
+  if (!seconds || seconds <= 0) return "";
+
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+function getCompletedSet(progress: CourseMyProgress | undefined): Set<string> {
+  if (!progress) return new Set();
+
+  return new Set(
+    progress.contents.filter((c) => c.is_completed).map((c) => c.content_id)
   );
 }
 
-function VideoContentViewer({ content }: { content: ModuleContent }) {
-  const url = content.data.video_url ?? "";
-  const isYoutube = url.includes("youtube.com") || url.includes("youtu.be");
-
-  let embedUrl = "";
-
-  if (isYoutube) {
-    const videoId =
-      url.match(/[?&]v=([^&]+)/)?.[1] ?? url.match(/youtu\.be\/([^?]+)/)?.[1];
-
-    if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}`;
-  }
-
-  return (
-    <div className="space-y-3">
-      {embedUrl ? (
-        <div className="aspect-video overflow-hidden rounded-lg">
-          <iframe
-            src={embedUrl}
-            title={content.title}
-            className="h-full w-full"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
-      ) : (
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-blue-600 hover:underline"
-        >
-          <Video className="h-4 w-4" />
-          Watch Video
-          <ExternalLink className="h-3 w-3" />
-        </a>
-      )}
-      {content.data.duration_seconds != null &&
-        content.data.duration_seconds > 0 && (
-          <div className="text-muted-foreground flex items-center gap-1.5 text-xs">
-            <Clock className="h-3.5 w-3.5" />
-            {Math.floor(content.data.duration_seconds / 60)}m{" "}
-            {content.data.duration_seconds % 60}s
-          </div>
-        )}
-    </div>
-  );
-}
-
-function FileContentViewer({ content }: { content: ModuleContent }) {
-  return (
-    <div className="bg-muted flex items-center gap-3 rounded-lg p-4">
-      <File className="text-muted-foreground h-8 w-8" />
-      <div>
-        <p className="text-sm font-medium">
-          {content.data.file_name ?? "Attachment"}
-        </p>
-        <p className="text-muted-foreground text-xs">
-          File attachment for this lesson
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function ContentItem({ content }: { content: ModuleContent }) {
+function ContentRow({
+  content,
+  courseId,
+  isCompleted,
+}: {
+  content: ModuleContent;
+  courseId: string;
+  isCompleted: boolean;
+}) {
   const typeIcons = { text: FileText, video: Video, file: File };
   const Icon = typeIcons[content.content_type] ?? FileText;
+  const duration = formatLessonDuration(content.data.duration_seconds);
 
   return (
-    <div className="space-y-3 py-4">
-      <div className="flex items-center gap-2">
-        <Icon className="text-muted-foreground h-4 w-4" />
-        <h4 className="text-sm font-semibold">{content.title}</h4>
-        <Badge variant="outline" className="text-xs">
-          {content.content_type}
-        </Badge>
-      </div>
-      {content.content_type === "text" && (
-        <TextContentViewer content={content} />
+    <Link
+      to={`/client/dashboard/courses/${courseId}/lessons/${content.id}`}
+      className="hover:bg-muted/40 group flex items-center gap-3 rounded-md px-2 py-3 transition-colors"
+    >
+      {isCompleted ? (
+        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500" />
+      ) : (
+        <Circle className="text-muted-foreground/50 h-4 w-4 shrink-0" />
       )}
-      {content.content_type === "video" && (
-        <VideoContentViewer content={content} />
+      <Icon className="text-muted-foreground h-4 w-4 shrink-0" />
+      <span
+        className={cn(
+          "flex-1 truncate text-sm",
+          isCompleted && "text-muted-foreground"
+        )}
+      >
+        {content.title}
+      </span>
+      {duration && (
+        <span className="text-muted-foreground font-mono text-xs tabular-nums">
+          {duration}
+        </span>
       )}
-      {content.content_type === "file" && (
-        <FileContentViewer content={content} />
-      )}
-    </div>
+    </Link>
   );
 }
 
@@ -127,39 +102,68 @@ function ModuleSection({
   module: mod,
   courseId,
   index,
+  defaultExpanded,
+  completedSet,
 }: {
   module: CourseModuleDetail;
   courseId: string;
   index: number;
+  defaultExpanded: boolean;
+  completedSet: Set<string>;
 }) {
-  const [expanded, setExpanded] = useState(index === 0);
-  const { data: contents, isLoading } = useModuleContents(courseId, mod.id);
-  const contentsList = useMemo(() => contents ?? [], [contents]);
+  const [expanded, setExpanded] = useState(defaultExpanded);
+
+  const totalSeconds = mod.contents.reduce(
+    (acc, c) => acc + (c.data.duration_seconds ?? 0),
+    0
+  );
+  const completed = mod.contents.filter((c) => completedSet.has(c.id)).length;
+  const total = mod.contents.length;
+  const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   return (
-    <Card>
+    <Card className="overflow-hidden">
       <button
         type="button"
-        className="flex w-full items-center justify-between p-4 text-left"
+        className="hover:bg-muted/30 flex w-full items-center justify-between gap-4 p-4 text-left transition-colors"
         onClick={() => setExpanded(!expanded)}
       >
-        <div className="flex items-center gap-3">
-          <div className="bg-primary/10 text-primary flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
+          <div className="bg-primary/10 text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold">
             {index + 1}
           </div>
-          <div>
-            <h3 className="font-semibold">{mod.title}</h3>
-            {mod.description && (
-              <p className="text-muted-foreground mt-0.5 text-xs">
-                {mod.description}
-              </p>
-            )}
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate font-semibold">{mod.title}</h3>
+            <div className="text-muted-foreground mt-0.5 flex items-center gap-3 text-xs">
+              <span>
+                {total} {total === 1 ? "lesson" : "lessons"}
+              </span>
+              {totalSeconds > 0 && (
+                <>
+                  <span className="text-muted-foreground/40">·</span>
+                  <span>{formatDuration(totalSeconds)}</span>
+                </>
+              )}
+              {completed > 0 && (
+                <>
+                  <span className="text-muted-foreground/40">·</span>
+                  <span className="text-emerald-600 dark:text-emerald-500">
+                    {completed}/{total} done
+                  </span>
+                </>
+              )}
+            </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="text-xs">
-            {mod.contents.length} items
-          </Badge>
+        <div className="flex items-center gap-3">
+          {total > 0 && (
+            <div className="bg-muted hidden h-1.5 w-24 overflow-hidden rounded-full sm:block">
+              <div
+                className="h-full bg-emerald-500 transition-all"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+          )}
           {expanded ? (
             <ChevronDown className="text-muted-foreground h-4 w-4" />
           ) : (
@@ -169,21 +173,20 @@ function ModuleSection({
       </button>
 
       {expanded && (
-        <CardContent className="border-t pt-4">
-          {isLoading ? (
-            <div className="space-y-3">
-              {Array.from({ length: 2 }).map((_, i) => (
-                <Skeleton key={i} className="h-20 w-full" />
-              ))}
-            </div>
-          ) : contentsList.length === 0 ? (
+        <CardContent className="border-t px-2 pt-2 pb-2">
+          {mod.contents.length === 0 ? (
             <p className="text-muted-foreground py-4 text-center text-sm">
               No content in this module yet.
             </p>
           ) : (
             <div className="divide-y">
-              {contentsList.map((content) => (
-                <ContentItem key={content.id} content={content} />
+              {mod.contents.map((content) => (
+                <ContentRow
+                  key={content.id}
+                  content={content}
+                  courseId={courseId}
+                  isCompleted={completedSet.has(content.id)}
+                />
               ))}
             </div>
           )}
@@ -200,14 +203,53 @@ export default function CoursePreviewPage() {
   const { data: modules, isLoading: modulesLoading } = useCourseModules(
     courseId!
   );
+  const { data: progress } = useCourseMyProgress(courseId!);
+  const enroll = useEnrollCourse();
 
   const modulesList = useMemo(() => modules ?? [], [modules]);
+  const completedSet = useMemo(() => getCompletedSet(progress), [progress]);
+
+  const totals = useMemo(() => {
+    let lessons = 0;
+    let seconds = 0;
+
+    for (const mod of modulesList) {
+      lessons += mod.contents.length;
+
+      for (const c of mod.contents) {
+        seconds += c.data.duration_seconds ?? 0;
+      }
+    }
+
+    return { lessons, seconds };
+  }, [modulesList]);
+
+  // Find the next incomplete lesson — used for resume CTA + smart expand.
+  // React Compiler memoizes this automatically; no manual useMemo needed.
+  let nextLesson: { moduleIndex: number; contentId: string } | null = null;
+
+  outer: for (let i = 0; i < modulesList.length; i++) {
+    for (const content of modulesList[i].contents) {
+      if (!completedSet.has(content.id)) {
+        nextLesson = { moduleIndex: i, contentId: content.id };
+        break outer;
+      }
+    }
+  }
+
+  const hasProgress = (progress?.completed_contents ?? 0) > 0;
+  const ctaLabel = hasProgress ? "Resume course" : "Start the course";
+  const ctaTo = nextLesson
+    ? `/client/dashboard/courses/${courseId}/lessons/${nextLesson.contentId}`
+    : modulesList[0]?.contents[0]
+      ? `/client/dashboard/courses/${courseId}/lessons/${modulesList[0].contents[0].id}`
+      : null;
 
   if (courseLoading) {
     return (
       <div className="space-y-6 p-6">
         <Skeleton className="h-10 w-64" />
-        <Skeleton className="h-48 w-full" />
+        <Skeleton className="h-72 w-full" />
         <Skeleton className="h-32 w-full" />
       </div>
     );
@@ -222,95 +264,126 @@ export default function CoursePreviewPage() {
   }
 
   return (
-    <div className="space-y-6 p-6">
-      {/* Header */}
-      <div className="space-y-2">
-        <Link to="/client/dashboard/courses">
-          <Button variant="ghost" size="sm">
-            <ArrowLeft className="mr-1 h-4 w-4" />
-            Back to Courses
-          </Button>
-        </Link>
-      </div>
+    <div className="space-y-8 p-4 sm:p-6">
+      <Link to="/client/dashboard/courses">
+        <Button variant="ghost" size="sm">
+          <ArrowLeft className="mr-1 h-4 w-4" />
+          Back to Courses
+        </Button>
+      </Link>
 
-      {/* Course Hero */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col gap-6 md:flex-row">
-            {course.course_image_url && (
-              <img
-                src={course.course_image_url}
-                alt={course.title}
-                className="h-48 w-full rounded-lg object-cover md:w-72"
-              />
-            )}
-            <div className="flex-1 space-y-3">
-              <div>
-                <h1 className="text-2xl font-bold sm:text-3xl">
-                  {course.title}
-                </h1>
-                {course.category && (
-                  <p className="text-muted-foreground mt-1 text-sm">
-                    {course.category.category_name}
-                  </p>
-                )}
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                <Badge variant={course.is_premium ? "default" : "secondary"}>
-                  {course.is_premium ? "Premium" : "Free"}
+      {/* Hero */}
+      <div className="relative overflow-hidden rounded-2xl border">
+        {course.course_image_url && (
+          <div className="absolute inset-0 -z-10">
+            <img
+              src={course.course_image_url}
+              alt=""
+              className="h-full w-full mask-b-from-30% mask-b-to-90% object-cover object-center opacity-30 dark:opacity-20"
+            />
+            <div className="from-background/40 via-background/80 to-background absolute inset-0 bg-gradient-to-b" />
+          </div>
+        )}
+        <div className="relative px-6 py-12 sm:px-10 sm:py-16">
+          <div className="max-w-3xl space-y-6">
+            <div className="flex flex-wrap gap-2">
+              {course.category && (
+                <Badge variant="secondary">
+                  {course.category.category_name}
                 </Badge>
-                <Badge variant={course.is_private ? "outline" : "secondary"}>
-                  {course.is_private ? "Private" : "Public"}
-                </Badge>
-              </div>
-
-              {course.tags && course.tags.length > 0 && (
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <Tag className="text-muted-foreground h-3.5 w-3.5" />
-                  {course.tags.map((tag: string) => (
-                    <Badge key={tag} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
               )}
+              <Badge variant={course.is_premium ? "default" : "outline"}>
+                {course.is_premium ? "Premium" : "Free"}
+              </Badge>
+              {course.is_private && <Badge variant="outline">Private</Badge>}
+            </div>
 
-              <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-1.5">
-                  <Layers className="text-muted-foreground h-4 w-4" />
-                  <span>{modulesList.length} modules</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <BookOpen className="text-muted-foreground h-4 w-4" />
+            <h1 className="text-3xl font-bold tracking-tight text-balance sm:text-4xl lg:text-5xl">
+              {course.title}
+            </h1>
+
+            {course.overview && (
+              <p className="text-muted-foreground max-w-2xl text-base text-pretty sm:text-lg">
+                {course.overview}
+              </p>
+            )}
+
+            <div className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium">
+              <div className="flex items-center gap-1.5">
+                <Layers className="h-4 w-4" />
+                <span>
+                  {modulesList.length}{" "}
+                  {modulesList.length === 1 ? "module" : "modules"}
+                </span>
+              </div>
+              <span className="text-muted-foreground/40">·</span>
+              <div className="flex items-center gap-1.5">
+                <BookOpen className="h-4 w-4" />
+                <span>
+                  {totals.lessons} {totals.lessons === 1 ? "lesson" : "lessons"}
+                </span>
+              </div>
+              {totals.seconds > 0 && (
+                <>
+                  <span className="text-muted-foreground/40">·</span>
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="h-4 w-4" />
+                    <span>{formatDuration(totals.seconds)}</span>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {hasProgress && progress && (
+              <div className="max-w-md space-y-1.5">
+                <div className="text-muted-foreground flex items-center justify-between text-xs font-medium">
+                  <span>Your progress</span>
                   <span>
-                    {modulesList.reduce((acc, m) => acc + m.contents.length, 0)}{" "}
-                    lessons
+                    {progress.completed_contents}/{progress.total_contents}{" "}
+                    lessons · {progress.progress_percent}%
                   </span>
                 </div>
+                <div className="bg-muted h-2 overflow-hidden rounded-full">
+                  <div
+                    className="h-full bg-emerald-500 transition-all"
+                    style={{ width: `${progress.progress_percent}%` }}
+                  />
+                </div>
               </div>
+            )}
+
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              {ctaTo ? (
+                <Button asChild size="lg">
+                  <Link to={ctaTo}>
+                    <PlayCircle className="mr-2 h-5 w-5" />
+                    {ctaLabel}
+                  </Link>
+                </Button>
+              ) : (
+                <Button size="lg" disabled>
+                  <PlayCircle className="mr-2 h-5 w-5" />
+                  No lessons yet
+                </Button>
+              )}
+              {!hasProgress && (
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => enroll.mutate(courseId!)}
+                  disabled={enroll.isPending}
+                >
+                  {enroll.isPending ? "Enrolling..." : "Enroll"}
+                </Button>
+              )}
             </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Overview */}
-      {course.overview && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Course Overview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              {course.overview}
-            </p>
-          </CardContent>
-        </Card>
-      )}
+        </div>
+      </div>
 
       {/* Modules */}
-      <div className="space-y-3">
-        <h2 className="text-xl font-bold">Course Content</h2>
+      <div className="space-y-4">
+        <h2 className="text-xl font-bold tracking-tight">Course Content</h2>
         {modulesLoading ? (
           <div className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -319,7 +392,7 @@ export default function CoursePreviewPage() {
           </div>
         ) : modulesList.length === 0 ? (
           <Card>
-            <CardContent className="py-8 text-center">
+            <CardContent className="py-10 text-center">
               <Layers className="text-muted-foreground mx-auto mb-2 h-8 w-8" />
               <p className="text-muted-foreground text-sm">
                 No modules have been added to this course yet.
@@ -334,6 +407,10 @@ export default function CoursePreviewPage() {
                 module={mod}
                 courseId={courseId!}
                 index={i}
+                defaultExpanded={
+                  nextLesson ? nextLesson.moduleIndex === i : i === 0
+                }
+                completedSet={completedSet}
               />
             ))}
           </div>

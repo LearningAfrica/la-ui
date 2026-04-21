@@ -71,6 +71,32 @@ export const useDeleteCourse = () => {
   });
 };
 
+export const useEnrollCourse = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: courseMutationKeys.enrollCourse(),
+    mutationFn: async (id: string) => {
+      await apiClient.post(`/api/courses/${id}/enroll/`);
+    },
+    onSuccess: (_data, id) => {
+      queryClient.invalidateQueries({
+        queryKey: courseQueryKeys.courseMyProgress(id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: courseQueryKeys.all,
+      });
+      toast.success({ message: "You're enrolled. Happy learning!" });
+    },
+    onError: (error) => {
+      toast.error({
+        message: extractError(error),
+        description: "Could not enroll in this course.",
+      });
+    },
+  });
+};
+
 export const useCreateCourse = () => {
   const queryClient = useQueryClient();
 

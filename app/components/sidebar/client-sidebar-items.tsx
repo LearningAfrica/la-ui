@@ -103,31 +103,24 @@ export default function ClientSidebarItems() {
         NavItemIcon: FolderOpen,
         roles: ["admin", "instructor"],
       },
-      // Instructor items
+      // Enrolment items — available to everyone in the org
       {
         title: "My Courses",
         url: href("/client/dashboard/my-courses"),
         NavItemIcon: BookOpen,
-        roles: ["instructor"],
-      },
-      // Learner items
-      {
-        title: "Browse Courses",
-        url: href("/client/dashboard/courses"),
-        NavItemIcon: BookOpen,
-        roles: ["learner"],
+        roles: "*",
       },
       {
         title: "My Learning",
         url: href("/client/dashboard/my-learning"),
         NavItemIcon: GraduationCap,
-        roles: ["learner"],
+        roles: "*",
       },
       {
         title: "Certificates",
         url: href("/client/dashboard/certificates"),
         NavItemIcon: Award,
-        roles: ["learner"],
+        roles: "*",
       },
     ];
     const baseDashboardItems: NavItem[] = [];

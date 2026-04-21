@@ -10,4 +10,6 @@ export const moduleContentMutationKeys = {
   createContent: () => ["createModuleContent"] as const,
   updateContent: () => ["updateModuleContent"] as const,
   deleteContent: () => ["deleteModuleContent"] as const,
+  markComplete: () => ["markModuleContentComplete"] as const,
+  markIncomplete: () => ["markModuleContentIncomplete"] as const,
 };

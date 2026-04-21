@@ -33,6 +33,12 @@ export default [
       ]),
     ]),
     ...prefix("client", [
+      layout("layouts/lesson-reader-layout.tsx", [
+        route(
+          "dashboard/courses/:courseId/lessons/:contentId",
+          "routes/client.dashboard.courses.$courseId.lessons.$contentId.tsx"
+        ),
+      ]),
       layout("layouts/client-dashboard-layout.tsx", [
         route("dashboard", "routes/client.dashboard.tsx"),
         route("dashboard/members", "routes/client.dashboard.members.tsx"),
