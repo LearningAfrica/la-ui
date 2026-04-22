@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { useCourses, type Course } from "@/features/courses/course-queries";
+import { createMediaUrl } from "@/lib/api";
 
 function CourseCard({ course }: { course: Course }) {
   const moduleCount = course.modules?.length ?? 0;
@@ -19,9 +20,9 @@ function CourseCard({ course }: { course: Course }) {
     >
       <Card className="hover:border-primary/50 h-full overflow-hidden transition-colors">
         <div className="bg-muted relative aspect-video overflow-hidden">
-          {course.course_image_url ? (
+          {course.course_image ? (
             <img
-              src={course.course_image_url}
+              src={createMediaUrl(course.course_image)}
               alt={course.title}
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />

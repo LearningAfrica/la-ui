@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Course } from "@/features/courses/course-queries";
+import { createMediaUrl } from "@/lib/api";
 import {
   BookOpen,
   Eye,
@@ -94,9 +95,9 @@ function CourseTitleCell({ course }: { course: Course }) {
   return (
     <div className="flex items-center gap-3">
       <div className="bg-muted relative h-12 w-16 shrink-0 overflow-hidden rounded-md border">
-        {course.course_image_url ? (
+        {course.course_image ? (
           <img
-            src={course.course_image_url}
+            src={createMediaUrl(course.course_image)}
             alt=""
             className="h-full w-full object-cover"
           />

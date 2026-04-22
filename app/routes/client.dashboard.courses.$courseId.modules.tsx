@@ -58,7 +58,7 @@ export default function ClientDashboardCourseModules() {
     refetch: refetchQuizzes,
   } = useQuizzes(courseId!, selectedModule?.id ?? "");
 
-  const modulesList = useMemo(() => modules ?? [], [modules]);
+  const modulesList = useMemo(() => modules?.data ?? [], [modules]);
   const contentsList = useMemo(() => contents ?? [], [contents]);
   const quizzesList = useMemo(() => quizzes ?? [], [quizzes]);
 

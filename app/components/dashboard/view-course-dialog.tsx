@@ -8,6 +8,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import type { Course } from "@/features/courses/course-queries";
+import { createMediaUrl } from "@/lib/api";
 import { ImageIcon } from "lucide-react";
 import moment from "moment";
 
@@ -39,9 +40,9 @@ export function ViewCourseDialog() {
         {course && (
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-              {course.course_image_url ? (
+              {course.course_image ? (
                 <img
-                  src={course.course_image_url}
+                  src={createMediaUrl(course.course_image)}
                   alt={course.title}
                   className="h-20 w-20 rounded-lg object-cover"
                 />

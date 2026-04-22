@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { moduleQueryKeys } from "./module-query-keys";
 import { apiClient } from "@/lib/api";
+import type { Paginated } from "@/lib/types/api";
 
 import type { ModuleContent } from "@/features/module-contents/module-content-queries";
 
@@ -11,12 +12,31 @@ export interface CourseModuleDetail {
   contents: ModuleContent[];
 }
 
-export const useCourseModules = (coursePk: string) => {
+export interface UseCourseModulesParams {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+}
+
+export const useCourseModules = (
+  coursePk: string,
+  params: UseCourseModulesParams = {}
+) => {
+  const { page = 1, pageSize = 10, search } = params;
+
   return useQuery({
-    queryKey: moduleQueryKeys.modules(coursePk),
+    queryKey: moduleQueryKeys.modules(coursePk, page, pageSize, search),
     queryFn: async () => {
-      const response = await apiClient.get<CourseModuleDetail[]>(
-        `/api/courses/${coursePk}/modules/`
+      const response = await apiClient.get<Paginated<CourseModuleDetail>>(
+        `/api/courses/${coursePk}/modules/`,
+        {
+          params: {
+            page,
+            page_size: pageSize,
+            limit: pageSize,
+            search,
+          },
+        }
       );
 
       return response.data;

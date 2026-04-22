@@ -40,7 +40,7 @@ export interface Course {
   is_premium: boolean;
   is_private: boolean;
   price: number;
-  course_image_url: string;
+  course_image: string | null;
   created_at: string;
   category: CourseCategory;
   tags: string[];

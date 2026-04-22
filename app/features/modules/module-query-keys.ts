@@ -1,6 +1,11 @@
 export const moduleQueryKeys = {
   all: ["modules"] as const,
-  modules: (coursePk: string) => [...moduleQueryKeys.all, coursePk] as const,
+  modules: (
+    coursePk: string,
+    page?: number,
+    pageSize?: number,
+    search?: string
+  ) => [...moduleQueryKeys.all, coursePk, page, pageSize, search] as const,
   module: (coursePk: string, id: string) =>
     [...moduleQueryKeys.all, coursePk, id] as const,
 };

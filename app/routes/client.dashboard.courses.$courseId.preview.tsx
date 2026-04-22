@@ -19,6 +19,7 @@ import {
   PlayCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createMediaUrl } from "@/lib/api";
 import {
   useCourse,
   useCourseMyProgress,
@@ -212,7 +213,7 @@ export default function CoursePreviewPage() {
   const { data: progress } = useCourseMyProgress(courseId!);
   const enroll = useEnrollCourse();
 
-  const modulesList = useMemo(() => modules ?? [], [modules]);
+  const modulesList = useMemo(() => modules?.data ?? [], [modules]);
   const completedSet = useMemo(() => getCompletedSet(progress), [progress]);
 
   const totals = useMemo(() => {
@@ -286,10 +287,10 @@ export default function CoursePreviewPage() {
 
       {/* Hero */}
       <div className="relative overflow-hidden rounded-2xl border">
-        {course.course_image_url && (
+        {course.course_image && (
           <div className="absolute inset-0 -z-10">
             <img
-              src={course.course_image_url}
+              src={createMediaUrl(course.course_image)}
               alt=""
               className="h-full w-full mask-b-from-30% mask-b-to-90% object-cover object-center opacity-30 dark:opacity-20"
             />
@@ -297,97 +298,110 @@ export default function CoursePreviewPage() {
           </div>
         )}
         <div className="relative px-6 py-12 sm:px-10 sm:py-16">
-          <div className="max-w-3xl space-y-6">
-            <div className="flex flex-wrap gap-2">
-              {course.category && (
-                <Badge variant="secondary">
-                  {course.category.category_name}
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-3xl space-y-6">
+              <div className="flex flex-wrap gap-2">
+                {course.category && (
+                  <Badge variant="secondary">
+                    {course.category.category_name}
+                  </Badge>
+                )}
+                <Badge variant={course.is_premium ? "default" : "outline"}>
+                  {course.is_premium ? "Premium" : "Free"}
                 </Badge>
-              )}
-              <Badge variant={course.is_premium ? "default" : "outline"}>
-                {course.is_premium ? "Premium" : "Free"}
-              </Badge>
-              {course.is_private && <Badge variant="outline">Private</Badge>}
-            </div>
-
-            <h1 className="text-3xl font-bold tracking-tight text-balance sm:text-4xl lg:text-5xl">
-              {course.title}
-            </h1>
-
-            {course.overview && (
-              <p className="text-muted-foreground max-w-2xl text-base text-pretty sm:text-lg">
-                {course.overview}
-              </p>
-            )}
-
-            <div className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium">
-              <div className="flex items-center gap-1.5">
-                <Layers className="h-4 w-4" />
-                <span>
-                  {modulesList.length}{" "}
-                  {modulesList.length === 1 ? "module" : "modules"}
-                </span>
+                {course.is_private && <Badge variant="outline">Private</Badge>}
               </div>
-              <span className="text-muted-foreground/40">·</span>
-              <div className="flex items-center gap-1.5">
-                <BookOpen className="h-4 w-4" />
-                <span>
-                  {totals.lessons} {totals.lessons === 1 ? "lesson" : "lessons"}
-                </span>
-              </div>
-              {totals.seconds > 0 && (
-                <>
-                  <span className="text-muted-foreground/40">·</span>
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="h-4 w-4" />
-                    <span>{formatDuration(totals.seconds)}</span>
-                  </div>
-                </>
-              )}
-            </div>
 
-            {hasProgress && (
-              <div className="max-w-md space-y-1.5">
-                <div className="text-muted-foreground flex items-center justify-between text-xs font-medium">
-                  <span>Your progress</span>
+              <h1 className="text-3xl font-bold tracking-tight text-balance sm:text-4xl lg:text-5xl">
+                {course.title}
+              </h1>
+
+              {course.overview && (
+                <p className="text-muted-foreground max-w-2xl text-base text-pretty sm:text-lg">
+                  {course.overview}
+                </p>
+              )}
+
+              <div className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium">
+                <div className="flex items-center gap-1.5">
+                  <Layers className="h-4 w-4" />
                   <span>
-                    {completedCount}/{totalLessons} lessons · {progressPercent}%
+                    {modulesList.length}{" "}
+                    {modulesList.length === 1 ? "module" : "modules"}
                   </span>
                 </div>
-                <div className="bg-muted h-2 overflow-hidden rounded-full">
-                  <div
-                    className="h-full bg-emerald-500 transition-all"
-                    style={{ width: `${progressPercent}%` }}
-                  />
+                <span className="text-muted-foreground/40">·</span>
+                <div className="flex items-center gap-1.5">
+                  <BookOpen className="h-4 w-4" />
+                  <span>
+                    {totals.lessons}{" "}
+                    {totals.lessons === 1 ? "lesson" : "lessons"}
+                  </span>
                 </div>
+                {totals.seconds > 0 && (
+                  <>
+                    <span className="text-muted-foreground/40">·</span>
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="h-4 w-4" />
+                      <span>{formatDuration(totals.seconds)}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {hasProgress && (
+                <div className="max-w-md space-y-1.5">
+                  <div className="text-muted-foreground flex items-center justify-between text-xs font-medium">
+                    <span>Your progress</span>
+                    <span>
+                      {completedCount}/{totalLessons} lessons ·{" "}
+                      {progressPercent}%
+                    </span>
+                  </div>
+                  <div className="bg-muted h-2 overflow-hidden rounded-full">
+                    <div
+                      className="h-full bg-emerald-500 transition-all"
+                      style={{ width: `${progressPercent}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="flex flex-wrap items-center gap-3 pt-2">
+                {ctaTo ? (
+                  <Button asChild size="lg">
+                    <Link to={ctaTo}>
+                      <PlayCircle className="mr-2 h-5 w-5" />
+                      {ctaLabel}
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button size="lg" disabled>
+                    <PlayCircle className="mr-2 h-5 w-5" />
+                    No lessons yet
+                  </Button>
+                )}
+                {!hasProgress && (
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => enroll.mutate(courseId!)}
+                    disabled={enroll.isPending}
+                  >
+                    {enroll.isPending ? "Enrolling..." : "Enroll"}
+                  </Button>
+                )}
+              </div>
+            </div>
+            {course.course_image && (
+              <div className="bg-muted relative aspect-video w-full shrink-0 overflow-hidden rounded-xl border shadow-lg lg:w-md">
+                <img
+                  src={createMediaUrl(course.course_image)}
+                  alt={course.title}
+                  className="h-full w-full object-cover"
+                />
               </div>
             )}
-
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              {ctaTo ? (
-                <Button asChild size="lg">
-                  <Link to={ctaTo}>
-                    <PlayCircle className="mr-2 h-5 w-5" />
-                    {ctaLabel}
-                  </Link>
-                </Button>
-              ) : (
-                <Button size="lg" disabled>
-                  <PlayCircle className="mr-2 h-5 w-5" />
-                  No lessons yet
-                </Button>
-              )}
-              {!hasProgress && (
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => enroll.mutate(courseId!)}
-                  disabled={enroll.isPending}
-                >
-                  {enroll.isPending ? "Enrolling..." : "Enroll"}
-                </Button>
-              )}
-            </div>
           </div>
         </div>
       </div>

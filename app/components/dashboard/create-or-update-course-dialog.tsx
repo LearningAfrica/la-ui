@@ -54,19 +54,21 @@ export function CreateOrUpdateCourseDialog() {
     label: cat.category_name,
   }));
 
+  const getEmptyValues = () => ({
+    organization: selectedOrganization?.id ?? "",
+    category: "",
+    title: "",
+    overview: "",
+    is_premium: false,
+    price: 0,
+    is_private: false,
+    tags: [] as string[],
+    course_image: undefined as File | undefined,
+  });
+
   const form = useForm({
     resolver: courseResolver,
-    defaultValues: {
-      organization: selectedOrganization?.id ?? "",
-      category: "",
-      title: "",
-      overview: "",
-      is_premium: false,
-      price: 0,
-      is_private: false,
-      tags: [] as string[],
-      course_image: undefined as File | undefined,
-    },
+    defaultValues: getEmptyValues(),
   });
 
   const isPremium = useWatch({
@@ -100,7 +102,7 @@ export function CreateOrUpdateCourseDialog() {
     if (isEditing) editModal.close();
     else createModal.close();
 
-    form.reset();
+    form.reset(getEmptyValues());
   };
 
   const handleFormSubmit = form.handleSubmit((data) => {

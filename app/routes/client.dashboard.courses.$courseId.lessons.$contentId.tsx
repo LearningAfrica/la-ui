@@ -182,7 +182,7 @@ export default function LessonReaderPage() {
   const markComplete = useMarkContentComplete();
   const markIncomplete = useMarkContentIncomplete();
 
-  const flat = useMemo(() => flattenModules(modules ?? []), [modules]);
+  const flat = useMemo(() => flattenModules(modules?.data ?? []), [modules]);
 
   const current = flat.find((f) => f.content.id === contentId);
   const prev = current && current.index > 0 ? flat[current.index - 1] : null;

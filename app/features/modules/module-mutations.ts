@@ -26,7 +26,7 @@ export const useCreateModule = () => {
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: moduleQueryKeys.modules(variables.coursePk),
+        queryKey: [...moduleQueryKeys.all, variables.coursePk],
       });
       toast.success({
         message: `Module "${data.title}" created successfully.`,
@@ -63,7 +63,7 @@ export const useUpdateModule = () => {
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: moduleQueryKeys.modules(variables.coursePk),
+        queryKey: [...moduleQueryKeys.all, variables.coursePk],
       });
       queryClient.invalidateQueries({
         queryKey: moduleQueryKeys.module(variables.coursePk, variables.id),
@@ -97,7 +97,7 @@ export const useDeleteModule = () => {
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
-        queryKey: moduleQueryKeys.modules(variables.coursePk),
+        queryKey: [...moduleQueryKeys.all, variables.coursePk],
       });
       toast.success({
         message: `Module${variables.title ? ` "${variables.title}"` : ""} deleted successfully.`,
