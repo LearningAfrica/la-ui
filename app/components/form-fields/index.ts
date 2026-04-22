@@ -19,6 +19,8 @@ export {
 
 export { FormCheckboxField, type CheckboxOption } from "./form-checkbox-field";
 
+export { FormSwitchField } from "./form-switch-field";
+
 export { FormDateField } from "./form-date-field";
 
 export { FormImageUploadField } from "./form-image-upload-field";

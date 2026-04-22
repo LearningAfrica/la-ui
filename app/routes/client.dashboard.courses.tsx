@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import type { LucideIcon } from "lucide-react";
+import { Link } from "react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -22,9 +23,7 @@ import {
 } from "@/components/ui/select";
 import { useCourses } from "@/features/courses/course-queries";
 import { AdminCoursesTable } from "@/components/dashboard/admin-courses-table";
-import { CreateOrUpdateCourseDialog } from "@/components/dashboard/create-or-update-course-dialog";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
-import { useAppModal } from "@/stores/filters/modal-hooks";
 import { useTableFilters } from "@/stores/filters/use-table-filters";
 
 type StatTone = "blue" | "amber" | "violet" | "emerald";
@@ -83,7 +82,6 @@ export default function ClientDashboardCourses() {
   const pageSize = state.limit;
   const { selectedOrganization } = useOrganizationStore();
   const isInstructor = selectedOrganization?.role === "instructor";
-  const createCourseModal = useAppModal("create-course");
   const {
     data: coursesData,
     isLoading,
@@ -190,12 +188,11 @@ export default function ClientDashboardCourses() {
                 </p>
               </div>
               {isInstructor && (
-                <Button
-                  onClick={() => createCourseModal.open()}
-                  className="mt-2"
-                >
-                  <Plus className="mr-1 h-4 w-4" />
-                  Create your first course
+                <Button asChild className="mt-2">
+                  <Link to="/client/dashboard/courses/new">
+                    <Plus className="mr-1 h-4 w-4" />
+                    Create your first course
+                  </Link>
                 </Button>
               )}
             </div>
@@ -207,9 +204,11 @@ export default function ClientDashboardCourses() {
                 isFetching={isFetching}
                 toolbarActions={
                   isInstructor ? (
-                    <Button size="sm" onClick={() => createCourseModal.open()}>
-                      <Plus className="mr-1 h-4 w-4" />
-                      Create Course
+                    <Button asChild size="sm">
+                      <Link to="/client/dashboard/courses/new">
+                        <Plus className="mr-1 h-4 w-4" />
+                        Create Course
+                      </Link>
                     </Button>
                   ) : undefined
                 }
@@ -263,8 +262,6 @@ export default function ClientDashboardCourses() {
           )}
         </CardContent>
       </Card>
-
-      <CreateOrUpdateCourseDialog />
     </div>
   );
 }

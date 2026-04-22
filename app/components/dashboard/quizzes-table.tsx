@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Link } from "react-router";
 import {
   useReactTable,
   getCoreRowModel,
@@ -34,7 +35,6 @@ import {
 } from "lucide-react";
 import type { Quiz } from "@/features/quizzes/quiz-queries";
 import { useDeleteQuiz } from "@/features/quizzes/quiz-mutations";
-import { useAppModal } from "@/stores/filters/modal-hooks";
 
 interface QuizzesTableProps {
   quizzes: Quiz[];
@@ -53,7 +53,6 @@ export function QuizzesTable({
   isFetching = false,
   toolbarActions,
 }: QuizzesTableProps) {
-  const editModal = useAppModal("create-or-update-quiz");
   const deleteQuiz = useDeleteQuiz();
   const [pendingDelete, setPendingDelete] = useState<Quiz | null>(null);
 
@@ -101,9 +100,13 @@ export function QuizzesTable({
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => editModal.open(quiz)}>
-                  <Pencil className="mr-2 h-4 w-4" />
-                  Edit Quiz
+                <DropdownMenuItem asChild>
+                  <Link
+                    to={`/client/dashboard/courses/${coursePk}/modules/${modulePk}/quizzes/${quiz.id}/edit`}
+                  >
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Edit Quiz
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => setPendingDelete(quiz)}
@@ -118,7 +121,7 @@ export function QuizzesTable({
         },
       },
     ],
-    [editModal]
+    [coursePk, modulePk]
   );
 
   const table = useReactTable({

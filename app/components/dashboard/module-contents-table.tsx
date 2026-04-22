@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { Link } from "react-router";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,9 +17,9 @@ import {
   Eye,
   ExternalLink,
 } from "lucide-react";
-import { useDeleteModuleContent } from "@/features/module-contents/module-content-mutations";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import { DataTable } from "@/components/ui/data-table";
+import { DeleteContentDialog } from "./delete-content-dialog";
 
 interface ModuleContentsTableProps {
   contents: ModuleContent[];
@@ -52,9 +53,8 @@ export function ModuleContentsTable({
   isFetching,
   toolbarActions,
 }: ModuleContentsTableProps) {
-  const deleteContent = useDeleteModuleContent();
-  const editModal = useAppModal("create-or-update-content");
   const viewModal = useAppModal("view-content");
+  const deleteModal = useAppModal("delete-content");
 
   const columns = useMemo(
     () =>
@@ -157,14 +157,18 @@ export function ModuleContentsTable({
                     <Eye className="mr-2 h-4 w-4" />
                     View
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => editModal.open(content)}>
-                    <Pencil className="mr-2 h-4 w-4" />
-                    Edit
+                  <DropdownMenuItem asChild>
+                    <Link
+                      to={`/client/dashboard/courses/${coursePk}/modules/${modulePk}/contents/${content.id}/edit`}
+                    >
+                      <Pencil className="mr-2 h-4 w-4" />
+                      Edit
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="text-destructive"
                     onClick={() =>
-                      deleteContent.mutate({
+                      deleteModal.open({
                         coursePk,
                         modulePk,
                         id: content.id,
@@ -181,18 +185,21 @@ export function ModuleContentsTable({
           },
         }),
       ] as ColumnDef<ModuleContent, unknown>[],
-    [coursePk, modulePk, deleteContent, editModal, viewModal]
+    [coursePk, modulePk, viewModal, deleteModal]
   );
 
   return (
-    <DataTable
-      columns={columns}
-      data={contents}
-      searchPlaceholder="Search contents..."
-      emptyMessage="No contents found."
-      onRefresh={onRefresh}
-      isFetching={isFetching}
-      toolbarActions={toolbarActions}
-    />
+    <>
+      <DataTable
+        columns={columns}
+        data={contents}
+        searchPlaceholder="Search contents..."
+        emptyMessage="No contents found."
+        onRefresh={onRefresh}
+        isFetching={isFetching}
+        toolbarActions={toolbarActions}
+      />
+      <DeleteContentDialog />
+    </>
   );
 }

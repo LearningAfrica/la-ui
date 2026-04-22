@@ -44,7 +44,6 @@ const columnHelper = createColumnHelper<Course>();
 
 function CourseActions({ course }: { course: Course }) {
   const viewModal = useAppModal("view-course");
-  const editModal = useAppModal("edit-course");
   const deleteModal = useAppModal("delete-course");
 
   return (
@@ -73,9 +72,11 @@ function CourseActions({ course }: { course: Course }) {
             <Eye className="mr-2 h-4 w-4" />
             Quick View
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => editModal.open(course)}>
-            <Pencil className="mr-2 h-4 w-4" />
-            Edit
+          <DropdownMenuItem asChild>
+            <Link to={`/client/dashboard/courses/${course.id}/edit`}>
+              <Pencil className="mr-2 h-4 w-4" />
+              Edit
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem

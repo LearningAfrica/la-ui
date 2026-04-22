@@ -11,7 +11,7 @@ import {
   Plus,
 } from "lucide-react";
 import { useCategories } from "@/features/categories/category-queries";
-import { AdminCategoriesTable } from "@/components/dashboard/admin-categories-table";
+import { AdminCategoriesGrid } from "@/components/dashboard/admin-categories-grid";
 import { useTableFilters } from "@/stores/filters/use-table-filters";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 
@@ -101,65 +101,59 @@ export default function ClientDashboardCategories() {
         </Card>
       </div>
 
-      {/* Categories Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Categories</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Skeleton key={i} className="h-12 w-full" />
-              ))}
-            </div>
-          ) : (
-            <>
-              <AdminCategoriesTable
-                categories={categories}
-                onRefresh={() => refetch()}
-                isFetching={isFetching}
-                toolbarActions={
-                  <Button size="sm" onClick={() => createCategoryModal.open()}>
-                    <Plus className="mr-1 h-4 w-4" />
-                    Create Category
-                  </Button>
-                }
-              />
+      {/* Categories Grid */}
+      <div className="space-y-4">
+        {isLoading ? (
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-52 w-full" />
+            ))}
+          </div>
+        ) : (
+          <>
+            <AdminCategoriesGrid
+              categories={categories}
+              onRefresh={() => refetch()}
+              isFetching={isFetching}
+              toolbarActions={
+                <Button size="sm" onClick={() => createCategoryModal.open()}>
+                  <Plus className="mr-1 h-4 w-4" />
+                  Create Category
+                </Button>
+              }
+            />
 
-              {/* Pagination */}
-              {categories.length > 0 && (
-                <div className="mt-4 flex items-center justify-between">
-                  <div className="text-muted-foreground text-sm">
-                    Page {state.page} of {totalPages} •{" "}
-                    {categoriesData?.meta?.total_docs} total categories
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setPage(Math.max(1, state.page - 1))}
-                      disabled={!hasPrev}
-                    >
-                      <ChevronLeft className="mr-1 h-4 w-4" />
-                      Previous
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setPage(state.page + 1)}
-                      disabled={!hasNext}
-                    >
-                      Next
-                      <ChevronRight className="ml-1 h-4 w-4" />
-                    </Button>
-                  </div>
+            {categories.length > 0 && (
+              <div className="flex items-center justify-between">
+                <div className="text-muted-foreground text-sm">
+                  Page {state.page} of {totalPages} •{" "}
+                  {categoriesData?.meta?.total_docs} total categories
                 </div>
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(Math.max(1, state.page - 1))}
+                    disabled={!hasPrev}
+                  >
+                    <ChevronLeft className="mr-1 h-4 w-4" />
+                    Previous
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(state.page + 1)}
+                    disabled={!hasNext}
+                  >
+                    Next
+                    <ChevronRight className="ml-1 h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

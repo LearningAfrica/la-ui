@@ -1,5 +1,5 @@
-import { useState, useMemo, useCallback } from "react";
-import { useParams, Link } from "react-router";
+import { useMemo, useCallback } from "react";
+import { useParams, Link, useSearchParams } from "react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -21,21 +21,19 @@ import { CourseModulesTable } from "@/components/dashboard/course-modules-table"
 import { ModuleContentsTable } from "@/components/dashboard/module-contents-table";
 import { QuizzesTable } from "@/components/dashboard/quizzes-table";
 import { CreateOrUpdateModuleDialog } from "@/components/dashboard/create-or-update-module-dialog";
-import { CreateOrUpdateContentDialog } from "@/components/dashboard/create-or-update-content-dialog";
-import { CreateOrUpdateQuizDialog } from "@/components/dashboard/create-or-update-quiz-dialog";
 import { GenerateAiQuizDialog } from "@/components/dashboard/generate-ai-quiz-dialog";
 import { ViewContentDialog } from "@/components/dashboard/view-content-dialog";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 
 export default function ClientDashboardCourseModules() {
   const { courseId } = useParams<{ courseId: string }>();
-  const [selectedModule, setSelectedModule] =
-    useState<CourseModuleDetail | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeModuleId = searchParams.get("moduleId");
+  const activeTab =
+    searchParams.get("tab") === "quizzes" ? "quizzes" : "contents";
 
   const { data: course } = useCourse(courseId!);
   const createModuleModal = useAppModal("create-or-update-module");
-  const createContentModal = useAppModal("create-or-update-content");
-  const createQuizModal = useAppModal("create-or-update-quiz");
   const generateAiQuizModal = useAppModal("generate-ai-quiz");
 
   const {
@@ -44,6 +42,16 @@ export default function ClientDashboardCourseModules() {
     isFetching,
     refetch,
   } = useCourseModules(courseId!);
+
+  const modulesList = useMemo(() => modules?.data ?? [], [modules]);
+
+  const selectedModule = useMemo<CourseModuleDetail | null>(
+    () =>
+      activeModuleId
+        ? (modulesList.find((m) => m.id === activeModuleId) ?? null)
+        : null,
+    [activeModuleId, modulesList]
+  );
 
   const {
     data: contents,
@@ -58,17 +66,28 @@ export default function ClientDashboardCourseModules() {
     refetch: refetchQuizzes,
   } = useQuizzes(courseId!, selectedModule?.id ?? "");
 
-  const modulesList = useMemo(() => modules?.data ?? [], [modules]);
   const contentsList = useMemo(() => contents ?? [], [contents]);
   const quizzesList = useMemo(() => quizzes ?? [], [quizzes]);
 
-  const handleViewContents = useCallback((mod: CourseModuleDetail) => {
-    setSelectedModule(mod);
-  }, []);
+  const handleViewContents = useCallback(
+    (mod: CourseModuleDetail) => {
+      setSearchParams({ moduleId: mod.id, tab: "contents" });
+    },
+    [setSearchParams]
+  );
 
   const handleBackToModules = useCallback(() => {
-    setSelectedModule(null);
-  }, []);
+    setSearchParams({});
+  }, [setSearchParams]);
+
+  const handleTabChange = useCallback(
+    (tab: string) => {
+      if (!activeModuleId) return;
+
+      setSearchParams({ moduleId: activeModuleId, tab });
+    },
+    [activeModuleId, setSearchParams]
+  );
 
   return (
     <div className="space-y-6 p-6">
@@ -141,7 +160,11 @@ export default function ClientDashboardCourseModules() {
             </Button>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="contents" className="space-y-4">
+            <Tabs
+              value={activeTab}
+              onValueChange={handleTabChange}
+              className="space-y-4"
+            >
               <TabsList>
                 <TabsTrigger value="contents">
                   <FileText className="mr-2 h-4 w-4" />
@@ -174,12 +197,13 @@ export default function ClientDashboardCourseModules() {
                     onRefresh={() => refetchContents()}
                     isFetching={contentsFetching}
                     toolbarActions={
-                      <Button
-                        size="sm"
-                        onClick={() => createContentModal.open(undefined)}
-                      >
-                        <Plus className="mr-1 h-4 w-4" />
-                        Add Content
+                      <Button asChild size="sm">
+                        <Link
+                          to={`/client/dashboard/courses/${courseId}/modules/${selectedModule.id}/contents/new`}
+                        >
+                          <Plus className="mr-1 h-4 w-4" />
+                          Add Content
+                        </Link>
                       </Button>
                     }
                   />
@@ -195,12 +219,13 @@ export default function ClientDashboardCourseModules() {
                   isFetching={quizzesFetching}
                   toolbarActions={
                     <>
-                      <Button
-                        size="sm"
-                        onClick={() => createQuizModal.open(undefined)}
-                      >
-                        <Plus className="mr-1 h-4 w-4" />
-                        New Quiz
+                      <Button asChild size="sm">
+                        <Link
+                          to={`/client/dashboard/courses/${courseId}/modules/${selectedModule.id}/quizzes/new`}
+                        >
+                          <Plus className="mr-1 h-4 w-4" />
+                          New Quiz
+                        </Link>
                       </Button>
                       <Button
                         size="sm"
@@ -254,20 +279,10 @@ export default function ClientDashboardCourseModules() {
       {/* Dialogs */}
       <CreateOrUpdateModuleDialog coursePk={courseId!} />
       {selectedModule && (
-        <>
-          <CreateOrUpdateContentDialog
-            coursePk={courseId!}
-            modulePk={selectedModule.id}
-          />
-          <CreateOrUpdateQuizDialog
-            coursePk={courseId!}
-            modulePk={selectedModule.id}
-          />
-          <GenerateAiQuizDialog
-            coursePk={courseId!}
-            modulePk={selectedModule.id}
-          />
-        </>
+        <GenerateAiQuizDialog
+          coursePk={courseId!}
+          modulePk={selectedModule.id}
+        />
       )}
       <ViewContentDialog />
     </div>

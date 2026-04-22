@@ -44,8 +44,32 @@ export default [
         route("dashboard/members", "routes/client.dashboard.members.tsx"),
         route("dashboard/courses", "routes/client.dashboard.courses.tsx"),
         route(
+          "dashboard/courses/new",
+          "routes/client.dashboard.courses.new.tsx"
+        ),
+        route(
+          "dashboard/courses/:courseId/edit",
+          "routes/client.dashboard.courses.$courseId.edit.tsx"
+        ),
+        route(
           "dashboard/courses/:courseId/modules",
           "routes/client.dashboard.courses.$courseId.modules.tsx"
+        ),
+        route(
+          "dashboard/courses/:courseId/modules/:moduleId/contents/new",
+          "routes/client.dashboard.courses.$courseId.modules.$moduleId.contents.new.tsx"
+        ),
+        route(
+          "dashboard/courses/:courseId/modules/:moduleId/contents/:contentId/edit",
+          "routes/client.dashboard.courses.$courseId.modules.$moduleId.contents.$contentId.edit.tsx"
+        ),
+        route(
+          "dashboard/courses/:courseId/modules/:moduleId/quizzes/new",
+          "routes/client.dashboard.courses.$courseId.modules.$moduleId.quizzes.new.tsx"
+        ),
+        route(
+          "dashboard/courses/:courseId/modules/:moduleId/quizzes/:quizId/edit",
+          "routes/client.dashboard.courses.$courseId.modules.$moduleId.quizzes.$quizId.edit.tsx"
         ),
         route(
           "dashboard/courses/:courseId/preview",

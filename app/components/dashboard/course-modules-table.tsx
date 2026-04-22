@@ -10,9 +10,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { CourseModuleDetail } from "@/features/modules/module-queries";
 import { MoreHorizontal, Pencil, Trash2, FileText } from "lucide-react";
-import { useDeleteModule } from "@/features/modules/module-mutations";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import { DataTable } from "@/components/ui/data-table";
+import { DeleteModuleDialog } from "./delete-module-dialog";
 
 interface CourseModulesTableProps {
   modules: CourseModuleDetail[];
@@ -33,8 +33,8 @@ export function CourseModulesTable({
   isFetching,
   toolbarActions,
 }: CourseModulesTableProps) {
-  const deleteModule = useDeleteModule();
   const editModal = useAppModal("create-or-update-module");
+  const deleteModal = useAppModal("delete-module");
 
   const columns = useMemo(
     () =>
@@ -100,7 +100,7 @@ export function CourseModulesTable({
                   <DropdownMenuItem
                     className="text-destructive"
                     onClick={() =>
-                      deleteModule.mutate({
+                      deleteModal.open({
                         coursePk,
                         id: mod.id,
                         title: mod.title,
@@ -116,18 +116,21 @@ export function CourseModulesTable({
           },
         }),
       ] as ColumnDef<CourseModuleDetail, unknown>[],
-    [coursePk, onViewContents, deleteModule, editModal]
+    [coursePk, onViewContents, editModal, deleteModal]
   );
 
   return (
-    <DataTable
-      columns={columns}
-      data={modules}
-      searchPlaceholder="Search modules..."
-      emptyMessage="No modules found."
-      onRefresh={onRefresh}
-      isFetching={isFetching}
-      toolbarActions={toolbarActions}
-    />
+    <>
+      <DataTable
+        columns={columns}
+        data={modules}
+        searchPlaceholder="Search modules..."
+        emptyMessage="No modules found."
+        onRefresh={onRefresh}
+        isFetching={isFetching}
+        toolbarActions={toolbarActions}
+      />
+      <DeleteModuleDialog />
+    </>
   );
 }
