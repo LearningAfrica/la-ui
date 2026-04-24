@@ -4,6 +4,8 @@ import { DashboardHeader } from "@/components/dashboard-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Outlet } from "react-router";
 
+export const meta = () => [{ name: "robots", content: "noindex, nofollow" }];
+
 export default function SystemDashboardLayout() {
   return (
     <RouteGuard allowedRoles={["super_admin"]} requireVerified>

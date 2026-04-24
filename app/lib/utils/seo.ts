@@ -1,19 +1,56 @@
 export interface SEOConfig {
   title: string;
   description: string;
+  /** Absolute or relative URL used for canonical + og:url. */
   url?: string;
   image?: string;
   type?: string;
   keywords?: string;
+  /** Force noindex for this route. */
+  noIndex?: boolean;
+  /** JSON-LD objects to emit as <script type="application/ld+json"> tags. */
+  jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
 }
 
-// Update this with your actual domain when deploying
-const baseUrl =
-  typeof window !== "undefined"
-    ? window.location.origin
-    : process.env.VITE_PUBLIC_URL || "https://learningafrica.com";
+const SITE_NAME = "Learning Africa";
+const SITE_DOMAIN = "https://learningafrica.com";
+const TWITTER_HANDLE = "@learningafrica";
 
-const defaultImage = `${baseUrl}/og.png`; // Create a 1200x630px image and place it in /public
+const baseUrl =
+  typeof globalThis.window !== "undefined"
+    ? globalThis.location.origin
+    : process.env.VITE_PUBLIC_URL || SITE_DOMAIN;
+
+const defaultImage = `${baseUrl}/og.png`;
+
+/**
+ * Strip tracking query params and trailing slash for canonical URLs.
+ */
+function canonicalize(url: string): string {
+  try {
+    const u = new URL(url);
+    const strip = [
+      "utm_source",
+      "utm_medium",
+      "utm_campaign",
+      "utm_term",
+      "utm_content",
+      "ref",
+      "gclid",
+      "fbclid",
+    ];
+
+    strip.forEach((k) => u.searchParams.delete(k));
+
+    if (u.pathname.length > 1 && u.pathname.endsWith("/")) {
+      u.pathname = u.pathname.slice(0, -1);
+    }
+
+    return u.toString();
+  } catch {
+    return url;
+  }
+}
 
 export function generateSEOTags(config: SEOConfig) {
   const {
@@ -23,38 +60,70 @@ export function generateSEOTags(config: SEOConfig) {
     image = defaultImage,
     type = "website",
     keywords,
+    noIndex,
+    jsonLd,
   } = config;
 
-  const fullUrl = url ? `${baseUrl}${url}` : baseUrl;
+  const fullTitle = title.includes(SITE_NAME)
+    ? title
+    : `${title} | ${SITE_NAME}`;
+  const rawUrl = url
+    ? url.startsWith("http")
+      ? url
+      : `${baseUrl}${url}`
+    : baseUrl;
+  const fullUrl = canonicalize(rawUrl);
   const fullImageUrl = image.startsWith("http") ? image : `${baseUrl}${image}`;
 
+  const envNoIndex =
+    typeof import.meta !== "undefined" &&
+    Boolean(
+      (import.meta as unknown as { env?: { VITE_NOINDEX?: unknown } }).env
+        ?.VITE_NOINDEX
+    );
+  const shouldNoIndex = noIndex || envNoIndex;
+
+  const jsonLdTags = jsonLd
+    ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]).map((obj) => ({
+        "script:ld+json": obj,
+      }))
+    : [];
+
   return [
-    // Basic Meta Tags
-    { title },
+    { title: fullTitle },
     { name: "description", content: description },
     ...(keywords ? [{ name: "keywords", content: keywords }] : []),
 
-    // Open Graph Tags
-    { property: "og:title", content: title },
+    { tagName: "link", rel: "canonical", href: fullUrl },
+
+    { property: "og:title", content: fullTitle },
     { property: "og:description", content: description },
     { property: "og:type", content: type },
     { property: "og:url", content: fullUrl },
     { property: "og:image", content: fullImageUrl },
+    { property: "og:image:secure_url", content: fullImageUrl },
+    { property: "og:image:type", content: "image/png" },
     { property: "og:image:width", content: "1200" },
     { property: "og:image:height", content: "630" },
     { property: "og:image:alt", content: title },
-    { property: "og:site_name", content: "Learning Africa" },
+    { property: "og:site_name", content: SITE_NAME },
+    { property: "og:locale", content: "en_US" },
 
-    // Twitter Card Tags
     { name: "twitter:card", content: "summary_large_image" },
-    { name: "twitter:title", content: title },
+    { name: "twitter:site", content: TWITTER_HANDLE },
+    { name: "twitter:creator", content: TWITTER_HANDLE },
+    { name: "twitter:title", content: fullTitle },
     { name: "twitter:description", content: description },
     { name: "twitter:image", content: fullImageUrl },
     { name: "twitter:image:alt", content: title },
-    { name: "twitter:creator", content: "@learningafrica" }, // Update with your Twitter handle if you have one
+    { name: "twitter:domain", content: new URL(baseUrl).hostname },
 
-    // Additional SEO
-    { name: "author", content: "Learning Africa" },
-    { name: "robots", content: "index, follow" },
+    { name: "author", content: SITE_NAME },
+    {
+      name: "robots",
+      content: shouldNoIndex ? "noindex, nofollow" : "index, follow",
+    },
+
+    ...jsonLdTags,
   ];
 }

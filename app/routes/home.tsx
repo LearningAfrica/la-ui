@@ -1,4 +1,5 @@
 import { generateSEOTags } from "@/lib/utils/seo";
+import { organizationSchema, websiteSchema } from "@/lib/utils/structured-data";
 // import type { Route } from "./+types/home";
 import { href } from "react-router";
 import { LandingHeader } from "@/components/landing/landing-header";
@@ -21,6 +22,7 @@ export function meta() {
       image: "/og.png",
       keywords:
         "learning,education,data science,tech innovation,smart learning,edtech,precision education,learning management,data analytics,machine learning,deep learning,computer vision,remote sensing,satellite imagery,IoT in education,digital learning",
+      jsonLd: [organizationSchema(), websiteSchema()],
     }),
   ];
 }
