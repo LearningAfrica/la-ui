@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import {
@@ -22,6 +22,7 @@ import {
   FormNumberField,
   FormSelectField,
 } from "@/components/form-fields";
+import { orgRoutes } from "@/lib/utils/org-routes";
 
 interface ContentFormProps {
   coursePk: string;
@@ -62,6 +63,7 @@ export function ContentForm({
   redirectTo,
 }: ContentFormProps) {
   const navigate = useNavigate();
+  const { orgId = "" } = useParams<{ orgId: string }>();
   const isEditing = !!content;
 
   const createContent = useCreateModuleContent();
@@ -126,7 +128,7 @@ export function ContentForm({
     [form]
   );
 
-  const back = redirectTo ?? `/client/dashboard/courses/${coursePk}/modules`;
+  const back = redirectTo ?? orgRoutes.courseModules(orgId, coursePk);
 
   const handleFormSubmit = form.handleSubmit((data) => {
     const payload: Record<string, unknown> = {

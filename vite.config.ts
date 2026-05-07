@@ -8,20 +8,18 @@ import netlifyReactRouter from "@netlify/vite-plugin-react-router";
 
 const isNetlify = process.env.VITE_NETLIFY === "true";
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
-    // reactRouterDevTools(),
     tailwindcss(),
     reactRouter(),
     tsconfigPaths(),
-    devtools(),
+    ...(mode === "development" ? [devtools()] : []),
     ...(isNetlify ? [netlifyReactRouter()] : []),
   ],
   server: {
     port: 3000,
-    // open: true,
   },
   build: {
     sourcemap: false,
   },
-});
+}));

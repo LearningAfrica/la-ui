@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 import {
   useReactTable,
   getCoreRowModel,
@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import type { Quiz } from "@/features/quizzes/quiz-queries";
 import { useDeleteQuiz } from "@/features/quizzes/quiz-mutations";
+import { orgRoutes } from "@/lib/utils/org-routes";
 
 interface QuizzesTableProps {
   quizzes: Quiz[];
@@ -53,6 +54,7 @@ export function QuizzesTable({
   isFetching = false,
   toolbarActions,
 }: QuizzesTableProps) {
+  const { orgId = "" } = useParams<{ orgId: string }>();
   const deleteQuiz = useDeleteQuiz();
   const [pendingDelete, setPendingDelete] = useState<Quiz | null>(null);
 
@@ -102,7 +104,7 @@ export function QuizzesTable({
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <Link
-                    to={`/client/dashboard/courses/${coursePk}/modules/${modulePk}/quizzes/${quiz.id}/edit`}
+                    to={orgRoutes.quizEdit(orgId, coursePk, modulePk, quiz.id)}
                   >
                     <Pencil className="mr-2 h-4 w-4" />
                     Edit Quiz

@@ -85,9 +85,9 @@ export function VerifyEmailComponent({
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-amber-100 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20">
+          <div className="bg-la-forest-wash mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full">
             {verificationStatus === "verifying" && (
-              <Loader2 className="h-10 w-10 animate-spin text-orange-600" />
+              <Loader2 className="text-la-forest h-10 w-10 animate-spin" />
             )}
             {verificationStatus === "success" && (
               <CheckCircle2 className="h-10 w-10 text-green-600" />

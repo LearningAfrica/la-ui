@@ -6,6 +6,7 @@ import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { createLogoItemUrl } from "@/lib/utils/create-image-url";
+import { orgRoutes } from "@/lib/utils/org-routes";
 
 interface OrganizationCardProps {
   organization: MyOrganization;
@@ -17,7 +18,7 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
 
   const handleOpenOrganization = () => {
     setSelectedOrganization(organization);
-    navigate("/client/dashboard");
+    navigate(orgRoutes.overview(organization.id));
   };
 
   const logoUrl = createLogoItemUrl(
@@ -37,8 +38,8 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
                 className="h-12 w-12 rounded-lg border object-cover"
               />
             ) : (
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-linear-to-br from-orange-400 to-amber-500">
-                <Building2 className="h-6 w-6 text-white" />
+              <div className="bg-la-forest flex h-12 w-12 items-center justify-center rounded-lg">
+                <Building2 className="text-la-paper h-6 w-6" />
               </div>
             )}
             <div>
@@ -50,7 +51,7 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
               </p>
             </div>
           </div>
-          <Badge variant={organization.is_active ? "default" : "secondary"}>
+          <Badge variant={organization.is_active ? "success" : "secondary"}>
             {organization.is_active ? "Active" : "Inactive"}
           </Badge>
         </div>

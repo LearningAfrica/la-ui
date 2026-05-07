@@ -48,12 +48,15 @@ export function ResetPasswordConfirmation() {
 
   return (
     <div className="w-full max-w-md space-y-6">
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Reset Your Password
+      <div className="space-y-1.5">
+        <p className="font-display text-la-muted text-[10px] font-medium tracking-[0.25em] uppercase">
+          New password
+        </p>
+        <h1 className="font-display text-la-ink text-[28px] leading-tight font-medium tracking-[-0.02em]">
+          Reset your password
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Enter the OTP sent to your email and your new password
+        <p className="text-la-muted mt-2 text-sm">
+          Enter the code we sent to your email and choose a new password.
         </p>
       </div>
       <Form {...form}>
@@ -126,7 +129,7 @@ export function ResetPasswordConfirmation() {
       <div className="text-center text-sm">
         <Link
           to="/sign-in"
-          className="text-primary font-medium hover:underline"
+          className="text-la-forest hover:text-la-forest-deep font-display font-medium underline-offset-4 hover:underline"
         >
           Back to Sign In
         </Link>

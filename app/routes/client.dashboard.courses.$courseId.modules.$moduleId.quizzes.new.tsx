@@ -2,13 +2,19 @@ import { Link, useParams } from "react-router";
 import { ArrowLeft, ClipboardCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { QuizForm } from "@/components/dashboard/quiz-form";
+import { orgRoutes } from "@/lib/utils/org-routes";
 
 export default function NewQuizPage() {
-  const { courseId, moduleId } = useParams<{
+  const {
+    orgId = "",
+    courseId,
+    moduleId,
+  } = useParams<{
+    orgId: string;
     courseId: string;
     moduleId: string;
   }>();
-  const back = `/client/dashboard/courses/${courseId}/modules?moduleId=${moduleId}&tab=quizzes`;
+  const back = `${orgRoutes.courseModules(orgId, courseId!)}?moduleId=${moduleId}&tab=quizzes`;
 
   return (
     <div className="space-y-6 p-4 sm:p-6">

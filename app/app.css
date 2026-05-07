@@ -3,10 +3,49 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@keyframes la-top-loader {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
 @theme {
   --font-sans:
     "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-display:
+    "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Learning Africa — orange brand palette (sampled from logo).
+     Token names retain the `la-forest*` prefix for backwards compatibility
+     while the underlying value is the brand orange.
+     Surfaces are neutral white/gray so the orange brand pops without
+     fighting a warm rusty undertone. */
+  --color-la-cream: #f3f4f6;
+  --color-la-paper: #ffffff;
+  --color-la-ink: #111827;
+  --color-la-ink-2: #374151;
+  --color-la-muted: #6b7280;
+  --color-la-rule: rgba(17, 24, 39, 0.08);
+  --color-la-rule-strong: rgba(17, 24, 39, 0.15);
+  /* Primary brand: warm orange from the logo. Darkened from the raw
+     swatch so small text on paper meets WCAG AA contrast (≥ 4.5). */
+  --color-la-forest: #c84617;
+  --color-la-forest-deep: #9a3411;
+  --color-la-forest-soft: #e07744;
+  --color-la-forest-wash: #fbe7da;
+  /* Accents */
+  --color-la-terracotta: #c84d2a;
+  --color-la-terracotta-deep: #9b3a1f;
+  --color-la-amber: #f0a93f;
+  --color-la-amber-soft: #f6c478;
+  /* Semantic */
+  --color-la-ok: #2d8a55;
+  --color-la-warn: #f0a93f;
+  --color-la-bad: #c2362a;
 }
 
 html,
@@ -61,71 +100,64 @@ body {
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.646 0.222 41.116);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.646 0.222 41.116);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.828 0.189 84.429);
-  --accent-foreground: oklch(0.145 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.646 0.222 41.116);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.646 0.222 41.116);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.646 0.222 41.116);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.646 0.222 41.116);
+  /* Shadcn tokens are derived from the la-* tokens so changing one set
+     propagates to every shadcn primitive (Card, Input, Badge, …).
+     Edit the la-* block above; everything below tracks it. */
+  --background: var(--color-la-paper);
+  --foreground: var(--color-la-ink);
+  --card: var(--color-la-paper);
+  --card-foreground: var(--color-la-ink);
+  --popover: var(--color-la-paper);
+  --popover-foreground: var(--color-la-ink);
+  --primary: var(--color-la-forest);
+  --primary-foreground: var(--color-la-paper);
+  --secondary: var(--color-la-cream);
+  --secondary-foreground: var(--color-la-ink);
+  --muted: var(--color-la-cream);
+  --muted-foreground: var(--color-la-muted);
+  --accent: var(--color-la-cream);
+  --accent-foreground: var(--color-la-ink);
+  --destructive: var(--color-la-bad);
+  --border: var(--color-la-rule-strong);
+  --input: var(--color-la-rule-strong);
+  --ring: var(--color-la-forest);
+  --chart-1: var(--color-la-forest);
+  --chart-2: var(--color-la-amber);
+  --chart-3: var(--color-la-terracotta);
+  --chart-4: var(--color-la-ok);
+  --chart-5: var(--color-la-forest-soft);
+  --sidebar: var(--color-la-paper);
+  --sidebar-foreground: var(--color-la-ink);
+  --sidebar-primary: var(--color-la-forest);
+  --sidebar-primary-foreground: var(--color-la-paper);
+  --sidebar-accent: var(--color-la-cream);
+  --sidebar-accent-foreground: var(--color-la-ink);
+  --sidebar-border: var(--color-la-rule);
+  --sidebar-ring: var(--color-la-forest);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.7 0.25 45);
-  --primary-foreground: oklch(0.145 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.828 0.189 84.429);
-  --accent-foreground: oklch(0.145 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.7 0.25 45);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.7 0.25 45);
-  --sidebar-primary-foreground: oklch(0.145 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.7 0.25 45);
+  /* Learning Africa tokens — dark mode equivalents.
+     Surfaces flip to neutral grays. Brand orange lightens one stop so
+     small text remains legible on dark surfaces. */
+  --color-la-cream: #1f2937;
+  --color-la-paper: #111827;
+  --color-la-ink: #f9fafb;
+  --color-la-ink-2: #d1d5db;
+  --color-la-muted: #9ca3af;
+  --color-la-rule: rgba(249, 250, 251, 0.1);
+  --color-la-rule-strong: rgba(249, 250, 251, 0.18);
+  --color-la-forest: #f08049;
+  --color-la-forest-deep: #d96632;
+  --color-la-forest-soft: #c84617;
+  --color-la-forest-wash: #3a1e15;
+  --color-la-terracotta: #e87a5b;
+  --color-la-terracotta-deep: #c25e44;
+  --color-la-amber: #f5b961;
+  --color-la-amber-soft: #f0a93f;
+  --color-la-ok: #4ab574;
+  --color-la-warn: #f5b961;
+  --color-la-bad: #e8625a;
 }
 
 @layer base {
@@ -138,6 +170,24 @@ body {
 }
 
 @layer components {
+  /* Flat tinted background for dashboard surfaces */
+  .la-shell-bg {
+    background-color: var(--color-la-cream);
+  }
+  .la-card {
+    background: var(--color-la-paper);
+    border: 1px solid var(--color-la-rule);
+    border-radius: 6px;
+  }
+  .la-eyebrow {
+    font-family: var(--font-display);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-la-muted);
+  }
+
   .lesson-prose {
     @apply text-foreground text-base leading-7;
   }

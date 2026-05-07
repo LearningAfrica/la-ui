@@ -90,7 +90,7 @@ export function AdminUsersTable({ users }: AdminUsersTableProps) {
       columnHelper.accessor("is_verified", {
         header: "Status",
         cell: ({ getValue }) => (
-          <Badge variant={getValue() ? "default" : "destructive"}>
+          <Badge variant={getValue() ? "success" : "destructive"}>
             {getValue() ? "Verified" : "Unverified"}
           </Badge>
         ),

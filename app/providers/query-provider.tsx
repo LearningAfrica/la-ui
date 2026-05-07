@@ -1,35 +1,43 @@
-import { TanStackDevtools } from "@tanstack/react-devtools";
-import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
+import { lazy, Suspense, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-// import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-// import { EmbeddedDevTools } from "react-router-devtools";
+
+const DevtoolsPanel = import.meta.env.DEV
+  ? lazy(() =>
+      Promise.all([
+        import("@tanstack/react-devtools"),
+        import("@tanstack/react-query-devtools"),
+      ]).then(([{ TanStackDevtools }, { ReactQueryDevtoolsPanel }]) => ({
+        default: () => (
+          <TanStackDevtools
+            config={{ hideUntilHover: true }}
+            plugins={[
+              {
+                name: "Tanstack Query",
+                render: <ReactQueryDevtoolsPanel />,
+                defaultOpen: false,
+              },
+            ]}
+          />
+        ),
+      }))
+    )
+  : null;
 
 type Props = {
   children: React.ReactNode;
 };
 
-const queryClient = new QueryClient();
-
 export default function ReactQueryProvider({ children }: Props) {
+  const [queryClient] = useState(() => new QueryClient());
+
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      <TanStackDevtools
-        config={{ hideUntilHover: true }}
-        plugins={[
-          {
-            name: "Tanstack Query",
-            render: <ReactQueryDevtoolsPanel />,
-            defaultOpen: false,
-          },
-
-          // {
-          //   name: "React Router",
-          //   render: <EmbeddedDevTools />,
-          //   defaultOpen: false,
-          // // },
-        ]}
-      />
+      {DevtoolsPanel ? (
+        <Suspense fallback={null}>
+          <DevtoolsPanel />
+        </Suspense>
+      ) : null}
     </QueryClientProvider>
   );
 }

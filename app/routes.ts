@@ -9,7 +9,61 @@ import {
 export default [
   layout("layouts/app-layout.tsx", [
     index("routes/home.tsx"),
-    route("dashboard", "routes/dashboard.tsx"),
+    layout("layouts/dashboard-shell-layout.tsx", [
+      route("dashboard", "routes/personal.home.tsx"),
+      route("dashboard/invitations", "routes/personal.invitations.tsx"),
+      route("dashboard/inquiries", "routes/personal.inquiries.tsx"),
+      route("dashboard/orgs", "routes/personal.orgs.tsx"),
+      route("dashboard/profile", "routes/client.profile.tsx"),
+    ]),
+    ...prefix("dashboard/org/:orgId", [
+      layout("layouts/lesson-reader-layout.tsx", [
+        route(
+          "courses/:courseId/lessons/:contentId",
+          "routes/client.dashboard.courses.$courseId.lessons.$contentId.tsx"
+        ),
+      ]),
+      layout("layouts/org-shell-layout.tsx", [
+        index("routes/client.dashboard.tsx"),
+        route("members", "routes/client.dashboard.members.tsx"),
+        route("courses", "routes/client.dashboard.courses.tsx"),
+        route("courses/new", "routes/client.dashboard.courses.new.tsx"),
+        route(
+          "courses/:courseId/edit",
+          "routes/client.dashboard.courses.$courseId.edit.tsx"
+        ),
+        route(
+          "courses/:courseId/modules",
+          "routes/client.dashboard.courses.$courseId.modules.tsx"
+        ),
+        route(
+          "courses/:courseId/modules/:moduleId/contents/new",
+          "routes/client.dashboard.courses.$courseId.modules.$moduleId.contents.new.tsx"
+        ),
+        route(
+          "courses/:courseId/modules/:moduleId/contents/:contentId/edit",
+          "routes/client.dashboard.courses.$courseId.modules.$moduleId.contents.$contentId.edit.tsx"
+        ),
+        route(
+          "courses/:courseId/modules/:moduleId/quizzes/new",
+          "routes/client.dashboard.courses.$courseId.modules.$moduleId.quizzes.new.tsx"
+        ),
+        route(
+          "courses/:courseId/modules/:moduleId/quizzes/:quizId/edit",
+          "routes/client.dashboard.courses.$courseId.modules.$moduleId.quizzes.$quizId.edit.tsx"
+        ),
+        route(
+          "courses/:courseId/preview",
+          "routes/client.dashboard.courses.$courseId.preview.tsx"
+        ),
+        route("categories", "routes/client.dashboard.categories.tsx"),
+        route("my-courses", "routes/client.dashboard.my-courses.tsx"),
+        route("my-learning", "routes/client.dashboard.my-learning.tsx"),
+        route("certificates", "routes/client.dashboard.certificates.tsx"),
+        route("invitations", "routes/client.dashboard.invitations.tsx"),
+        route("live-sessions", "routes/client.dashboard.live-sessions.tsx"),
+      ]),
+    ]),
     route("/sign-in", "routes/sign-in.tsx"),
     route("/sign-up", "routes/sign-up.tsx"),
     route("/verify-email", "routes/verify-email.tsx"),
@@ -24,76 +78,12 @@ export default [
       "routes/email-verification-pending.tsx"
     ),
     ...prefix("system", [
-      layout("layouts/system-dashboard-layout.tsx", [
+      layout("layouts/platform-shell-layout.tsx", [
         route("dashboard", "routes/system.dashboard.tsx"),
         route("inquiries", "routes/system.dashboard.inquiries.tsx"),
         route("users", "routes/system.dashboard.users.tsx"),
         route("organizations", "routes/system.dashboard.organizations.tsx"),
         route("profile", "routes/system.profile.tsx"),
-      ]),
-    ]),
-    ...prefix("client", [
-      layout("layouts/lesson-reader-layout.tsx", [
-        route(
-          "dashboard/courses/:courseId/lessons/:contentId",
-          "routes/client.dashboard.courses.$courseId.lessons.$contentId.tsx"
-        ),
-      ]),
-      layout("layouts/client-dashboard-layout.tsx", [
-        route("dashboard", "routes/client.dashboard.tsx"),
-        route("dashboard/members", "routes/client.dashboard.members.tsx"),
-        route("dashboard/courses", "routes/client.dashboard.courses.tsx"),
-        route(
-          "dashboard/courses/new",
-          "routes/client.dashboard.courses.new.tsx"
-        ),
-        route(
-          "dashboard/courses/:courseId/edit",
-          "routes/client.dashboard.courses.$courseId.edit.tsx"
-        ),
-        route(
-          "dashboard/courses/:courseId/modules",
-          "routes/client.dashboard.courses.$courseId.modules.tsx"
-        ),
-        route(
-          "dashboard/courses/:courseId/modules/:moduleId/contents/new",
-          "routes/client.dashboard.courses.$courseId.modules.$moduleId.contents.new.tsx"
-        ),
-        route(
-          "dashboard/courses/:courseId/modules/:moduleId/contents/:contentId/edit",
-          "routes/client.dashboard.courses.$courseId.modules.$moduleId.contents.$contentId.edit.tsx"
-        ),
-        route(
-          "dashboard/courses/:courseId/modules/:moduleId/quizzes/new",
-          "routes/client.dashboard.courses.$courseId.modules.$moduleId.quizzes.new.tsx"
-        ),
-        route(
-          "dashboard/courses/:courseId/modules/:moduleId/quizzes/:quizId/edit",
-          "routes/client.dashboard.courses.$courseId.modules.$moduleId.quizzes.$quizId.edit.tsx"
-        ),
-        route(
-          "dashboard/courses/:courseId/preview",
-          "routes/client.dashboard.courses.$courseId.preview.tsx"
-        ),
-        route("dashboard/categories", "routes/client.dashboard.categories.tsx"),
-        route("dashboard/my-courses", "routes/client.dashboard.my-courses.tsx"),
-        route(
-          "dashboard/my-learning",
-          "routes/client.dashboard.my-learning.tsx"
-        ),
-        route(
-          "dashboard/certificates",
-          "routes/client.dashboard.certificates.tsx"
-        ),
-        route(
-          "dashboard/invitations",
-          "routes/client.dashboard.invitations.tsx"
-        ),
-        route(
-          "dashboard/live-sessions",
-          "routes/client.dashboard.live-sessions.tsx"
-        ),
-        route("profile", "routes/client.profile.tsx"),
       ]),
     ]),
     route("*", "routes/catch-all.tsx"),

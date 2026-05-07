@@ -29,6 +29,7 @@ import { useCourseModules } from "@/features/modules/module-queries";
 import { useEnrollCourse } from "@/features/courses/course-mutations";
 import type { CourseModuleDetail } from "@/features/modules/module-queries";
 import type { ModuleContent } from "@/features/module-contents/module-content-queries";
+import { orgRoutes } from "@/lib/utils/org-routes";
 
 function formatDuration(totalSeconds: number): string {
   if (!totalSeconds || totalSeconds <= 0) return "";
@@ -66,10 +67,12 @@ function getCompletedSet(progress: CourseMyProgress | undefined): Set<string> {
 
 function ContentRow({
   content,
+  orgId,
   courseId,
   isCompleted,
 }: {
   content: ModuleContent;
+  orgId: string;
   courseId: string;
   isCompleted: boolean;
 }) {
@@ -79,7 +82,7 @@ function ContentRow({
 
   return (
     <Link
-      to={`/client/dashboard/courses/${courseId}/lessons/${content.id}`}
+      to={orgRoutes.lesson(orgId, courseId, content.id)}
       className="hover:bg-muted/40 group flex items-center gap-3 rounded-md px-2 py-3 transition-colors"
     >
       {isCompleted ? (
@@ -107,12 +110,14 @@ function ContentRow({
 
 function ModuleSection({
   module: mod,
+  orgId,
   courseId,
   index,
   defaultExpanded,
   completedSet,
 }: {
   module: CourseModuleDetail;
+  orgId: string;
   courseId: string;
   index: number;
   defaultExpanded: boolean;
@@ -191,6 +196,7 @@ function ModuleSection({
                 <ContentRow
                   key={content.id}
                   content={content}
+                  orgId={orgId}
                   courseId={courseId}
                   isCompleted={completedSet.has(content.id)}
                 />
@@ -204,7 +210,10 @@ function ModuleSection({
 }
 
 export default function CoursePreviewPage() {
-  const { courseId } = useParams<{ courseId: string }>();
+  const { orgId = "", courseId } = useParams<{
+    orgId: string;
+    courseId: string;
+  }>();
 
   const { data: course, isLoading: courseLoading } = useCourse(courseId!);
   const { data: modules, isLoading: modulesLoading } = useCourseModules(
@@ -253,9 +262,9 @@ export default function CoursePreviewPage() {
   const hasProgress = completedCount > 0;
   const ctaLabel = hasProgress ? "Resume course" : "Start the course";
   const ctaTo = nextLesson
-    ? `/client/dashboard/courses/${courseId}/lessons/${nextLesson.contentId}`
+    ? orgRoutes.lesson(orgId, courseId!, nextLesson.contentId)
     : modulesList[0]?.contents[0]
-      ? `/client/dashboard/courses/${courseId}/lessons/${modulesList[0].contents[0].id}`
+      ? orgRoutes.lesson(orgId, courseId!, modulesList[0].contents[0].id)
       : null;
 
   if (courseLoading) {
@@ -278,7 +287,7 @@ export default function CoursePreviewPage() {
 
   return (
     <div className="space-y-8 p-4 sm:p-6">
-      <Link to="/client/dashboard/courses">
+      <Link to={orgRoutes.courses(orgId)}>
         <Button variant="ghost" size="sm">
           <ArrowLeft className="mr-1 h-4 w-4" />
           Back to Courses
@@ -294,7 +303,7 @@ export default function CoursePreviewPage() {
               alt=""
               className="h-full w-full mask-b-from-30% mask-b-to-90% object-cover object-center opacity-30 dark:opacity-20"
             />
-            <div className="from-background/40 via-background/80 to-background absolute inset-0 bg-gradient-to-b" />
+            <div className="bg-background/80 absolute inset-0" />
           </div>
         )}
         <div className="relative px-6 py-12 sm:px-10 sm:py-16">
@@ -430,6 +439,7 @@ export default function CoursePreviewPage() {
               <ModuleSection
                 key={mod.id}
                 module={mod}
+                orgId={orgId}
                 courseId={courseId!}
                 index={i}
                 defaultExpanded={

@@ -4,15 +4,22 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { QuizForm } from "@/components/dashboard/quiz-form";
 import { useQuiz } from "@/features/quizzes/quiz-queries";
+import { orgRoutes } from "@/lib/utils/org-routes";
 
 export default function EditQuizPage() {
-  const { courseId, moduleId, quizId } = useParams<{
+  const {
+    orgId = "",
+    courseId,
+    moduleId,
+    quizId,
+  } = useParams<{
+    orgId: string;
     courseId: string;
     moduleId: string;
     quizId: string;
   }>();
   const { data: quiz, isLoading } = useQuiz(courseId!, moduleId!, quizId!);
-  const back = `/client/dashboard/courses/${courseId}/modules?moduleId=${moduleId}&tab=quizzes`;
+  const back = `${orgRoutes.courseModules(orgId, courseId!)}?moduleId=${moduleId}&tab=quizzes`;
 
   return (
     <div className="space-y-6 p-4 sm:p-6">

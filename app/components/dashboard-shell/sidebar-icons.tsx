@@ -1,0 +1,42 @@
+import {
+  BarChart3,
+  BookOpen,
+  Building2,
+  Compass,
+  FolderTree,
+  GraduationCap,
+  HeartPulse,
+  Home,
+  Inbox,
+  Mail,
+  Network,
+  ShieldCheck,
+  Sparkles,
+  UserCircle2,
+  Users,
+  Video,
+} from "lucide-react";
+
+export const NAV_ICON = {
+  home: Home,
+  invitations: Mail,
+  inbox: Inbox,
+  activity: Sparkles,
+  myOrgs: Building2,
+  joinedOrgs: Network,
+  browse: Compass,
+  platform: ShieldCheck,
+  platformOrgs: Building2,
+  platformUsers: Users,
+  platformHealth: HeartPulse,
+  members: Users,
+  courses: BookOpen,
+  categories: FolderTree,
+  reports: BarChart3,
+  liveSessions: Video,
+  myCourses: GraduationCap,
+  certificates: ShieldCheck,
+  profile: UserCircle2,
+} as const;
+
+export type NavIconKey = keyof typeof NAV_ICON;

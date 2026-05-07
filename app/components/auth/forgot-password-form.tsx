@@ -35,12 +35,15 @@ export function ForgotPasswordForm({ searchParams }: ForgotPasswordFormProps) {
 
   return (
     <div className="w-full max-w-md space-y-6">
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Reset Password
+      <div className="space-y-1.5">
+        <p className="font-display text-la-muted text-[10px] font-medium tracking-[0.25em] uppercase">
+          Reset password
+        </p>
+        <h1 className="font-display text-la-ink text-[28px] leading-tight font-medium tracking-[-0.02em]">
+          Forgot your password?
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Enter your email to receive a reset link
+        <p className="text-la-muted mt-2 text-sm">
+          Enter your email and we&apos;ll send you a reset link.
         </p>
       </div>
       <Form {...form}>
@@ -75,12 +78,10 @@ export function ForgotPasswordForm({ searchParams }: ForgotPasswordFormProps) {
         </form>
       </Form>
       <div className="text-center text-sm">
-        <span className="text-gray-600 dark:text-gray-400">
-          Remember your password?{" "}
-        </span>
+        <span className="text-la-muted">Remember your password? </span>
         <Link
           to={`/sign-in${searchParams ? `?${searchParams.toString()}` : ""}`}
-          className="text-primary font-medium hover:underline"
+          className="text-la-forest hover:text-la-forest-deep font-display font-medium underline-offset-4 hover:underline"
         >
           Sign in
         </Link>

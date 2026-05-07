@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { LucideIcon } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ import { useCourses } from "@/features/courses/course-queries";
 import { AdminCoursesTable } from "@/components/dashboard/admin-courses-table";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { useTableFilters } from "@/stores/filters/use-table-filters";
+import { orgRoutes } from "@/lib/utils/org-routes";
 
 type StatTone = "blue" | "amber" | "violet" | "emerald";
 
@@ -77,6 +78,7 @@ function StatCard({
 }
 
 export default function ClientDashboardCourses() {
+  const { orgId = "" } = useParams<{ orgId: string }>();
   const { state, setPage, setLimit } = useTableFilters("courses");
   const page = state.page;
   const pageSize = state.limit;
@@ -189,7 +191,7 @@ export default function ClientDashboardCourses() {
               </div>
               {isInstructor && (
                 <Button asChild className="mt-2">
-                  <Link to="/client/dashboard/courses/new">
+                  <Link to={orgRoutes.courseNew(orgId)}>
                     <Plus className="mr-1 h-4 w-4" />
                     Create your first course
                   </Link>
@@ -205,7 +207,7 @@ export default function ClientDashboardCourses() {
                 toolbarActions={
                   isInstructor ? (
                     <Button asChild size="sm">
-                      <Link to="/client/dashboard/courses/new">
+                      <Link to={orgRoutes.courseNew(orgId)}>
                         <Plus className="mr-1 h-4 w-4" />
                         Create Course
                       </Link>
