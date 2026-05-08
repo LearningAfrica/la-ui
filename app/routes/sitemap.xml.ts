@@ -1,53 +1,49 @@
-import { generateRemixSitemap } from "@forge42/seo-tools/remix/sitemap";
 import type { Route } from "./+types/sitemap.xml";
 
-function sitemapEntry(url: string, origin: string) {
-  const path = url.replace(origin, "") || "/";
+type Entry = {
+  path: string;
+  priority?: number;
+  changefreq?:
+    | "always"
+    | "hourly"
+    | "daily"
+    | "weekly"
+    | "monthly"
+    | "yearly"
+    | "never";
+};
 
-  if (path === "/") {
-    return { priority: 1, changefreq: "daily" as const };
-  }
-
-  return { priority: 0.5, changefreq: "weekly" as const };
-}
+const PUBLIC_ENTRIES: Entry[] = [
+  { path: "/", priority: 1.0, changefreq: "daily" },
+  { path: "/inquiry", priority: 0.9, changefreq: "monthly" },
+  { path: "/sign-up", priority: 0.7, changefreq: "monthly" },
+  { path: "/sign-in", priority: 0.5, changefreq: "monthly" },
+  { path: "/forgot-password", priority: 0.3, changefreq: "yearly" },
+];
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const { routes } = await import("virtual:react-router/server-build");
   const { origin } = new URL(request.url);
+  const lastmod = new Date().toISOString();
 
-  const sitemap = await generateRemixSitemap({
-    domain: origin,
-    ignore: [
-      "/client",
-      "/client/*",
-      "/system",
-      "/system/*",
-      "/dashboard",
-      "/sign-in",
-      "/sign-up",
-      "/verify-email",
-      "/forgot-password",
-      "/reset-password-confirmation",
-      "/email-verification-pending",
-      "/inquiry",
-      "/.well-known/appspecific/com.chrome.devtools.json",
-      "/*",
-    ],
-    routes,
-    sitemapData: async ({ url }: { url: string }) => {
-      const { priority, changefreq } = sitemapEntry(url, origin);
+  const urls = PUBLIC_ENTRIES.map(
+    (entry) =>
+      `  <url>\n` +
+      `    <loc>${origin}${entry.path === "/" ? "" : entry.path}</loc>\n` +
+      `    <lastmod>${lastmod}</lastmod>\n` +
+      `    <changefreq>${entry.changefreq ?? "monthly"}</changefreq>\n` +
+      `    <priority>${(entry.priority ?? 0.5).toFixed(1)}</priority>\n` +
+      `  </url>`
+  ).join("\n");
 
-      return {
-        changefreq,
-        priority,
-        lastUpdated: new Date(),
-      };
-    },
-  });
+  const xml =
+    `<?xml version="1.0" encoding="UTF-8"?>\n` +
+    `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+    `${urls}\n` +
+    `</urlset>\n`;
 
-  return new Response(sitemap, {
+  return new Response(xml, {
     headers: {
-      "Content-Type": "application/xml",
+      "Content-Type": "application/xml; charset=utf-8",
       "Cache-Control": "public, max-age=3600",
     },
   });

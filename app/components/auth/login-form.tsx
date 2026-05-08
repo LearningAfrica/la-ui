@@ -21,9 +21,11 @@ import { FormPasswordField } from "@/components/form-fields/form-password-field"
 
 interface LoginFormProps {
   searchParams?: URLSearchParams;
+  /** When provided, called instead of navigating after successful login. */
+  onAuthSuccess?: () => void;
 }
 
-export function LoginForm({ searchParams }: LoginFormProps) {
+export function LoginForm({ searchParams, onAuthSuccess }: LoginFormProps) {
   const navigate = useNavigate();
   const { login } = useAuthStore();
   const { setSelectedOrganization } = useOrganizationStore();
@@ -61,6 +63,12 @@ export function LoginForm({ searchParams }: LoginFormProps) {
           setSelectedOrganization(
             loginOrganizationToMyOrganization(result.organizations[0])
           );
+        }
+
+        if (onAuthSuccess) {
+          onAuthSuccess();
+
+          return;
         }
 
         // Check for a safe redirect param, otherwise navigate by role

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
+import { useAppModal } from "@/stores/filters/modal-hooks";
 
 import { LALogo } from "./la-logo";
 
@@ -32,6 +33,12 @@ export function LandingHeader({ isAuthenticated }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
+  const authModal = useAppModal("auth-modal");
+
+  const openAuth = (mode: "sign-in" | "sign-up") => {
+    setMobileOpen(false);
+    authModal.open({ mode });
+  };
 
   const fullName =
     [user?.first_name, user?.last_name].filter(Boolean).join(" ") ||
@@ -126,20 +133,20 @@ export function LandingHeader({ isAuthenticated }: Props) {
             </DropdownMenu>
           ) : (
             <>
-              <Link
-                to="/sign-in"
-                prefetch="intent"
+              <button
+                type="button"
+                onClick={() => openAuth("sign-in")}
                 className="font-display text-la-ink hover:bg-la-cream hidden h-9 items-center rounded px-3 text-[13px] font-medium md:inline-flex"
               >
                 Sign in
-              </Link>
-              <Link
-                to="/sign-up"
-                prefetch="intent"
+              </button>
+              <button
+                type="button"
+                onClick={() => openAuth("sign-up")}
                 className="font-display bg-la-forest text-la-paper inline-flex h-9 items-center rounded px-3.5 text-[13px] font-medium transition-colors hover:bg-(--color-la-forest-deep)"
               >
                 Sign up
-              </Link>
+              </button>
             </>
           )}
           <button
@@ -191,20 +198,20 @@ export function LandingHeader({ isAuthenticated }: Props) {
                 </>
               ) : (
                 <div className="flex gap-2">
-                  <Link
-                    to="/sign-in"
-                    prefetch="intent"
+                  <button
+                    type="button"
+                    onClick={() => openAuth("sign-in")}
                     className="font-display text-la-ink border-la-rule flex-1 rounded border px-3 py-2 text-center text-[14px] font-medium"
                   >
                     Sign in
-                  </Link>
-                  <Link
-                    to="/sign-up"
-                    prefetch="intent"
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => openAuth("sign-up")}
                     className="font-display bg-la-forest text-la-paper flex-1 rounded px-3 py-2 text-center text-[14px] font-medium"
                   >
                     Sign up
-                  </Link>
+                  </button>
                 </div>
               )}
             </div>

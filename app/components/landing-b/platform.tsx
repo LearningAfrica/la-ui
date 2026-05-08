@@ -50,8 +50,11 @@ export function LandingPlatform() {
 
   return (
     <section id="platform" className="bg-la-cream relative overflow-hidden">
-      <div className="pointer-events-none absolute -bottom-24 -left-24 hidden size-[360px] md:block">
-        <BackgroundPattern kind="weave" tone="dark" />
+      <div className="pointer-events-none absolute -bottom-24 -left-24 hidden size-[420px] md:block">
+        <BackgroundPattern kind="weave" tone="dark" opacityScale={2.5} />
+      </div>
+      <div className="pointer-events-none absolute -top-12 right-8 hidden size-[200px] lg:block">
+        <BackgroundPattern kind="circles" tone="dark" opacityScale={2} />
       </div>
       <div className="relative mx-auto max-w-[1280px] px-5 py-20 md:px-10 md:py-24">
         <div className="mb-12 grid gap-5 md:grid-cols-12">

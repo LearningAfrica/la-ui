@@ -13,21 +13,43 @@ import {
   LandingVoices,
 } from "@/components/landing-b";
 import { generateSEOTags } from "@/lib/utils/seo";
-import { organizationSchema, websiteSchema } from "@/lib/utils/structured-data";
+import {
+  faqSchema,
+  organizationSchema,
+  websiteSchema,
+} from "@/lib/utils/structured-data";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
+
+const HOME_FAQS = [
+  {
+    q: "Who is Learning Africa for?",
+    a: "Schools, universities, ministries, and individual learners across Africa. Educators teach, learners enroll, ministries roll out at scale.",
+  },
+  {
+    q: "How much does it cost?",
+    a: "Free for eligible educators, schools, ministries, and learners. We onboard organizations after a short inquiry.",
+  },
+  {
+    q: "Can my organization onboard?",
+    a: "Yes. Submit an inquiry from the homepage. We review every request and reply with next steps within a few business days.",
+  },
+  {
+    q: "Do learners get verifiable credentials?",
+    a: "Yes. Course completions issue digital credentials that are verifiable and portable across institutions.",
+  },
+];
 
 export function meta() {
   return [
     ...generateSEOTags({
-      title:
-        "Learning Africa | Make Learning Smarter with Data and AI Solutions in Africa",
+      title: "Learning Africa — Free education for the continent",
       description:
-        "Free, accredited education infrastructure built with educators, ministries, and universities across the continent.",
+        "Free, accredited learning for African schools, universities, ministries, and learners. Submit an inquiry to onboard your organization.",
       url: href("/"),
       image: "/og.png",
       keywords:
-        "learning,education,africa,edtech,curriculum,credentials,literacy,k-12,higher education,ministry of education",
-      jsonLd: [organizationSchema(), websiteSchema()],
+        "learning africa,free education africa,african edtech,k-12 africa,higher education africa,ministry of education,verifiable credentials,school management africa",
+      jsonLd: [organizationSchema(), websiteSchema(), faqSchema(HOME_FAQS)],
     }),
   ];
 }

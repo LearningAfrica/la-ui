@@ -22,9 +22,14 @@ import { FormPasswordField } from "@/components/form-fields/form-password-field"
 
 interface RegisterFormProps {
   searchParams?: URLSearchParams;
+  /** When provided, called instead of navigating after successful sign-up. */
+  onAuthSuccess?: () => void;
 }
 
-export function RegisterForm({ searchParams }: RegisterFormProps) {
+export function RegisterForm({
+  searchParams,
+  onAuthSuccess,
+}: RegisterFormProps) {
   const navigate = useNavigate();
 
   const form = useForm<RegisterFormData>({
@@ -45,6 +50,12 @@ export function RegisterForm({ searchParams }: RegisterFormProps) {
   const onSubmit = form.handleSubmit(async (data) => {
     await registerMutation.mutateAsync(data, {
       onSuccess: () => {
+        if (onAuthSuccess) {
+          onAuthSuccess();
+
+          return;
+        }
+
         // Navigate to sign-in page after successful registration
         navigate(
           `/sign-in${searchParams ? `?${searchParams.toString()}` : ""}`

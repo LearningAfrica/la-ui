@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router";
 
 import { useAuthStore } from "@/stores/auth/auth-hooks";
+import { useAppModal } from "@/stores/filters/modal-hooks";
 
 import { AfricaMap } from "./africa-map";
 import { BackgroundPattern } from "./background-pattern";
@@ -15,6 +16,7 @@ const HIGHLIGHTS = [
 
 export function LandingHero() {
   const { isAuthenticated } = useAuthStore();
+  const authModal = useAppModal("auth-modal");
   const [hovered, setHovered] = useState<string | null>(null);
 
   const highlights: Record<string, string> = hovered
@@ -70,20 +72,20 @@ export function LandingHero() {
                 </Link>
               ) : (
                 <>
-                  <Link
-                    to="/sign-up"
-                    prefetch="intent"
+                  <button
+                    type="button"
+                    onClick={() => authModal.open({ mode: "sign-up" })}
                     className="font-display bg-la-forest text-la-paper inline-flex h-12 items-center rounded px-6 text-[14px] font-medium transition-colors hover:bg-(--color-la-forest-deep)"
                   >
                     Sign up — it&apos;s free →
-                  </Link>
-                  <Link
-                    to="/sign-in"
-                    prefetch="intent"
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => authModal.open({ mode: "sign-in" })}
                     className="font-display border-la-rule-strong text-la-ink hover:bg-la-cream inline-flex h-12 items-center rounded border px-6 text-[14px] font-medium transition-colors"
                   >
                     Sign in
-                  </Link>
+                  </button>
                 </>
               )}
               <span className="text-la-muted text-[13px]">
