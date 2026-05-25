@@ -82,7 +82,7 @@ function SidebarLink({ item }: { item: NavItem }) {
       prefetch="intent"
       className={({ isActive }) =>
         cn(
-          "font-display group flex items-center justify-between gap-2 rounded px-3 py-2 text-[13px] transition-colors",
+          "font-display group flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-[13px] transition-colors",
           isActive
             ? "bg-la-forest-wash text-la-forest font-semibold"
             : "text-la-ink-2 hover:bg-la-cream font-medium"

@@ -49,10 +49,17 @@
 html,
 body {
   @apply bg-white dark:bg-gray-950;
+  height: 100%;
 
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
   }
+}
+
+/* Prevent body scroll when the dashboard shell is active —
+   only main's overflow-y-auto should scroll. */
+html:has(.la-shell-bg) {
+  overflow: hidden;
 }
 
 @theme inline {
@@ -97,7 +104,7 @@ body {
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 0.225rem;
   /* Shadcn tokens are derived from the la-* tokens so changing one set
      propagates to every shadcn primitive (Card, Input, Badge, …).
      Edit the la-* block above; everything below tracks it. */
@@ -171,6 +178,14 @@ body {
   /* Flat tinted background for dashboard surfaces */
   .la-shell-bg {
     background-color: var(--color-la-cream);
+  }
+  /* Ensure all headings inside the dashboard shell use the display font
+     so pages rendered by different teams stay visually consistent. */
+  .la-shell-bg h1,
+  .la-shell-bg h2,
+  .la-shell-bg h3,
+  .la-shell-bg h4 {
+    font-family: var(--font-display);
   }
   .la-card {
     background: var(--color-la-paper);

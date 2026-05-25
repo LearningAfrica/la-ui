@@ -16,6 +16,8 @@ type Props = {
   rightSlot?: React.ReactNode;
   /** Mobile menu trigger — rendered only when provided + on small screens */
   onMenuClick?: () => void;
+  /** Opens the command palette when the search trigger is clicked. */
+  onSearchClick?: () => void;
   className?: string;
 };
 
@@ -26,12 +28,13 @@ export function DashTopbar({
   action,
   rightSlot,
   onMenuClick,
+  onSearchClick,
   className,
 }: Props) {
   return (
     <header
       className={cn(
-        "border-la-rule bg-la-paper flex h-16 items-center gap-3 border-b px-3 sm:px-4",
+        "border-la-rule bg-la-paper flex h-16 shrink-0 items-center gap-3 border-b px-3 sm:px-4",
         className
       )}
     >
@@ -75,12 +78,14 @@ export function DashTopbar({
 
       <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
         {action}
-        <SearchInput />
+        <SearchTrigger onClick={onSearchClick} />
         <ThemeToggle />
         <button
           type="button"
           aria-label="Notifications"
-          className="text-la-ink-2 hover:bg-la-cream relative grid size-9 place-items-center rounded transition-colors"
+          disabled
+          title="Notifications coming soon"
+          className="text-la-ink-2 relative grid size-9 place-items-center rounded opacity-50 transition-colors"
         >
           <Bell className="size-4" />
         </button>
@@ -90,15 +95,18 @@ export function DashTopbar({
   );
 }
 
-function SearchInput() {
+function SearchTrigger({ onClick }: { onClick?: () => void }) {
   return (
-    <div className="relative hidden md:block">
-      <Search className="text-la-muted pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2" />
-      <input
-        type="search"
-        placeholder="Search…"
-        className="border-la-rule bg-la-cream font-display text-la-ink placeholder:text-la-muted focus:ring-la-forest h-9 w-48 rounded border px-8 text-[13px] outline-none focus:ring-1 lg:w-56"
-      />
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      className="border-la-rule bg-la-cream font-display text-la-muted hover:bg-la-paper hover:border-la-rule-strong hidden h-9 w-48 items-center gap-2 rounded-lg border px-3 text-[13px] transition-colors md:inline-flex lg:w-56"
+    >
+      <Search className="size-3.5 shrink-0" />
+      <span className="flex-1 text-left">Search…</span>
+      <kbd className="bg-la-paper text-la-muted pointer-events-none hidden rounded border px-1.5 py-0.5 font-mono text-[10px] font-medium sm:inline-block">
+        ⌘K
+      </kbd>
+    </button>
   );
 }

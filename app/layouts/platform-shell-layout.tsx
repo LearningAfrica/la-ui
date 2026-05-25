@@ -164,12 +164,13 @@ function PlatformShellInner() {
   return (
     <DashboardShell
       sidebar={sidebar}
-      topbar={({ onMenuClick }) => (
+      topbar={({ onMenuClick, onSearchClick }) => (
         <DashTopbar
           title={pageTitle}
           subtitle="Platform administration"
           crumbs={[{ label: "Platform" }]}
           onMenuClick={onMenuClick}
+          onSearchClick={onSearchClick}
           rightSlot={
             <UserMenu
               initials={initialsFor(fullName)}

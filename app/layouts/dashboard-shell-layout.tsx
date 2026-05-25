@@ -11,6 +11,7 @@ import {
   UserMenu,
 } from "@/components/dashboard-shell";
 import type { ContextOption, NavGroup } from "@/components/dashboard-shell";
+import { useMyInquiries } from "@/features/inquiries/inquiry-queries";
 import { useMyOrganizations } from "@/features/organizations/organization-queries";
 import { useMyInvites } from "@/features/invites/invites-queries";
 import { orgRoutes, personalRoutes } from "@/lib/utils/org-routes";
@@ -48,8 +49,11 @@ function DashboardShellInner() {
 
   const { data: invitesData } = useMyInvites();
   const { data: orgsData } = useMyOrganizations();
+  const { data: inquiriesData } = useMyInquiries();
 
   const inviteCount = invitesData?.data?.length ?? 0;
+  const inquiryCount = inquiriesData?.meta?.total_docs ?? 0;
+  const showInquiries = isSuperAdmin || inquiryCount > 0;
 
   const fullName =
     [user?.first_name, user?.last_name].filter(Boolean).join(" ") ||
@@ -67,31 +71,33 @@ function DashboardShellInner() {
   }, [orgs]);
 
   const sidebarGroups = useMemo<NavGroup[]>(() => {
-    const personal: NavGroup = {
-      id: "personal",
-      items: [
-        {
-          id: "home",
-          label: "Home",
-          to: "/dashboard",
-          icon: <NAV_ICON.home className="size-4" />,
-        },
-        {
-          id: "invitations",
-          label: "My invitations",
-          to: "/dashboard/invitations",
-          icon: <NAV_ICON.invitations className="size-4" />,
-          badge: inviteCount > 0 ? inviteCount : undefined,
-          badgeTone: "warn",
-        },
-        {
-          id: "inquiries",
-          label: "My inquiries",
-          to: "/dashboard/inquiries",
-          icon: <NAV_ICON.inbox className="size-4" />,
-        },
-      ],
-    };
+    const personalItems = [
+      {
+        id: "home",
+        label: "Home",
+        to: "/dashboard",
+        icon: <NAV_ICON.home className="size-4" />,
+      },
+      {
+        id: "invitations",
+        label: "My invitations",
+        to: "/dashboard/invitations",
+        icon: <NAV_ICON.invitations className="size-4" />,
+        badge: inviteCount > 0 ? inviteCount : undefined,
+        badgeTone: "warn" as const,
+      },
+    ];
+
+    if (showInquiries) {
+      personalItems.push({
+        id: "inquiries",
+        label: "My inquiries",
+        to: "/dashboard/inquiries",
+        icon: <NAV_ICON.inbox className="size-4" />,
+      });
+    }
+
+    const personal: NavGroup = { id: "personal", items: personalItems };
 
     const orgsGroup: NavGroup = {
       id: "orgs",
@@ -108,7 +114,7 @@ function DashboardShellInner() {
     };
 
     return [personal, orgsGroup];
-  }, [inviteCount, organizationsTarget, orgs.length]);
+  }, [inviteCount, showInquiries, organizationsTarget, orgs.length]);
 
   const contextOptions = useMemo<ContextOption[]>(() => {
     const options: ContextOption[] = [];
@@ -175,11 +181,12 @@ function DashboardShellInner() {
   return (
     <DashboardShell
       sidebar={sidebar}
-      topbar={({ onMenuClick }) => (
+      topbar={({ onMenuClick, onSearchClick }) => (
         <DashTopbar
           title="Personal"
           subtitle="Your invitations, inquiries, and organizations."
           onMenuClick={onMenuClick}
+          onSearchClick={onSearchClick}
           rightSlot={
             <UserMenu
               initials={initialsFor(fullName, user?.email)}

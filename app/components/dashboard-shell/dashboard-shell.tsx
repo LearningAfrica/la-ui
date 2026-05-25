@@ -4,13 +4,18 @@ import { Outlet, useLocation } from "react-router";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
+import { CommandPalette, useCommandPalette } from "./command-palette";
+
 type Props = {
   sidebar: React.ReactNode;
   /**
    * Render-prop for the topbar. Receives `onMenuClick` to wire the
-   * mobile hamburger that toggles the sidebar drawer.
+   * mobile hamburger and `onSearchClick` for the command palette trigger.
    */
-  topbar: (ctx: { onMenuClick: () => void }) => React.ReactNode;
+  topbar: (ctx: {
+    onMenuClick: () => void;
+    onSearchClick: () => void;
+  }) => React.ReactNode;
   className?: string;
 };
 
@@ -18,10 +23,8 @@ export function DashboardShell({ sidebar, topbar, className }: Props) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const location = useLocation();
   const lastPath = useRef(location.pathname);
+  const cmd = useCommandPalette();
 
-  // Close mobile drawer on navigation only — skip the initial render and any
-  // effect run where the path hasn't actually changed. The guard prevents the
-  // cascading-render loop the rule warns about.
   useEffect(() => {
     if (lastPath.current === location.pathname) return;
 
@@ -37,8 +40,8 @@ export function DashboardShell({ sidebar, topbar, className }: Props) {
         className
       )}
     >
-      {/* Persistent sidebar at lg+ */}
-      <div className="hidden lg:flex">{sidebar}</div>
+      {/* Persistent sidebar at lg+ — pinned to viewport height */}
+      <div className="hidden h-full shrink-0 lg:flex">{sidebar}</div>
 
       {/* Mobile/tablet drawer */}
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
@@ -51,12 +54,17 @@ export function DashboardShell({ sidebar, topbar, className }: Props) {
         </SheetContent>
       </Sheet>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        {topbar({ onMenuClick: () => setDrawerOpen(true) })}
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        {topbar({
+          onMenuClick: () => setDrawerOpen(true),
+          onSearchClick: () => cmd.setOpen(true),
+        })}
         <main className="flex-1 overflow-y-auto px-4 py-5 sm:px-6 sm:py-6">
           <Outlet />
         </main>
       </div>
+
+      <CommandPalette open={cmd.open} onOpenChange={cmd.setOpen} />
     </div>
   );
 }

@@ -97,6 +97,28 @@ export const useEnrollCourse = () => {
   });
 };
 
+export const useGenerateCertificate = () => {
+  return useMutation({
+    mutationKey: courseMutationKeys.generateCertificate(),
+    mutationFn: async (courseId: string) => {
+      const response = await apiClient.post(
+        `/api/courses/${courseId}/certificate/`
+      );
+
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success({ message: "Certificate generated!" });
+    },
+    onError: (error) => {
+      toast.error({
+        message: extractError(error),
+        description: "Could not generate certificate.",
+      });
+    },
+  });
+};
+
 export const useCreateCourse = () => {
   const queryClient = useQueryClient();
 

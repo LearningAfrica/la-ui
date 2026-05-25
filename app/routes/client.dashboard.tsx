@@ -21,15 +21,28 @@ import {
   type OrganizationMembershipRole,
 } from "@/features/organizations/organization-queries";
 import { InviteMemberDialog } from "@/components/dashboard/invite-member-dialog";
+import { useCourses } from "@/features/courses/course-queries";
+import { useCategories } from "@/features/categories/category-queries";
 
 function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
-  const { data: membersData, isLoading } = useMyOrganizationMembers({
-    organizationId: orgId,
-    filters: { page: 1, page_size: 5 },
+  const { data: membersData, isLoading: membersLoading } =
+    useMyOrganizationMembers({
+      organizationId: orgId,
+      filters: { page: 1, page_size: 5 },
+    });
+  const { data: coursesData, isLoading: coursesLoading } = useCourses({
+    page: 1,
+    pageSize: 1,
+  });
+  const { data: categoriesData, isLoading: categoriesLoading } = useCategories({
+    page: 1,
+    limit: 1,
   });
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
   const totalMembers = membersData?.meta?.total_docs || 0;
+  const totalCourses = coursesData?.meta?.total_docs || 0;
+  const totalCategories = categoriesData?.meta?.total_docs || 0;
 
   return (
     <div className="space-y-6">
@@ -49,7 +62,7 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
             </div>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {membersLoading ? (
               <Skeleton className="h-8 w-16" />
             ) : (
               <div className="text-2xl font-bold">{totalMembers}</div>
@@ -67,7 +80,12 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-muted-foreground text-sm">Coming soon</div>
+            {coursesLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{totalCourses}</div>
+            )}
+            <p className="text-muted-foreground text-xs">Published courses</p>
           </CardContent>
         </Card>
         <Card>
@@ -78,7 +96,12 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-muted-foreground text-sm">Coming soon</div>
+            {categoriesLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{totalCategories}</div>
+            )}
+            <p className="text-muted-foreground text-xs">Content categories</p>
           </CardContent>
         </Card>
         <Card>
@@ -91,7 +114,8 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-muted-foreground text-sm">Coming soon</div>
+            <div className="text-2xl font-bold">—</div>
+            <p className="text-muted-foreground text-xs">No data yet</p>
           </CardContent>
         </Card>
       </div>

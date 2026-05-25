@@ -15,6 +15,7 @@ import type {
   NavGroup,
   NavItem,
 } from "@/components/dashboard-shell";
+import { useMyInquiries } from "@/features/inquiries/inquiry-queries";
 import { useMyInvites } from "@/features/invites/invites-queries";
 import {
   useMyOrganizations,
@@ -54,6 +55,7 @@ function OrgShellInner() {
   const { selectedOrganization, setSelectedOrganization } =
     useOrganizationStore();
   const { data: invitesData } = useMyInvites();
+  const { data: inquiriesData } = useMyInquiries();
   const { data: orgsData } = useMyOrganizations();
   const navigate = useNavigate();
   const location = useLocation();
@@ -83,6 +85,8 @@ function OrgShellInner() {
   const orgRole = activeOrg?.role;
   const personalInviteCount =
     invitesData?.data?.filter((inv) => !inv.is_used).length ?? 0;
+  const inquiryCount = inquiriesData?.meta?.total_docs ?? 0;
+  const showInquiries = isSuperAdmin || inquiryCount > 0;
 
   const fullName =
     [user?.first_name, user?.last_name].filter(Boolean).join(" ") ||
@@ -121,31 +125,35 @@ function OrgShellInner() {
     ): NavItem => i;
 
     // Personal items always sit at the top — Home is the implicit "exit".
-    const personal: NavGroup = {
-      id: "personal",
-      items: [
-        item({
-          id: "home",
-          label: "Home",
-          to: "/dashboard",
-          icon: <NAV_ICON.home className="size-4" />,
-        }),
-        item({
-          id: "personal-invitations",
-          label: "My invitations",
-          to: "/dashboard/invitations",
-          icon: <NAV_ICON.invitations className="size-4" />,
-          badge: personalInviteCount > 0 ? personalInviteCount : undefined,
-          badgeTone: "warn",
-        }),
+    const personalItems: NavItem[] = [
+      item({
+        id: "home",
+        label: "Home",
+        to: "/dashboard",
+        icon: <NAV_ICON.home className="size-4" />,
+      }),
+      item({
+        id: "personal-invitations",
+        label: "My invitations",
+        to: "/dashboard/invitations",
+        icon: <NAV_ICON.invitations className="size-4" />,
+        badge: personalInviteCount > 0 ? personalInviteCount : undefined,
+        badgeTone: "warn",
+      }),
+    ];
+
+    if (showInquiries) {
+      personalItems.push(
         item({
           id: "personal-inquiries",
           label: "My inquiries",
           to: "/dashboard/inquiries",
           icon: <NAV_ICON.inbox className="size-4" />,
-        }),
-      ],
-    };
+        })
+      );
+    }
+
+    const personal: NavGroup = { id: "personal", items: personalItems };
 
     const workspace: NavGroup = {
       id: "workspace",
@@ -238,7 +246,7 @@ function OrgShellInner() {
     };
 
     return [personal, workspace, manage, learning];
-  }, [urlOrgId, orgRole, personalInviteCount]);
+  }, [urlOrgId, orgRole, personalInviteCount, showInquiries]);
 
   const contextOptions = useMemo<ContextOption[]>(() => {
     const options: ContextOption[] = [];
@@ -307,11 +315,12 @@ function OrgShellInner() {
   return (
     <DashboardShell
       sidebar={sidebar}
-      topbar={({ onMenuClick }) => (
+      topbar={({ onMenuClick, onSearchClick }) => (
         <DashTopbar
-          title={activeOrg?.name ?? "Workspace"}
+          title={activeOrg?.name ?? selectedOrganization?.name ?? "Workspace"}
           subtitle={pageTitle}
           onMenuClick={onMenuClick}
+          onSearchClick={onSearchClick}
           rightSlot={
             <UserMenu
               initials={initialsFor(fullName)}

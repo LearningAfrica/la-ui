@@ -259,6 +259,7 @@ export default function CoursePreviewPage() {
     0
   );
   const progressPercent = Math.round(progress?.course_progress ?? 0);
+  const isEnrolled = !!progress;
   const hasProgress = completedCount > 0;
   const ctaLabel = hasProgress ? "Resume course" : "Start the course";
   const ctaTo = nextLesson
@@ -358,7 +359,7 @@ export default function CoursePreviewPage() {
                 )}
               </div>
 
-              {hasProgress && (
+              {isEnrolled && (
                 <div className="max-w-md space-y-1.5">
                   <div className="text-muted-foreground flex items-center justify-between text-xs font-medium">
                     <span>Your progress</span>
@@ -367,11 +368,16 @@ export default function CoursePreviewPage() {
                       {progressPercent}%
                     </span>
                   </div>
-                  <div className="bg-muted h-2 overflow-hidden rounded-full">
-                    <div
-                      className="h-full bg-emerald-500 transition-all"
-                      style={{ width: `${progressPercent}%` }}
-                    />
+                  <div className="mt-2 flex items-center gap-2">
+                    <div className="bg-muted h-2 flex-1 overflow-hidden rounded-full">
+                      <div
+                        className="bg-primary h-full rounded-full transition-all"
+                        style={{ width: `${progressPercent}%` }}
+                      />
+                    </div>
+                    <span className="text-muted-foreground text-sm">
+                      {progressPercent}%
+                    </span>
                   </div>
                 </div>
               )}
@@ -390,7 +396,12 @@ export default function CoursePreviewPage() {
                     No lessons yet
                   </Button>
                 )}
-                {!hasProgress && (
+                {isEnrolled ? (
+                  <Button variant="outline" size="lg" disabled>
+                    <CheckCircle2 className="mr-2 h-5 w-5 text-emerald-500" />
+                    Enrolled
+                  </Button>
+                ) : (
                   <Button
                     variant="outline"
                     size="lg"

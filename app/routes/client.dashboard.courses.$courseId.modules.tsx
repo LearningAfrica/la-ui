@@ -169,7 +169,7 @@ export default function ClientDashboardCourseModules() {
               onValueChange={handleTabChange}
               className="space-y-4"
             >
-              <TabsList>
+              <TabsList variant="line">
                 <TabsTrigger value="contents">
                   <FileText className="mr-2 h-4 w-4" />
                   Contents

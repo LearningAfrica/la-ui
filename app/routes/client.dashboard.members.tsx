@@ -98,7 +98,7 @@ export default function ClientDashboardMembers() {
         onValueChange={setActiveTab}
         className="space-y-6"
       >
-        <TabsList>
+        <TabsList variant="line">
           <TabsTrigger value="members">Members</TabsTrigger>
           <TabsTrigger value="invites">
             Invites

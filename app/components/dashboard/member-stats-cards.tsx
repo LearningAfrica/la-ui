@@ -59,7 +59,7 @@ export function MemberStatsCards({
       title: "Learners",
       value: learnerCount,
       icon: BookOpen,
-      description: "Student members",
+      description: "Learner members",
       color: "text-cyan-600",
       bgColor: "bg-cyan-100 dark:bg-cyan-950",
     },
