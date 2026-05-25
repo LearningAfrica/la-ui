@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from "react-router";
 
 import { RouteGuard } from "@/components/auth/route-guard";
 import {
-  ContextSwitcher,
   DashSidebar,
   DashTopbar,
   DashboardShell,
@@ -13,7 +12,7 @@ import {
 } from "@/components/dashboard-shell";
 import type { ContextOption, NavGroup } from "@/components/dashboard-shell";
 import { useMyOrganizations } from "@/features/organizations/organization-queries";
-import { orgRoutes } from "@/lib/utils/org-routes";
+import { orgRoutes, personalRoutes } from "@/lib/utils/org-routes";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 
@@ -79,7 +78,7 @@ function PlatformShellInner() {
           },
           {
             id: "platform-inquiries",
-            label: "Inquiries",
+            label: "Platform inquiries",
             to: "/system/inquiries",
             icon: <NAV_ICON.inbox className="size-4" />,
           },
@@ -102,17 +101,7 @@ function PlatformShellInner() {
   );
 
   const contextOptions = useMemo<ContextOption[]>(() => {
-    const options: ContextOption[] = [
-      {
-        id: "personal",
-        kind: "personal",
-        label: "Personal",
-        hint: "Invitations, inquiries, your orgs",
-        to: "/dashboard",
-        initials: initialsFor(fullName),
-        onSelect: () => navigate("/dashboard"),
-      },
-    ];
+    const options: ContextOption[] = [];
 
     orgs.forEach((org) => {
       options.push({
@@ -139,10 +128,18 @@ function PlatformShellInner() {
     });
 
     return options;
-  }, [fullName, orgs, navigate, setSelectedOrganization]);
+  }, [orgs, navigate, setSelectedOrganization]);
 
-  const currentContext =
-    contextOptions.find((o) => o.id === "platform") ?? contextOptions[0];
+  const contextGroups = useMemo(
+    () => [
+      {
+        label: "Organizations",
+        ids: contextOptions.filter((o) => o.kind === "org").map((o) => o.id),
+      },
+      { label: "Platform", ids: ["platform"] },
+    ],
+    [contextOptions]
+  );
 
   const handleSignOut = () => {
     logout();
@@ -152,22 +149,6 @@ function PlatformShellInner() {
   const sidebar = (
     <DashSidebar
       groups={sidebarGroups}
-      header={
-        <ContextSwitcher
-          current={currentContext}
-          options={contextOptions}
-          groups={[
-            { label: "You", ids: ["personal"] },
-            {
-              label: "Organizations",
-              ids: contextOptions
-                .filter((o) => o.kind === "org")
-                .map((o) => o.id),
-            },
-            { label: "Platform", ids: ["platform"] },
-          ]}
-        />
-      }
       footer={
         <SidebarUserCard
           initials={initialsFor(fullName)}
@@ -197,6 +178,10 @@ function PlatformShellInner() {
               profileTo="/system/profile"
               avatarTone="amber"
               onSignOut={handleSignOut}
+              contextOptions={contextOptions}
+              currentContextId="platform"
+              contextGroups={contextGroups}
+              viewAllOrgsTo={personalRoutes.orgs()}
             />
           }
         />

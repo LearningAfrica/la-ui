@@ -7,7 +7,7 @@ const STEPS = [
   {
     n: "01",
     title: "Tell us about your organization",
-    body: "Share who you are — school, university, ministry, or business — plus the size and what you want to teach.",
+    body: "Share who you are — company, NGO, training provider, or institution — plus the size and what you want to teach.",
   },
   {
     n: "02",

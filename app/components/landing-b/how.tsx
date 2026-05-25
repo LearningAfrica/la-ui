@@ -1,10 +1,22 @@
 import { BackgroundPattern } from "./background-pattern";
 
 const STEPS = [
-  { title: "Tell us your context", body: "Country, language, role." },
-  { title: "Pick a pathway", body: "From literacy to a master’s." },
-  { title: "Learn anywhere", body: "On phone, laptop, offline." },
-  { title: "Earn credentials", body: "Recognised, portable, free." },
+  {
+    title: "Set up your organization",
+    body: "Create your workspace and invite your team.",
+  },
+  {
+    title: "Build your courses",
+    body: "Author modules, lessons, and quizzes — your way.",
+  },
+  {
+    title: "Track learner progress",
+    body: "Enroll your team and see how they're doing.",
+  },
+  {
+    title: "Issue certificates",
+    body: "Recognize completion with verifiable credentials.",
+  },
 ];
 
 export function LandingHow() {
@@ -21,7 +33,7 @@ export function LandingHow() {
             </div>
           </div>
           <h2 className="font-display text-la-ink text-[36px] leading-[1.05] font-medium tracking-[-0.035em] sm:text-[44px] md:col-span-9 md:text-[56px]">
-            Four steps to learning.
+            Four steps to launch.
           </h2>
         </div>
 

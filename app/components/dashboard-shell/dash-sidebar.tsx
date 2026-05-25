@@ -53,14 +53,16 @@ export function DashSidebar({ groups, header, footer, className }: Props) {
 function SidebarGroup({ group }: { group: NavGroup }) {
   return (
     <div className="mb-3 last:mb-0">
-      <div
-        className={cn(
-          "font-display px-3 pt-2 pb-1 text-[10px] font-medium tracking-[0.15em] uppercase",
-          group.accent ? "text-(--color-la-amber)" : "text-la-muted"
-        )}
-      >
-        {group.label}
-      </div>
+      {group.label && (
+        <div
+          className={cn(
+            "font-display px-3 pt-2 pb-1 text-[10px] font-medium tracking-[0.15em] uppercase",
+            group.accent ? "text-(--color-la-amber)" : "text-la-muted"
+          )}
+        >
+          {group.label}
+        </div>
+      )}
       <ul className="space-y-0.5">
         {group.items.map((item) => (
           <li key={item.id}>

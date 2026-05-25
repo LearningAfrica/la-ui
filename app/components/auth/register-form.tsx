@@ -24,11 +24,15 @@ interface RegisterFormProps {
   searchParams?: URLSearchParams;
   /** When provided, called instead of navigating after successful sign-up. */
   onAuthSuccess?: () => void;
+  /** When provided, the "Sign in" prompt switches modes via this callback
+   *  instead of linking to the /sign-in page. */
+  onSwitchAuthMode?: () => void;
 }
 
 export function RegisterForm({
   searchParams,
   onAuthSuccess,
+  onSwitchAuthMode,
 }: RegisterFormProps) {
   const navigate = useNavigate();
 
@@ -199,12 +203,22 @@ export function RegisterForm({
 
       <div className="text-center text-sm">
         <span className="text-la-muted">Already have an account? </span>
-        <Link
-          to={`/sign-in${searchParams ? `?${searchParams.toString()}` : ""}`}
-          className="text-la-forest hover:text-la-forest-deep font-display font-medium underline-offset-4 hover:underline"
-        >
-          Sign in
-        </Link>
+        {onSwitchAuthMode ? (
+          <button
+            type="button"
+            onClick={onSwitchAuthMode}
+            className="text-la-forest hover:text-la-forest-deep font-display font-medium underline-offset-4 hover:underline"
+          >
+            Sign in
+          </button>
+        ) : (
+          <Link
+            to={`/sign-in${searchParams ? `?${searchParams.toString()}` : ""}`}
+            className="text-la-forest hover:text-la-forest-deep font-display font-medium underline-offset-4 hover:underline"
+          >
+            Sign in
+          </Link>
+        )}
       </div>
     </div>
   );

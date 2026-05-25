@@ -1,6 +1,7 @@
 import { ArrowLeft, CheckCircle2, MessageSquare, Sparkles } from "lucide-react";
 import { Link, href } from "react-router";
 
+import { AuthModal } from "@/components/auth/auth-modal";
 import { BackgroundPattern } from "@/components/landing-b/background-pattern";
 import { LALogo } from "@/components/landing-b/la-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -156,6 +157,8 @@ export default function InquiryPage() {
           </div>
         </main>
       </div>
+
+      <AuthModal />
     </div>
   );
 }

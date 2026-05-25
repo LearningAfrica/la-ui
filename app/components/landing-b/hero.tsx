@@ -2,21 +2,19 @@ import { useState } from "react";
 import { Link } from "react-router";
 
 import { useAuthStore } from "@/stores/auth/auth-hooks";
-import { useAppModal } from "@/stores/filters/modal-hooks";
 
 import { AfricaMap } from "./africa-map";
 import { BackgroundPattern } from "./background-pattern";
 
 const HIGHLIGHTS = [
-  { l: "Free for learners" },
-  { l: "Built with educators" },
-  { l: "Verifiable credentials" },
-  { l: "Pan-African" },
+  { l: "Free to start" },
+  { l: "Multi-tenant" },
+  { l: "Verifiable certificates" },
+  { l: "Self-serve setup" },
 ];
 
 export function LandingHero() {
   const { isAuthenticated } = useAuthStore();
-  const authModal = useAppModal("auth-modal");
   const [hovered, setHovered] = useState<string | null>(null);
 
   const highlights: Record<string, string> = hovered
@@ -36,7 +34,24 @@ export function LandingHero() {
       };
 
   return (
-    <section className="bg-la-paper relative overflow-hidden">
+    <section className="relative overflow-hidden bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
+      <div className="pointer-events-none absolute inset-0 opacity-[0.08]">
+        <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern
+              id="hero-dots"
+              x="0"
+              y="0"
+              width="40"
+              height="40"
+              patternUnits="userSpaceOnUse"
+            >
+              <circle cx="20" cy="20" r="2" fill="currentColor" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#hero-dots)" />
+        </svg>
+      </div>
       <div className="pointer-events-none absolute -top-20 -right-32 hidden size-[420px] md:block">
         <BackgroundPattern kind="circles" tone="dark" opacityScale={0.8} />
       </div>
@@ -47,19 +62,20 @@ export function LandingHero() {
             <div className="mb-7 flex items-center gap-3">
               <span aria-hidden className="bg-la-ink h-px w-6 shrink-0" />
               <span className="font-display text-la-muted text-[10px] font-medium tracking-[0.2em] uppercase">
-                Education infrastructure · Est. 2018
+                Empowering Africa Through Learning
               </span>
             </div>
             <h1 className="font-display text-la-ink text-[44px] leading-[1.02] font-medium tracking-[-0.04em] sm:text-[56px] lg:text-[72px] lg:tracking-[-0.045em]">
-              Every learner.
+              Transform Your
               <br />
-              Every language.
+              Organization&apos;s
               <br />
-              <span className="text-la-forest">One platform.</span>
+              <span className="text-la-forest">Learning.</span>
             </h1>
             <p className="text-la-ink-2 mt-7 max-w-[520px] text-[16px] leading-[1.55] sm:text-[17px]">
-              Free, accredited education built with educators, ministries, and
-              universities across the continent.
+              The complete learning management platform for modern
+              organizations. Create courses, track progress, and issue
+              certificates — all in one place.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               {isAuthenticated ? (
@@ -72,20 +88,20 @@ export function LandingHero() {
                 </Link>
               ) : (
                 <>
-                  <button
-                    type="button"
-                    onClick={() => authModal.open({ mode: "sign-up" })}
+                  <Link
+                    to="/sign-up"
+                    prefetch="intent"
                     className="font-display bg-la-forest text-la-paper inline-flex h-12 items-center rounded px-6 text-[14px] font-medium transition-colors hover:bg-(--color-la-forest-deep)"
                   >
                     Sign up — it&apos;s free →
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => authModal.open({ mode: "sign-in" })}
+                  </Link>
+                  <Link
+                    to="/sign-in"
+                    prefetch="intent"
                     className="font-display border-la-rule-strong text-la-ink hover:bg-la-cream inline-flex h-12 items-center rounded border px-6 text-[14px] font-medium transition-colors"
                   >
                     Sign in
-                  </button>
+                  </Link>
                 </>
               )}
               <span className="text-la-muted text-[13px]">
@@ -132,7 +148,7 @@ export function LandingHero() {
                 <div className="font-display text-la-ink mb-2 text-[18px] leading-snug font-medium tracking-tight">
                   {hovered
                     ? "Hover or click to explore"
-                    : "Built for learners and educators in every country."}
+                    : "Learners and instructors in every country."}
                 </div>
                 <div className="text-la-muted text-[12px]">
                   {hovered

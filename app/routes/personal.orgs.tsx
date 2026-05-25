@@ -1,3 +1,4 @@
+import { useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
 
 import { useMyOrganizations } from "@/features/organizations/organization-queries";
@@ -8,7 +9,17 @@ export default function PersonalOrganizationsPage() {
   const { data, isLoading } = useMyOrganizations();
   const { setSelectedOrganization } = useOrganizationStore();
   const navigate = useNavigate();
-  const orgs = data ?? [];
+  const orgs = useMemo(() => data ?? [], [data]);
+
+  // Single-org shortcut: drop straight into the only workspace the user has.
+  useEffect(() => {
+    if (isLoading || orgs.length !== 1) return;
+
+    const only = orgs[0];
+
+    setSelectedOrganization(only);
+    navigate(orgRoutes.overview(only.id), { replace: true });
+  }, [isLoading, orgs, setSelectedOrganization, navigate]);
 
   const enter = (org: (typeof orgs)[number]) => {
     setSelectedOrganization(org);

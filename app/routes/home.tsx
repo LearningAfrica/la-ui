@@ -23,11 +23,11 @@ import { useAuthStore } from "@/stores/auth/auth-hooks";
 const HOME_FAQS = [
   {
     q: "Who is Learning Africa for?",
-    a: "Schools, universities, ministries, and individual learners across Africa. Educators teach, learners enroll, ministries roll out at scale.",
+    a: "Any organization that wants to train its people — companies, NGOs, training providers, and institutions. Admins set up the workspace, instructors build courses, and learners enroll and earn certificates.",
   },
   {
     q: "How much does it cost?",
-    a: "Free for eligible educators, schools, ministries, and learners. We onboard organizations after a short inquiry.",
+    a: "Signing up is free. Organizations can request a custom plan with additional features through our inquiry form.",
   },
   {
     q: "Can my organization onboard?",
@@ -35,20 +35,20 @@ const HOME_FAQS = [
   },
   {
     q: "Do learners get verifiable credentials?",
-    a: "Yes. Course completions issue digital credentials that are verifiable and portable across institutions.",
+    a: "Yes. Course completions issue digital certificates that are verifiable and portable, so learners can share them anywhere.",
   },
 ];
 
 export function meta() {
   return [
     ...generateSEOTags({
-      title: "Learning Africa — Free education for the continent",
+      title: "Learning Africa — The complete learning management platform",
       description:
-        "Free, accredited learning for African schools, universities, ministries, and learners. Submit an inquiry to onboard your organization.",
+        "Create courses, track learner progress, and issue verifiable certificates — all in one place. The complete LMS for modern organizations.",
       url: href("/"),
       image: "/og.png",
       keywords:
-        "learning africa,free education africa,african edtech,k-12 africa,higher education africa,ministry of education,verifiable credentials,school management africa",
+        "learning africa,learning management system,lms platform,corporate training,employee training,online courses,verifiable certificates,team training,instructor platform",
       jsonLd: [organizationSchema(), websiteSchema(), faqSchema(HOME_FAQS)],
     }),
   ];

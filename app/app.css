@@ -19,33 +19,31 @@
   --font-display:
     "Space Grotesk", "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  /* Learning Africa — orange brand palette (sampled from logo).
+  /* Learning Africa — orange brand palette (matched to learningafrica.com).
      Token names retain the `la-forest*` prefix for backwards compatibility
      while the underlying value is the brand orange.
-     Surfaces are neutral white/gray so the orange brand pops without
-     fighting a warm rusty undertone. */
-  --color-la-cream: #f3f4f6;
+     Surfaces are neutral white/gray so the orange brand pops. */
+  --color-la-cream: #f5f5f5;
   --color-la-paper: #ffffff;
-  --color-la-ink: #111827;
-  --color-la-ink-2: #374151;
-  --color-la-muted: #6b7280;
-  --color-la-rule: rgba(17, 24, 39, 0.08);
-  --color-la-rule-strong: rgba(17, 24, 39, 0.15);
-  /* Primary brand: warm orange from the logo. Darkened from the raw
-     swatch so small text on paper meets WCAG AA contrast (≥ 4.5). */
-  --color-la-forest: #c84617;
-  --color-la-forest-deep: #9a3411;
-  --color-la-forest-soft: #e07744;
-  --color-la-forest-wash: #fbe7da;
+  --color-la-ink: #0a0a0a;
+  --color-la-ink-2: #404040;
+  --color-la-muted: #737373;
+  --color-la-rule: rgba(10, 10, 10, 0.08);
+  --color-la-rule-strong: rgba(10, 10, 10, 0.15);
+  /* Primary brand: vivid orange from learningafrica.com production. */
+  --color-la-forest: #f54900;
+  --color-la-forest-deep: #c63b00;
+  --color-la-forest-soft: #ff6d33;
+  --color-la-forest-wash: #fff1eb;
   /* Accents */
-  --color-la-terracotta: #c84d2a;
-  --color-la-terracotta-deep: #9b3a1f;
-  --color-la-amber: #f0a93f;
-  --color-la-amber-soft: #f6c478;
+  --color-la-terracotta: #e55c30;
+  --color-la-terracotta-deep: #b84520;
+  --color-la-amber: #ffb900;
+  --color-la-amber-soft: #ffd24d;
   /* Semantic */
   --color-la-ok: #2d8a55;
-  --color-la-warn: #f0a93f;
-  --color-la-bad: #c2362a;
+  --color-la-warn: #ffb900;
+  --color-la-bad: #e7000b;
 }
 
 html,
@@ -138,26 +136,26 @@ body {
 
 .dark {
   /* Learning Africa tokens — dark mode equivalents.
-     Surfaces flip to neutral grays. Brand orange lightens one stop so
-     small text remains legible on dark surfaces. */
-  --color-la-cream: #1f2937;
-  --color-la-paper: #111827;
-  --color-la-ink: #f9fafb;
-  --color-la-ink-2: #d1d5db;
-  --color-la-muted: #9ca3af;
-  --color-la-rule: rgba(249, 250, 251, 0.1);
-  --color-la-rule-strong: rgba(249, 250, 251, 0.18);
-  --color-la-forest: #f08049;
-  --color-la-forest-deep: #d96632;
-  --color-la-forest-soft: #c84617;
-  --color-la-forest-wash: #3a1e15;
-  --color-la-terracotta: #e87a5b;
-  --color-la-terracotta-deep: #c25e44;
-  --color-la-amber: #f5b961;
-  --color-la-amber-soft: #f0a93f;
+     Surfaces flip to neutral grays. Brand orange lightens so small text
+     remains legible on dark surfaces. */
+  --color-la-cream: #1c1c1c;
+  --color-la-paper: #0a0a0a;
+  --color-la-ink: #fafafa;
+  --color-la-ink-2: #d4d4d4;
+  --color-la-muted: #a3a3a3;
+  --color-la-rule: rgba(250, 250, 250, 0.1);
+  --color-la-rule-strong: rgba(250, 250, 250, 0.18);
+  --color-la-forest: #ff7e4a;
+  --color-la-forest-deep: #e66035;
+  --color-la-forest-soft: #f54900;
+  --color-la-forest-wash: #2d1608;
+  --color-la-terracotta: #ff8c5c;
+  --color-la-terracotta-deep: #d96840;
+  --color-la-amber: #ffcc33;
+  --color-la-amber-soft: #ffb900;
   --color-la-ok: #4ab574;
-  --color-la-warn: #f5b961;
-  --color-la-bad: #e8625a;
+  --color-la-warn: #ffcc33;
+  --color-la-bad: #ff4d4d;
 }
 
 @layer base {

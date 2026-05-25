@@ -4,48 +4,38 @@ import { cn } from "@/lib/utils";
 
 import { BackgroundPattern } from "./background-pattern";
 
-type AudienceKey = "students" | "teachers" | "leaders";
+type AudienceKey = "learners" | "instructors" | "organizations";
 
 const TABS: Record<
   AudienceKey,
   { title: string; body: string; items: string[] }
 > = {
-  students: {
-    title: "For students",
-    body: "Free, lifelong learning from primary school through professional credentials. In your language.",
+  learners: {
+    title: "For learners",
+    body: "Lifelong learning from foundational skills through professional credentials. At your pace, in your language.",
+    items: ["Adaptive pathways", "Recognised credentials"],
+  },
+  instructors: {
+    title: "For instructors",
+    body: "Course-building tools and ready-made content aligned to your curriculum. Co-authored by educators, for educators.",
     items: [
-      "Adaptive pathways",
-      "Peer study circles",
-      "Offline mode",
-      "Recognised credentials",
+      "Course & lesson builder",
+      "Cohort analytics",
+      "Learner communication",
+      "Resource library",
     ],
   },
-  teachers: {
-    title: "For teachers",
-    body: "Lesson plans aligned to your national curriculum. Co-authored by teachers, for teachers.",
-    items: [
-      "1,200+ lesson plans",
-      "Class analytics",
-      "Parent communication",
-      "PD library",
-    ],
-  },
-  leaders: {
-    title: "For leaders",
-    body: "Whether you run a school or a ministry, oversight tools that scale from 30 to 30 million students.",
-    items: [
-      "Real-time dashboards",
-      "Cohort comparisons",
-      "Procurement-ready",
-      "API & data export",
-    ],
+  organizations: {
+    title: "For organizations",
+    body: "Whether you run a school, NGO, ministry, or company, oversight tools that scale from 30 to 30 million learners.",
+    items: ["Real-time dashboards", "Cohort comparisons"],
   },
 };
 
-const TAB_ORDER: AudienceKey[] = ["students", "teachers", "leaders"];
+const TAB_ORDER: AudienceKey[] = ["learners", "instructors", "organizations"];
 
 export function LandingPlatform() {
-  const [active, setActive] = useState<AudienceKey>("students");
+  const [active, setActive] = useState<AudienceKey>("learners");
   const tab = TABS[active];
 
   return (

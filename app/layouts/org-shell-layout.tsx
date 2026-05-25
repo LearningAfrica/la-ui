@@ -3,7 +3,6 @@ import { useLocation, useNavigate, useParams } from "react-router";
 
 import { RouteGuard } from "@/components/auth/route-guard";
 import {
-  ContextSwitcher,
   DashSidebar,
   DashTopbar,
   DashboardShell,
@@ -64,8 +63,6 @@ function OrgShellInner() {
   const isSuperAdmin = systemRole === "super_admin";
   const orgs = useMemo(() => orgsData ?? [], [orgsData]);
 
-  // URL is the source of truth — sync the orgId from the URL into Redux
-  // whenever it changes (so existing components reading the store stay valid).
   const activeOrg = useMemo(
     () => orgs.find((o) => o.id === urlOrgId) ?? null,
     [orgs, urlOrgId]
@@ -77,7 +74,6 @@ function OrgShellInner() {
     }
   }, [activeOrg, selectedOrganization?.id, setSelectedOrganization]);
 
-  // If we have orgs loaded and the URL's orgId isn't one of them, bounce home.
   useEffect(() => {
     if (urlOrgId && orgs.length > 0 && !activeOrg) {
       navigate(personalRoutes.orgs(), { replace: true });
@@ -85,7 +81,7 @@ function OrgShellInner() {
   }, [urlOrgId, orgs.length, activeOrg, navigate]);
 
   const orgRole = activeOrg?.role;
-  const inviteCount =
+  const personalInviteCount =
     invitesData?.data?.filter((inv) => !inv.is_used).length ?? 0;
 
   const fullName =
@@ -97,7 +93,6 @@ function OrgShellInner() {
     const segments = location.pathname.split("/").filter(Boolean);
     const last = segments[segments.length - 1] ?? "";
 
-    // Org dashboard root looks like /dashboard/org/:orgId — last segment is the id.
     if (last === urlOrgId) return "Overview";
 
     const titles: Record<string, string> = {
@@ -125,8 +120,35 @@ function OrgShellInner() {
       i: Omit<NavItem, "icon"> & { icon: React.ReactNode }
     ): NavItem => i;
 
-    const overview: NavGroup = {
-      id: "overview",
+    // Personal items always sit at the top — Home is the implicit "exit".
+    const personal: NavGroup = {
+      id: "personal",
+      items: [
+        item({
+          id: "home",
+          label: "Home",
+          to: "/dashboard",
+          icon: <NAV_ICON.home className="size-4" />,
+        }),
+        item({
+          id: "personal-invitations",
+          label: "My invitations",
+          to: "/dashboard/invitations",
+          icon: <NAV_ICON.invitations className="size-4" />,
+          badge: personalInviteCount > 0 ? personalInviteCount : undefined,
+          badgeTone: "warn",
+        }),
+        item({
+          id: "personal-inquiries",
+          label: "My inquiries",
+          to: "/dashboard/inquiries",
+          icon: <NAV_ICON.inbox className="size-4" />,
+        }),
+      ],
+    };
+
+    const workspace: NavGroup = {
+      id: "workspace",
       label: "Workspace",
       items: [
         item({
@@ -136,20 +158,18 @@ function OrgShellInner() {
           icon: <NAV_ICON.home className="size-4" />,
         }),
         item({
-          id: "invitations",
-          label: "Invitations",
+          id: "org-invitations",
+          label: "Member invitations",
           to: orgRoutes.invitations(urlOrgId),
           icon: <NAV_ICON.invitations className="size-4" />,
-          badge: inviteCount > 0 ? inviteCount : undefined,
-          badgeTone: "warn",
         }),
       ],
     };
 
-    const adminItems: NavItem[] = [];
+    const manageItems: NavItem[] = [];
 
     if (canSee(orgRole, ["admin"])) {
-      adminItems.push(
+      manageItems.push(
         item({
           id: "members",
           label: "Members",
@@ -160,7 +180,7 @@ function OrgShellInner() {
     }
 
     if (canSee(orgRole, ["admin", "instructor"])) {
-      adminItems.push(
+      manageItems.push(
         item({
           id: "courses",
           label: "Courses",
@@ -177,7 +197,7 @@ function OrgShellInner() {
       );
     }
 
-    adminItems.push(
+    manageItems.push(
       item({
         id: "live-sessions",
         label: "Live sessions",
@@ -189,7 +209,7 @@ function OrgShellInner() {
     const manage: NavGroup = {
       id: "manage",
       label: "Manage",
-      items: adminItems,
+      items: manageItems,
     };
 
     const learning: NavGroup = {
@@ -217,42 +237,11 @@ function OrgShellInner() {
       ],
     };
 
-    const groups: NavGroup[] = [overview, manage, learning];
-
-    if (isSuperAdmin) {
-      groups.push({
-        id: "platform",
-        label: "Platform admin",
-        accent: true,
-        items: [
-          item({
-            id: "platform-dashboard",
-            label: "Super admin dashboard",
-            to: "/system/dashboard",
-            icon: <NAV_ICON.platform className="size-4" />,
-          }),
-        ],
-      });
-    }
-
-    return groups;
-  }, [urlOrgId, orgRole, isSuperAdmin, inviteCount]);
+    return [personal, workspace, manage, learning];
+  }, [urlOrgId, orgRole, personalInviteCount]);
 
   const contextOptions = useMemo<ContextOption[]>(() => {
-    const options: ContextOption[] = [
-      {
-        id: "personal",
-        kind: "personal",
-        label: "Personal",
-        hint: "Invitations, inquiries, your orgs",
-        to: personalRoutes.home(),
-        initials: initialsFor(fullName),
-        onSelect: () => {
-          setSelectedOrganization(null);
-          navigate(personalRoutes.home());
-        },
-      },
-    ];
+    const options: ContextOption[] = [];
 
     orgs.forEach((org) => {
       options.push({
@@ -281,11 +270,20 @@ function OrgShellInner() {
     }
 
     return options;
-  }, [fullName, orgs, isSuperAdmin, setSelectedOrganization, navigate]);
+  }, [orgs, isSuperAdmin, setSelectedOrganization, navigate]);
 
-  const currentContext =
-    contextOptions.find((o) => o.id === `org-${urlOrgId ?? ""}`) ??
-    contextOptions[0];
+  const currentContextId = `org-${urlOrgId ?? ""}`;
+
+  const contextGroups = useMemo(
+    () => [
+      {
+        label: "Organizations",
+        ids: contextOptions.filter((o) => o.kind === "org").map((o) => o.id),
+      },
+      ...(isSuperAdmin ? [{ label: "Platform", ids: ["platform"] }] : []),
+    ],
+    [contextOptions, isSuperAdmin]
+  );
 
   const handleSignOut = () => {
     logout();
@@ -295,22 +293,6 @@ function OrgShellInner() {
   const sidebar = (
     <DashSidebar
       groups={sidebarGroups}
-      header={
-        <ContextSwitcher
-          current={currentContext}
-          options={contextOptions}
-          groups={[
-            { label: "You", ids: ["personal"] },
-            {
-              label: "Organizations",
-              ids: contextOptions
-                .filter((o) => o.kind === "org")
-                .map((o) => o.id),
-            },
-            ...(isSuperAdmin ? [{ label: "Platform", ids: ["platform"] }] : []),
-          ]}
-        />
-      }
       footer={
         <SidebarUserCard
           initials={initialsFor(fullName)}
@@ -327,9 +309,8 @@ function OrgShellInner() {
       sidebar={sidebar}
       topbar={({ onMenuClick }) => (
         <DashTopbar
-          title={pageTitle}
-          subtitle={activeOrg?.name}
-          crumbs={[{ label: "Workspace" }, { label: activeOrg?.name ?? "" }]}
+          title={activeOrg?.name ?? "Workspace"}
+          subtitle={pageTitle}
           onMenuClick={onMenuClick}
           rightSlot={
             <UserMenu
@@ -338,6 +319,10 @@ function OrgShellInner() {
               email={user?.email ?? ""}
               profileTo={personalRoutes.profile()}
               onSignOut={handleSignOut}
+              contextOptions={contextOptions}
+              currentContextId={currentContextId}
+              contextGroups={contextGroups}
+              viewAllOrgsTo={personalRoutes.orgs()}
             />
           }
         />

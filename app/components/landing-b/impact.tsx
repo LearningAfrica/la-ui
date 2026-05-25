@@ -3,11 +3,11 @@ import { BackgroundPattern } from "./background-pattern";
 const PILLARS = [
   {
     label: "Enrolment",
-    body: "Track learners onboarded and active across schools and cohorts.",
+    body: "Track learners onboarded and active across courses and cohorts.",
   },
   {
     label: "Completion",
-    body: "Lesson and module completion at the cohort, school, and country level.",
+    body: "Lesson and module completion at the learner, cohort, and organization level.",
   },
   {
     label: "Credentials",
@@ -15,7 +15,7 @@ const PILLARS = [
   },
   {
     label: "Outcomes",
-    body: "Downstream signals: progression, employment, further study.",
+    body: "Downstream signals: skills gained, promotions, new opportunities.",
   },
 ];
 

@@ -5,7 +5,6 @@ import { LoginForm } from "@/components/auth/login-form";
 import { RegisterForm } from "@/components/auth/register-form";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useAppModal } from "@/stores/filters/modal-hooks";
-import { cn } from "@/lib/utils";
 
 declare module "@/stores/filters/modal-slice" {
   interface ModalRegistry {
@@ -55,21 +54,7 @@ export function AuthModal() {
           {tab === "sign-in" ? "Sign in" : "Create account"}
         </DialogTitle>
 
-        <div className="border-la-rule flex items-center justify-between border-b px-5 py-3">
-          <div className="flex gap-1">
-            <TabButton
-              active={tab === "sign-in"}
-              onClick={() => setTab("sign-in")}
-            >
-              Sign in
-            </TabButton>
-            <TabButton
-              active={tab === "sign-up"}
-              onClick={() => setTab("sign-up")}
-            >
-              Sign up
-            </TabButton>
-          </div>
+        <div className="flex justify-end px-3 pt-3">
           <button
             type="button"
             onClick={modal.close}
@@ -80,37 +65,20 @@ export function AuthModal() {
           </button>
         </div>
 
-        <div className="px-6 py-6 sm:px-7 sm:py-7">
+        <div className="px-6 pt-2 pb-6 sm:px-7 sm:pb-7">
           {tab === "sign-in" ? (
-            <LoginForm onAuthSuccess={handleSuccess} />
+            <LoginForm
+              onAuthSuccess={handleSuccess}
+              onSwitchAuthMode={() => setTab("sign-up")}
+            />
           ) : (
-            <RegisterForm onAuthSuccess={handleSuccess} />
+            <RegisterForm
+              onAuthSuccess={handleSuccess}
+              onSwitchAuthMode={() => setTab("sign-in")}
+            />
           )}
         </div>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function TabButton({
-  active,
-  children,
-  onClick,
-}: {
-  active: boolean;
-  children: React.ReactNode;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        "font-display rounded px-3 py-1.5 text-[13px] font-medium transition-colors",
-        active ? "bg-la-cream text-la-ink" : "text-la-muted hover:text-la-ink"
-      )}
-    >
-      {children}
-    </button>
   );
 }

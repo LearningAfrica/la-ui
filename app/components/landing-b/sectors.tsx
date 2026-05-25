@@ -2,18 +2,18 @@ import { BackgroundPattern } from "./background-pattern";
 
 const SECTORS = [
   {
-    title: "K–12",
-    body: "Schools across primary and secondary, with curriculum mapped to national standards.",
+    title: "Companies",
+    body: "Onboard new hires, upskill teams, and roll out compliance training across your workforce.",
     accent: "var(--color-la-forest)",
   },
   {
-    title: "Higher Ed",
-    body: "Universities offering credit-bearing pathways from foundation through doctoral level.",
+    title: "NGOs & associations",
+    body: "Run capacity-building and member training programs at scale, with progress tracked end-to-end.",
     accent: "var(--color-la-forest-soft)",
   },
   {
-    title: "Government",
-    body: "National rollouts with ministries of education. Population-scale assessment and dashboards.",
+    title: "Training providers",
+    body: "Bootcamps, professional courses, and certificate programs — your courses, your brand, your learners.",
     accent: "var(--color-la-amber)",
   },
 ];
@@ -28,11 +28,12 @@ export function LandingSectors() {
         <div className="mb-12 grid gap-5 md:grid-cols-12">
           <div className="md:col-span-3">
             <div className="font-display text-la-muted text-[10px] font-medium tracking-[0.25em] uppercase">
-              ¶ 03 Sectors
+              ¶ 03 Audiences
             </div>
           </div>
           <h2 className="font-display text-la-ink text-[36px] leading-[1.05] font-medium tracking-[-0.035em] sm:text-[44px] md:col-span-9 md:text-[56px]">
-            Three sectors. <span className="text-la-forest">One system.</span>
+            Built for every kind of{" "}
+            <span className="text-la-forest">organization.</span>
           </h2>
         </div>
 
@@ -48,7 +49,7 @@ export function LandingSectors() {
                 style={{ background: s.accent }}
               />
               <div className="font-display text-la-muted mt-7 text-[10px] font-medium tracking-[0.18em] uppercase">
-                Sector
+                Organization
               </div>
               <div className="font-display text-la-ink mt-2 text-[36px] leading-tight font-medium tracking-[-0.03em] sm:text-[40px]">
                 {s.title}

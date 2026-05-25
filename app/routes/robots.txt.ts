@@ -1,8 +1,9 @@
+import { env } from "@/lib/env";
 import type { Route } from "./+types/robots.txt";
 
 export const loader = ({ request }: Route.LoaderArgs) => {
   const { origin } = new URL(request.url);
-  const noIndex = Boolean(import.meta.env.VITE_NOINDEX);
+  const noIndex = Boolean(env.VITE_NOINDEX);
 
   const body = noIndex
     ? `User-agent: *\nDisallow: /\n`

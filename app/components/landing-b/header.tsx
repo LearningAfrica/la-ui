@@ -13,14 +13,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
-import { useAppModal } from "@/stores/filters/modal-hooks";
 
 import { LALogo } from "./la-logo";
 
 const NAV_ITEMS = [
   { label: "Onboarding", to: "#onboarding" },
   { label: "Platform", to: "#platform" },
-  { label: "Sectors", to: "#sectors" },
+  { label: "Audiences", to: "#sectors" },
   { label: "Impact", to: "#impact" },
   { label: "How", to: "#how" },
 ];
@@ -33,12 +32,8 @@ export function LandingHeader({ isAuthenticated }: Props) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
-  const authModal = useAppModal("auth-modal");
 
-  const openAuth = (mode: "sign-in" | "sign-up") => {
-    setMobileOpen(false);
-    authModal.open({ mode });
-  };
+  const closeMobile = () => setMobileOpen(false);
 
   const fullName =
     [user?.first_name, user?.last_name].filter(Boolean).join(" ") ||
@@ -133,20 +128,20 @@ export function LandingHeader({ isAuthenticated }: Props) {
             </DropdownMenu>
           ) : (
             <>
-              <button
-                type="button"
-                onClick={() => openAuth("sign-in")}
+              <Link
+                to="/sign-in"
+                prefetch="intent"
                 className="font-display text-la-ink hover:bg-la-cream hidden h-9 items-center rounded px-3 text-[13px] font-medium md:inline-flex"
               >
                 Sign in
-              </button>
-              <button
-                type="button"
-                onClick={() => openAuth("sign-up")}
+              </Link>
+              <Link
+                to="/sign-up"
+                prefetch="intent"
                 className="font-display bg-la-forest text-la-paper inline-flex h-9 items-center rounded px-3.5 text-[13px] font-medium transition-colors hover:bg-(--color-la-forest-deep)"
               >
                 Sign up
-              </button>
+              </Link>
             </>
           )}
           <button
@@ -198,20 +193,22 @@ export function LandingHeader({ isAuthenticated }: Props) {
                 </>
               ) : (
                 <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => openAuth("sign-in")}
+                  <Link
+                    to="/sign-in"
+                    prefetch="intent"
+                    onClick={closeMobile}
                     className="font-display text-la-ink border-la-rule flex-1 rounded border px-3 py-2 text-center text-[14px] font-medium"
                   >
                     Sign in
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => openAuth("sign-up")}
+                  </Link>
+                  <Link
+                    to="/sign-up"
+                    prefetch="intent"
+                    onClick={closeMobile}
                     className="font-display bg-la-forest text-la-paper flex-1 rounded px-3 py-2 text-center text-[14px] font-medium"
                   >
                     Sign up
-                  </button>
+                  </Link>
                 </div>
               )}
             </div>

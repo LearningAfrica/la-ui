@@ -3,7 +3,6 @@ import { useNavigate } from "react-router";
 
 import { RouteGuard } from "@/components/auth/route-guard";
 import {
-  ContextSwitcher,
   DashSidebar,
   DashTopbar,
   DashboardShell,
@@ -14,7 +13,7 @@ import {
 import type { ContextOption, NavGroup } from "@/components/dashboard-shell";
 import { useMyOrganizations } from "@/features/organizations/organization-queries";
 import { useMyInvites } from "@/features/invites/invites-queries";
-import { orgRoutes } from "@/lib/utils/org-routes";
+import { orgRoutes, personalRoutes } from "@/lib/utils/org-routes";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 
@@ -59,10 +58,17 @@ function DashboardShellInner() {
 
   const orgs = useMemo(() => orgsData ?? [], [orgsData]);
 
+  // Where the sidebar "Organizations" link should go. Auto-select the first
+  // (or only) org so users don't get bounced through the picker every time.
+  const organizationsTarget = useMemo(() => {
+    if (orgs.length === 0) return personalRoutes.orgs();
+
+    return orgRoutes.overview(orgs[0].id);
+  }, [orgs]);
+
   const sidebarGroups = useMemo<NavGroup[]>(() => {
     const personal: NavGroup = {
       id: "personal",
-      label: "Personal",
       items: [
         {
           id: "home",
@@ -72,7 +78,7 @@ function DashboardShellInner() {
         },
         {
           id: "invitations",
-          label: "Invitations",
+          label: "My invitations",
           to: "/dashboard/invitations",
           icon: <NAV_ICON.invitations className="size-4" />,
           badge: inviteCount > 0 ? inviteCount : undefined,
@@ -80,7 +86,7 @@ function DashboardShellInner() {
         },
         {
           id: "inquiries",
-          label: "Inquiries",
+          label: "My inquiries",
           to: "/dashboard/inquiries",
           icon: <NAV_ICON.inbox className="size-4" />,
         },
@@ -92,65 +98,20 @@ function DashboardShellInner() {
       label: "Organizations",
       items: [
         {
-          id: "my-orgs",
-          label: "My organizations",
-          to: "/dashboard/orgs",
+          id: "organizations",
+          label: "Organizations",
+          to: organizationsTarget,
           icon: <NAV_ICON.myOrgs className="size-4" />,
           badge: orgs.length > 0 ? orgs.length : undefined,
-        },
-        {
-          id: "browse",
-          label: "Browse public courses",
-          to: "/dashboard/browse",
-          icon: <NAV_ICON.browse className="size-4" />,
         },
       ],
     };
 
-    const groups: NavGroup[] = [personal, orgsGroup];
-
-    if (isSuperAdmin) {
-      groups.push({
-        id: "platform",
-        label: "Platform admin",
-        accent: true,
-        items: [
-          {
-            id: "platform-dashboard",
-            label: "Super admin dashboard",
-            to: "/system/dashboard",
-            icon: <NAV_ICON.platform className="size-4" />,
-          },
-          {
-            id: "platform-orgs",
-            label: "All organizations",
-            to: "/system/organizations",
-            icon: <NAV_ICON.platformOrgs className="size-4" />,
-          },
-          {
-            id: "platform-users",
-            label: "Platform users",
-            to: "/system/users",
-            icon: <NAV_ICON.platformUsers className="size-4" />,
-          },
-        ],
-      });
-    }
-
-    return groups;
-  }, [inviteCount, orgs.length, isSuperAdmin]);
+    return [personal, orgsGroup];
+  }, [inviteCount, organizationsTarget, orgs.length]);
 
   const contextOptions = useMemo<ContextOption[]>(() => {
-    const options: ContextOption[] = [
-      {
-        id: "personal",
-        kind: "personal",
-        label: "Personal",
-        hint: "Invitations, inquiries, your orgs",
-        to: "/dashboard",
-        initials: initialsFor(fullName, user?.email),
-      },
-    ];
+    const options: ContextOption[] = [];
 
     orgs.forEach((org) => {
       options.push({
@@ -179,16 +140,18 @@ function DashboardShellInner() {
     }
 
     return options;
-  }, [
-    fullName,
-    user?.email,
-    orgs,
-    isSuperAdmin,
-    setSelectedOrganization,
-    navigate,
-  ]);
+  }, [orgs, isSuperAdmin, setSelectedOrganization, navigate]);
 
-  const currentContext = contextOptions[0];
+  const contextGroups = useMemo(
+    () => [
+      {
+        label: "Organizations",
+        ids: contextOptions.filter((o) => o.kind === "org").map((o) => o.id),
+      },
+      ...(isSuperAdmin ? [{ label: "Platform", ids: ["platform"] }] : []),
+    ],
+    [contextOptions, isSuperAdmin]
+  );
 
   const handleSignOut = () => {
     logout();
@@ -198,22 +161,6 @@ function DashboardShellInner() {
   const sidebar = (
     <DashSidebar
       groups={sidebarGroups}
-      header={
-        <ContextSwitcher
-          current={currentContext}
-          options={contextOptions}
-          groups={[
-            { label: "You", ids: ["personal"] },
-            {
-              label: "Organizations",
-              ids: contextOptions
-                .filter((o) => o.kind === "org")
-                .map((o) => o.id),
-            },
-            ...(isSuperAdmin ? [{ label: "Platform", ids: ["platform"] }] : []),
-          ]}
-        />
-      }
       footer={
         <SidebarUserCard
           initials={initialsFor(fullName, user?.email)}
@@ -240,6 +187,9 @@ function DashboardShellInner() {
               email={user?.email ?? ""}
               profileTo="/dashboard/profile"
               onSignOut={handleSignOut}
+              contextOptions={contextOptions}
+              contextGroups={contextGroups}
+              viewAllOrgsTo={personalRoutes.orgs()}
             />
           }
         />

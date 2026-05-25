@@ -15,7 +15,8 @@ export type NavItem = {
 
 export type NavGroup = {
   id: string;
-  label: string;
+  /** Section label rendered above the items. Omit to render an unlabelled group. */
+  label?: string;
   /** Use amber accent for the group label (e.g. Platform admin) */
   accent?: boolean;
   items: NavItem[];

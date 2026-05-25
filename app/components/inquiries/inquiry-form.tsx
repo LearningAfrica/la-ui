@@ -22,12 +22,14 @@ import { FormTextField } from "@/components/form-fields/form-text-field";
 import { FormTextareaField } from "@/components/form-fields/form-textarea-field";
 import { FormAsyncSelectField } from "@/components/form-fields/form-select-field";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
+import { useAppModal } from "@/stores/filters/modal-hooks";
 
 export function InquiryForm() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const isSignedIn = !!user;
   const createInquiryMutation = useCreateInquiry();
+  const authModal = useAppModal("auth-modal");
 
   const form = useForm<InquiryFormData>({
     resolver: inquiryResolver,
@@ -40,14 +42,27 @@ export function InquiryForm() {
   });
 
   const onSubmit = form.handleSubmit(async (data: InquiryFormData) => {
-    await createInquiryMutation.mutateAsync(data, {
-      onSuccess: () => {
-        form.reset();
-        // Authenticated users see their inquiry list on the dashboard;
-        // anonymous submitters land back on the home page.
-        navigate(isSignedIn ? href("/dashboard/inquiries") : href("/"));
-      },
-    });
+    const submit = async () => {
+      await createInquiryMutation.mutateAsync(data, {
+        onSuccess: () => {
+          form.reset();
+          navigate(href("/dashboard/inquiries"));
+        },
+      });
+    };
+
+    if (!isSignedIn) {
+      authModal.open({
+        mode: "sign-up",
+        onAuthSuccess: () => {
+          void submit();
+        },
+      });
+
+      return;
+    }
+
+    await submit();
   });
 
   return (

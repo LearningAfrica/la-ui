@@ -7,9 +7,9 @@ const COLUMNS = [
   {
     label: "Platform",
     links: [
-      { label: "For students", to: "#platform" },
-      { label: "For teachers", to: "#platform" },
-      { label: "For leaders", to: "#platform" },
+      { label: "For learners", to: "#platform" },
+      { label: "For instructors", to: "#platform" },
+      { label: "For organizations", to: "#platform" },
       { label: "Enterprise", to: "#platform" },
     ],
   },
@@ -47,7 +47,8 @@ export function LandingFooter() {
               Learning Africa
             </div>
             <p className="text-la-muted mt-4 max-w-[280px] text-[13px] leading-[1.55]">
-              Education infrastructure built for the continent.
+              The complete learning management platform for modern
+              organizations.
             </p>
           </div>
 
@@ -84,7 +85,7 @@ export function LandingFooter() {
 
         <div className="border-la-rule font-display text-la-muted mt-12 flex flex-col gap-2 border-t pt-6 text-[11px] tracking-wide sm:flex-row sm:justify-between">
           <span>© {new Date().getFullYear()} Learning Africa</span>
-          <span>Made for Africa</span>
+          <span>Made in Africa, for the world</span>
         </div>
       </div>
     </footer>

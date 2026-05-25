@@ -23,9 +23,16 @@ interface LoginFormProps {
   searchParams?: URLSearchParams;
   /** When provided, called instead of navigating after successful login. */
   onAuthSuccess?: () => void;
+  /** When provided, the "Create account" prompt switches modes via this callback
+   *  instead of linking to the /sign-up page. */
+  onSwitchAuthMode?: () => void;
 }
 
-export function LoginForm({ searchParams, onAuthSuccess }: LoginFormProps) {
+export function LoginForm({
+  searchParams,
+  onAuthSuccess,
+  onSwitchAuthMode,
+}: LoginFormProps) {
   const navigate = useNavigate();
   const { login } = useAuthStore();
   const { setSelectedOrganization } = useOrganizationStore();
@@ -178,12 +185,22 @@ export function LoginForm({ searchParams, onAuthSuccess }: LoginFormProps) {
 
       <div className="text-center text-sm">
         <span className="text-la-muted">Don&apos;t have an account? </span>
-        <Link
-          to={`/sign-up${searchParams ? `?${searchParams.toString()}` : ""}`}
-          className="text-la-forest hover:text-la-forest-deep font-display font-medium underline-offset-4 hover:underline"
-        >
-          Create account
-        </Link>
+        {onSwitchAuthMode ? (
+          <button
+            type="button"
+            onClick={onSwitchAuthMode}
+            className="text-la-forest hover:text-la-forest-deep font-display font-medium underline-offset-4 hover:underline"
+          >
+            Create account
+          </button>
+        ) : (
+          <Link
+            to={`/sign-up${searchParams ? `?${searchParams.toString()}` : ""}`}
+            className="text-la-forest hover:text-la-forest-deep font-display font-medium underline-offset-4 hover:underline"
+          >
+            Create account
+          </Link>
+        )}
       </div>
     </div>
   );
