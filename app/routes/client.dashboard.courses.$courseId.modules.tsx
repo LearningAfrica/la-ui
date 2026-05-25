@@ -24,9 +24,13 @@ import { CreateOrUpdateModuleDialog } from "@/components/dashboard/create-or-upd
 import { GenerateAiQuizDialog } from "@/components/dashboard/generate-ai-quiz-dialog";
 import { ViewContentDialog } from "@/components/dashboard/view-content-dialog";
 import { useAppModal } from "@/stores/filters/modal-hooks";
+import { orgRoutes } from "@/lib/utils/org-routes";
 
 export default function ClientDashboardCourseModules() {
-  const { courseId } = useParams<{ courseId: string }>();
+  const { orgId = "", courseId } = useParams<{
+    orgId: string;
+    courseId: string;
+  }>();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeModuleId = searchParams.get("moduleId");
   const activeTab =
@@ -93,7 +97,7 @@ export default function ClientDashboardCourseModules() {
     <div className="space-y-6 p-6">
       {/* Header */}
       <div className="space-y-2">
-        <Link to="/client/dashboard/courses">
+        <Link to={orgRoutes.courses(orgId)}>
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-1 h-4 w-4" />
             Courses
@@ -165,7 +169,7 @@ export default function ClientDashboardCourseModules() {
               onValueChange={handleTabChange}
               className="space-y-4"
             >
-              <TabsList>
+              <TabsList variant="line">
                 <TabsTrigger value="contents">
                   <FileText className="mr-2 h-4 w-4" />
                   Contents
@@ -199,7 +203,11 @@ export default function ClientDashboardCourseModules() {
                     toolbarActions={
                       <Button asChild size="sm">
                         <Link
-                          to={`/client/dashboard/courses/${courseId}/modules/${selectedModule.id}/contents/new`}
+                          to={orgRoutes.contentNew(
+                            orgId,
+                            courseId!,
+                            selectedModule.id
+                          )}
                         >
                           <Plus className="mr-1 h-4 w-4" />
                           Add Content
@@ -221,7 +229,11 @@ export default function ClientDashboardCourseModules() {
                     <>
                       <Button asChild size="sm">
                         <Link
-                          to={`/client/dashboard/courses/${courseId}/modules/${selectedModule.id}/quizzes/new`}
+                          to={orgRoutes.quizNew(
+                            orgId,
+                            courseId!,
+                            selectedModule.id
+                          )}
                         >
                           <Plus className="mr-1 h-4 w-4" />
                           New Quiz

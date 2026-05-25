@@ -24,6 +24,7 @@ import {
 } from "@/features/module-contents/module-content-mutations";
 import type { ModuleContent } from "@/features/module-contents/module-content-queries";
 import type { CourseModuleDetail } from "@/features/modules/module-queries";
+import { orgRoutes } from "@/lib/utils/org-routes";
 
 interface FlatItem {
   content: ModuleContent;
@@ -169,10 +170,14 @@ function useTocHeadings(content: ModuleContent | undefined): TocHeading[] {
 }
 
 export default function LessonReaderPage() {
-  const { courseId, contentId } = useParams<{
+  const params = useParams<{
+    orgId: string;
     courseId: string;
     contentId: string;
   }>();
+  const orgId = params.orgId ?? "";
+  const courseId = params.courseId;
+  const contentId = params.contentId;
   const navigate = useNavigate();
 
   const { data: modules, isLoading: modulesLoading } = useCourseModules(
@@ -238,9 +243,7 @@ export default function LessonReaderPage() {
       {
         onSuccess: () => {
           if (next) {
-            navigate(
-              `/client/dashboard/courses/${courseId}/lessons/${next.content.id}`
-            );
+            navigate(orgRoutes.lesson(orgId, courseId!, next.content.id));
           }
         },
       }
@@ -324,7 +327,7 @@ export default function LessonReaderPage() {
               {prev && (
                 <Button asChild variant="ghost" size="sm">
                   <Link
-                    to={`/client/dashboard/courses/${courseId}/lessons/${prev.content.id}`}
+                    to={orgRoutes.lesson(orgId, courseId!, prev.content.id)}
                   >
                     <ArrowLeft className="mr-1 h-4 w-4" />
                     Previous
@@ -334,7 +337,7 @@ export default function LessonReaderPage() {
               {next && (
                 <Button asChild variant="ghost" size="sm">
                   <Link
-                    to={`/client/dashboard/courses/${courseId}/lessons/${next.content.id}`}
+                    to={orgRoutes.lesson(orgId, courseId!, next.content.id)}
                   >
                     Next
                     <ArrowRight className="ml-1 h-4 w-4" />
@@ -347,7 +350,7 @@ export default function LessonReaderPage() {
           {/* Up next */}
           {next && (
             <Link
-              to={`/client/dashboard/courses/${courseId}/lessons/${next.content.id}`}
+              to={orgRoutes.lesson(orgId, courseId!, next.content.id)}
               className="hover:border-primary/50 hover:bg-muted/30 group mt-6 flex items-center gap-4 rounded-xl border p-5 transition-colors"
             >
               <div className="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-full">

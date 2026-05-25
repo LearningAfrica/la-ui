@@ -1,53 +1,62 @@
-import { generateRemixSitemap } from "@forge42/seo-tools/remix/sitemap";
+import { env } from "@/lib/env";
 import type { Route } from "./+types/sitemap.xml";
 
-function sitemapEntry(url: string, origin: string) {
-  const path = url.replace(origin, "") || "/";
+type Entry = {
+  path: string;
+  priority?: number;
+  changefreq?:
+    | "always"
+    | "hourly"
+    | "daily"
+    | "weekly"
+    | "monthly"
+    | "yearly"
+    | "never";
+};
 
-  if (path === "/") {
-    return { priority: 1, changefreq: "daily" as const };
-  }
+const routes: Entry[] = [
+  { path: "/", priority: 1.0, changefreq: "daily" },
+  { path: "/inquiry", priority: 0.9, changefreq: "monthly" },
+  { path: "/sign-up", priority: 0.7, changefreq: "monthly" },
+  { path: "/sign-in", priority: 0.5, changefreq: "monthly" },
+  { path: "/forgot-password", priority: 0.3, changefreq: "yearly" },
+];
 
-  return { priority: 0.5, changefreq: "weekly" as const };
+function escapeXml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
 }
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
-  const { routes } = await import("virtual:react-router/server-build");
-  const { origin } = new URL(request.url);
+export const loader = ({ request }: Route.LoaderArgs) => {
+  const origin = env.VITE_SITE_URL || new URL(request.url).origin;
+  const lastmod = new Date().toISOString();
 
-  const sitemap = await generateRemixSitemap({
-    domain: origin,
-    ignore: [
-      "/client",
-      "/client/*",
-      "/system",
-      "/system/*",
-      "/dashboard",
-      "/sign-in",
-      "/sign-up",
-      "/verify-email",
-      "/forgot-password",
-      "/reset-password-confirmation",
-      "/email-verification-pending",
-      "/inquiry",
-      "/.well-known/appspecific/com.chrome.devtools.json",
-      "/*",
-    ],
-    routes,
-    sitemapData: async ({ url }: { url: string }) => {
-      const { priority, changefreq } = sitemapEntry(url, origin);
+  const urls = routes
+    .map((r) => {
+      const loc = escapeXml(`${origin}${r.path}`);
 
-      return {
-        changefreq,
-        priority,
-        lastUpdated: new Date(),
-      };
-    },
-  });
+      return `  <url>
+    <loc>${loc}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>${r.changefreq}</changefreq>
+    <priority>${(r.priority ?? 0.5).toFixed(1)}</priority>
+  </url>`;
+    })
+    .join("\n");
 
-  return new Response(sitemap, {
+  const body = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>
+`;
+
+  return new Response(body, {
     headers: {
-      "Content-Type": "application/xml",
+      "Content-Type": "application/xml; charset=utf-8",
       "Cache-Control": "public, max-age=3600",
     },
   });

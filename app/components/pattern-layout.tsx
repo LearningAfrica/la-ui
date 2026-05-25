@@ -20,12 +20,12 @@ export function PatternLayout({
   return (
     <div
       className={cn(
-        "relative min-h-screen overflow-hidden bg-linear-to-br from-amber-50 via-orange-50 to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900",
+        "bg-la-paper text-la-ink relative min-h-screen overflow-hidden",
         className
       )}
     >
-      {/* African Pattern Background */}
-      <div className="absolute inset-0 opacity-5">
+      {/* Editorial diamond/circle pattern */}
+      <div className="absolute inset-0 opacity-[0.06]">
         <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <pattern
@@ -57,14 +57,10 @@ export function PatternLayout({
             width="100%"
             height="100%"
             fill={`url(#${patternId})`}
-            className="text-amber-900 dark:text-gray-700"
+            className="text-la-ink"
           />
         </svg>
       </div>
-
-      {/* Decorative Elements */}
-      <div className="absolute top-0 left-0 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-linear-to-br from-orange-400/20 to-amber-400/20 blur-3xl" />
-      <div className="absolute right-0 bottom-0 h-96 w-96 translate-x-1/2 translate-y-1/2 rounded-full bg-linear-to-br from-yellow-400/20 to-orange-400/20 blur-3xl" />
 
       {/* Main Content */}
       <div className="relative z-10">{children}</div>

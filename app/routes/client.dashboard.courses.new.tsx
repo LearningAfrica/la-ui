@@ -1,13 +1,16 @@
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CourseForm } from "@/components/dashboard/course-form";
+import { orgRoutes } from "@/lib/utils/org-routes";
 
 export default function NewCoursePage() {
+  const { orgId = "" } = useParams<{ orgId: string }>();
+
   return (
     <div className="space-y-6 p-4 sm:p-6">
       <div className="space-y-2">
-        <Link to="/client/dashboard/courses">
+        <Link to={orgRoutes.courses(orgId)}>
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-1 h-4 w-4" />
             Courses

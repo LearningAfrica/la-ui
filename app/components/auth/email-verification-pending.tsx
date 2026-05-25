@@ -42,8 +42,8 @@ export function EmailVerificationPending({
     <div className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-linear-to-br from-amber-100 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20">
-            <Mail className="h-10 w-10 text-orange-600" />
+          <div className="bg-la-forest-wash mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full">
+            <Mail className="text-la-forest h-10 w-10" />
           </div>
           <CardTitle className="text-2xl">Verify Your Email Address</CardTitle>
           <CardDescription>

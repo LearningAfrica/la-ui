@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 import { useState } from "react";
 import {
   Users,
@@ -15,20 +15,34 @@ import {
   Mail,
 } from "lucide-react";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
+import { orgRoutes } from "@/lib/utils/org-routes";
 import {
   useMyOrganizationMembers,
   type OrganizationMembershipRole,
 } from "@/features/organizations/organization-queries";
 import { InviteMemberDialog } from "@/components/dashboard/invite-member-dialog";
+import { useCourses } from "@/features/courses/course-queries";
+import { useCategories } from "@/features/categories/category-queries";
 
 function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
-  const { data: membersData, isLoading } = useMyOrganizationMembers({
-    organizationId: orgId,
-    filters: { page: 1, page_size: 5 },
+  const { data: membersData, isLoading: membersLoading } =
+    useMyOrganizationMembers({
+      organizationId: orgId,
+      filters: { page: 1, page_size: 5 },
+    });
+  const { data: coursesData, isLoading: coursesLoading } = useCourses({
+    page: 1,
+    pageSize: 1,
+  });
+  const { data: categoriesData, isLoading: categoriesLoading } = useCategories({
+    page: 1,
+    limit: 1,
   });
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
   const totalMembers = membersData?.meta?.total_docs || 0;
+  const totalCourses = coursesData?.meta?.total_docs || 0;
+  const totalCategories = categoriesData?.meta?.total_docs || 0;
 
   return (
     <div className="space-y-6">
@@ -48,7 +62,7 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
             </div>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {membersLoading ? (
               <Skeleton className="h-8 w-16" />
             ) : (
               <div className="text-2xl font-bold">{totalMembers}</div>
@@ -66,7 +80,12 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-muted-foreground text-sm">Coming soon</div>
+            {coursesLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{totalCourses}</div>
+            )}
+            <p className="text-muted-foreground text-xs">Published courses</p>
           </CardContent>
         </Card>
         <Card>
@@ -77,7 +96,12 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-muted-foreground text-sm">Coming soon</div>
+            {categoriesLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{totalCategories}</div>
+            )}
+            <p className="text-muted-foreground text-xs">Content categories</p>
           </CardContent>
         </Card>
         <Card>
@@ -90,7 +114,8 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-muted-foreground text-sm">Coming soon</div>
+            <div className="text-2xl font-bold">—</div>
+            <p className="text-muted-foreground text-xs">No data yet</p>
           </CardContent>
         </Card>
       </div>
@@ -112,7 +137,7 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
             <ArrowRight className="h-4 w-4" />
           </Button>
           <Button asChild variant="outline" className="w-full justify-between">
-            <Link to="/client/dashboard/members">
+            <Link to={orgRoutes.members(orgId)}>
               <span className="flex items-center gap-2">
                 <UserPlus className="h-4 w-4" />
                 Manage Members
@@ -121,7 +146,7 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
             </Link>
           </Button>
           <Button asChild variant="outline" className="w-full justify-between">
-            <Link to="/client/dashboard/courses">
+            <Link to={orgRoutes.courses(orgId)}>
               <span className="flex items-center gap-2">
                 <BookOpen className="h-4 w-4" />
                 View Courses
@@ -130,7 +155,7 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
             </Link>
           </Button>
           <Button asChild variant="outline" className="w-full justify-between">
-            <Link to="/client/dashboard/categories">
+            <Link to={orgRoutes.categories(orgId)}>
               <span className="flex items-center gap-2">
                 <FolderOpen className="h-4 w-4" />
                 Manage Categories
@@ -150,16 +175,24 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
   );
 }
 
-function InstructorOverview({ orgName }: { orgName: string }) {
+function InstructorOverview({
+  orgId,
+  orgName,
+}: {
+  orgId: string;
+  orgName: string;
+}) {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <Card className="border-orange-200 bg-linear-to-r from-orange-50 to-amber-50 dark:border-orange-900 dark:from-orange-950/30 dark:to-amber-950/30">
+      <Card className="bg-la-forest text-la-paper border-transparent">
         <CardContent className="pt-6">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-2xl font-bold sm:text-3xl">{orgName}</h1>
-              <p className="text-muted-foreground mt-1">
+              <h1 className="text-la-paper text-2xl font-bold sm:text-3xl">
+                {orgName}
+              </h1>
+              <p className="text-la-paper/80 mt-1">
                 Instructor dashboard — manage your courses and track learner
                 progress
               </p>
@@ -170,7 +203,7 @@ function InstructorOverview({ orgName }: { orgName: string }) {
               size="sm"
               className="shrink-0 self-start"
             >
-              <Link to="/client/dashboard/courses">
+              <Link to={orgRoutes.courses(orgId)}>
                 <Plus className="mr-2 h-4 w-4" />
                 New Course
               </Link>
@@ -247,7 +280,7 @@ function InstructorOverview({ orgName }: { orgName: string }) {
               variant="outline"
               className="h-auto justify-start gap-3 p-4 text-left whitespace-normal"
             >
-              <Link to="/client/dashboard/my-courses">
+              <Link to={orgRoutes.myCourses(orgId)}>
                 <div className="rounded-lg bg-blue-600/10 p-2">
                   <BookOpen className="h-4 w-4 text-blue-600" />
                 </div>
@@ -264,7 +297,7 @@ function InstructorOverview({ orgName }: { orgName: string }) {
               variant="outline"
               className="h-auto justify-start gap-3 p-4 text-left whitespace-normal"
             >
-              <Link to="/client/dashboard/courses">
+              <Link to={orgRoutes.courses(orgId)}>
                 <div className="rounded-lg bg-green-600/10 p-2">
                   <BookOpen className="h-4 w-4 text-green-600" />
                 </div>
@@ -281,7 +314,7 @@ function InstructorOverview({ orgName }: { orgName: string }) {
               variant="outline"
               className="h-auto justify-start gap-3 p-4 text-left whitespace-normal"
             >
-              <Link to="/client/dashboard/categories">
+              <Link to={orgRoutes.categories(orgId)}>
                 <div className="rounded-lg bg-purple-600/10 p-2">
                   <FolderOpen className="h-4 w-4 text-purple-600" />
                 </div>
@@ -300,7 +333,13 @@ function InstructorOverview({ orgName }: { orgName: string }) {
   );
 }
 
-function LearnerOverview({ orgName }: { orgName: string }) {
+function LearnerOverview({
+  orgId,
+  orgName,
+}: {
+  orgId: string;
+  orgName: string;
+}) {
   return (
     <div className="space-y-6">
       <div>
@@ -363,7 +402,7 @@ function LearnerOverview({ orgName }: { orgName: string }) {
         </CardHeader>
         <CardContent className="space-y-3">
           <Button asChild variant="outline" className="w-full justify-between">
-            <Link to="/client/dashboard/courses">
+            <Link to={orgRoutes.courses(orgId)}>
               <span className="flex items-center gap-2">
                 <BookOpen className="h-4 w-4" />
                 Browse Courses
@@ -372,7 +411,7 @@ function LearnerOverview({ orgName }: { orgName: string }) {
             </Link>
           </Button>
           <Button asChild variant="outline" className="w-full justify-between">
-            <Link to="/client/dashboard/my-learning">
+            <Link to={orgRoutes.myLearning(orgId)}>
               <span className="flex items-center gap-2">
                 <GraduationCap className="h-4 w-4" />
                 My Learning
@@ -381,7 +420,7 @@ function LearnerOverview({ orgName }: { orgName: string }) {
             </Link>
           </Button>
           <Button asChild variant="outline" className="w-full justify-between">
-            <Link to="/client/dashboard/certificates">
+            <Link to={orgRoutes.certificates(orgId)}>
               <span className="flex items-center gap-2">
                 <Award className="h-4 w-4" />
                 My Certificates
@@ -405,9 +444,10 @@ const roleComponents: Record<
 };
 
 export default function ClientDashboard() {
+  const { orgId: urlOrgId } = useParams<{ orgId: string }>();
   const { selectedOrganization } = useOrganizationStore();
   const role = selectedOrganization?.role || "learner";
-  const orgId = selectedOrganization?.id || "";
+  const orgId = urlOrgId || selectedOrganization?.id || "";
   const orgName = selectedOrganization?.name || "Organization";
 
   const DashboardComponent = roleComponents[role] || LearnerOverview;

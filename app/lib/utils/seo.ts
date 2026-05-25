@@ -12,14 +12,15 @@ export interface SEOConfig {
   jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
 }
 
-const SITE_NAME = "Learning Africa";
-const SITE_DOMAIN = "https://learningafrica.com";
+import { env } from "@/lib/env";
+
+const SITE_NAME = env.VITE_APP_NAME;
 const TWITTER_HANDLE = "@learningafrica";
 
 const baseUrl =
   typeof globalThis.window !== "undefined"
     ? globalThis.location.origin
-    : process.env.VITE_PUBLIC_URL || SITE_DOMAIN;
+    : env.VITE_PUBLIC_URL;
 
 const defaultImage = `${baseUrl}/og.png`;
 
@@ -75,13 +76,7 @@ export function generateSEOTags(config: SEOConfig) {
   const fullUrl = canonicalize(rawUrl);
   const fullImageUrl = image.startsWith("http") ? image : `${baseUrl}${image}`;
 
-  const envNoIndex =
-    typeof import.meta !== "undefined" &&
-    Boolean(
-      (import.meta as unknown as { env?: { VITE_NOINDEX?: unknown } }).env
-        ?.VITE_NOINDEX
-    );
-  const shouldNoIndex = noIndex || envNoIndex;
+  const shouldNoIndex = noIndex || env.VITE_NOINDEX;
 
   const jsonLdTags = jsonLd
     ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]).map((obj) => ({

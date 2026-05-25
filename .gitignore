@@ -16,3 +16,4 @@
 *.log
 .netlify
 .playwright-mcp
+.claude/

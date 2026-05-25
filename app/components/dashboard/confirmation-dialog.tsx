@@ -53,7 +53,7 @@ export function ConfirmationDialog({
             className={
               variant === "destructive"
                 ? "bg-red-500 hover:bg-red-600"
-                : "bg-linear-to-r from-orange-500 to-amber-500 text-white hover:from-orange-600 hover:to-amber-600"
+                : "bg-la-forest text-la-paper hover:bg-(--color-la-forest-deep)"
             }
           >
             {isLoading ? "Processing..." : confirmText}

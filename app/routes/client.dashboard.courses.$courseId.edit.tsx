@@ -4,15 +4,19 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CourseForm } from "@/components/dashboard/course-form";
 import { useCourse } from "@/features/courses/course-queries";
+import { orgRoutes } from "@/lib/utils/org-routes";
 
 export default function EditCoursePage() {
-  const { courseId } = useParams<{ courseId: string }>();
+  const { orgId = "", courseId } = useParams<{
+    orgId: string;
+    courseId: string;
+  }>();
   const { data: course, isLoading } = useCourse(courseId!);
 
   return (
     <div className="space-y-6 p-4 sm:p-6">
       <div className="space-y-2">
-        <Link to="/client/dashboard/courses">
+        <Link to={orgRoutes.courses(orgId)}>
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-1 h-4 w-4" />
             Courses

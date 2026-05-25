@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 import { BookOpen, Layers, Search } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,15 +7,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { useCourses, type Course } from "@/features/courses/course-queries";
 import { createMediaUrl } from "@/lib/api";
+import { orgRoutes } from "@/lib/utils/org-routes";
 
-function CourseCard({ course }: { course: Course }) {
+function CourseCard({ course, orgId }: { course: Course; orgId: string }) {
   const moduleCount = course.modules?.length ?? 0;
   const lessonCount =
     course.modules?.reduce((acc, m) => acc + (m.contents?.length ?? 0), 0) ?? 0;
 
   return (
     <Link
-      to={`/client/dashboard/courses/${course.id}/preview`}
+      to={orgRoutes.coursePreview(orgId, course.id)}
       className="group block"
     >
       <Card className="hover:border-primary/50 h-full overflow-hidden transition-colors">
@@ -74,6 +75,7 @@ function CourseCard({ course }: { course: Course }) {
 }
 
 export default function ClientDashboardMyCourses() {
+  const { orgId = "" } = useParams<{ orgId: string }>();
   const [search, setSearch] = useState("");
   const { data, isLoading } = useCourses({
     page: 1,
@@ -120,7 +122,7 @@ export default function ClientDashboardMyCourses() {
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {courses.map((course) => (
-            <CourseCard key={course.id} course={course} />
+            <CourseCard key={course.id} course={course} orgId={orgId} />
           ))}
         </div>
       )}

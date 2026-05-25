@@ -207,7 +207,7 @@ export default function UserProfilePage() {
       <Card>
         <CardContent className="flex items-center gap-4 pt-6">
           <Avatar className="h-20 w-20">
-            <AvatarFallback className="bg-linear-to-br from-orange-400 to-amber-500 text-2xl text-white">
+            <AvatarFallback className="bg-la-forest text-la-paper text-2xl">
               {initials}
             </AvatarFallback>
           </Avatar>
@@ -217,16 +217,12 @@ export default function UserProfilePage() {
             <div className="mt-2 flex gap-2">
               <Badge variant="secondary">{roleLabel}</Badge>
               {isVerified ? (
-                <Badge className="bg-green-600 hover:bg-green-700">
-                  Verified
-                </Badge>
+                <Badge variant="success">Verified</Badge>
               ) : (
                 <Badge variant="outline">Unverified</Badge>
               )}
               {isActive ? (
-                <Badge className="bg-green-600 hover:bg-green-700">
-                  Active
-                </Badge>
+                <Badge variant="success">Active</Badge>
               ) : (
                 <Badge variant="destructive">Inactive</Badge>
               )}

@@ -27,9 +27,10 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 import { DataTable } from "@/components/ui/data-table";
 import { useAppModal } from "@/stores/filters/modal-hooks";
+import { orgRoutes } from "@/lib/utils/org-routes";
 import { ViewCourseDialog } from "./view-course-dialog";
 import { DeleteCourseDialog } from "./delete-course-dialog";
 
@@ -43,13 +44,14 @@ interface AdminCoursesTableProps {
 const columnHelper = createColumnHelper<Course>();
 
 function CourseActions({ course }: { course: Course }) {
+  const { orgId = "" } = useParams<{ orgId: string }>();
   const viewModal = useAppModal("view-course");
   const deleteModal = useAppModal("delete-course");
 
   return (
     <div className="flex items-center justify-end gap-1">
       <Button asChild size="sm" variant="outline" className="h-8">
-        <Link to={`/client/dashboard/courses/${course.id}/modules`}>
+        <Link prefetch="intent" to={orgRoutes.courseModules(orgId, course.id)}>
           <Layers className="mr-1 h-3.5 w-3.5" />
           Manage
         </Link>
@@ -63,7 +65,7 @@ function CourseActions({ course }: { course: Course }) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem asChild>
-            <Link to={`/client/dashboard/courses/${course.id}/preview`}>
+            <Link to={orgRoutes.coursePreview(orgId, course.id)}>
               <Eye className="mr-2 h-4 w-4" />
               Preview Course
             </Link>
@@ -73,7 +75,7 @@ function CourseActions({ course }: { course: Course }) {
             Quick View
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link to={`/client/dashboard/courses/${course.id}/edit`}>
+            <Link to={orgRoutes.courseEdit(orgId, course.id)}>
               <Pencil className="mr-2 h-4 w-4" />
               Edit
             </Link>

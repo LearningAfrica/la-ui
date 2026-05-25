@@ -21,9 +21,18 @@ import { FormPasswordField } from "@/components/form-fields/form-password-field"
 
 interface LoginFormProps {
   searchParams?: URLSearchParams;
+  /** When provided, called instead of navigating after successful login. */
+  onAuthSuccess?: () => void;
+  /** When provided, the "Create account" prompt switches modes via this callback
+   *  instead of linking to the /sign-up page. */
+  onSwitchAuthMode?: () => void;
 }
 
-export function LoginForm({ searchParams }: LoginFormProps) {
+export function LoginForm({
+  searchParams,
+  onAuthSuccess,
+  onSwitchAuthMode,
+}: LoginFormProps) {
   const navigate = useNavigate();
   const { login } = useAuthStore();
   const { setSelectedOrganization } = useOrganizationStore();
@@ -63,6 +72,12 @@ export function LoginForm({ searchParams }: LoginFormProps) {
           );
         }
 
+        if (onAuthSuccess) {
+          onAuthSuccess();
+
+          return;
+        }
+
         // Check for a safe redirect param, otherwise navigate by role
         const redirectTo = searchParams?.get("redirect");
         const isSafeRedirect =
@@ -75,7 +90,7 @@ export function LoginForm({ searchParams }: LoginFormProps) {
         } else if (result.user_role === "super_admin") {
           navigate(href("/system/dashboard"));
         } else if (result.organizations.length === 1) {
-          navigate(href("/client/dashboard"));
+          navigate(`/dashboard/org/${result.organizations[0].id}`);
         } else {
           navigate(href("/dashboard"));
         }
@@ -89,13 +104,13 @@ export function LoginForm({ searchParams }: LoginFormProps) {
 
   return (
     <div className="w-full max-w-md space-y-6">
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Welcome Back
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Sign in to your Learning Africa account
+      <div className="space-y-1.5">
+        <p className="font-display text-la-muted text-[10px] font-medium tracking-[0.25em] uppercase">
+          Welcome back
         </p>
+        <h1 className="font-display text-la-ink text-[28px] leading-tight font-medium tracking-[-0.02em]">
+          Sign in to Learning Africa
+        </h1>
       </div>
 
       <Form {...form}>
@@ -169,15 +184,23 @@ export function LoginForm({ searchParams }: LoginFormProps) {
       </Form>
 
       <div className="text-center text-sm">
-        <span className="text-gray-600 dark:text-gray-400">
-          Don&apos;t have an account?{" "}
-        </span>
-        <Link
-          to={`/sign-up${searchParams ? `?${searchParams.toString()}` : ""}`}
-          className="text-primary font-medium hover:underline"
-        >
-          Create account
-        </Link>
+        <span className="text-la-muted">Don&apos;t have an account? </span>
+        {onSwitchAuthMode ? (
+          <button
+            type="button"
+            onClick={onSwitchAuthMode}
+            className="text-la-forest hover:text-la-forest-deep font-display font-medium underline-offset-4 hover:underline"
+          >
+            Create account
+          </button>
+        ) : (
+          <Link
+            to={`/sign-up${searchParams ? `?${searchParams.toString()}` : ""}`}
+            className="text-la-forest hover:text-la-forest-deep font-display font-medium underline-offset-4 hover:underline"
+          >
+            Create account
+          </Link>
+        )}
       </div>
     </div>
   );

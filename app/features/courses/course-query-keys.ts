@@ -17,4 +17,5 @@ export const courseMutationKeys = {
   updateCourse: () => ["updateCourse"] as const,
   deleteCourse: () => ["deleteCourse"] as const,
   enrollCourse: () => ["enrollCourse"] as const,
+  generateCertificate: () => ["generateCertificate"] as const,
 };

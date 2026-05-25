@@ -192,7 +192,7 @@ export function InquiryDetailsDialog({
                   <Button
                     onClick={() => onApprove(inquiry)}
                     disabled={isApproving || isRejecting}
-                    className="bg-linear-to-r from-orange-500 to-amber-500 text-white hover:from-orange-600 hover:to-amber-600"
+                    className="bg-la-forest text-la-paper hover:bg-(--color-la-forest-deep)"
                   >
                     {isApproving ? "Approving..." : "Approve"}
                   </Button>

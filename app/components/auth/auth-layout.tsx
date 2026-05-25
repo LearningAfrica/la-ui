@@ -1,168 +1,141 @@
-import { PatternLayout } from "@/components/pattern-layout";
-import { Link, href } from "react-router";
 import { ArrowLeft } from "lucide-react";
+import { Link } from "react-router";
+
+import { BackgroundPattern } from "@/components/landing-b/background-pattern";
+import { LALogo } from "@/components/landing-b/la-logo";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { cn } from "@/lib/utils";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
   className?: string;
+  /** Override the left-rail eyebrow + headline */
+  eyebrow?: string;
+  headline?: React.ReactNode;
+  description?: string;
 }
 
-export function AuthLayout({ children, className }: AuthLayoutProps) {
+const FEATURES = [
+  {
+    title: "Dedicated workspaces",
+    description:
+      "Each organization gets its own isolated workspace, members and content.",
+  },
+  {
+    title: "Powerful course builder",
+    description:
+      "Modules, content blocks, quizzes, AI-assisted authoring — built in.",
+  },
+  {
+    title: "Digital certificates",
+    description: "Verifiable credentials issued automatically on completion.",
+  },
+];
+
+export function AuthLayout({
+  children,
+  className,
+  eyebrow = "Learning Africa",
+  headline = (
+    <>
+      Education infrastructure
+      <br />
+      <span className="text-la-forest">for the continent.</span>
+    </>
+  ),
+  description = "Free, accredited learning built with educators, ministries, and universities across Africa.",
+}: AuthLayoutProps) {
   return (
-    <PatternLayout
-      className={`flex items-center justify-center ${className ?? ""}`}
+    <div
+      className={cn("bg-la-paper text-la-ink relative min-h-screen", className)}
     >
-      <div className="w-full max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mb-4 lg:hidden">
-          <Link
-            to={href("/")}
-            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 text-sm transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Home
-          </Link>
+      {/* Decorative patterns — fixed to viewport, only in true corners so
+          they never overlap the form card or copy. Opacity is dialled to
+          stay visible as texture without competing with content. */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 overflow-hidden"
+      >
+        <div className="absolute -top-32 -left-32 size-[360px] sm:size-[460px]">
+          <BackgroundPattern kind="circles" tone="dark" opacityScale={2.6} />
         </div>
-        <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
-          {/* Left Side - Branding */}
-          <div className="hidden items-center lg:flex">
-            <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-amber-500 to-orange-600 shadow-lg">
-                  <span className="text-2xl font-bold text-white">LA</span>
-                </div>
-                <div>
-                  <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-                    Learning Africa
-                  </h2>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Transform Learning in Africa
-                  </p>
-                </div>
-              </div>
+        <div className="absolute -right-28 -bottom-36 hidden size-[360px] md:block lg:size-[460px]">
+          <BackgroundPattern kind="rays" tone="dark" opacityScale={2.4} />
+        </div>
+        <div className="absolute -bottom-24 -left-32 hidden size-[280px] xl:block">
+          <BackgroundPattern kind="weave" tone="dark" opacityScale={2.2} />
+        </div>
+      </div>
 
-              <div className="space-y-4">
-                <FeatureItem
-                  icon={
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  }
-                  color="amber"
-                  title="Dedicated Workspaces"
-                  description="Get your own isolated workspace with full control over content and users"
-                />
-                <FeatureItem
-                  icon={
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                    />
-                  }
-                  color="orange"
-                  title="Powerful Course Builder"
-                  description="Create engaging courses with quizzes, assessments, and multimedia content"
-                />
-                <FeatureItem
-                  icon={
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-                    />
-                  }
-                  color="green"
-                  title="Digital Certificates"
-                  description="Issue verified digital certificates upon course completion"
-                />
-              </div>
+      <div className="relative mx-auto flex w-full max-w-[1280px] flex-col px-5 py-6 md:min-h-screen md:px-10 md:py-10">
+        {/* Top utility bar */}
+        <div className="flex items-center justify-between">
+          <Link
+            to="/"
+            prefetch="intent"
+            className="font-display text-la-ink hover:bg-la-cream inline-flex items-center gap-2 rounded px-2 py-1.5 text-[13px] font-medium transition-colors"
+          >
+            <ArrowLeft className="size-4" />
+            Back home
+          </Link>
+          <ThemeToggle />
+        </div>
 
-              <div className="rounded-2xl border border-amber-200 bg-amber-50/50 p-6 dark:border-gray-700 dark:bg-gray-800/50">
-                <div className="mb-4 flex items-center gap-2">
-                  <div className="flex -space-x-2">
-                    {[1, 2, 3, 4].map((i) => (
-                      <div
-                        key={i}
-                        className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-linear-to-br from-amber-400 to-orange-500 text-xs font-medium text-white dark:border-gray-800"
-                      >
-                        {String.fromCharCode(64 + i)}
-                      </div>
-                    ))}
-                  </div>
-                  <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                    500+ Organizations
-                  </span>
-                </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Join hundreds of African organizations already transforming
-                  their learning experience
-                </p>
-              </div>
+        {/* Split */}
+        <main className="grid flex-1 items-start gap-12 py-10 lg:grid-cols-12 lg:items-center lg:gap-10 lg:py-12">
+          {/* Left rail — editorial value prop */}
+          <aside className="hidden flex-col gap-10 lg:col-span-6 lg:flex xl:col-span-7">
+            <div className="flex items-center gap-3">
+              <LALogo size={32} />
+              <span className="font-display text-la-muted text-[10px] font-medium tracking-[0.25em] uppercase">
+                {eyebrow}
+              </span>
             </div>
-          </div>
 
-          {/* Right Side - Auth Form */}
-          <div className="flex items-center justify-center">
-            <div className="w-full max-w-md rounded-3xl border border-amber-100 bg-white p-8 shadow-2xl dark:border-gray-700 dark:bg-gray-900">
+            <h1 className="font-display text-la-ink text-[44px] leading-[1.04] font-medium tracking-[-0.04em] xl:text-[56px]">
+              {headline}
+            </h1>
+
+            <p className="text-la-ink-2 max-w-[480px] text-[15px] leading-[1.6] xl:text-[16px]">
+              {description}
+            </p>
+
+            <ul className="flex flex-col gap-5">
+              {FEATURES.map((f, i) => (
+                <li
+                  key={f.title}
+                  className="border-la-rule flex items-start gap-4 border-t pt-5"
+                >
+                  <span className="font-display text-la-forest text-[14px] font-medium tabular-nums">
+                    0{i + 1}
+                  </span>
+                  <div>
+                    <div className="font-display text-la-ink text-[15px] font-medium tracking-tight">
+                      {f.title}
+                    </div>
+                    <p className="text-la-muted mt-1 text-[13px] leading-[1.55]">
+                      {f.description}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <div className="border-la-rule bg-la-cream rounded border p-4">
+              <p className="font-display text-la-ink text-[13px] leading-[1.55]">
+                Built with educators across Africa — schools, universities, and
+                ministries.
+              </p>
+            </div>
+          </aside>
+
+          {/* Right — form card */}
+          <div className="flex w-full justify-center lg:col-span-6 lg:justify-end xl:col-span-5">
+            <div className="border-la-rule-strong bg-la-paper w-full max-w-md rounded-md border p-6 shadow-[0_8px_32px_-16px_rgba(20,41,34,0.22)] sm:p-8">
               {children}
             </div>
           </div>
-        </div>
-      </div>
-    </PatternLayout>
-  );
-}
-
-const colorMap = {
-  amber: {
-    bg: "bg-amber-100 dark:bg-amber-900/30",
-    text: "text-amber-600 dark:text-amber-400",
-  },
-  orange: {
-    bg: "bg-orange-100 dark:bg-orange-900/30",
-    text: "text-orange-600 dark:text-orange-400",
-  },
-  green: {
-    bg: "bg-green-100 dark:bg-green-900/30",
-    text: "text-green-600 dark:text-green-400",
-  },
-} as const;
-
-function FeatureItem({
-  icon,
-  color,
-  title,
-  description,
-}: {
-  icon: React.ReactNode;
-  color: keyof typeof colorMap;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="flex items-start gap-4">
-      <div
-        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${colorMap[color].bg}`}
-      >
-        <svg
-          className={`h-5 w-5 ${colorMap[color].text}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          {icon}
-        </svg>
-      </div>
-      <div>
-        <h3 className="font-semibold text-gray-900 dark:text-white">{title}</h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          {description}
-        </p>
+        </main>
       </div>
     </div>
   );

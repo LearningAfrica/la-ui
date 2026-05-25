@@ -19,6 +19,7 @@ import { useNavigate } from "react-router";
 import { useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { createLogoItemUrl } from "@/lib/utils/create-image-url";
+import { orgRoutes } from "@/lib/utils/org-routes";
 
 export function OrganizationSelector() {
   const { selectedOrganization, setSelectedOrganization } =
@@ -51,7 +52,7 @@ export function OrganizationSelector() {
 
     if (org) {
       setSelectedOrganization(org);
-      navigate("/client/dashboard");
+      navigate(orgRoutes.overview(org.id));
     }
   };
 

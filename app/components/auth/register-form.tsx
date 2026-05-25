@@ -22,9 +22,18 @@ import { FormPasswordField } from "@/components/form-fields/form-password-field"
 
 interface RegisterFormProps {
   searchParams?: URLSearchParams;
+  /** When provided, called instead of navigating after successful sign-up. */
+  onAuthSuccess?: () => void;
+  /** When provided, the "Sign in" prompt switches modes via this callback
+   *  instead of linking to the /sign-in page. */
+  onSwitchAuthMode?: () => void;
 }
 
-export function RegisterForm({ searchParams }: RegisterFormProps) {
+export function RegisterForm({
+  searchParams,
+  onAuthSuccess,
+  onSwitchAuthMode,
+}: RegisterFormProps) {
   const navigate = useNavigate();
 
   const form = useForm<RegisterFormData>({
@@ -45,6 +54,12 @@ export function RegisterForm({ searchParams }: RegisterFormProps) {
   const onSubmit = form.handleSubmit(async (data) => {
     await registerMutation.mutateAsync(data, {
       onSuccess: () => {
+        if (onAuthSuccess) {
+          onAuthSuccess();
+
+          return;
+        }
+
         // Navigate to sign-in page after successful registration
         navigate(
           `/sign-in${searchParams ? `?${searchParams.toString()}` : ""}`
@@ -59,12 +74,15 @@ export function RegisterForm({ searchParams }: RegisterFormProps) {
 
   return (
     <div className="w-full max-w-md space-y-6">
-      <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Create Account
+      <div className="space-y-1.5">
+        <p className="font-display text-la-muted text-[10px] font-medium tracking-[0.25em] uppercase">
+          Get started
+        </p>
+        <h1 className="font-display text-la-ink text-[28px] leading-tight font-medium tracking-[-0.02em]">
+          Create your account
         </h1>
-        <p className="text-gray-600 dark:text-gray-400">
-          Join Learning Africa and transform your organization&apos;s learning
+        <p className="text-la-muted mt-2 text-sm">
+          Free, accredited learning. No credit card.
         </p>
       </div>
 
@@ -146,7 +164,7 @@ export function RegisterForm({ searchParams }: RegisterFormProps) {
                     I agree to the{" "}
                     <Link
                       to="/terms"
-                      className="text-primary hover:underline"
+                      className="text-la-forest font-medium hover:underline"
                       target="_blank"
                     >
                       Terms
@@ -154,7 +172,7 @@ export function RegisterForm({ searchParams }: RegisterFormProps) {
                     and{" "}
                     <Link
                       to="/privacy"
-                      className="text-primary hover:underline"
+                      className="text-la-forest font-medium hover:underline"
                       target="_blank"
                     >
                       Privacy Policy
@@ -184,15 +202,23 @@ export function RegisterForm({ searchParams }: RegisterFormProps) {
       </Form>
 
       <div className="text-center text-sm">
-        <span className="text-gray-600 dark:text-gray-400">
-          Already have an account?{" "}
-        </span>
-        <Link
-          to={`/sign-in${searchParams ? `?${searchParams.toString()}` : ""}`}
-          className="text-primary font-medium hover:underline"
-        >
-          Sign in
-        </Link>
+        <span className="text-la-muted">Already have an account? </span>
+        {onSwitchAuthMode ? (
+          <button
+            type="button"
+            onClick={onSwitchAuthMode}
+            className="text-la-forest hover:text-la-forest-deep font-display font-medium underline-offset-4 hover:underline"
+          >
+            Sign in
+          </button>
+        ) : (
+          <Link
+            to={`/sign-in${searchParams ? `?${searchParams.toString()}` : ""}`}
+            className="text-la-forest hover:text-la-forest-deep font-display font-medium underline-offset-4 hover:underline"
+          >
+            Sign in
+          </Link>
+        )}
       </div>
     </div>
   );
