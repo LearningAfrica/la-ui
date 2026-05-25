@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router";
 
+import { OptimisticImage } from "@/components/ui/optimistic-image";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
 
 import { AfricaMap } from "./africa-map";
@@ -112,11 +113,11 @@ export function LandingHero() {
 
           {/* Right: photo + map */}
           <div className="flex flex-col gap-3 lg:col-span-6">
-            <div className="bg-la-forest-wash relative aspect-[5/4] overflow-hidden rounded">
-              <img
+            <div className="relative aspect-[5/4] overflow-hidden rounded">
+              <OptimisticImage
                 src="https://images.unsplash.com/photo-1620969910995-4bbe4eaa32c1?q=80&w=1296&auto=format&fit=crop"
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover"
+                alt="Learners in an African classroom using Learning Africa platform"
+                wrapperClassName="absolute inset-0"
                 loading="eager"
                 decoding="async"
               />

@@ -21,13 +21,13 @@ import { createMediaUrl } from "@/lib/api";
 import {
   BookOpen,
   Eye,
-  Image as ImageIcon,
   Layers,
   MoreHorizontal,
   Pencil,
   Trash2,
 } from "lucide-react";
 import { Link, useParams } from "react-router";
+import { OptimisticImage } from "@/components/ui/optimistic-image";
 import { DataTable } from "@/components/ui/data-table";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import { orgRoutes } from "@/lib/utils/org-routes";
@@ -97,19 +97,13 @@ function CourseActions({ course }: { course: Course }) {
 function CourseTitleCell({ course }: { course: Course }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="bg-muted relative h-12 w-16 shrink-0 overflow-hidden rounded-md border">
-        {course.course_image ? (
-          <img
-            src={createMediaUrl(course.course_image)}
-            alt=""
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="text-muted-foreground flex h-full items-center justify-center">
-            <ImageIcon className="h-4 w-4" />
-          </div>
-        )}
-      </div>
+      <OptimisticImage
+        src={
+          course.course_image ? createMediaUrl(course.course_image) : undefined
+        }
+        alt={course.title}
+        wrapperClassName="h-12 w-16 shrink-0 rounded-md border"
+      />
       <div className="min-w-0">
         <p className="truncate font-medium">{course.title}</p>
         {course.overview && (

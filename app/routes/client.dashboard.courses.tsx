@@ -26,10 +26,10 @@ import {
   Pencil,
   Trash2,
   MoreHorizontal,
-  Image as ImageIcon,
   ArrowRight,
   Search,
 } from "lucide-react";
+import { OptimisticImage } from "@/components/ui/optimistic-image";
 import {
   Select,
   SelectContent,
@@ -106,19 +106,14 @@ function CourseCard({ course, orgId }: { course: Course; orgId: string }) {
   return (
     <Card className="flex flex-col overflow-hidden">
       {/* Thumbnail */}
-      <div className="bg-muted relative aspect-[16/9] w-full">
-        {course.course_image ? (
-          <img
-            src={createMediaUrl(course.course_image)}
-            alt={course.title}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="text-muted-foreground flex h-full items-center justify-center">
-            <ImageIcon className="h-10 w-10" />
-          </div>
-        )}
-      </div>
+      <OptimisticImage
+        src={
+          course.course_image ? createMediaUrl(course.course_image) : undefined
+        }
+        alt={course.title}
+        wrapperClassName="aspect-[16/9] w-full"
+        iconSize="size-10"
+      />
 
       {/* Content */}
       <CardContent className="flex flex-1 flex-col gap-2 p-4">

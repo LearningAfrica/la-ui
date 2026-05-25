@@ -44,11 +44,11 @@ export function meta() {
     ...generateSEOTags({
       title: "Learning Africa — The complete learning management platform",
       description:
-        "Create courses, track learner progress, and issue verifiable certificates — all in one place. The complete LMS for modern organizations.",
+        "Create courses, track learner progress, and issue verifiable certificates with Learning Africa — the complete learning management platform for organizations, training providers, and teams everywhere.",
       url: href("/"),
       image: "/og.png",
       keywords:
-        "learning africa,learning management system,lms platform,corporate training,employee training,online courses,verifiable certificates,team training,instructor platform",
+        "learning africa,learning management platform,course management,organizational learning,certificates,team training,online courses,instructor platform",
       jsonLd: [organizationSchema(), websiteSchema(), faqSchema(HOME_FAQS)],
     }),
   ];

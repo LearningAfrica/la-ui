@@ -1,6 +1,5 @@
 import { Link } from "react-router";
-import { Button } from "@/components/ui/button";
-import { PatternLayout } from "@/components/pattern-layout";
+
 import { generateSEOTags } from "@/lib/utils/seo";
 
 export function meta() {
@@ -14,25 +13,30 @@ export function meta() {
 
 export default function CatchAllPage() {
   return (
-    <PatternLayout className="flex items-center justify-center py-12">
-      <div className="flex flex-col items-center justify-center px-4 text-center">
-        <h1 className="text-8xl font-bold text-amber-500">404</h1>
-        <h2 className="mt-4 text-2xl font-semibold text-gray-900 dark:text-white">
-          Page Not Found
+    <div className="bg-la-paper text-la-ink flex min-h-screen items-center justify-center px-4">
+      <div className="flex flex-col items-center text-center">
+        <h1 className="text-la-ink text-8xl font-bold">404</h1>
+        <h2 className="text-la-ink mt-4 text-2xl font-semibold">
+          Page not found
         </h2>
-        <p className="mt-2 max-w-md text-gray-600 dark:text-gray-400">
-          Sorry, the page you are looking for doesn&apos;t exist or has been
-          moved.
+        <p className="text-la-ink-2 mt-2 max-w-md">
+          The page you&apos;re looking for doesn&apos;t exist or has been moved.
         </p>
         <div className="mt-8 flex gap-4">
-          <Button asChild>
-            <Link to="/">Go Home</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link to="/sign-in">Sign In</Link>
-          </Button>
+          <Link
+            to="/"
+            className="bg-la-forest text-la-paper inline-flex h-10 items-center rounded px-5 text-sm font-medium transition-colors hover:bg-(--color-la-forest-deep)"
+          >
+            Go home
+          </Link>
+          <Link
+            to="/sign-in"
+            className="text-la-forest border-la-rule-strong hover:bg-la-cream inline-flex h-10 items-center rounded border px-5 text-sm font-medium transition-colors"
+          >
+            Sign in
+          </Link>
         </div>
       </div>
-    </PatternLayout>
+    </div>
   );
 }

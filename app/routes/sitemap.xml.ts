@@ -1,5 +1,4 @@
 import { env } from "@/lib/env";
-import type { Route } from "./+types/sitemap.xml";
 
 type Entry = {
   path: string;
@@ -31,8 +30,8 @@ function escapeXml(s: string): string {
     .replace(/'/g, "&apos;");
 }
 
-export const loader = ({ request }: Route.LoaderArgs) => {
-  const origin = env.VITE_SITE_URL || new URL(request.url).origin;
+export const loader = () => {
+  const origin = env.VITE_SITE_URL;
   const lastmod = new Date().toISOString();
 
   const urls = routes
