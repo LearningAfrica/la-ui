@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { LayoutDashboard, LogOut, Menu, X } from "lucide-react";
+import LayoutDashboard from "~icons/lucide/layout-dashboard";
+import LogOut from "~icons/lucide/log-out";
+import Menu from "~icons/lucide/menu";
+import X from "~icons/lucide/x";
 import { Link, useNavigate } from "react-router";
 
 import { ThemeToggle } from "@/components/theme-toggle";

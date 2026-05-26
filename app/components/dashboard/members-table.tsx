@@ -22,16 +22,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Search,
-  RefreshCw,
-  X,
-  UsersIcon,
-  MoreVertical,
-  UserCog,
-  Ban,
-  CheckCircle,
-} from "lucide-react";
+import Search from "~icons/lucide/search";
+import RefreshCw from "~icons/lucide/refresh-cw";
+import X from "~icons/lucide/x";
+import UsersIcon from "~icons/lucide/users";
+import MoreVertical from "~icons/lucide/more-vertical";
+import UserCog from "~icons/lucide/user-cog";
+import Ban from "~icons/lucide/ban";
+import CheckCircle from "~icons/lucide/check-circle";
 import type {
   OrganizationMember,
   OrganizationMembershipRole,

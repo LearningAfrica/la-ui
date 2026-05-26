@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ImageIcon } from "lucide-react";
+import ImageIcon from "~icons/lucide/image";
 
 import { cn } from "@/lib/utils";
 

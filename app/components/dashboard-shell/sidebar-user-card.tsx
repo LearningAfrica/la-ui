@@ -1,4 +1,4 @@
-import { LogOut } from "lucide-react";
+import LogOut from "~icons/lucide/log-out";
 
 import { cn } from "@/lib/utils";
 

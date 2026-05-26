@@ -16,7 +16,11 @@ import {
   defaultQuizValues,
   type QuizFormData,
 } from "@/lib/schema/quiz-schema";
-import { ChevronDown, ChevronRight, Loader2, Plus, Trash2 } from "lucide-react";
+import ChevronDown from "~icons/lucide/chevron-down";
+import ChevronRight from "~icons/lucide/chevron-right";
+import Loader2 from "~icons/lucide/loader-2";
+import Plus from "~icons/lucide/plus";
+import Trash2 from "~icons/lucide/trash-2";
 import {
   useCreateQuiz,
   useUpdateQuiz,

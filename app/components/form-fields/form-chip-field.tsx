@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { X } from "lucide-react";
+import X from "~icons/lucide/x";
 
 // Validation function type
 export type ChipValidationFn = (value: string) => string | true;

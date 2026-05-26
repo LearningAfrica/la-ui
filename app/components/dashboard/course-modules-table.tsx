@@ -9,7 +9,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { CourseModuleDetail } from "@/features/modules/module-queries";
-import { MoreHorizontal, Pencil, Trash2, FileText } from "lucide-react";
+import MoreHorizontal from "~icons/lucide/more-horizontal";
+import Pencil from "~icons/lucide/pencil";
+import Trash2 from "~icons/lucide/trash-2";
+import FileText from "~icons/lucide/file-text";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import { DataTable } from "@/components/ui/data-table";
 import { DeleteModuleDialog } from "./delete-module-dialog";

@@ -23,7 +23,9 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, ChevronDown, X } from "lucide-react";
+import CheckCircle from "~icons/lucide/check-circle";
+import ChevronDown from "~icons/lucide/chevron-down";
+import X from "~icons/lucide/x";
 import { cn } from "@/lib/utils";
 
 export interface SelectOption {

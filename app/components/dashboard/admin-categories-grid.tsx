@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import type { Category } from "@/features/categories/category-queries";
-import { Eye, Pencil, Trash2, RefreshCw, FolderOpen } from "lucide-react";
+import Eye from "~icons/lucide/eye";
+import Pencil from "~icons/lucide/pencil";
+import Trash2 from "~icons/lucide/trash-2";
+import RefreshCw from "~icons/lucide/refresh-cw";
+import FolderOpen from "~icons/lucide/folder-open";
 import moment from "moment";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import { ViewCategoryDialog } from "./view-category-dialog";

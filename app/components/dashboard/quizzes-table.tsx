@@ -26,13 +26,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  MoreVertical,
-  Pencil,
-  Trash2,
-  ClipboardCheck,
-  RefreshCw,
-} from "lucide-react";
+import MoreVertical from "~icons/lucide/more-vertical";
+import Pencil from "~icons/lucide/pencil";
+import Trash2 from "~icons/lucide/trash-2";
+import ClipboardCheck from "~icons/lucide/clipboard-check";
+import RefreshCw from "~icons/lucide/refresh-cw";
 import type { Quiz } from "@/features/quizzes/quiz-queries";
 import { useDeleteQuiz } from "@/features/quizzes/quiz-mutations";
 import { orgRoutes } from "@/lib/utils/org-routes";

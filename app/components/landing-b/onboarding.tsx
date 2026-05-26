@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import ArrowRight from "~icons/lucide/arrow-right";
 import { Link } from "react-router";
 
 import { BackgroundPattern } from "./background-pattern";

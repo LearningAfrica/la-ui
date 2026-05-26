@@ -25,7 +25,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { Organization } from "@/features/organizations/organization-queries";
-import { Search, X } from "lucide-react";
+import Search from "~icons/lucide/search";
+import X from "~icons/lucide/x";
 
 interface AdminOrganizationsTableProps {
   organizations: Organization[];

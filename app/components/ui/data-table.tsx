@@ -16,7 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import ChevronLeft from "~icons/lucide/chevron-left";
+import ChevronRight from "~icons/lucide/chevron-right";
 import {
   Table,
   TableBody,
@@ -35,7 +36,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Search, X, RefreshCw, SlidersHorizontal } from "lucide-react";
+import Search from "~icons/lucide/search";
+import X from "~icons/lucide/x";
+import RefreshCw from "~icons/lucide/refresh-cw";
+import SlidersHorizontal from "~icons/lucide/sliders-horizontal";
 
 interface DataTableProps<TData> {
   columns: ColumnDef<TData, unknown>[];

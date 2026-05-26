@@ -1,4 +1,8 @@
-import { CheckCircle, Info, Loader, AlertTriangle, X } from "lucide-react";
+import CheckCircle from "~icons/lucide/check-circle";
+import Info from "~icons/lucide/info";
+import Loader from "~icons/lucide/loader";
+import AlertTriangle from "~icons/lucide/alert-triangle";
+import X from "~icons/lucide/x";
 import { createRoot, type Root } from "react-dom/client";
 
 type ToastType = "success" | "error" | "warning" | "info" | "loading";

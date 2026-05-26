@@ -11,7 +11,11 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Check, X, Clock, Mail } from "lucide-react";
+import Search from "~icons/lucide/search";
+import Check from "~icons/lucide/check";
+import X from "~icons/lucide/x";
+import Clock from "~icons/lucide/clock";
+import Mail from "~icons/lucide/mail";
 import {
   useAcceptInvite,
   useDeclineInvite,

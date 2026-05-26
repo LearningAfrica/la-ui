@@ -3,17 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useParams } from "react-router";
 import { useState } from "react";
-import {
-  Users,
-  BookOpen,
-  GraduationCap,
-  Award,
-  ArrowRight,
-  UserPlus,
-  FolderOpen,
-  Plus,
-  Mail,
-} from "lucide-react";
+import Users from "~icons/lucide/users";
+import BookOpen from "~icons/lucide/book-open";
+import GraduationCap from "~icons/lucide/graduation-cap";
+import Award from "~icons/lucide/award";
+import ArrowRight from "~icons/lucide/arrow-right";
+import UserPlus from "~icons/lucide/user-plus";
+import FolderOpen from "~icons/lucide/folder-open";
+import Plus from "~icons/lucide/plus";
+import Mail from "~icons/lucide/mail";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { orgRoutes } from "@/lib/utils/org-routes";
 import {

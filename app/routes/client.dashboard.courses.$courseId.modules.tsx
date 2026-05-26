@@ -4,14 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Layers,
-  FileText,
-  ArrowLeft,
-  Plus,
-  ClipboardCheck,
-  Sparkles,
-} from "lucide-react";
+import Layers from "~icons/lucide/layers";
+import FileText from "~icons/lucide/file-text";
+import ArrowLeft from "~icons/lucide/arrow-left";
+import Plus from "~icons/lucide/plus";
+import ClipboardCheck from "~icons/lucide/clipboard-check";
+import Sparkles from "~icons/lucide/sparkles";
 import { useCourseModules } from "@/features/modules/module-queries";
 import { useModuleContents } from "@/features/module-contents/module-content-queries";
 import { useQuizzes } from "@/features/quizzes/quiz-queries";

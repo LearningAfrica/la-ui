@@ -15,7 +15,9 @@ import { InquiryDetailsDialog } from "@/components/dashboard/inquiry-details-dia
 import { ConfirmationDialog } from "@/components/dashboard/confirmation-dialog";
 import { RejectInquiryDialog } from "@/components/dashboard/reject-inquiry-dialog";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import ChevronLeft from "~icons/lucide/chevron-left";
+import ChevronRight from "~icons/lucide/chevron-right";
+import RefreshCw from "~icons/lucide/refresh-cw";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 
 declare module "@/stores/filters/modal-slice" {

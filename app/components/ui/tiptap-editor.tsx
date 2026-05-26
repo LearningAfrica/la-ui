@@ -6,25 +6,23 @@ import TextAlign from "@tiptap/extension-text-align";
 import Placeholder from "@tiptap/extension-placeholder";
 import { cn } from "@/lib/utils";
 import { Toggle } from "@/components/ui/toggle";
-import {
-  Bold,
-  Italic,
-  Underline as UnderlineIcon,
-  Strikethrough,
-  List,
-  ListOrdered,
-  Quote,
-  Code,
-  Heading1,
-  Heading2,
-  Heading3,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  Link as LinkIcon,
-  Undo,
-  Redo,
-} from "lucide-react";
+import Bold from "~icons/lucide/bold";
+import Italic from "~icons/lucide/italic";
+import UnderlineIcon from "~icons/lucide/underline";
+import Strikethrough from "~icons/lucide/strikethrough";
+import List from "~icons/lucide/list";
+import ListOrdered from "~icons/lucide/list-ordered";
+import Quote from "~icons/lucide/quote";
+import Code from "~icons/lucide/code";
+import Heading1 from "~icons/lucide/heading-1";
+import Heading2 from "~icons/lucide/heading-2";
+import Heading3 from "~icons/lucide/heading-3";
+import AlignLeft from "~icons/lucide/align-left";
+import AlignCenter from "~icons/lucide/align-center";
+import AlignRight from "~icons/lucide/align-right";
+import LinkIcon from "~icons/lucide/link";
+import Undo from "~icons/lucide/undo";
+import Redo from "~icons/lucide/redo";
 
 interface TiptapEditorProps {
   content: string;

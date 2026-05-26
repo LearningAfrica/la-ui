@@ -18,14 +18,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Course } from "@/features/courses/course-queries";
 import { createMediaUrl } from "@/lib/api";
-import {
-  BookOpen,
-  Eye,
-  Layers,
-  MoreHorizontal,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import BookOpen from "~icons/lucide/book-open";
+import Eye from "~icons/lucide/eye";
+import Layers from "~icons/lucide/layers";
+import MoreHorizontal from "~icons/lucide/more-horizontal";
+import Pencil from "~icons/lucide/pencil";
+import Trash2 from "~icons/lucide/trash-2";
 import { Link, useParams } from "react-router";
 import { OptimisticImage } from "@/components/ui/optimistic-image";
 import { DataTable } from "@/components/ui/data-table";

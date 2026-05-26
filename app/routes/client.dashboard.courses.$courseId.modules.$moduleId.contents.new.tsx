@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router";
-import { ArrowLeft, FileText } from "lucide-react";
+import ArrowLeft from "~icons/lucide/arrow-left";
+import FileText from "~icons/lucide/file-text";
 import { Button } from "@/components/ui/button";
 import { ContentForm } from "@/components/dashboard/content-form";
 import { orgRoutes } from "@/lib/utils/org-routes";

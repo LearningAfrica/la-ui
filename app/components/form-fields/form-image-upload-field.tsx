@@ -12,7 +12,7 @@ import {
   FormMessage,
   FormControl,
 } from "@/components/ui/form";
-import { ImagePlus } from "lucide-react";
+import ImagePlus from "~icons/lucide/image-plus";
 
 interface FormImageUploadFieldProps<
   TFieldValues extends FieldValues = FieldValues,

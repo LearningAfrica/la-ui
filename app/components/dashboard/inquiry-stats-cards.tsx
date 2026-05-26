@@ -1,6 +1,9 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Clock, CheckCircle, XCircle } from "lucide-react";
+import FileText from "~icons/lucide/file-text";
+import Clock from "~icons/lucide/clock";
+import CheckCircle from "~icons/lucide/check-circle";
+import XCircle from "~icons/lucide/x-circle";
 import type { InquiryStats } from "@/features/inquiries/inquiry-queries";
 import { Skeleton } from "@/components/ui/skeleton";
 

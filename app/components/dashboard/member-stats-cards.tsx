@@ -1,11 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Users,
-  UserCheck,
-  Shield,
-  GraduationCap,
-  BookOpen,
-} from "lucide-react";
+import Users from "~icons/lucide/users";
+import UserCheck from "~icons/lucide/user-check";
+import Shield from "~icons/lucide/shield";
+import GraduationCap from "~icons/lucide/graduation-cap";
+import BookOpen from "~icons/lucide/book-open";
 import type { OrganizationMember } from "@/features/organizations/organization-queries";
 
 interface MemberStatsCardsProps {

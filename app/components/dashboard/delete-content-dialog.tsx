@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import { useDeleteModuleContent } from "@/features/module-contents/module-content-mutations";
-import { Loader2 } from "lucide-react";
+import Loader2 from "~icons/lucide/loader-2";
 
 export interface DeleteContentData {
   coursePk: string;

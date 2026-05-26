@@ -19,7 +19,8 @@ import {
   defaultZoomCallValues,
   type ZoomCallFormData,
 } from "@/lib/schema/zoom-call-schema";
-import { Video, Loader2 } from "lucide-react";
+import Video from "~icons/lucide/video";
+import Loader2 from "~icons/lucide/loader-2";
 import {
   useCreateZoomCall,
   useUpdateZoomCall,

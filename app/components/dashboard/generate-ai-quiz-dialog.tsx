@@ -19,7 +19,8 @@ import {
   defaultAiQuizValues,
   difficultyOptions,
 } from "@/lib/schema/quiz-schema";
-import { Sparkles, Loader2 } from "lucide-react";
+import Sparkles from "~icons/lucide/sparkles";
+import Loader2 from "~icons/lucide/loader-2";
 import { useGenerateAiQuiz } from "@/features/quizzes/quiz-mutations";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 

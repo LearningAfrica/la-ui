@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { courseResolver } from "@/lib/schema/course-schema";
-import { Loader2 } from "lucide-react";
+import Loader2 from "~icons/lucide/loader-2";
 import {
   useCreateCourse,
   useUpdateCourse,

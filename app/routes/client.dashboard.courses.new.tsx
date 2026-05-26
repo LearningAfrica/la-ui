@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router";
-import { ArrowLeft, BookOpen } from "lucide-react";
+import ArrowLeft from "~icons/lucide/arrow-left";
+import BookOpen from "~icons/lucide/book-open";
 import { Button } from "@/components/ui/button";
 import { CourseForm } from "@/components/dashboard/course-form";
 import { orgRoutes } from "@/lib/utils/org-routes";

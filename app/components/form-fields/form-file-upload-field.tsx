@@ -12,7 +12,8 @@ import {
   FormMessage,
   FormControl,
 } from "@/components/ui/form";
-import { FileUp, X } from "lucide-react";
+import FileUp from "~icons/lucide/file-up";
+import X from "~icons/lucide/x";
 
 export interface FormFileUploadValue {
   name: string;

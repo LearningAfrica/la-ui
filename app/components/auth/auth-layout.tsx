@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import ArrowLeft from "~icons/lucide/arrow-left";
 import { Link } from "react-router";
 
 import { BackgroundPattern } from "@/components/landing-b/background-pattern";

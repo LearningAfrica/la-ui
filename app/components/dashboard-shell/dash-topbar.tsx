@@ -1,4 +1,6 @@
-import { Bell, Menu, Search } from "lucide-react";
+import Bell from "~icons/lucide/bell";
+import Menu from "~icons/lucide/menu";
+import Search from "~icons/lucide/search";
 
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";

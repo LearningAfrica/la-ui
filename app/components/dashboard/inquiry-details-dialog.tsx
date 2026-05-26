@@ -11,7 +11,10 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import type { InquiryInterface } from "@/features/inquiries/inquiry-queries";
 import { getCategoryLabel, getSizeLabel } from "@/lib/constants/company";
-import { Calendar, Mail, Building2, Users } from "lucide-react";
+import Calendar from "~icons/lucide/calendar";
+import Mail from "~icons/lucide/mail";
+import Building2 from "~icons/lucide/building-2";
+import Users from "~icons/lucide/users";
 
 interface InquiryDetailsDialogProps {
   inquiry: InquiryInterface | null;

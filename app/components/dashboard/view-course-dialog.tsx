@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import type { Course } from "@/features/courses/course-queries";
 import { createMediaUrl } from "@/lib/api";
-import { ImageIcon } from "lucide-react";
+import ImageIcon from "~icons/lucide/image";
 import moment from "moment";
 
 declare module "@/stores/filters/modal-slice" {

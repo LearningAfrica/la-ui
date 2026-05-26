@@ -17,7 +17,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Eye, Search } from "lucide-react";
+import Eye from "~icons/lucide/eye";
+import Search from "~icons/lucide/search";
 import type { InquiryInterface } from "@/features/inquiries/inquiry-queries";
 import moment from "moment";
 import { getCategoryLabel, getSizeLabel } from "@/lib/constants/company";

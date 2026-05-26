@@ -26,15 +26,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  MoreVertical,
-  Pencil,
-  Trash2,
-  Video,
-  ExternalLink,
-  RefreshCw,
-  Copy,
-} from "lucide-react";
+import MoreVertical from "~icons/lucide/more-vertical";
+import Pencil from "~icons/lucide/pencil";
+import Trash2 from "~icons/lucide/trash-2";
+import Video from "~icons/lucide/video";
+import ExternalLink from "~icons/lucide/external-link";
+import RefreshCw from "~icons/lucide/refresh-cw";
+import Copy from "~icons/lucide/copy";
 import type { ZoomCall } from "@/features/zoom-calls/zoom-call-queries";
 import { useDeleteZoomCall } from "@/features/zoom-calls/zoom-call-mutations";
 import { useAppModal } from "@/stores/filters/modal-hooks";

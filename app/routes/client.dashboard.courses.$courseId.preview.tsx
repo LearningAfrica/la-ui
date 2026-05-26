@@ -4,20 +4,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import {
-  ArrowLeft,
-  Layers,
-  FileText,
-  Video,
-  File,
-  ChevronDown,
-  ChevronRight,
-  Clock,
-  BookOpen,
-  CheckCircle2,
-  Circle,
-  PlayCircle,
-} from "lucide-react";
+import ArrowLeft from "~icons/lucide/arrow-left";
+import Layers from "~icons/lucide/layers";
+import FileText from "~icons/lucide/file-text";
+import Video from "~icons/lucide/video";
+import File from "~icons/lucide/file";
+import ChevronDown from "~icons/lucide/chevron-down";
+import ChevronRight from "~icons/lucide/chevron-right";
+import Clock from "~icons/lucide/clock";
+import BookOpen from "~icons/lucide/book-open";
+import CheckCircle2 from "~icons/lucide/check-circle-2";
+import Circle from "~icons/lucide/circle";
+import PlayCircle from "~icons/lucide/play-circle";
 import { cn } from "@/lib/utils";
 import { createMediaUrl } from "@/lib/api";
 import {

@@ -8,21 +8,21 @@ import {
 } from "react-router";
 
 import { env } from "@/lib/env";
+import {
+  navigationSchema,
+  organizationSchema,
+  websiteSchema,
+} from "@/lib/utils/structured-data";
 import type { Route } from "./+types/root";
 import "./app.css";
 
+const GLOBAL_JSON_LD = JSON.stringify([
+  organizationSchema(),
+  websiteSchema(),
+  navigationSchema(),
+]);
+
 export const links: Route.LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
-  {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
-  },
-  {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Space+Grotesk:wght@400;500;600;700&display=swap",
-  },
-  // Favicon links
   {
     rel: "apple-touch-icon",
     sizes: "180x180",
@@ -71,6 +71,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: GLOBAL_JSON_LD }}
+        />
         {env.VITE_GTAG_ID && (
           <>
             <script

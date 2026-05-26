@@ -115,9 +115,10 @@ export function LandingHero() {
           <div className="flex flex-col gap-3 lg:col-span-6">
             <div className="relative aspect-[5/4] overflow-hidden rounded">
               <OptimisticImage
-                src="https://images.unsplash.com/photo-1620969910995-4bbe4eaa32c1?q=80&w=1296&auto=format&fit=crop"
+                src="https://images.unsplash.com/photo-1620969910995-4bbe4eaa32c1?q=80&w=820&auto=format&fit=crop"
                 alt="Learners in an African classroom using Learning Africa platform"
                 wrapperClassName="absolute inset-0"
+                fetchPriority="high"
                 loading="eager"
                 decoding="async"
               />

@@ -6,9 +6,11 @@ type Props = {
 };
 
 export function LALogo({ size = 22, className }: Props) {
+  const src = size <= 44 ? "/logo-sm.png" : "/logo.png";
+
   return (
     <img
-      src="/logo.png"
+      src={src}
       alt="Learning Africa"
       width={size}
       height={size}

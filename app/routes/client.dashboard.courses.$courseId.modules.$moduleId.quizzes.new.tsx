@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router";
-import { ArrowLeft, ClipboardCheck } from "lucide-react";
+import ArrowLeft from "~icons/lucide/arrow-left";
+import ClipboardCheck from "~icons/lucide/clipboard-check";
 import { Button } from "@/components/ui/button";
 import { QuizForm } from "@/components/dashboard/quiz-form";
 import { orgRoutes } from "@/lib/utils/org-routes";

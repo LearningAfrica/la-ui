@@ -3,15 +3,13 @@ import { Link } from "react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Building2,
-  FileText,
-  Users,
-  Clock,
-  ArrowRight,
-  CheckCircle,
-  XCircle,
-} from "lucide-react";
+import Building2 from "~icons/lucide/building-2";
+import FileText from "~icons/lucide/file-text";
+import Users from "~icons/lucide/users";
+import Clock from "~icons/lucide/clock";
+import ArrowRight from "~icons/lucide/arrow-right";
+import CheckCircle from "~icons/lucide/check-circle";
+import XCircle from "~icons/lucide/x-circle";
 import { useAllInquiries } from "@/features/inquiries/inquiry-queries";
 
 export default function SystemDashboard() {

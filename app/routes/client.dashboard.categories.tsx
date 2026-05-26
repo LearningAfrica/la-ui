@@ -2,14 +2,12 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import {
-  FolderOpen,
-  ChevronLeft,
-  ChevronRight,
-  BookOpen,
-  Layers,
-  Plus,
-} from "lucide-react";
+import FolderOpen from "~icons/lucide/folder-open";
+import ChevronLeft from "~icons/lucide/chevron-left";
+import ChevronRight from "~icons/lucide/chevron-right";
+import BookOpen from "~icons/lucide/book-open";
+import Layers from "~icons/lucide/layers";
+import Plus from "~icons/lucide/plus";
 import { useCategories } from "@/features/categories/category-queries";
 import { AdminCategoriesGrid } from "@/components/dashboard/admin-categories-grid";
 import { useTableFilters } from "@/stores/filters/use-table-filters";

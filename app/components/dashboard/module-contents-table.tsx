@@ -10,13 +10,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { ModuleContent } from "@/features/module-contents/module-content-queries";
-import {
-  MoreHorizontal,
-  Pencil,
-  Trash2,
-  Eye,
-  ExternalLink,
-} from "lucide-react";
+import MoreHorizontal from "~icons/lucide/more-horizontal";
+import Pencil from "~icons/lucide/pencil";
+import Trash2 from "~icons/lucide/trash-2";
+import Eye from "~icons/lucide/eye";
+import ExternalLink from "~icons/lucide/external-link";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import { DataTable } from "@/components/ui/data-table";
 import { DeleteContentDialog } from "./delete-content-dialog";

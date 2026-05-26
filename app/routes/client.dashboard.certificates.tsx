@@ -9,7 +9,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Award, Download, CheckCircle2 } from "lucide-react";
+import Award from "~icons/lucide/award";
+import Download from "~icons/lucide/download";
+import CheckCircle2 from "~icons/lucide/check-circle-2";
 import { cn } from "@/lib/utils";
 import {
   useCourses,

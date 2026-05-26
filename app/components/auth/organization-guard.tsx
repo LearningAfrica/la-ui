@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle } from "lucide-react";
+import AlertCircle from "~icons/lucide/alert-circle";
 import { Button } from "@/components/ui/button";
 
 interface OrganizationGuardProps {

@@ -1,7 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle, MailOpen } from "lucide-react";
+import AlertCircle from "~icons/lucide/alert-circle";
+import MailOpen from "~icons/lucide/mail-open";
 import { useMyInvites } from "@/features/invites/invites-queries";
 import { InvitesTable } from "@/components/dashboard/invites-table";
 

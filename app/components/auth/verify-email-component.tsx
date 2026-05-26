@@ -13,13 +13,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  CheckCircle2,
-  XCircle,
-  Loader2,
-  Mail,
-  Loader2Icon,
-} from "lucide-react";
+import CheckCircle2 from "~icons/lucide/check-circle-2";
+import XCircle from "~icons/lucide/x-circle";
+import Loader2 from "~icons/lucide/loader-2";
+import Mail from "~icons/lucide/mail";
+import Loader2Icon from "~icons/lucide/loader-2";
 
 interface VerifyEmailComponentProps {
   token: string | null;

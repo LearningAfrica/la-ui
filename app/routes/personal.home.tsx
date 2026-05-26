@@ -1,4 +1,7 @@
-import { ArrowRight, Mail, MailOpen, Plus } from "lucide-react";
+import ArrowRight from "~icons/lucide/arrow-right";
+import Mail from "~icons/lucide/mail";
+import MailOpen from "~icons/lucide/mail-open";
+import Plus from "~icons/lucide/plus";
 import { Link } from "react-router";
 
 import { useMyInquiries } from "@/features/inquiries/inquiry-queries";
@@ -15,6 +18,7 @@ export function meta() {
         "Your invitations, inquiries, and organizations on Learning Africa.",
       url: "/dashboard",
       image: "/og.png",
+      noIndex: true,
     }),
   ];
 }

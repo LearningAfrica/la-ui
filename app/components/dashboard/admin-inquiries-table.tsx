@@ -26,7 +26,11 @@ import {
 } from "@/components/ui/select";
 import type { InquiryInterface } from "@/features/inquiries/inquiry-queries";
 import { getCategoryLabel, getSizeLabel } from "@/lib/constants/company";
-import { Search, Eye, CheckCircle, XCircle, X } from "lucide-react";
+import Search from "~icons/lucide/search";
+import Eye from "~icons/lucide/eye";
+import CheckCircle from "~icons/lucide/check-circle";
+import XCircle from "~icons/lucide/x-circle";
+import X from "~icons/lucide/x";
 
 interface AdminInquiriesTableProps {
   inquiries: InquiryInterface[];

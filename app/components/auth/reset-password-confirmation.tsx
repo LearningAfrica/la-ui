@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
-import { Loader2 } from "lucide-react";
+import Loader2 from "~icons/lucide/loader-2";
 import { Button } from "@/components/ui/button";
 import {
   InputOTP,

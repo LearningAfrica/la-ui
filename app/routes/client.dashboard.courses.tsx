@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { LucideIcon } from "lucide-react";
+import type { SVGProps } from "react";
 import { Link, useParams } from "react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -13,22 +13,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import {
-  BookOpen,
-  Crown,
-  Layers,
-  GraduationCap,
-  ChevronLeft,
-  ChevronRight,
-  Plus,
-  RefreshCw,
-  Eye,
-  Pencil,
-  Trash2,
-  MoreHorizontal,
-  ArrowRight,
-  Search,
-} from "lucide-react";
+import BookOpen from "~icons/lucide/book-open";
+import Crown from "~icons/lucide/crown";
+import Layers from "~icons/lucide/layers";
+import GraduationCap from "~icons/lucide/graduation-cap";
+import ChevronLeft from "~icons/lucide/chevron-left";
+import ChevronRight from "~icons/lucide/chevron-right";
+import Plus from "~icons/lucide/plus";
+import RefreshCw from "~icons/lucide/refresh-cw";
+import Eye from "~icons/lucide/eye";
+import Pencil from "~icons/lucide/pencil";
+import Trash2 from "~icons/lucide/trash-2";
+import MoreHorizontal from "~icons/lucide/more-horizontal";
+import ArrowRight from "~icons/lucide/arrow-right";
+import Search from "~icons/lucide/search";
 import { OptimisticImage } from "@/components/ui/optimistic-image";
 import {
   Select,
@@ -66,7 +64,7 @@ function StatCard({
 }: {
   label: string;
   value: number;
-  icon: LucideIcon;
+  icon: React.ComponentType<SVGProps<SVGSVGElement>>;
   tone: StatTone;
   isLoading?: boolean;
   hint?: string;

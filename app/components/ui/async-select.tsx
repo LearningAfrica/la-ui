@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { Loader2, ChevronDown, X } from "lucide-react";
+import Loader2 from "~icons/lucide/loader-2";
+import ChevronDown from "~icons/lucide/chevron-down";
+import X from "~icons/lucide/x";
 
 /**
  * Represents a single selectable option in the dropdown.
@@ -612,7 +614,7 @@ export default function AsyncSelect(props: SelectProps) {
                     onClick={(e) => handleRemoveTag(e, option.value)}
                     aria-label={`Remove ${option.label}`}
                   >
-                    <X size={12} />
+                    <X width={12} height={12} />
                   </button>
                 </span>
               ))}
@@ -650,7 +652,11 @@ export default function AsyncSelect(props: SelectProps) {
         </div>
         <div className="ml-2 flex items-center gap-2">
           {isLoading && (
-            <Loader2 className="text-primary animate-spin" size={16} />
+            <Loader2
+              className="text-primary animate-spin"
+              width={16}
+              height={16}
+            />
           )}
           {hasValue && !disabled && !isLoading && (
             <button
@@ -659,12 +665,13 @@ export default function AsyncSelect(props: SelectProps) {
               onClick={handleClear}
               aria-label="Clear selection"
             >
-              <X size={16} />
+              <X width={16} height={16} />
             </button>
           )}
           <ChevronDown
             className={`text-muted-foreground shrink-0 transition-transform duration-200 select-none ${isOpen ? "rotate-180" : ""}`}
-            size={16}
+            width={16}
+            height={16}
           />
         </div>
       </div>
@@ -673,7 +680,7 @@ export default function AsyncSelect(props: SelectProps) {
         <div className="bg-popover text-popover-foreground border-border absolute top-[calc(100%+4px)] right-0 left-0 z-1000 max-h-75 animate-[slideDown_0.2s_ease_forwards] overflow-hidden rounded-md border shadow-lg">
           {isLoading ? (
             <div className="text-primary flex items-center justify-center gap-2 p-4 text-center text-sm">
-              <Loader2 className="animate-spin" size={20} />
+              <Loader2 className="animate-spin" width={20} height={20} />
               <span>Loading...</span>
             </div>
           ) : finalOptions.length === 0 ? (

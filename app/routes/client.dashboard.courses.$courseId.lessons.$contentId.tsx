@@ -1,17 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
-import {
-  ArrowLeft,
-  ArrowRight,
-  CheckCircle2,
-  Circle,
-  Clock,
-  ExternalLink,
-  File,
-  FileText,
-  ListTree,
-  Video,
-} from "lucide-react";
+import ArrowLeft from "~icons/lucide/arrow-left";
+import ArrowRight from "~icons/lucide/arrow-right";
+import CheckCircle2 from "~icons/lucide/check-circle-2";
+import Circle from "~icons/lucide/circle";
+import Clock from "~icons/lucide/clock";
+import ExternalLink from "~icons/lucide/external-link";
+import File from "~icons/lucide/file";
+import FileText from "~icons/lucide/file-text";
+import ListTree from "~icons/lucide/list-tree";
+import Video from "~icons/lucide/video";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";

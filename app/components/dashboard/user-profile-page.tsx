@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
-import { Loader2, User } from "lucide-react";
+import Loader2 from "~icons/lucide/loader-2";
+import User from "~icons/lucide/user";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
 import {
   useUpdateProfile,

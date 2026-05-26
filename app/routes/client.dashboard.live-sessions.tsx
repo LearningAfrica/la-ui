@@ -1,7 +1,8 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Video } from "lucide-react";
+import Plus from "~icons/lucide/plus";
+import Video from "~icons/lucide/video";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { useZoomCalls } from "@/features/zoom-calls/zoom-call-queries";
 import { ZoomCallsTable } from "@/components/dashboard/zoom-calls-table";

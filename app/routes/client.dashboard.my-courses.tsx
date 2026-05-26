@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router";
-import { BookOpen, Layers, Search } from "lucide-react";
+import BookOpen from "~icons/lucide/book-open";
+import Layers from "~icons/lucide/layers";
+import Search from "~icons/lucide/search";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";

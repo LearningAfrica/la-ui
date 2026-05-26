@@ -2,15 +2,13 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import {
-  Building2,
-  CheckCircle,
-  XCircle,
-  Clock,
-  ChevronLeft,
-  ChevronRight,
-  RefreshCw,
-} from "lucide-react";
+import Building2 from "~icons/lucide/building-2";
+import CheckCircle from "~icons/lucide/check-circle";
+import XCircle from "~icons/lucide/x-circle";
+import Clock from "~icons/lucide/clock";
+import ChevronLeft from "~icons/lucide/chevron-left";
+import ChevronRight from "~icons/lucide/chevron-right";
+import RefreshCw from "~icons/lucide/refresh-cw";
 import { useOrganizations } from "@/features/organizations/organization-queries";
 import { AdminOrganizationsTable } from "@/components/dashboard/admin-organizations-table";
 

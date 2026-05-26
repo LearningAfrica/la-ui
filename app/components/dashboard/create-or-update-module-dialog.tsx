@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
 import { moduleResolver } from "@/lib/schema/module-schema";
-import { Layers, Loader2 } from "lucide-react";
+import Layers from "~icons/lucide/layers";
+import Loader2 from "~icons/lucide/loader-2";
 import {
   useCreateModule,
   useUpdateModule,

@@ -2,15 +2,13 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import {
-  Users,
-  ShieldCheck,
-  UserCheck,
-  UserX,
-  ChevronLeft,
-  ChevronRight,
-  RefreshCw,
-} from "lucide-react";
+import Users from "~icons/lucide/users";
+import ShieldCheck from "~icons/lucide/shield-check";
+import UserCheck from "~icons/lucide/user-check";
+import UserX from "~icons/lucide/user-x";
+import ChevronLeft from "~icons/lucide/chevron-left";
+import ChevronRight from "~icons/lucide/chevron-right";
+import RefreshCw from "~icons/lucide/refresh-cw";
 import { useUsers } from "@/features/users/user-queries";
 import { AdminUsersTable } from "@/components/dashboard/admin-users-table";
 

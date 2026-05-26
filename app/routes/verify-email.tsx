@@ -10,6 +10,7 @@ export function meta() {
       description:
         "Verify your email address to activate your Learning Africa account",
       url: "/verify-email",
+      noIndex: true,
     }),
   ];
 }

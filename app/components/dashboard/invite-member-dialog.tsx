@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useInviteMember } from "@/features/organizations/organization-mutations";
 import { useForm, useWatch } from "react-hook-form";
 import { inviteMemberResolver } from "@/lib/schema/invite-schema";
-import { Loader2 } from "lucide-react";
+import Loader2 from "~icons/lucide/loader-2";
 import { useEffect, useEffectEvent } from "react";
 
 interface InviteMemberDialogProps {

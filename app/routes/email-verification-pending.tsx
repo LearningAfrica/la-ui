@@ -10,6 +10,7 @@ export function meta() {
       description:
         "Please check your email to verify your Learning Africa account",
       url: "/email-verification-pending",
+      noIndex: true,
     }),
   ];
 }

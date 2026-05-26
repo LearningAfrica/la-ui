@@ -8,6 +8,7 @@ export function meta() {
       title: "Reset Password | Learning Africa",
       description: "Reset your Learning Africa account password.",
       url: "/reset-password-confirmation",
+      noIndex: true,
     }),
   ];
 }

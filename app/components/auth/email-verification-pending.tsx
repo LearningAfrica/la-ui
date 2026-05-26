@@ -8,7 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Mail, RefreshCw } from "lucide-react";
+import Mail from "~icons/lucide/mail";
+import RefreshCw from "~icons/lucide/refresh-cw";
 import { useState } from "react";
 import { useResendVerificationEmail } from "@/features/auth/auth-mutations";
 

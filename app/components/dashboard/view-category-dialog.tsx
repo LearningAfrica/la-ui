@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import type { Category } from "@/features/categories/category-queries";
-import { ImageIcon } from "lucide-react";
+import ImageIcon from "~icons/lucide/image";
 import moment from "moment";
 
 declare module "@/stores/filters/modal-slice" {

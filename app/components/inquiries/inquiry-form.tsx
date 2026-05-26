@@ -15,7 +15,7 @@ import {
   inquiryResolver,
 } from "@/lib/schema/inquiry-schema";
 import { useCreateInquiry } from "@/features/inquiries/inquiry-mutations";
-import { Loader2 } from "lucide-react";
+import Loader2 from "~icons/lucide/loader-2";
 import { COMPANY_CATEGORIES, COMPANY_SIZES } from "@/lib/constants/company";
 import { Checkbox } from "../ui/checkbox";
 import { FormTextField } from "@/components/form-fields/form-text-field";

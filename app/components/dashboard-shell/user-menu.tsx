@@ -1,4 +1,8 @@
-import { Building2, Check, LogOut, Settings, UserCircle2 } from "lucide-react";
+import Building2 from "~icons/lucide/building-2";
+import Check from "~icons/lucide/check";
+import LogOut from "~icons/lucide/log-out";
+import Settings from "~icons/lucide/settings";
+import UserCircle2 from "~icons/lucide/user-circle-2";
 import { Link } from "react-router";
 
 import {

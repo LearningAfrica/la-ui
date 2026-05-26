@@ -1,0 +1,25 @@
+# Learning Africa
+
+> The complete learning management platform for organizations, training providers, and teams.
+
+Learning Africa is a multi-tenant LMS that enables organizations to create courses, track learner progress, and issue verifiable certificates — all in one place.
+
+## Key Features
+
+- **Course Management**: Create and organize courses with modules, lessons, quizzes, and live sessions.
+- **Multi-Tenant Workspaces**: Each organization gets its own workspace with role-based access (admin, instructor, learner).
+- **Certificates**: Learners earn verifiable digital certificates on course completion.
+- **Progress Tracking**: Real-time dashboards for learner progress and course analytics.
+- **Live Sessions**: Schedule and host live video sessions within courses.
+
+## Pages
+
+- [Home](https://learningafrica.com/)
+- [Sign Up](https://learningafrica.com/sign-up)
+- [Sign In](https://learningafrica.com/sign-in)
+- [Submit an Inquiry](https://learningafrica.com/inquiry)
+
+## Contact
+
+- Website: https://learningafrica.com
+- Email: info@learningafrica.com

@@ -1,4 +1,7 @@
-import { ArrowLeft, CheckCircle2, MessageSquare, Sparkles } from "lucide-react";
+import ArrowLeft from "~icons/lucide/arrow-left";
+import CheckCircle2 from "~icons/lucide/check-circle-2";
+import MessageSquare from "~icons/lucide/message-square";
+import Sparkles from "~icons/lucide/sparkles";
 import { Link, href } from "react-router";
 
 import { AuthModal } from "@/components/auth/auth-modal";
@@ -7,6 +10,10 @@ import { LALogo } from "@/components/landing-b/la-logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { InquiryForm } from "@/components/inquiries/inquiry-form";
 import { generateSEOTags } from "@/lib/utils/seo";
+import {
+  breadcrumbSchema,
+  contactPageSchema,
+} from "@/lib/utils/structured-data";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
 
 export function meta() {
@@ -19,6 +26,13 @@ export function meta() {
       image: "/og.png",
       keywords:
         "inquiry,organization onboarding,setup,learning africa,Africa,education,edtech",
+      jsonLd: [
+        contactPageSchema(),
+        breadcrumbSchema([
+          { name: "Home", url: "/" },
+          { name: "Inquiry", url: "/inquiry" },
+        ]),
+      ],
     }),
   ];
 }

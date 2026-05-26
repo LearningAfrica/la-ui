@@ -1,5 +1,9 @@
 import { Link, Outlet, useParams } from "react-router";
-import { ArrowLeft, LogOut, Moon, Sun, User } from "lucide-react";
+import ArrowLeft from "~icons/lucide/arrow-left";
+import LogOut from "~icons/lucide/log-out";
+import Moon from "~icons/lucide/moon";
+import Sun from "~icons/lucide/sun";
+import User from "~icons/lucide/user";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {

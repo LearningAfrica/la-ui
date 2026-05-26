@@ -1,16 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import {
-  BookOpen,
-  GraduationCap,
-  Home,
-  Layers,
-  Mail,
-  MessageSquare,
-  Settings,
-  Users,
-  Video,
-} from "lucide-react";
+import BookOpen from "~icons/lucide/book-open";
+import GraduationCap from "~icons/lucide/graduation-cap";
+import Home from "~icons/lucide/home";
+import Layers from "~icons/lucide/layers";
+import Mail from "~icons/lucide/mail";
+import MessageSquare from "~icons/lucide/message-square";
+import Settings from "~icons/lucide/settings";
+import Users from "~icons/lucide/users";
+import Video from "~icons/lucide/video";
 
 import {
   CommandDialog,

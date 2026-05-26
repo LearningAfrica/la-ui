@@ -13,7 +13,8 @@ import {
   type CategoryFormData,
   categoryResolver,
 } from "@/lib/schema/category-schema";
-import { FolderOpen, Loader2 } from "lucide-react";
+import FolderOpen from "~icons/lucide/folder-open";
+import Loader2 from "~icons/lucide/loader-2";
 import {
   useCreateCategory,
   useUpdateCategory,

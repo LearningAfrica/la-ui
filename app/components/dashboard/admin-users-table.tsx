@@ -25,7 +25,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { User } from "@/features/users/user-queries";
-import { Search, X } from "lucide-react";
+import Search from "~icons/lucide/search";
+import X from "~icons/lucide/x";
 
 interface AdminUsersTableProps {
   users: User[];

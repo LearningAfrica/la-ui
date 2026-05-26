@@ -23,17 +23,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Search,
-  RefreshCw,
-  X,
-  Mail,
-  MoreVertical,
-  Copy,
-  UserPlus,
-  Send,
-  Trash2,
-} from "lucide-react";
+import Search from "~icons/lucide/search";
+import RefreshCw from "~icons/lucide/refresh-cw";
+import X from "~icons/lucide/x";
+import Mail from "~icons/lucide/mail";
+import MoreVertical from "~icons/lucide/more-vertical";
+import Copy from "~icons/lucide/copy";
+import UserPlus from "~icons/lucide/user-plus";
+import Send from "~icons/lucide/send";
+import Trash2 from "~icons/lucide/trash-2";
 import type {
   OrganizationInvite,
   OrganizationMembershipRole,

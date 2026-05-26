@@ -10,7 +10,7 @@ import {
   type ModuleContentFormData,
   type ContentType,
 } from "@/lib/schema/module-content-schema";
-import { Loader2 } from "lucide-react";
+import Loader2 from "~icons/lucide/loader-2";
 import {
   useCreateModuleContent,
   useUpdateModuleContent,

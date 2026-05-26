@@ -1,4 +1,4 @@
-import { href } from "react-router";
+import { href, type LinksFunction } from "react-router";
 
 import {
   LandingCTA,
@@ -19,6 +19,15 @@ import {
   websiteSchema,
 } from "@/lib/utils/structured-data";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
+
+export const links: LinksFunction = () => [
+  {
+    rel: "preload",
+    href: "https://images.unsplash.com/photo-1620969910995-4bbe4eaa32c1?q=80&w=820&auto=format&fit=crop",
+    as: "image",
+    type: "image/webp",
+  },
+];
 
 const HOME_FAQS = [
   {

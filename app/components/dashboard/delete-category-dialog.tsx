@@ -11,7 +11,7 @@ import {
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import { useDeleteCategory } from "@/features/categories/category-mutations";
 import type { Category } from "@/features/categories/category-queries";
-import { Loader2 } from "lucide-react";
+import Loader2 from "~icons/lucide/loader-2";
 
 declare module "@/stores/filters/modal-slice" {
   interface ModalRegistry {

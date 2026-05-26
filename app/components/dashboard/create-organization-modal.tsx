@@ -13,7 +13,8 @@ import {
   type OrganizationFormData,
   organizationResolver,
 } from "@/lib/schema/organization-schema";
-import { Building2, Loader2 } from "lucide-react";
+import Building2 from "~icons/lucide/building-2";
+import Loader2 from "~icons/lucide/loader-2";
 import { useState } from "react";
 import { useCreateOrganization } from "@/features/organizations/organization-mutations";
 import {

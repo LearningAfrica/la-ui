@@ -8,7 +8,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff } from "lucide-react";
+import Eye from "~icons/lucide/eye";
+import EyeOff from "~icons/lucide/eye-off";
 
 interface FormPasswordFieldProps<
   TFieldValues extends FieldValues = FieldValues,

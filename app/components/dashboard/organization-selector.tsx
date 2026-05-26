@@ -14,7 +14,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Building2, ChevronsUpDown } from "lucide-react";
+import Building2 from "~icons/lucide/building-2";
+import ChevronsUpDown from "~icons/lucide/chevrons-up-down";
 import { useNavigate } from "react-router";
 import { useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
