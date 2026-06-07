@@ -4,10 +4,19 @@ import BookOpen from "~icons/lucide/book-open";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CourseForm } from "@/components/dashboard/course-form";
+import { OrgRoleGuard } from "@/components/auth/org-role-guard";
 import { useCourse } from "@/features/courses/course-queries";
 import { orgRoutes } from "@/lib/utils/org-routes";
 
 export default function EditCoursePage() {
+  return (
+    <OrgRoleGuard allowedRoles={["admin", "instructor"]}>
+      <EditCoursePageInner />
+    </OrgRoleGuard>
+  );
+}
+
+function EditCoursePageInner() {
   const { orgId = "", courseId } = useParams<{
     orgId: string;
     courseId: string;

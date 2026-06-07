@@ -95,7 +95,15 @@ function StatCard({
   );
 }
 
-function CourseCard({ course, orgId }: { course: Course; orgId: string }) {
+function CourseCard({
+  course,
+  orgId,
+  canManage,
+}: {
+  course: Course;
+  orgId: string;
+  canManage: boolean;
+}) {
   const deleteModal = useAppModal("delete-course");
   const moduleCount = course.modules?.length ?? 0;
   const lessonCount =
@@ -134,45 +142,59 @@ function CourseCard({ course, orgId }: { course: Course; orgId: string }) {
             {course.is_premium ? `$${course.price} Premium` : "Free"}
           </Badge>
           <div className="flex items-center gap-1">
-            <Button asChild size="sm" variant="outline" className="h-8">
-              <Link
-                prefetch="intent"
-                to={orgRoutes.courseModules(orgId, course.id)}
-              >
-                Manage
-                <ArrowRight className="ml-1 h-3.5 w-3.5" />
-              </Link>
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">Actions</span>
+            {canManage ? (
+              <>
+                <Button asChild size="sm" variant="outline" className="h-8">
+                  <Link
+                    prefetch="intent"
+                    to={orgRoutes.courseModules(orgId, course.id)}
+                  >
+                    Manage
+                    <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                  </Link>
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem asChild>
-                  <Link to={orgRoutes.coursePreview(orgId, course.id)}>
-                    <Eye className="mr-2 h-4 w-4" />
-                    Preview Course
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to={orgRoutes.courseEdit(orgId, course.id)}>
-                    <Pencil className="mr-2 h-4 w-4" />
-                    Edit
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="text-destructive"
-                  onClick={() => deleteModal.open(course)}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                      <MoreHorizontal className="h-4 w-4" />
+                      <span className="sr-only">Actions</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                      <Link to={orgRoutes.coursePreview(orgId, course.id)}>
+                        <Eye className="mr-2 h-4 w-4" />
+                        Preview Course
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to={orgRoutes.courseEdit(orgId, course.id)}>
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Edit
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      className="text-destructive"
+                      onClick={() => deleteModal.open(course)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <Button asChild size="sm" variant="outline" className="h-8">
+                <Link
+                  prefetch="intent"
+                  to={orgRoutes.coursePreview(orgId, course.id)}
                 >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  View course
+                  <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -381,7 +403,12 @@ export default function ClientDashboardCourses() {
         <>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filteredCourses.map((course) => (
-              <CourseCard key={course.id} course={course} orgId={orgId} />
+              <CourseCard
+                key={course.id}
+                course={course}
+                orgId={orgId}
+                canManage={canCreate}
+              />
             ))}
           </div>
 

@@ -21,6 +21,8 @@ import {
 import { InviteMemberDialog } from "@/components/dashboard/invite-member-dialog";
 import { useCourses } from "@/features/courses/course-queries";
 import { useCategories } from "@/features/categories/category-queries";
+import { useOrganizationInvites } from "@/features/organizations/organization-queries";
+import { useUserStats } from "@/features/stats/stats-queries";
 
 function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
   const { data: membersData, isLoading: membersLoading } =
@@ -36,11 +38,17 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
     page: 1,
     limit: 1,
   });
+  const { data: invitesData, isLoading: invitesLoading } =
+    useOrganizationInvites({
+      organizationId: orgId,
+      filters: { page: 1, page_size: 1, status: "pending" },
+    });
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
   const totalMembers = membersData?.meta?.total_docs || 0;
   const totalCourses = coursesData?.meta?.total_docs || 0;
   const totalCategories = categoriesData?.meta?.total_docs || 0;
+  const pendingInvites = invitesData?.meta?.total_docs || 0;
 
   return (
     <div className="space-y-6">
@@ -105,15 +113,19 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
-              Completion Rate
+              Pending Invites
             </CardTitle>
             <div className="rounded-lg bg-amber-600/10 p-2">
-              <Award className="h-4 w-4 text-amber-600" />
+              <Mail className="h-4 w-4 text-amber-600" />
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">—</div>
-            <p className="text-muted-foreground text-xs">No data yet</p>
+            {invitesLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{pendingInvites}</div>
+            )}
+            <p className="text-muted-foreground text-xs">Awaiting response</p>
           </CardContent>
         </Card>
       </div>
@@ -180,6 +192,29 @@ function InstructorOverview({
   orgId: string;
   orgName: string;
 }) {
+  const { data: coursesData, isLoading: coursesLoading } = useCourses({
+    page: 1,
+    pageSize: 1,
+  });
+  const { data: categoriesData, isLoading: categoriesLoading } = useCategories({
+    page: 1,
+    limit: 1,
+  });
+  const { data: userStats, isLoading: statsLoading } = useUserStats({
+    enabled: false,
+  });
+
+  const totalCourses = coursesData?.meta?.total_docs ?? 0;
+  const totalCategories = categoriesData?.meta?.total_docs ?? 0;
+  const totalLearners =
+    typeof userStats?.total_learners === "number"
+      ? userStats.total_learners
+      : null;
+  const avgCompletion =
+    typeof userStats?.average_completion === "number"
+      ? userStats.average_completion
+      : null;
+
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
@@ -201,7 +236,7 @@ function InstructorOverview({
               size="sm"
               className="shrink-0 self-start"
             >
-              <Link to={orgRoutes.courses(orgId)}>
+              <Link to={orgRoutes.courseNew(orgId)}>
                 <Plus className="mr-2 h-4 w-4" />
                 New Course
               </Link>
@@ -220,7 +255,11 @@ function InstructorOverview({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            {coursesLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{totalCourses}</div>
+            )}
             <p className="text-muted-foreground text-xs">Courses created</p>
           </CardContent>
         </Card>
@@ -234,7 +273,11 @@ function InstructorOverview({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            {statsLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{totalLearners ?? "—"}</div>
+            )}
             <p className="text-muted-foreground text-xs">Enrolled learners</p>
           </CardContent>
         </Card>
@@ -248,7 +291,13 @@ function InstructorOverview({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0%</div>
+            {statsLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">
+                {avgCompletion != null ? `${Math.round(avgCompletion)}%` : "—"}
+              </div>
+            )}
             <p className="text-muted-foreground text-xs">Average rate</p>
           </CardContent>
         </Card>
@@ -260,7 +309,11 @@ function InstructorOverview({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">0</div>
+            {categoriesLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{totalCategories}</div>
+            )}
             <p className="text-muted-foreground text-xs">Content categories</p>
           </CardContent>
         </Card>
@@ -278,7 +331,7 @@ function InstructorOverview({
               variant="outline"
               className="h-auto justify-start gap-3 p-4 text-left whitespace-normal"
             >
-              <Link to={orgRoutes.myCourses(orgId)}>
+              <Link to={orgRoutes.courses(orgId)}>
                 <div className="rounded-lg bg-blue-600/10 p-2">
                   <BookOpen className="h-4 w-4 text-blue-600" />
                 </div>
@@ -295,14 +348,14 @@ function InstructorOverview({
               variant="outline"
               className="h-auto justify-start gap-3 p-4 text-left whitespace-normal"
             >
-              <Link to={orgRoutes.courses(orgId)}>
+              <Link to={orgRoutes.courseNew(orgId)}>
                 <div className="rounded-lg bg-green-600/10 p-2">
-                  <BookOpen className="h-4 w-4 text-green-600" />
+                  <Plus className="h-4 w-4 text-green-600" />
                 </div>
                 <div className="text-left">
-                  <div className="font-medium">All Courses</div>
+                  <div className="font-medium">New course</div>
                   <div className="text-muted-foreground text-xs">
-                    Browse organization courses
+                    Start a new course
                   </div>
                 </div>
               </Link>
@@ -338,6 +391,9 @@ function LearnerOverview({
   orgId: string;
   orgName: string;
 }) {
+  const { data, isLoading } = useCourses({ page: 1, pageSize: 1 });
+  const enrolled = data?.meta?.total_docs ?? 0;
+
   return (
     <div className="space-y-6">
       <div>
@@ -356,7 +412,12 @@ function LearnerOverview({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-muted-foreground text-sm">Coming soon</div>
+            {isLoading ? (
+              <Skeleton className="h-8 w-16" />
+            ) : (
+              <div className="text-2xl font-bold">{enrolled}</div>
+            )}
+            <p className="text-muted-foreground text-xs">Active enrollments</p>
           </CardContent>
         </Card>
         <Card>
@@ -367,7 +428,9 @@ function LearnerOverview({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-muted-foreground text-sm">Coming soon</div>
+            <div className="text-muted-foreground text-sm">
+              Open My learning
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -378,7 +441,9 @@ function LearnerOverview({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-muted-foreground text-sm">Coming soon</div>
+            <div className="text-muted-foreground text-sm">
+              Open My learning
+            </div>
           </CardContent>
         </Card>
         <Card>
@@ -389,7 +454,9 @@ function LearnerOverview({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-muted-foreground text-sm">Coming soon</div>
+            <div className="text-muted-foreground text-sm">
+              Open Certificates
+            </div>
           </CardContent>
         </Card>
       </div>

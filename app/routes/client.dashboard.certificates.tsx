@@ -14,32 +14,16 @@ import Download from "~icons/lucide/download";
 import CheckCircle2 from "~icons/lucide/check-circle-2";
 import { cn } from "@/lib/utils";
 import {
-  useCourses,
-  useCourseMyProgress,
+  useMyProgress,
+  type CourseWithProgress,
 } from "@/features/courses/course-queries";
-import type { Course } from "@/features/courses/course-queries";
 import { useGenerateCertificate } from "@/features/courses/course-mutations";
 
-function CertificateCourseCard({ course }: { course: Course }) {
-  const { data: progress, isLoading } = useCourseMyProgress(course.id);
+function CertificateCourseCard({ course }: { course: CourseWithProgress }) {
   const generateCertificate = useGenerateCertificate();
 
-  const progressPercent = Math.round(progress?.course_progress ?? 0);
+  const progressPercent = Math.round(course.course_progress ?? 0);
   const isCompleted = progressPercent === 100;
-
-  if (isLoading) {
-    return (
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-5 w-48" />
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="mt-2 h-3 w-24" />
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <Card className={cn(!isCompleted && "opacity-60")}>
@@ -56,7 +40,6 @@ function CertificateCourseCard({ course }: { course: Course }) {
       </CardHeader>
 
       <CardContent className="space-y-3">
-        {/* Progress bar */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs font-medium">
             <span className="text-muted-foreground">Progress</span>
@@ -73,7 +56,6 @@ function CertificateCourseCard({ course }: { course: Course }) {
           </div>
         </div>
 
-        {/* Status badge */}
         {isCompleted ? (
           <Badge
             variant="default"
@@ -107,14 +89,10 @@ function CertificateCourseCard({ course }: { course: Course }) {
 
 export default function ClientDashboardCertificates() {
   const { orgId = "" } = useParams<{ orgId: string }>();
-  const { data: coursesData, isLoading } = useCourses({
-    page: 1,
-    pageSize: 100,
-  });
+  const { data, isLoading } = useMyProgress({ page: 1, pageSize: 100 });
 
-  const courses = coursesData?.data ?? [];
+  const courses = data?.data ?? [];
 
-  // Suppress unused variable lint — orgId is needed if we add navigation later
   void orgId;
 
   return (
@@ -146,7 +124,7 @@ export default function ClientDashboardCertificates() {
             <div className="text-muted-foreground flex flex-col items-center justify-center gap-3 py-12 text-sm">
               <Award className="h-10 w-10 opacity-40" />
               <p>
-                No courses found. Enroll in courses to start earning
+                No enrolled courses yet. Enroll in courses to start earning
                 certificates.
               </p>
             </div>
