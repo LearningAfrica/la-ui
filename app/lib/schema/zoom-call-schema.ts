@@ -14,6 +14,7 @@ export const zoomCallSchema = z.object({
     .min(5, "Duration must be at least 5 minutes")
     .max(480, "Duration must be less than 8 hours (480 minutes)")
     .default(60),
+  course: z.string().optional(),
 });
 
 export type ZoomCallFormData = z.infer<typeof zoomCallSchema>;
@@ -25,4 +26,5 @@ export const defaultZoomCallValues: ZoomCallFormData = {
   description: "",
   start_time: "",
   duration: 60,
+  course: "none",
 };

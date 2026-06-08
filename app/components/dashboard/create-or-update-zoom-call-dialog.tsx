@@ -13,7 +13,9 @@ import {
   FormTextField,
   FormTextareaField,
   FormNumberField,
+  FormAsyncSelectField,
 } from "@/components/form-fields";
+import { useCourses } from "@/features/courses/course-queries";
 import {
   zoomCallResolver,
   defaultZoomCallValues,
@@ -54,6 +56,7 @@ function callToFormValues(call: ZoomCall): ZoomCallFormData {
     description: call.description ?? "",
     start_time: toDatetimeLocal(call.start_time),
     duration: call.duration,
+    course: call.course ?? "none",
   };
 }
 
@@ -63,6 +66,12 @@ export function CreateOrUpdateZoomCallDialog() {
   const updateCall = useUpdateZoomCall();
 
   const isEditing = !!modal.data?.id;
+
+  const { data: coursesData } = useCourses({ page: 1, pageSize: 100 });
+  const courseOptions = [
+    { label: "Org-wide session", value: "none" },
+    ...(coursesData?.data?.map((c) => ({ label: c.title, value: c.id })) ?? []),
+  ];
 
   const form = useForm({
     resolver: zoomCallResolver,
@@ -92,6 +101,7 @@ export function CreateOrUpdateZoomCallDialog() {
       description: data.description,
       start_time: new Date(data.start_time).toISOString(),
       duration: data.duration,
+      course: data.course && data.course !== "none" ? data.course : null,
     };
 
     if (isEditing && modal.data?.id) {
@@ -152,6 +162,16 @@ export function CreateOrUpdateZoomCallDialog() {
               placeholder="Optional details about this session"
               disabled={isLoading}
               rows={2}
+            />
+
+            <FormAsyncSelectField
+              control={form.control}
+              name="course"
+              label="Course"
+              placeholder="Org-wide session"
+              disabled={isLoading}
+              options={courseOptions}
+              description="Attach this session to a course, or leave as org-wide."
             />
 
             <div className="grid grid-cols-2 gap-4">

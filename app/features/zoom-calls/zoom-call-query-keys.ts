@@ -3,6 +3,7 @@ export interface ZoomCallFilters {
   page_size?: number;
   status?: ZoomCallStatus;
   search?: string;
+  course?: string;
 }
 
 export type ZoomCallStatus = "scheduled" | "live" | "completed" | "cancelled";

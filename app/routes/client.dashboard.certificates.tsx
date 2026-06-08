@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import moment from "moment";
 import {
   Card,
   CardContent,
@@ -11,76 +11,56 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import Award from "~icons/lucide/award";
 import Download from "~icons/lucide/download";
-import CheckCircle2 from "~icons/lucide/check-circle-2";
-import { cn } from "@/lib/utils";
+import Eye from "~icons/lucide/eye";
 import {
-  useMyProgress,
-  type CourseWithProgress,
-} from "@/features/courses/course-queries";
-import { useGenerateCertificate } from "@/features/courses/course-mutations";
+  useMyCertificates,
+  resolveCertificateUrl,
+  type Certificate,
+} from "@/features/certificates/certificate-queries";
 
-function CertificateCourseCard({ course }: { course: CourseWithProgress }) {
-  const generateCertificate = useGenerateCertificate();
-
-  const progressPercent = Math.round(course.course_progress ?? 0);
-  const isCompleted = progressPercent === 100;
+function CertificateCard({ certificate }: { certificate: Certificate }) {
+  const pdfUrl = resolveCertificateUrl(certificate.pdf_url);
 
   return (
-    <Card className={cn(!isCompleted && "opacity-60")}>
+    <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
-          <Award
-            className={cn(
-              "h-5 w-5 shrink-0",
-              isCompleted ? "text-amber-500" : "text-muted-foreground"
-            )}
-          />
-          <span className="truncate">{course.title}</span>
+          <Award className="h-5 w-5 shrink-0 text-amber-500" />
+          <span className="truncate">
+            {certificate.course_title ?? "Certificate"}
+          </span>
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-3">
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-xs font-medium">
-            <span className="text-muted-foreground">Progress</span>
-            <span className="tabular-nums">{progressPercent}%</span>
-          </div>
-          <div className="bg-muted h-2 overflow-hidden rounded-full">
-            <div
-              className={cn(
-                "h-full rounded-full transition-all",
-                isCompleted ? "bg-emerald-500" : "bg-primary/60"
-              )}
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
-        </div>
-
-        {isCompleted ? (
-          <Badge
-            variant="default"
-            className="bg-emerald-600 hover:bg-emerald-700"
-          >
-            <CheckCircle2 className="mr-1 h-3 w-3" />
-            Completed
-          </Badge>
-        ) : (
-          <Badge variant="secondary">{progressPercent}% complete</Badge>
-        )}
+      <CardContent className="space-y-2">
+        <Badge variant="default" className="bg-amber-600 hover:bg-amber-700">
+          {certificate.certificate_id}
+        </Badge>
+        <p className="text-muted-foreground text-xs">
+          Issued {moment(certificate.issued_at).format("MMM D, YYYY")}
+        </p>
       </CardContent>
 
-      {isCompleted && (
-        <CardFooter>
-          <Button
-            className="w-full"
-            onClick={() => generateCertificate.mutate(course.id)}
-            disabled={generateCertificate.isPending}
-          >
-            <Download className="mr-2 h-4 w-4" />
-            {generateCertificate.isPending
-              ? "Generating..."
-              : "Generate Certificate"}
+      {pdfUrl ? (
+        <CardFooter className="gap-2">
+          <Button asChild variant="outline" className="flex-1">
+            <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
+              <Eye className="mr-2 h-4 w-4" />
+              View
+            </a>
           </Button>
+          <Button asChild className="flex-1">
+            <a href={pdfUrl} download>
+              <Download className="mr-2 h-4 w-4" />
+              Download
+            </a>
+          </Button>
+        </CardFooter>
+      ) : (
+        <CardFooter>
+          <span className="text-muted-foreground text-xs">
+            PDF is being prepared.
+          </span>
         </CardFooter>
       )}
     </Card>
@@ -88,12 +68,9 @@ function CertificateCourseCard({ course }: { course: CourseWithProgress }) {
 }
 
 export default function ClientDashboardCertificates() {
-  const { orgId = "" } = useParams<{ orgId: string }>();
-  const { data, isLoading } = useMyProgress({ page: 1, pageSize: 100 });
+  const { data: certificates, isLoading } = useMyCertificates();
 
-  const courses = data?.data ?? [];
-
-  void orgId;
+  const items = certificates ?? [];
 
   return (
     <div className="container mx-auto space-y-6 p-6">
@@ -118,22 +95,22 @@ export default function ClientDashboardCertificates() {
             </Card>
           ))}
         </div>
-      ) : courses.length === 0 ? (
+      ) : items.length === 0 ? (
         <Card>
           <CardContent>
             <div className="text-muted-foreground flex flex-col items-center justify-center gap-3 py-12 text-sm">
               <Award className="h-10 w-10 opacity-40" />
               <p>
-                No enrolled courses yet. Enroll in courses to start earning
-                certificates.
+                No certificates yet. Complete a course to earn your first
+                certificate.
               </p>
             </div>
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {courses.map((course) => (
-            <CertificateCourseCard key={course.id} course={course} />
+          {items.map((certificate) => (
+            <CertificateCard key={certificate.id} certificate={certificate} />
           ))}
         </div>
       )}

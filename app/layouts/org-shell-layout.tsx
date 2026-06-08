@@ -186,6 +186,34 @@ function OrgShellInner() {
     if (canSee(orgRole, ["admin", "instructor"])) {
       manageItems.push(
         item({
+          id: "instructor-certificates",
+          label: "Certificates",
+          to: orgRoutes.instructorCertificates(urlOrgId),
+          icon: <NAV_ICON.certificates className="size-4" />,
+        })
+      );
+    }
+
+    if (canSee(orgRole, ["admin"])) {
+      manageItems.push(
+        item({
+          id: "org-progress",
+          label: "Course progress",
+          to: orgRoutes.orgProgress(urlOrgId),
+          icon: <NAV_ICON.home className="size-4" />,
+        }),
+        item({
+          id: "organization-certificates",
+          label: "All certificates",
+          to: orgRoutes.organizationCertificates(urlOrgId),
+          icon: <NAV_ICON.certificates className="size-4" />,
+        })
+      );
+    }
+
+    if (canSee(orgRole, ["admin", "instructor"])) {
+      manageItems.push(
+        item({
           id: "courses",
           label: "Courses",
           to: orgRoutes.courses(urlOrgId),

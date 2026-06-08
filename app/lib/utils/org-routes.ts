@@ -11,6 +11,8 @@ export const orgRoutes = {
   members: (orgId: string) => `/dashboard/org/${orgId}/members`,
   invitations: (orgId: string) => `/dashboard/org/${orgId}/invitations`,
   liveSessions: (orgId: string) => `/dashboard/org/${orgId}/live-sessions`,
+  liveSessionJoin: (orgId: string, sessionId: string) =>
+    `/dashboard/org/${orgId}/live-sessions/${sessionId}/join`,
 
   // Courses
   courses: (orgId: string) => `/dashboard/org/${orgId}/courses`,
@@ -47,6 +49,11 @@ export const orgRoutes = {
   myCourses: (orgId: string) => `/dashboard/org/${orgId}/my-courses`,
   myLearning: (orgId: string) => `/dashboard/org/${orgId}/my-learning`,
   certificates: (orgId: string) => `/dashboard/org/${orgId}/certificates`,
+  instructorCertificates: (orgId: string) =>
+    `/dashboard/org/${orgId}/instructor-certificates`,
+  organizationCertificates: (orgId: string) =>
+    `/dashboard/org/${orgId}/organization-certificates`,
+  orgProgress: (orgId: string) => `/dashboard/org/${orgId}/org-progress`,
 } as const;
 
 export const personalRoutes = {

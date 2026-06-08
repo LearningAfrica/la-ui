@@ -206,6 +206,36 @@ export const useMyProgress = (params: UseMyProgressParams = {}) => {
   });
 };
 
+// Enrolled courses for the current learner. Documented endpoint:
+// /api/my-courses/?organization=<org_id>. Returns enrollment + course detail
+// (with course_progress when the backend includes it).
+export const useMyCourses = (params: UseMyProgressParams = {}) => {
+  const { page = 1, pageSize = 50 } = params;
+  const { selectedOrganization } = useOrganizationStore();
+  const organizationId = selectedOrganization?.id;
+
+  return useQuery({
+    queryKey: courseQueryKeys.myCourses(organizationId, page, pageSize),
+    queryFn: async () => {
+      const response = await apiClient.get<
+        Paginated<CourseWithProgress> | CourseWithProgress[]
+      >("/api/my-courses/", {
+        params: {
+          page,
+          limit: pageSize,
+          page_size: pageSize,
+          organization: organizationId,
+        },
+      });
+      const body = response.data;
+      const items = Array.isArray(body) ? body : (body?.data ?? []);
+
+      return { data: items };
+    },
+    enabled: !!organizationId,
+  });
+};
+
 export const useCourseMyProgress = (id: string) => {
   return useQuery({
     queryKey: courseQueryKeys.courseMyProgress(id),

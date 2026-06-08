@@ -121,15 +121,23 @@ export interface CompletionPayload {
   id: string;
 }
 
+export interface MarkCompleteResult {
+  detail?: string;
+  module_progress?: number;
+  course_progress?: number;
+}
+
 export const useMarkContentComplete = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: moduleContentMutationKeys.markComplete(),
     mutationFn: async ({ coursePk, modulePk, id }: CompletionPayload) => {
-      await apiClient.post(
+      const response = await apiClient.post<MarkCompleteResult>(
         `/api/courses/${coursePk}/modules/${modulePk}/contents/${id}/mark_complete/`
       );
+
+      return response.data;
     },
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({

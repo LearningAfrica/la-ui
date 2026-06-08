@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { createMediaUrl } from "@/lib/api";
 import { orgRoutes } from "@/lib/utils/org-routes";
 import {
-  useMyProgress,
+  useMyCourses,
   type CourseWithProgress,
 } from "@/features/courses/course-queries";
 
@@ -113,9 +113,17 @@ function EnrolledCourseCard({
 
 export default function ClientDashboardMyLearning() {
   const { orgId = "" } = useParams<{ orgId: string }>();
-  const { data, isLoading } = useMyProgress({ page: 1, pageSize: 50 });
+  const { data, isLoading } = useMyCourses({ page: 1, pageSize: 50 });
 
   const courses = data?.data ?? [];
+  const inProgress = courses.filter((c) => {
+    const p = Math.round(c.course_progress ?? 0);
+
+    return p < 100;
+  });
+  const completed = courses.filter(
+    (c) => Math.round(c.course_progress ?? 0) === 100
+  );
 
   return (
     <div className="container mx-auto space-y-6 p-4 sm:p-6">
@@ -148,10 +156,28 @@ export default function ClientDashboardMyLearning() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {courses.map((c) => (
-            <EnrolledCourseCard key={c.id} course={c} orgId={orgId} />
-          ))}
+        <div className="space-y-8">
+          {inProgress.length > 0 && (
+            <section className="space-y-4">
+              <h2 className="text-lg font-semibold">In progress</h2>
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {inProgress.map((c) => (
+                  <EnrolledCourseCard key={c.id} course={c} orgId={orgId} />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {completed.length > 0 && (
+            <section className="space-y-4">
+              <h2 className="text-lg font-semibold">Completed</h2>
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {completed.map((c) => (
+                  <EnrolledCourseCard key={c.id} course={c} orgId={orgId} />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       )}
     </div>

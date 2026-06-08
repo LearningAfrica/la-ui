@@ -23,6 +23,14 @@ export const courseQueryKeys = {
       page,
       pageSize,
     ] as const,
+  myCourses: (organizationId?: string, page?: number, pageSize?: number) =>
+    [
+      ...courseQueryKeys.all,
+      "my_courses",
+      organizationId,
+      page,
+      pageSize,
+    ] as const,
   course: (id: string) => ["course", id] as const,
   courseContents: (id: string) => ["course", id, "contents"] as const,
   courseMyProgress: (id: string) => ["course", id, "my_progress"] as const,

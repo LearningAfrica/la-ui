@@ -60,8 +60,21 @@ export default [
         route("my-courses", "routes/client.dashboard.my-courses.tsx"),
         route("my-learning", "routes/client.dashboard.my-learning.tsx"),
         route("certificates", "routes/client.dashboard.certificates.tsx"),
+        route(
+          "instructor-certificates",
+          "routes/client.dashboard.instructor-certificates.tsx"
+        ),
+        route(
+          "organization-certificates",
+          "routes/client.dashboard.organization-certificates.tsx"
+        ),
+        route("org-progress", "routes/client.dashboard.org-progress.tsx"),
         route("invitations", "routes/client.dashboard.invitations.tsx"),
         route("live-sessions", "routes/client.dashboard.live-sessions.tsx"),
+        route(
+          "live-sessions/:sessionId/join",
+          "routes/client.dashboard.live-sessions.$sessionId.join.tsx"
+        ),
       ]),
     ]),
     route("/sign-in", "routes/sign-in.tsx"),

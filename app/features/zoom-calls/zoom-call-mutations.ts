@@ -13,6 +13,7 @@ export interface CreateZoomCallPayload {
   description?: string;
   start_time: string;
   duration: number;
+  course?: string | null;
 }
 
 export const useCreateZoomCall = () => {

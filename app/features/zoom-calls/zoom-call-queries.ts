@@ -17,6 +17,8 @@ export interface ZoomCall {
   duration: number;
   join_url: string;
   status: ZoomCallStatus;
+  course?: string | null;
+  course_title?: string | null;
   created_at?: string;
 }
 
@@ -31,7 +33,7 @@ export interface ZoomCallJoinInfo {
 }
 
 export const useZoomCalls = (filters: ZoomCallFilters = {}) => {
-  const { page = 1, page_size = 20, status, search } = filters;
+  const { page = 1, page_size = 20, status, search, course } = filters;
 
   return useQuery({
     queryKey: zoomCallQueryKeys.list(filters),
@@ -44,6 +46,8 @@ export const useZoomCalls = (filters: ZoomCallFilters = {}) => {
       if (status) params.append("status", status);
 
       if (search) params.append("search", search);
+
+      if (course) params.append("course", course);
 
       const response = await apiClient.get<Paginated<ZoomCall>>(
         `/api/call/zoom-calls/?${params.toString()}`
