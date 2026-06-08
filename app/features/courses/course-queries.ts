@@ -135,12 +135,127 @@ export interface CourseMyProgress {
   modules: CourseProgressModule[];
 }
 
+export interface CourseWithProgress extends Course {
+  course_progress?: number;
+  is_enrolled?: boolean;
+  enrolled_time?: string;
+}
+
+export interface UseOrgProgressParams {
+  page?: number;
+  pageSize?: number;
+}
+
+export const useOrgProgress = (params: UseOrgProgressParams = {}) => {
+  const { page = 1, pageSize = 20 } = params;
+  const { selectedOrganization } = useOrganizationStore();
+  const organizationId = selectedOrganization?.id;
+
+  return useQuery({
+    queryKey: courseQueryKeys.orgProgress(organizationId, page, pageSize),
+    queryFn: async () => {
+      const response = await apiClient.get<Paginated<CourseWithProgress>>(
+        "/api/courses/org_progress/",
+        {
+          params: {
+            page,
+            limit: pageSize,
+            page_size: pageSize,
+            organization: organizationId,
+          },
+        }
+      );
+
+      return response.data;
+    },
+    enabled: !!organizationId,
+  });
+};
+
+export interface UseMyProgressParams {
+  page?: number;
+  pageSize?: number;
+}
+
+// Backend may return either a paginated wrapper or a raw array;
+// callers should use `useMyProgress().data ?? []`.
+export const useMyProgress = (params: UseMyProgressParams = {}) => {
+  const { page = 1, pageSize = 50 } = params;
+  const { selectedOrganization } = useOrganizationStore();
+  const organizationId = selectedOrganization?.id;
+
+  return useQuery({
+    queryKey: courseQueryKeys.myProgress(organizationId, page, pageSize),
+    queryFn: async () => {
+      const response = await apiClient.get<
+        Paginated<CourseWithProgress> | CourseWithProgress[]
+      >("/api/my_progress/", {
+        params: {
+          page,
+          limit: pageSize,
+          page_size: pageSize,
+          organization: organizationId,
+        },
+      });
+      const body = response.data;
+      const items = Array.isArray(body) ? body : (body?.data ?? []);
+
+      return { data: items };
+    },
+    enabled: !!organizationId,
+  });
+};
+
+// Enrolled courses for the current learner. Documented endpoint:
+// /api/my-courses/?organization=<org_id>. Returns enrollment + course detail
+// (with course_progress when the backend includes it).
+export const useMyCourses = (params: UseMyProgressParams = {}) => {
+  const { page = 1, pageSize = 50 } = params;
+  const { selectedOrganization } = useOrganizationStore();
+  const organizationId = selectedOrganization?.id;
+
+  return useQuery({
+    queryKey: courseQueryKeys.myCourses(organizationId, page, pageSize),
+    queryFn: async () => {
+      const response = await apiClient.get<
+        Paginated<CourseWithProgress> | CourseWithProgress[]
+      >("/api/my-courses/", {
+        params: {
+          page,
+          limit: pageSize,
+          page_size: pageSize,
+          organization: organizationId,
+        },
+      });
+      const body = response.data;
+      const items = Array.isArray(body) ? body : (body?.data ?? []);
+
+      return { data: items };
+    },
+    enabled: !!organizationId,
+  });
+};
+
 export const useCourseMyProgress = (id: string) => {
   return useQuery({
     queryKey: courseQueryKeys.courseMyProgress(id),
     queryFn: async () => {
       const response = await apiClient.get<CourseMyProgress>(
         `/api/courses/${id}/my_progress/`
+      );
+
+      return response.data;
+    },
+    enabled: !!id,
+  });
+};
+
+export const useCourseLearnerProgress = (id: string) => {
+  return useQuery({
+    queryKey: courseQueryKeys.courseLearnerProgress(id),
+    queryFn: async () => {
+      const response = await apiClient.get<CourseMyProgress>(
+        `/api/courses/${id}/learner_progress/`
       );
 
       return response.data;

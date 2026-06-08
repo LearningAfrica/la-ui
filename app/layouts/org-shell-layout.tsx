@@ -17,6 +17,7 @@ import type {
 } from "@/components/dashboard-shell";
 import { useMyInquiries } from "@/features/inquiries/inquiry-queries";
 import { useMyInvites } from "@/features/invites/invites-queries";
+import { pendingInviteCount } from "@/features/invites/invite-selectors";
 import {
   useMyOrganizations,
   type OrganizationMembershipRole,
@@ -83,8 +84,7 @@ function OrgShellInner() {
   }, [urlOrgId, orgs.length, activeOrg, navigate]);
 
   const orgRole = activeOrg?.role;
-  const personalInviteCount =
-    invitesData?.data?.filter((inv) => !inv.is_used).length ?? 0;
+  const personalInviteCount = pendingInviteCount(invitesData?.data);
   const inquiryCount = inquiriesData?.meta?.total_docs ?? 0;
   const showInquiries = isSuperAdmin || inquiryCount > 0;
 
@@ -165,14 +165,10 @@ function OrgShellInner() {
           to: orgRoutes.overview(urlOrgId),
           icon: <NAV_ICON.home className="size-4" />,
         }),
-        item({
-          id: "org-invitations",
-          label: "Member invitations",
-          to: orgRoutes.invitations(urlOrgId),
-          icon: <NAV_ICON.invitations className="size-4" />,
-        }),
       ],
     };
+
+    const groups: NavGroup[] = [personal, workspace];
 
     const manageItems: NavItem[] = [];
 
@@ -183,6 +179,34 @@ function OrgShellInner() {
           label: "Members",
           to: orgRoutes.members(urlOrgId),
           icon: <NAV_ICON.members className="size-4" />,
+        })
+      );
+    }
+
+    if (canSee(orgRole, ["admin", "instructor"])) {
+      manageItems.push(
+        item({
+          id: "instructor-certificates",
+          label: "Certificates",
+          to: orgRoutes.instructorCertificates(urlOrgId),
+          icon: <NAV_ICON.certificates className="size-4" />,
+        })
+      );
+    }
+
+    if (canSee(orgRole, ["admin"])) {
+      manageItems.push(
+        item({
+          id: "org-progress",
+          label: "Course progress",
+          to: orgRoutes.orgProgress(urlOrgId),
+          icon: <NAV_ICON.home className="size-4" />,
+        }),
+        item({
+          id: "organization-certificates",
+          label: "All certificates",
+          to: orgRoutes.organizationCertificates(urlOrgId),
+          icon: <NAV_ICON.certificates className="size-4" />,
         })
       );
     }
@@ -201,51 +225,55 @@ function OrgShellInner() {
           label: "Categories",
           to: orgRoutes.categories(urlOrgId),
           icon: <NAV_ICON.categories className="size-4" />,
+        }),
+        item({
+          id: "live-sessions",
+          label: "Live sessions",
+          to: orgRoutes.liveSessions(urlOrgId),
+          icon: <NAV_ICON.liveSessions className="size-4" />,
         })
       );
     }
 
-    manageItems.push(
-      item({
-        id: "live-sessions",
-        label: "Live sessions",
-        to: orgRoutes.liveSessions(urlOrgId),
-        icon: <NAV_ICON.liveSessions className="size-4" />,
-      })
-    );
+    if (manageItems.length > 0) {
+      groups.push({ id: "manage", label: "Manage", items: manageItems });
+    }
 
-    const manage: NavGroup = {
-      id: "manage",
-      label: "Manage",
-      items: manageItems,
-    };
+    if (canSee(orgRole, ["learner"])) {
+      groups.push({
+        id: "learning",
+        label: "Learning",
+        items: [
+          item({
+            id: "browse-courses",
+            label: "Browse courses",
+            to: orgRoutes.courses(urlOrgId),
+            icon: <NAV_ICON.browse className="size-4" />,
+            end: false,
+          }),
+          item({
+            id: "my-learning",
+            label: "My learning",
+            to: orgRoutes.myLearning(urlOrgId),
+            icon: <NAV_ICON.myCourses className="size-4" />,
+          }),
+          item({
+            id: "live-sessions",
+            label: "Live sessions",
+            to: orgRoutes.liveSessions(urlOrgId),
+            icon: <NAV_ICON.liveSessions className="size-4" />,
+          }),
+          item({
+            id: "certificates",
+            label: "Certificates",
+            to: orgRoutes.certificates(urlOrgId),
+            icon: <NAV_ICON.certificates className="size-4" />,
+          }),
+        ],
+      });
+    }
 
-    const learning: NavGroup = {
-      id: "learning",
-      label: "Learning",
-      items: [
-        item({
-          id: "my-courses",
-          label: "My courses",
-          to: orgRoutes.myCourses(urlOrgId),
-          icon: <NAV_ICON.myCourses className="size-4" />,
-        }),
-        item({
-          id: "my-learning",
-          label: "My learning",
-          to: orgRoutes.myLearning(urlOrgId),
-          icon: <NAV_ICON.browse className="size-4" />,
-        }),
-        item({
-          id: "certificates",
-          label: "Certificates",
-          to: orgRoutes.certificates(urlOrgId),
-          icon: <NAV_ICON.certificates className="size-4" />,
-        }),
-      ],
-    };
-
-    return [personal, workspace, manage, learning];
+    return groups;
   }, [urlOrgId, orgRole, personalInviteCount, showInquiries]);
 
   const contextOptions = useMemo<ContextOption[]>(() => {

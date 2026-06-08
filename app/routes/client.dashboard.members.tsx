@@ -9,12 +9,21 @@ import { MemberStatsCards } from "@/components/dashboard/member-stats-cards";
 import { MembersTable } from "@/components/dashboard/members-table";
 import { InviteMemberDialog } from "@/components/dashboard/invite-member-dialog";
 import { OrganizationInvitesTable } from "@/components/dashboard/organization-invites-table";
+import { OrgRoleGuard } from "@/components/auth/org-role-guard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMemo, useState } from "react";
 
 type InviteStatus = "pending" | "accepted" | "declined" | "expired";
 
 export default function ClientDashboardMembers() {
+  return (
+    <OrgRoleGuard allowedRoles={["admin"]}>
+      <ClientDashboardMembersInner />
+    </OrgRoleGuard>
+  );
+}
+
+function ClientDashboardMembersInner() {
   const { selectedOrganization } = useOrganizationStore();
   const membersFilters = useTableFilters("members");
   const invitesFilters = useTableFilters("invites");

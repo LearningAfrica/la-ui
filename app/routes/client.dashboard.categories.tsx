@@ -10,10 +10,19 @@ import Layers from "~icons/lucide/layers";
 import Plus from "~icons/lucide/plus";
 import { useCategories } from "@/features/categories/category-queries";
 import { AdminCategoriesGrid } from "@/components/dashboard/admin-categories-grid";
+import { OrgRoleGuard } from "@/components/auth/org-role-guard";
 import { useTableFilters } from "@/stores/filters/use-table-filters";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 
 export default function ClientDashboardCategories() {
+  return (
+    <OrgRoleGuard allowedRoles={["admin", "instructor"]}>
+      <ClientDashboardCategoriesInner />
+    </OrgRoleGuard>
+  );
+}
+
+function ClientDashboardCategoriesInner() {
   const createCategoryModal = useAppModal("create-category");
   const { params, state, setPage } = useTableFilters("categoriesFilter");
   const {

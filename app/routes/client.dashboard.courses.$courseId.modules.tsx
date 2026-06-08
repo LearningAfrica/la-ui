@@ -22,9 +22,18 @@ import { CreateOrUpdateModuleDialog } from "@/components/dashboard/create-or-upd
 import { GenerateAiQuizDialog } from "@/components/dashboard/generate-ai-quiz-dialog";
 import { ViewContentDialog } from "@/components/dashboard/view-content-dialog";
 import { useAppModal } from "@/stores/filters/modal-hooks";
+import { OrgRoleGuard } from "@/components/auth/org-role-guard";
 import { orgRoutes } from "@/lib/utils/org-routes";
 
 export default function ClientDashboardCourseModules() {
+  return (
+    <OrgRoleGuard allowedRoles={["admin", "instructor"]}>
+      <ClientDashboardCourseModulesInner />
+    </OrgRoleGuard>
+  );
+}
+
+function ClientDashboardCourseModulesInner() {
   const { orgId = "", courseId } = useParams<{
     orgId: string;
     courseId: string;

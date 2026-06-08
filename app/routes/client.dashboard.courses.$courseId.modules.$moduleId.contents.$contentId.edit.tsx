@@ -4,10 +4,19 @@ import FileText from "~icons/lucide/file-text";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ContentForm } from "@/components/dashboard/content-form";
+import { OrgRoleGuard } from "@/components/auth/org-role-guard";
 import { useModuleContent } from "@/features/module-contents/module-content-queries";
 import { orgRoutes } from "@/lib/utils/org-routes";
 
 export default function EditContentPage() {
+  return (
+    <OrgRoleGuard allowedRoles={["admin", "instructor"]}>
+      <EditContentPageInner />
+    </OrgRoleGuard>
+  );
+}
+
+function EditContentPageInner() {
   const {
     orgId = "",
     courseId,

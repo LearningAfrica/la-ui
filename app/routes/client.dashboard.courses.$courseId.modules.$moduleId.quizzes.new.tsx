@@ -3,9 +3,18 @@ import ArrowLeft from "~icons/lucide/arrow-left";
 import ClipboardCheck from "~icons/lucide/clipboard-check";
 import { Button } from "@/components/ui/button";
 import { QuizForm } from "@/components/dashboard/quiz-form";
+import { OrgRoleGuard } from "@/components/auth/org-role-guard";
 import { orgRoutes } from "@/lib/utils/org-routes";
 
 export default function NewQuizPage() {
+  return (
+    <OrgRoleGuard allowedRoles={["admin", "instructor"]}>
+      <NewQuizPageInner />
+    </OrgRoleGuard>
+  );
+}
+
+function NewQuizPageInner() {
   const {
     orgId = "",
     courseId,

@@ -26,15 +26,21 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useNavigate, useParams } from "react-router";
 import MoreVertical from "~icons/lucide/more-vertical";
 import Pencil from "~icons/lucide/pencil";
 import Trash2 from "~icons/lucide/trash-2";
 import Video from "~icons/lucide/video";
-import ExternalLink from "~icons/lucide/external-link";
 import RefreshCw from "~icons/lucide/refresh-cw";
 import Copy from "~icons/lucide/copy";
 import type { ZoomCall } from "@/features/zoom-calls/zoom-call-queries";
 import { useDeleteZoomCall } from "@/features/zoom-calls/zoom-call-mutations";
+import {
+  getSessionStatus,
+  SESSION_STATUS_LABEL,
+  SESSION_STATUS_CLASS,
+} from "@/features/zoom-calls/session-status";
+import { orgRoutes } from "@/lib/utils/org-routes";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import type { OrganizationMembershipRole } from "@/features/organizations/organization-queries";
 
@@ -46,13 +52,6 @@ interface ZoomCallsTableProps {
   userRole: OrganizationMembershipRole | undefined;
 }
 
-const statusColors: Record<ZoomCall["status"], string> = {
-  scheduled: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-  live: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-  completed: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
-  cancelled: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
-};
-
 export function ZoomCallsTable({
   calls,
   isLoading = false,
@@ -60,6 +59,8 @@ export function ZoomCallsTable({
   onRefresh,
   userRole,
 }: ZoomCallsTableProps) {
+  const { orgId = "" } = useParams<{ orgId: string }>();
+  const navigate = useNavigate();
   const editModal = useAppModal("create-or-update-zoom-call");
   const deleteMutation = useDeleteZoomCall();
   const [pendingDelete, setPendingDelete] = useState<ZoomCall | null>(null);
@@ -102,40 +103,37 @@ export function ZoomCallsTable({
       {
         accessorKey: "status",
         header: "Status",
-        cell: ({ row }) => (
-          <Badge
-            variant="outline"
-            className={statusColors[row.original.status]}
-          >
-            {row.original.status.charAt(0).toUpperCase() +
-              row.original.status.slice(1)}
-          </Badge>
-        ),
+        cell: ({ row }) => {
+          const s = getSessionStatus(row.original);
+
+          return (
+            <Badge variant="outline" className={SESSION_STATUS_CLASS[s]}>
+              {SESSION_STATUS_LABEL[s]}
+            </Badge>
+          );
+        },
       },
       {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => {
           const call = row.original;
-          const canJoin = call.status === "scheduled" || call.status === "live";
+          const s = getSessionStatus(call);
+          const canJoin = s === "live" || s === "upcoming";
 
           return (
             <div className="flex items-center gap-2">
-              {canJoin && call.join_url && (
+              {canJoin && (
                 <Button
-                  asChild
                   size="sm"
                   variant="default"
                   className="bg-green-600 hover:bg-green-700"
+                  onClick={() =>
+                    navigate(orgRoutes.liveSessionJoin(orgId, call.id))
+                  }
                 >
-                  <a
-                    href={call.join_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <ExternalLink className="mr-1 h-3 w-3" />
-                    Join
-                  </a>
+                  <Video className="mr-1 h-3 w-3" />
+                  Join
                 </Button>
               )}
               <DropdownMenu>
@@ -179,7 +177,7 @@ export function ZoomCallsTable({
         },
       },
     ],
-    [editModal, canManage]
+    [editModal, canManage, navigate, orgId]
   );
 
   const table = useReactTable({

@@ -23,6 +23,7 @@ import {
 import type { ModuleContent } from "@/features/module-contents/module-content-queries";
 import type { CourseModuleDetail } from "@/features/modules/module-queries";
 import { orgRoutes } from "@/lib/utils/org-routes";
+import { useAppModal } from "@/stores/filters/modal-hooks";
 
 interface FlatItem {
   content: ModuleContent;
@@ -184,6 +185,7 @@ export default function LessonReaderPage() {
   const { data: progress } = useCourseMyProgress(courseId!);
   const markComplete = useMarkContentComplete();
   const markIncomplete = useMarkContentIncomplete();
+  const completedModal = useAppModal("course-completed");
 
   const flat = useMemo(() => flattenModules(modules?.data ?? []), [modules]);
 
@@ -239,7 +241,16 @@ export default function LessonReaderPage() {
     markComplete.mutate(
       { coursePk: courseId, modulePk: mod.id, id: content.id },
       {
-        onSuccess: () => {
+        onSuccess: (result) => {
+          if (result?.course_progress === 100) {
+            completedModal.open({
+              courseId: courseId!,
+              courseTitle: progress?.title,
+            });
+
+            return;
+          }
+
           if (next) {
             navigate(orgRoutes.lesson(orgId, courseId!, next.content.id));
           }

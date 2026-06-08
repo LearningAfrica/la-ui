@@ -4,10 +4,19 @@ import ClipboardCheck from "~icons/lucide/clipboard-check";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { QuizForm } from "@/components/dashboard/quiz-form";
+import { OrgRoleGuard } from "@/components/auth/org-role-guard";
 import { useQuiz } from "@/features/quizzes/quiz-queries";
 import { orgRoutes } from "@/lib/utils/org-routes";
 
 export default function EditQuizPage() {
+  return (
+    <OrgRoleGuard allowedRoles={["admin", "instructor"]}>
+      <EditQuizPageInner />
+    </OrgRoleGuard>
+  );
+}
+
+function EditQuizPageInner() {
   const {
     orgId = "",
     courseId,

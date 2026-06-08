@@ -105,10 +105,23 @@ export default function PersonalHome() {
           actionLabel="Manage"
         >
           {orgs.length === 0 ? (
-            <EmptyHint
-              icon={<Plus className="size-4" />}
-              text="You haven't joined an organization yet."
-            />
+            <div className="space-y-3">
+              <EmptyHint
+                icon={<Plus className="size-4" />}
+                text="You haven't joined an organization yet."
+              />
+              <Link
+                to="/inquiry"
+                prefetch="intent"
+                className="border-la-rule bg-la-paper hover:bg-la-forest hover:text-la-paper font-display text-la-ink flex items-center justify-between gap-3 rounded border px-3 py-2 text-[13px] font-semibold transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <Mail className="size-4" />
+                  Request access
+                </span>
+                <ArrowRight className="size-4" />
+              </Link>
+            </div>
           ) : (
             <ul className="space-y-2">
               {orgs.slice(0, 3).map((org) => (

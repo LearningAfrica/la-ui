@@ -3,9 +3,18 @@ import ArrowLeft from "~icons/lucide/arrow-left";
 import BookOpen from "~icons/lucide/book-open";
 import { Button } from "@/components/ui/button";
 import { CourseForm } from "@/components/dashboard/course-form";
+import { OrgRoleGuard } from "@/components/auth/org-role-guard";
 import { orgRoutes } from "@/lib/utils/org-routes";
 
 export default function NewCoursePage() {
+  return (
+    <OrgRoleGuard allowedRoles={["admin", "instructor"]}>
+      <NewCoursePageInner />
+    </OrgRoleGuard>
+  );
+}
+
+function NewCoursePageInner() {
   const { orgId = "" } = useParams<{ orgId: string }>();
 
   return (

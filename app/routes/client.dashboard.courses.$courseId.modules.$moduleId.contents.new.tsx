@@ -3,9 +3,18 @@ import ArrowLeft from "~icons/lucide/arrow-left";
 import FileText from "~icons/lucide/file-text";
 import { Button } from "@/components/ui/button";
 import { ContentForm } from "@/components/dashboard/content-form";
+import { OrgRoleGuard } from "@/components/auth/org-role-guard";
 import { orgRoutes } from "@/lib/utils/org-routes";
 
 export default function NewContentPage() {
+  return (
+    <OrgRoleGuard allowedRoles={["admin", "instructor"]}>
+      <NewContentPageInner />
+    </OrgRoleGuard>
+  );
+}
+
+function NewContentPageInner() {
   const {
     orgId = "",
     courseId,

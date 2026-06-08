@@ -15,6 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { RouteGuard } from "@/components/auth/route-guard";
+import { CourseCompletedDialog } from "@/components/dashboard/course-completed-dialog";
 import { useTheme } from "@/providers/theme-provider";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
 import { useCourse } from "@/features/courses/course-queries";
@@ -138,6 +139,7 @@ export default function LessonReaderLayout() {
       <div className="bg-background min-h-screen">
         <LessonReaderHeader />
         <Outlet />
+        <CourseCompletedDialog />
       </div>
     </RouteGuard>
   );

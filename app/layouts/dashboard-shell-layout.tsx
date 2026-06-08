@@ -14,6 +14,7 @@ import type { ContextOption, NavGroup } from "@/components/dashboard-shell";
 import { useMyInquiries } from "@/features/inquiries/inquiry-queries";
 import { useMyOrganizations } from "@/features/organizations/organization-queries";
 import { useMyInvites } from "@/features/invites/invites-queries";
+import { pendingInviteCount } from "@/features/invites/invite-selectors";
 import { orgRoutes, personalRoutes } from "@/lib/utils/org-routes";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
@@ -51,7 +52,7 @@ function DashboardShellInner() {
   const { data: orgsData } = useMyOrganizations();
   const { data: inquiriesData } = useMyInquiries();
 
-  const inviteCount = invitesData?.data?.length ?? 0;
+  const inviteCount = pendingInviteCount(invitesData?.data);
   const inquiryCount = inquiriesData?.meta?.total_docs ?? 0;
   const showInquiries = isSuperAdmin || inquiryCount > 0;
 
