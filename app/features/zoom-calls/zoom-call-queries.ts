@@ -22,14 +22,17 @@ export interface ZoomCall {
   created_at?: string;
 }
 
+// The backend returns the credentials using Zoom's own camelCase field names
+// (the exact shape `ZoomMtgEmbedded.join()` expects), so we keep them verbatim
+// and hand them straight to the SDK. Note `passWord` is Zoom's spelling.
 export interface ZoomCallJoinInfo {
-  meeting_number: string;
-  password: string;
+  sdkKey: string;
+  meetingNumber: string;
+  passWord: string;
+  userName: string;
   signature: string;
-  sdk_key: string;
-  user_name: string;
-  user_email: string;
-  join_url: string;
+  userEmail?: string;
+  leaveUrl?: string;
 }
 
 export const useZoomCalls = (filters: ZoomCallFilters = {}) => {

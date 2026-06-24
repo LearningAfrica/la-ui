@@ -1,5 +1,5 @@
 import { useForm, useWatch } from "react-hook-form";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { courseResolver } from "@/lib/schema/course-schema";
@@ -19,6 +19,7 @@ import {
   FormAsyncSelectField,
   FormImageUploadField,
 } from "@/components/form-fields";
+import { orgRoutes } from "@/lib/utils/org-routes";
 import type { Course } from "@/features/courses/course-queries";
 
 interface CourseFormProps {
@@ -28,7 +29,10 @@ interface CourseFormProps {
 
 export function CourseForm({ course, redirectTo }: CourseFormProps) {
   const navigate = useNavigate();
+  const { orgId = "" } = useParams<{ orgId: string }>();
   const isEditing = !!course;
+
+  const coursesPath = orgRoutes.courses(orgId);
 
   const { selectedOrganization } = useOrganizationStore();
   const { data: categoriesData } = useCategories();
@@ -75,7 +79,7 @@ export function CourseForm({ course, redirectTo }: CourseFormProps) {
       organization: selectedOrganization?.id ?? data.organization,
     };
 
-    const done = () => navigate(redirectTo ?? "/client/dashboard/courses");
+    const done = () => navigate(redirectTo ?? coursesPath);
 
     return isEditing
       ? updateMutation.mutateAsync(
@@ -172,7 +176,7 @@ export function CourseForm({ course, redirectTo }: CourseFormProps) {
           <Button
             type="button"
             variant="outline"
-            onClick={() => navigate(redirectTo ?? "/client/dashboard/courses")}
+            onClick={() => navigate(redirectTo ?? coursesPath)}
             disabled={isLoading}
           >
             Cancel

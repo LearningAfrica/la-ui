@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Link } from "react-router";
+import { Link, useParams } from "react-router";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,7 @@ import Eye from "~icons/lucide/eye";
 import ExternalLink from "~icons/lucide/external-link";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import { DataTable } from "@/components/ui/data-table";
+import { orgRoutes } from "@/lib/utils/org-routes";
 import { DeleteContentDialog } from "./delete-content-dialog";
 
 interface ModuleContentsTableProps {
@@ -51,6 +52,7 @@ export function ModuleContentsTable({
   isFetching,
   toolbarActions,
 }: ModuleContentsTableProps) {
+  const { orgId = "" } = useParams<{ orgId: string }>();
   const viewModal = useAppModal("view-content");
   const deleteModal = useAppModal("delete-content");
 
@@ -157,7 +159,12 @@ export function ModuleContentsTable({
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link
-                      to={`/client/dashboard/courses/${coursePk}/modules/${modulePk}/contents/${content.id}/edit`}
+                      to={orgRoutes.contentEdit(
+                        orgId,
+                        coursePk,
+                        modulePk,
+                        content.id
+                      )}
                     >
                       <Pencil className="mr-2 h-4 w-4" />
                       Edit
@@ -183,7 +190,7 @@ export function ModuleContentsTable({
           },
         }),
       ] as ColumnDef<ModuleContent, unknown>[],
-    [coursePk, modulePk, viewModal, deleteModal]
+    [orgId, coursePk, modulePk, viewModal, deleteModal]
   );
 
   return (

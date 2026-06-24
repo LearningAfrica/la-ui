@@ -7,6 +7,7 @@ import { extractError } from "@/lib/error";
 import { organizationQueryKeys } from "../organizations/organization-query-keys";
 import type { MyOrganization } from "../organizations/organization-queries";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
+import { orgRoutes, personalRoutes } from "@/lib/utils/org-routes";
 import type { Paginated } from "@/lib/types/api";
 
 interface AcceptInviteResponse {
@@ -75,7 +76,9 @@ export const useAcceptInvite = () => {
         setSelectedOrganization(joinedOrg);
       }
 
-      navigate("/client/dashboard");
+      navigate(
+        joinedOrg ? orgRoutes.base(joinedOrg.id) : personalRoutes.home()
+      );
     },
     onError: (error) => {
       toast.error({

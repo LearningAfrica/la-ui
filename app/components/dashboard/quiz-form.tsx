@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useForm, useFieldArray, useWatch, Controller } from "react-hook-form";
 import type { Control, FieldValues } from "react-hook-form";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -27,6 +27,7 @@ import {
 } from "@/features/quizzes/quiz-mutations";
 import type { Quiz } from "@/features/quizzes/quiz-queries";
 import { cn } from "@/lib/utils";
+import { orgRoutes } from "@/lib/utils/org-routes";
 
 interface QuizFormProps {
   coursePk: string;
@@ -260,6 +261,7 @@ export function QuizForm({
   redirectTo,
 }: QuizFormProps) {
   const navigate = useNavigate();
+  const { orgId = "" } = useParams<{ orgId: string }>();
   const isEditing = !!quiz;
 
   const createQuiz = useCreateQuiz();
@@ -305,7 +307,7 @@ export function QuizForm({
     setExpandedIndex((prev) => (prev === qi ? null : qi));
   };
 
-  const back = redirectTo ?? `/client/dashboard/courses/${coursePk}/modules`;
+  const back = redirectTo ?? orgRoutes.courseModules(orgId, coursePk);
 
   const isLoading =
     createQuiz.isPending || updateQuiz.isPending || form.formState.isSubmitting;
