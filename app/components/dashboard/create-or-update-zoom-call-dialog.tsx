@@ -1,19 +1,21 @@
 import { useEffect, useEffectEvent } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetFooter,
+} from "@/components/ui/sheet";
 import { Form } from "@/components/ui/form";
 import {
   FormTextField,
   FormTextareaField,
   FormNumberField,
   FormAsyncSelectField,
+  FormDateTimeField,
 } from "@/components/form-fields";
 import { useCourses } from "@/features/courses/course-queries";
 import {
@@ -48,6 +50,17 @@ function toDatetimeLocal(iso: string): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
     d.getHours()
   )}:${pad(d.getMinutes())}`;
+}
+
+const DURATION_PRESETS = [30, 45, 60, 90, 120];
+
+function formatDuration(m: number): string {
+  if (m < 60) return `${m}m`;
+
+  const h = Math.floor(m / 60);
+  const rem = m % 60;
+
+  return rem ? `${h}h ${rem}m` : `${h}h`;
 }
 
 function callToFormValues(call: ZoomCall): ZoomCallFormData {
@@ -95,6 +108,9 @@ export function CreateOrUpdateZoomCallDialog() {
   const isLoading =
     createCall.isPending || updateCall.isPending || form.formState.isSubmitting;
 
+  const minDateTime = toDatetimeLocal(new Date().toISOString());
+  const duration = useWatch({ control: form.control, name: "duration" });
+
   const handleSubmit = form.handleSubmit((data) => {
     const payload = {
       topic: data.topic,
@@ -125,77 +141,104 @@ export function CreateOrUpdateZoomCallDialog() {
   });
 
   return (
-    <Dialog
+    <Sheet
       open={modal.isOpen}
       onOpenChange={(v) => {
         if (!v) modal.close();
       }}
     >
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Video className="h-5 w-5" />
-            {isEditing ? "Edit Live Session" : "Schedule Live Session"}
-          </DialogTitle>
-          <DialogDescription>
+      <SheetContent
+        side="right"
+        className="flex w-full flex-col gap-0 p-0 sm:max-w-lg"
+      >
+        <SheetHeader className="border-b">
+          <SheetTitle className="flex items-center gap-2">
+            <span className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-lg">
+              <Video className="h-5 w-5" />
+            </span>
+            {isEditing ? "Edit live session" : "Schedule live session"}
+          </SheetTitle>
+          <SheetDescription>
             {isEditing
               ? "Update the session details."
-              : "Schedule a Zoom session for your organization."}
-          </DialogDescription>
-        </DialogHeader>
+              : "Set up a Zoom session for your organization."}
+          </SheetDescription>
+        </SheetHeader>
 
         <Form {...form}>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <FormTextField
-              control={form.control}
-              name="topic"
-              label="Topic"
-              placeholder="e.g. Weekly instructor Q&A"
-              required
-              disabled={isLoading}
-            />
-
-            <FormTextareaField
-              control={form.control}
-              name="description"
-              label="Description"
-              placeholder="Optional details about this session"
-              disabled={isLoading}
-              rows={2}
-            />
-
-            <FormAsyncSelectField
-              control={form.control}
-              name="course"
-              label="Course"
-              placeholder="Org-wide session"
-              disabled={isLoading}
-              options={courseOptions}
-              description="Attach this session to a course, or leave as org-wide."
-            />
-
-            <div className="grid grid-cols-2 gap-4">
+          <form
+            onSubmit={handleSubmit}
+            className="flex min-h-0 flex-1 flex-col"
+          >
+            <div className="flex-1 space-y-5 overflow-y-auto px-6 py-5">
               <FormTextField
                 control={form.control}
-                name="start_time"
-                label="Start Time"
-                placeholder=""
+                name="topic"
+                label="Topic"
+                placeholder="e.g. Weekly instructor Q&A"
                 required
                 disabled={isLoading}
-                type="datetime-local"
               />
-              <FormNumberField
+
+              <FormTextareaField
                 control={form.control}
-                name="duration"
-                label="Duration (min)"
-                placeholder="60"
+                name="description"
+                label="Description"
+                placeholder="Optional details about this session"
+                disabled={isLoading}
+                rows={3}
+              />
+
+              <FormAsyncSelectField
+                control={form.control}
+                name="course"
+                label="Course"
+                placeholder="Org-wide session"
+                disabled={isLoading}
+                options={courseOptions}
+                description="Attach this session to a course, or leave as org-wide."
+              />
+
+              <FormDateTimeField
+                control={form.control}
+                name="start_time"
+                label="Start time"
                 required
                 disabled={isLoading}
-                inputProps={{ min: 5, max: 480 }}
+                min={minDateTime}
+                description="Click to pick a date and time."
               />
+
+              <div className="space-y-2">
+                <div className="flex flex-wrap gap-2">
+                  {DURATION_PRESETS.map((m) => (
+                    <Button
+                      key={m}
+                      type="button"
+                      size="sm"
+                      variant={duration === m ? "default" : "outline"}
+                      disabled={isLoading}
+                      onClick={() =>
+                        form.setValue("duration", m, { shouldValidate: true })
+                      }
+                    >
+                      {formatDuration(m)}
+                    </Button>
+                  ))}
+                </div>
+                <FormNumberField
+                  control={form.control}
+                  name="duration"
+                  label="Duration (minutes)"
+                  placeholder="60"
+                  required
+                  disabled={isLoading}
+                  inputProps={{ min: 5, max: 480 }}
+                />
+              </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4">
+            <SheetFooter className="flex-row justify-end gap-3 border-t">
               <Button
                 type="button"
                 variant="outline"
@@ -206,12 +249,12 @@ export function CreateOrUpdateZoomCallDialog() {
               </Button>
               <Button type="submit" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isEditing ? "Save Changes" : "Schedule"}
+                {isEditing ? "Save changes" : "Schedule"}
               </Button>
-            </div>
+            </SheetFooter>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }

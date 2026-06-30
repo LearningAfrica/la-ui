@@ -18,6 +18,13 @@ let getAuthToken: () => string | null = () => null;
 let getRefreshToken: () => string | null = () => null;
 let setTokens: (access: string, refresh: string) => void = () => {};
 let clearAuthState: () => void = () => {};
+let getOrganizationId: () => string | null = () => null;
+
+// Set the org accessor (called from the store). Org-scoped requests get the
+// selected org id sent as the `X-Organization-ID` header automatically.
+export const setOrganizationHelper = (getOrgId: () => string | null) => {
+  getOrganizationId = getOrgId;
+};
 
 // Function to set the auth helpers (called from auth store)
 export const setAuthHelpers = (
@@ -54,6 +61,12 @@ apiClient.interceptors.request.use(
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    const orgId = getOrganizationId();
+
+    if (orgId) {
+      config.headers["x-organization-id"] = orgId;
     }
 
     return config;

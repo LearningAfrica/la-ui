@@ -56,6 +56,31 @@ function useCertList(
   });
 }
 
+/**
+ * Fetch a certificate PDF through `apiClient` so the auth (and org) headers are
+ * attached automatically, then expose it as a same-origin `blob:` URL.
+ *
+ * Going through apiClient (instead of a bare <iframe src> or fetch) means the
+ * request carries the bearer token and isn't a browser navigation — so it passes
+ * auth, satisfies CORS with the already-allowed headers, and dodges ngrok's
+ * browser-warning interstitial. The blob URL is same-origin, so the iframe that
+ * renders it never makes a cross-origin/authed request itself.
+ */
+export function useCertificatePdfUrl(pdfUrl: string | null) {
+  return useQuery({
+    queryKey: ["certificate-blob", pdfUrl],
+    enabled: !!pdfUrl,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    queryFn: async () => {
+      const res = await apiClient.get<Blob>(pdfUrl!, { responseType: "blob" });
+
+      // ponytail: object URLs aren't revoked; cert lists are small, fine per session.
+      return URL.createObjectURL(res.data);
+    },
+  });
+}
+
 export const useMyCertificates = () =>
   useCertList("/api/my-certificates/", certificateQueryKeys.mine, false);
 

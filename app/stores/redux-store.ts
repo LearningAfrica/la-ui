@@ -14,7 +14,7 @@ import { authActions } from "@/stores/auth/auth-slice";
 import organizationReducer from "@/stores/organization/organization-slice";
 import tableFiltersReducer from "@/stores/filters/table-filters-slice";
 import modalsReducer from "@/stores/filters/modal-slice";
-import { setAuthHelpers } from "@/lib/api/index";
+import { setAuthHelpers, setOrganizationHelper } from "@/lib/api/index";
 import { createCookieStorage } from "@/stores/cookie-storage";
 
 const storage = createCookieStorage();
@@ -62,4 +62,8 @@ setAuthHelpers(
   () => store.getState().auth.refreshToken ?? null,
   (access: string, refresh: string) =>
     store.dispatch(authActions.updateTokens({ access, refresh }))
+);
+
+setOrganizationHelper(
+  () => store.getState().organization.selectedOrganization?.id ?? null
 );

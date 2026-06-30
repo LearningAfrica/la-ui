@@ -23,6 +23,8 @@ export { FormSwitchField } from "./form-switch-field";
 
 export { FormDateField } from "./form-date-field";
 
+export { FormDateTimeField } from "./form-datetime-field";
+
 export { FormImageUploadField } from "./form-image-upload-field";
 
 export {

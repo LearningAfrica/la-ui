@@ -3,6 +3,7 @@ import { courseQueryKeys } from "./course-query-keys";
 import { apiClient } from "@/lib/api";
 import type { Paginated } from "@/lib/types/api";
 import type { ModuleContent } from "@/features/module-contents/module-content-queries";
+import type { User } from "@/features/users/user-queries";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 
 export interface CourseInstructor {
@@ -67,7 +68,7 @@ export const useCourses = (params: UseCoursesParams = {}) => {
           page_size: pageSize,
           limit: pageSize,
           search,
-          organization_id: organizationId,
+          organization: organizationId,
         },
       });
 
@@ -128,17 +129,53 @@ export interface CourseProgressModule {
 // Backend returns the enriched course with nested module → content progress.
 // Individual completion lives on each content row, so the top level surfaces
 // `course_progress` and modules rather than a flat contents array.
+//
+// When the learner is NOT enrolled the backend returns only
+// `{ is_enrolled: "false" }` (200), so every course field is optional.
+// Note `is_enrolled` arrives as a string ("false"/"true"), not a boolean.
 export interface CourseMyProgress {
-  id: string;
-  title: string;
-  course_progress: number;
-  modules: CourseProgressModule[];
+  id?: string;
+  title?: string;
+  course_progress?: number;
+  modules?: CourseProgressModule[];
+  is_enrolled?: boolean | string;
+}
+
+// Enrolled payloads omit `is_enrolled`; the not-enrolled payload sets it to
+// "false" (string). So: enrolled unless the flag is explicitly false.
+export function isLearnerEnrolled(progress?: CourseMyProgress): boolean {
+  if (!progress) return false;
+
+  return progress.is_enrolled !== false && progress.is_enrolled !== "false";
 }
 
 export interface CourseWithProgress extends Course {
   course_progress?: number;
   is_enrolled?: boolean;
   enrolled_time?: string;
+}
+
+// Org progress groups learners under each course; per-learner progress carries
+// the overall percent plus a per-module breakdown.
+export interface OrgProgressModule {
+  module_id: string;
+  title: string;
+  module_progress: number;
+  total_contents: number;
+  completed_contents: number;
+}
+
+export interface OrgProgressLearner {
+  learner: User;
+  enrolled_time: string;
+  course_progress: number;
+  modules: OrgProgressModule[];
+}
+
+export interface OrgProgressCourse {
+  course_id: string;
+  course_title: string;
+  learners: OrgProgressLearner[];
 }
 
 export interface UseOrgProgressParams {
@@ -154,7 +191,7 @@ export const useOrgProgress = (params: UseOrgProgressParams = {}) => {
   return useQuery({
     queryKey: courseQueryKeys.orgProgress(organizationId, page, pageSize),
     queryFn: async () => {
-      const response = await apiClient.get<Paginated<CourseWithProgress>>(
+      const response = await apiClient.get<Paginated<OrgProgressCourse>>(
         "/api/courses/org_progress/",
         {
           params: {

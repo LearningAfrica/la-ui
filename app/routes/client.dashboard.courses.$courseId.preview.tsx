@@ -21,6 +21,7 @@ import { createMediaUrl } from "@/lib/api";
 import {
   useCourse,
   useCourseMyProgress,
+  isLearnerEnrolled,
   type CourseMyProgress,
 } from "@/features/courses/course-queries";
 import { useCourseModules } from "@/features/modules/module-queries";
@@ -257,7 +258,7 @@ export default function CoursePreviewPage() {
     0
   );
   const progressPercent = Math.round(progress?.course_progress ?? 0);
-  const isEnrolled = !!progress;
+  const isEnrolled = isLearnerEnrolled(progress);
   const hasProgress = completedCount > 0;
   const ctaLabel = hasProgress ? "Resume course" : "Start the course";
   const ctaTo = nextLesson
