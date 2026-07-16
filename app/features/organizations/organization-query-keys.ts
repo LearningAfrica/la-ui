@@ -22,6 +22,8 @@ export const organizationQueryKeys = {
 // Organization Mutation Keys
 export const organizationMutationKeys = {
   createOrganization: () => ["createOrganization"] as const,
+  updateOrganization: (organizationId: string) =>
+    ["updateOrganization", organizationId] as const,
   changeMemberRole: (organizationId: string) =>
     ["changeMemberRole", organizationId] as const,
   toggleMemberStatus: (organizationId: string) =>

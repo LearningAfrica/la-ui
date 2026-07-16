@@ -65,6 +65,45 @@ export const useCreateOrganization = () => {
   });
 };
 
+// Update Organization Mutation (owner edits their org)
+export const useUpdateOrganization = (organizationId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationKey: organizationMutationKeys.updateOrganization(organizationId),
+    mutationFn: async (data: OrganizationFormData) => {
+      const response = await apiClient.patch<CreateOrganizationResponse>(
+        `/api/organizations/mine/${organizationId}/`,
+        toFormData(data),
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      return response.data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: organizationQueryKeys.myOrganizations(),
+      });
+      toast.success({
+        message: `Organization "${data.name}" has been updated successfully.`,
+      });
+    },
+    onError: (error) => {
+      const errorMessage = extractError(error);
+
+      toast.error({
+        message: errorMessage,
+        description:
+          "Please try again or contact support if the issue persists.",
+      });
+    },
+  });
+};
+
 // Change Member Role Mutation
 export const useChangeMemberRole = (organizationId: string) => {
   const queryClient = useQueryClient();

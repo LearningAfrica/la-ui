@@ -63,13 +63,10 @@ function DashboardShellInner() {
 
   const orgs = useMemo(() => orgsData ?? [], [orgsData]);
 
-  // Where the sidebar "Organizations" link should go. Auto-select the first
-  // (or only) org so users don't get bounced through the picker every time.
-  const organizationsTarget = useMemo(() => {
-    if (orgs.length === 0) return personalRoutes.orgs();
-
-    return orgRoutes.overview(orgs[0].id);
-  }, [orgs]);
+  // Always land on the organizations list so users can see, select, create, or
+  // edit — including single-org users. Jumping straight into a workspace also
+  // crashed when it navigated without setting the selected organization.
+  const organizationsTarget = personalRoutes.orgs();
 
   const sidebarGroups = useMemo<NavGroup[]>(() => {
     const personalItems = [

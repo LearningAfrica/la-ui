@@ -37,6 +37,10 @@ export const useUserRole = () => {
   return useSelector((s: RootState) => s.auth.role);
 };
 
+export const useCanCreateOrg = () => {
+  return useSelector((s: RootState) => !!s.auth.canCreateOrg);
+};
+
 export const useIsLoggedInAndVerified = () => {
   return useSelector((s: RootState) => {
     return s.auth.isAuthenticated && s.auth.isVerified;

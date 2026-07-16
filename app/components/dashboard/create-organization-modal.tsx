@@ -15,8 +15,12 @@ import {
 } from "@/lib/schema/organization-schema";
 import Building2 from "~icons/lucide/building-2";
 import Loader2 from "~icons/lucide/loader-2";
-import { useState } from "react";
-import { useCreateOrganization } from "@/features/organizations/organization-mutations";
+import { useEffect, useState } from "react";
+import {
+  useCreateOrganization,
+  useUpdateOrganization,
+} from "@/features/organizations/organization-mutations";
+import type { MyOrganization } from "@/features/organizations/organization-queries";
 import {
   FormTextField,
   FormTextareaField,
@@ -25,12 +29,16 @@ import {
 
 interface CreateOrganizationModalProps {
   children?: React.ReactNode;
+  // When provided, the modal edits this organization instead of creating one.
+  organization?: MyOrganization;
 }
 
 export function CreateOrganizationModal({
   children,
+  organization,
 }: CreateOrganizationModalProps) {
   const [open, setOpen] = useState(false);
+  const isEditing = !!organization;
 
   const form = useForm<OrganizationFormData>({
     resolver: organizationResolver,
@@ -41,10 +49,27 @@ export function CreateOrganizationModal({
     },
   });
 
+  // Prefill when editing (logo stays empty — it's a File input, not the URL).
+  useEffect(() => {
+    if (open && organization) {
+      form.reset({
+        name: organization.name,
+        description: organization.description ?? "",
+        logo: undefined,
+      });
+    }
+  }, [open, organization, form]);
+
   const createOrganizationMutation = useCreateOrganization();
+  const updateOrganizationMutation = useUpdateOrganization(
+    organization?.id ?? ""
+  );
+  const mutation = isEditing
+    ? updateOrganizationMutation
+    : createOrganizationMutation;
 
   const handleFormSubmit = form.handleSubmit((data) => {
-    createOrganizationMutation.mutateAsync(data, {
+    mutation.mutate(data, {
       onSuccess() {
         setOpen(false);
         form.reset();
@@ -52,8 +77,7 @@ export function CreateOrganizationModal({
     });
   });
   const isLoading =
-    createOrganizationMutation.status === "pending" ||
-    form.formState.isSubmitting;
+    mutation.status === "pending" || form.formState.isSubmitting;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -61,7 +85,7 @@ export function CreateOrganizationModal({
         {children || (
           <Button variant="gradient" size="lg">
             <Building2 className="mr-2 h-4 w-4" />
-            Create Organization
+            {isEditing ? "Edit Organization" : "Create Organization"}
           </Button>
         )}
       </DialogTrigger>
@@ -69,11 +93,12 @@ export function CreateOrganizationModal({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Building2 className="h-5 w-5" />
-            Create New Organization
+            {isEditing ? "Edit Organization" : "Create New Organization"}
           </DialogTitle>
           <DialogDescription>
-            Fill in the details to create your organization. Add a logo to make
-            it more recognizable.
+            {isEditing
+              ? "Update your organization details. Upload a new logo to replace the current one."
+              : "Fill in the details to create your organization. Add a logo to make it more recognizable."}
           </DialogDescription>
         </DialogHeader>
 
@@ -116,7 +141,7 @@ export function CreateOrganizationModal({
               </Button>
               <Button type="submit" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Create Organization
+                {isEditing ? "Save Changes" : "Create Organization"}
               </Button>
             </div>
           </form>
