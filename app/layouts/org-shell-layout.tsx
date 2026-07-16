@@ -57,7 +57,7 @@ function OrgShellInner() {
     useOrganizationStore();
   const { data: invitesData } = useMyInvites();
   const { data: inquiriesData } = useMyInquiries();
-  const { data: orgsData } = useMyOrganizations();
+  const { data: orgsData, isLoading: orgsLoading } = useMyOrganizations();
   const navigate = useNavigate();
   const location = useLocation();
   const params = useParams<{ orgId: string }>();
@@ -78,10 +78,13 @@ function OrgShellInner() {
   }, [activeOrg, selectedOrganization?.id, setSelectedOrganization]);
 
   useEffect(() => {
-    if (urlOrgId && orgs.length > 0 && !activeOrg) {
+    // Only bounce once the list has actually settled — bouncing on stale/empty
+    // data (mid-fetch) can start a redirect loop with the orgs list, which the
+    // router surfaces as endless manifest/.data fetches.
+    if (!orgsLoading && urlOrgId && orgs.length > 0 && !activeOrg) {
       navigate(personalRoutes.orgs(), { replace: true });
     }
-  }, [urlOrgId, orgs.length, activeOrg, navigate]);
+  }, [orgsLoading, urlOrgId, orgs.length, activeOrg, navigate]);
 
   const orgRole = activeOrg?.role;
   const personalInviteCount = pendingInviteCount(invitesData?.data);

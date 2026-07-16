@@ -49,7 +49,7 @@ export default function PersonalOrganizationsPage() {
             />
             Refresh
           </Button>
-          {canCreateOrg && orgs.length > 0 && <CreateOrganizationModal />}
+          {canCreateOrg && <CreateOrganizationModal />}
         </div>
       </header>
 
