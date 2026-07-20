@@ -192,12 +192,17 @@ export default function ClientDashboardCertificates() {
 
   return (
     <div className="space-y-6 p-6 lg:p-8">
-      <div>
-        <h1 className="text-3xl font-bold">My Certificates</h1>
-        <p className="text-muted-foreground mt-1">
+      <header>
+        <p className="text-la-forest mb-2 text-xs font-semibold tracking-[0.2em] uppercase">
+          Achievements
+        </p>
+        <h1 className="font-display text-la-ink text-4xl font-bold tracking-tight lg:text-5xl">
+          My Certificates
+        </h1>
+        <p className="text-la-muted mt-2">
           Preview and download your earned certificates
         </p>
-      </div>
+      </header>
 
       {isLoading ? (
         <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">

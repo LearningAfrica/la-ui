@@ -155,6 +155,15 @@ export interface CourseWithProgress extends Course {
   enrolled_time?: string;
 }
 
+// /api/my-courses/ returns enrollment rows: the course is nested under `course`,
+// with per-learner `course_progress` alongside it (not flattened onto the course).
+export interface EnrolledCourse {
+  id: string;
+  enrolled_time: string;
+  course_progress?: number;
+  course: Course;
+}
+
 // Org progress groups learners under each course; per-learner progress carries
 // the overall percent plus a per-module breakdown.
 export interface OrgProgressModule {
@@ -255,7 +264,7 @@ export const useMyCourses = (params: UseMyProgressParams = {}) => {
     queryKey: courseQueryKeys.myCourses(organizationId, page, pageSize),
     queryFn: async () => {
       const response = await apiClient.get<
-        Paginated<CourseWithProgress> | CourseWithProgress[]
+        Paginated<EnrolledCourse> | EnrolledCourse[]
       >("/api/my-courses/", {
         params: {
           page,
