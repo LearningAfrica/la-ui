@@ -1,9 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link, useParams } from "react-router";
 import { useState } from "react";
-import Users from "~icons/lucide/users";
 import BookOpen from "~icons/lucide/book-open";
 import GraduationCap from "~icons/lucide/graduation-cap";
 import Award from "~icons/lucide/award";
@@ -12,6 +10,7 @@ import UserPlus from "~icons/lucide/user-plus";
 import FolderOpen from "~icons/lucide/folder-open";
 import Plus from "~icons/lucide/plus";
 import Mail from "~icons/lucide/mail";
+import { cn } from "@/lib/utils";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { orgRoutes } from "@/lib/utils/org-routes";
 import {
@@ -23,6 +22,117 @@ import { useCourses } from "@/features/courses/course-queries";
 import { useCategories } from "@/features/categories/category-queries";
 import { useOrganizationInvites } from "@/features/organizations/organization-queries";
 import { useUserStats } from "@/features/stats/stats-queries";
+
+type IconType = React.ComponentType<{ className?: string }>;
+
+function DashboardHeader({
+  eyebrow,
+  title,
+  subtitle,
+  action,
+}: {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  action?: React.ReactNode;
+}) {
+  return (
+    <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p className="text-la-forest mb-2 text-xs font-semibold tracking-[0.2em] uppercase">
+          {eyebrow}
+        </p>
+        <h1 className="font-display text-la-ink text-4xl font-bold tracking-tight lg:text-5xl">
+          {title}
+        </h1>
+        <p className="text-la-muted mt-2 max-w-prose">{subtitle}</p>
+      </div>
+      {action ? <div className="shrink-0">{action}</div> : null}
+    </header>
+  );
+}
+
+function StatStrip({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="border-la-rule-strong bg-la-rule-strong mb-8 grid gap-px overflow-hidden rounded-lg border sm:grid-cols-2 xl:grid-cols-4">
+      {children}
+    </div>
+  );
+}
+
+function StatCell({
+  eyebrow,
+  title,
+  value,
+  accent,
+  loading,
+}: {
+  eyebrow: string;
+  title: string;
+  value: React.ReactNode;
+  accent: string;
+  loading?: boolean;
+}) {
+  return (
+    <div className="bg-la-paper relative p-5">
+      <span
+        className={cn("absolute inset-x-0 top-0 h-1", accent)}
+        aria-hidden
+      />
+      <p className="text-la-muted text-[0.7rem] font-semibold tracking-[0.15em] uppercase">
+        {eyebrow}
+      </p>
+      {loading ? (
+        <Skeleton className="mt-3 h-10 w-14" />
+      ) : (
+        <p className="font-display text-la-ink mt-3 text-4xl font-bold tabular-nums">
+          {value}
+        </p>
+      )}
+      <p className="text-la-ink-2 mt-1 text-sm font-medium">{title}</p>
+    </div>
+  );
+}
+
+function ActionRail({
+  title = "Quick actions",
+  children,
+}: {
+  title?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="border-la-rule-strong bg-la-paper rounded-lg border">
+      <div className="border-la-rule border-b px-5 py-4">
+        <h2 className="font-display text-la-ink text-lg font-bold">{title}</h2>
+      </div>
+      <nav className="p-2">{children}</nav>
+    </section>
+  );
+}
+
+function RailLink({
+  to,
+  icon: Icon,
+  label,
+}: {
+  to: string;
+  icon: IconType;
+  label: string;
+}) {
+  return (
+    <Link
+      to={to}
+      className="group hover:bg-la-cream flex items-center gap-3 rounded-md px-3 py-3 transition-colors"
+    >
+      <span className="bg-la-cream text-la-ink-2 group-hover:bg-la-forest group-hover:text-la-paper flex size-9 items-center justify-center rounded-md transition-colors">
+        <Icon className="size-4" />
+      </span>
+      <span className="text-la-ink flex-1 font-medium">{label}</span>
+      <ArrowRight className="text-la-muted size-4 transition-transform group-hover:translate-x-0.5" />
+    </Link>
+  );
+}
 
 function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
   const { data: membersData, isLoading: membersLoading } =
@@ -51,130 +161,67 @@ function AdminOverview({ orgId, orgName }: { orgId: string; orgName: string }) {
   const pendingInvites = invitesData?.meta?.total_docs || 0;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">{orgName}</h1>
-        <p className="text-muted-foreground mt-1">
-          Workspace administration overview
-        </p>
-      </div>
+    <div>
+      <DashboardHeader
+        eyebrow="Admin"
+        title={orgName}
+        subtitle="Workspace administration overview"
+        action={
+          <Button onClick={() => setInviteDialogOpen(true)}>
+            <Mail className="mr-2 h-4 w-4" />
+            Invite members
+          </Button>
+        }
+      />
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Members</CardTitle>
-            <div className="rounded-lg bg-blue-600/10 p-2">
-              <Users className="h-4 w-4 text-blue-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {membersLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{totalMembers}</div>
-            )}
-            <p className="text-muted-foreground text-xs">
-              Active workspace members
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Courses</CardTitle>
-            <div className="rounded-lg bg-green-600/10 p-2">
-              <BookOpen className="h-4 w-4 text-green-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {coursesLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{totalCourses}</div>
-            )}
-            <p className="text-muted-foreground text-xs">Published courses</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Categories</CardTitle>
-            <div className="rounded-lg bg-purple-600/10 p-2">
-              <FolderOpen className="h-4 w-4 text-purple-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {categoriesLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{totalCategories}</div>
-            )}
-            <p className="text-muted-foreground text-xs">Content categories</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Pending Invites
-            </CardTitle>
-            <div className="rounded-lg bg-amber-600/10 p-2">
-              <Mail className="h-4 w-4 text-amber-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {invitesLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{pendingInvites}</div>
-            )}
-            <p className="text-muted-foreground text-xs">Awaiting response</p>
-          </CardContent>
-        </Card>
-      </div>
+      <StatStrip>
+        <StatCell
+          eyebrow="Members"
+          title="Active workspace members"
+          value={totalMembers}
+          accent="bg-la-ink"
+          loading={membersLoading}
+        />
+        <StatCell
+          eyebrow="Courses"
+          title="Published courses"
+          value={totalCourses}
+          accent="bg-la-forest"
+          loading={coursesLoading}
+        />
+        <StatCell
+          eyebrow="Categories"
+          title="Content categories"
+          value={totalCategories}
+          accent="bg-la-ok"
+          loading={categoriesLoading}
+        />
+        <StatCell
+          eyebrow="Invites"
+          title="Awaiting response"
+          value={pendingInvites}
+          accent="bg-la-amber"
+          loading={invitesLoading}
+        />
+      </StatStrip>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Button
-            variant="gradient"
-            className="w-full justify-between"
-            onClick={() => setInviteDialogOpen(true)}
-          >
-            <span className="flex items-center gap-2">
-              <Mail className="h-4 w-4" />
-              Invite Members
-            </span>
-            <ArrowRight className="h-4 w-4" />
-          </Button>
-          <Button asChild variant="outline" className="w-full justify-between">
-            <Link to={orgRoutes.members(orgId)}>
-              <span className="flex items-center gap-2">
-                <UserPlus className="h-4 w-4" />
-                Manage Members
-              </span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="w-full justify-between">
-            <Link to={orgRoutes.courses(orgId)}>
-              <span className="flex items-center gap-2">
-                <BookOpen className="h-4 w-4" />
-                View Courses
-              </span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="w-full justify-between">
-            <Link to={orgRoutes.categories(orgId)}>
-              <span className="flex items-center gap-2">
-                <FolderOpen className="h-4 w-4" />
-                Manage Categories
-              </span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </CardContent>
-      </Card>
+      <ActionRail>
+        <RailLink
+          to={orgRoutes.members(orgId)}
+          icon={UserPlus}
+          label="Manage members"
+        />
+        <RailLink
+          to={orgRoutes.courses(orgId)}
+          icon={BookOpen}
+          label="View courses"
+        />
+        <RailLink
+          to={orgRoutes.categories(orgId)}
+          icon={FolderOpen}
+          label="Manage categories"
+        />
+      </ActionRail>
 
       <InviteMemberDialog
         open={inviteDialogOpen}
@@ -216,170 +263,69 @@ function InstructorOverview({
       : null;
 
   return (
-    <div className="space-y-6">
-      {/* Welcome Banner */}
-      <Card className="bg-la-forest text-la-paper border-transparent">
-        <CardContent className="pt-6">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-la-paper text-2xl font-bold sm:text-3xl">
-                {orgName}
-              </h1>
-              <p className="text-la-paper/80 mt-1">
-                Instructor dashboard — manage your courses and track learner
-                progress
-              </p>
-            </div>
-            <Button
-              asChild
-              variant="gradient"
-              size="sm"
-              className="shrink-0 self-start"
-            >
-              <Link to={orgRoutes.courseNew(orgId)}>
-                <Plus className="mr-2 h-4 w-4" />
-                New Course
-              </Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+    <div>
+      <DashboardHeader
+        eyebrow="Instructor"
+        title={orgName}
+        subtitle="Manage your courses and track learner progress"
+        action={
+          <Button asChild>
+            <Link to={orgRoutes.courseNew(orgId)}>
+              <Plus className="mr-2 h-4 w-4" />
+              New course
+            </Link>
+          </Button>
+        }
+      />
 
-      {/* Stats Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">My Courses</CardTitle>
-            <div className="rounded-lg bg-blue-600/10 p-2">
-              <BookOpen className="h-4 w-4 text-blue-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {coursesLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{totalCourses}</div>
-            )}
-            <p className="text-muted-foreground text-xs">Courses created</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Total Learners
-            </CardTitle>
-            <div className="rounded-lg bg-green-600/10 p-2">
-              <GraduationCap className="h-4 w-4 text-green-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {statsLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{totalLearners ?? "—"}</div>
-            )}
-            <p className="text-muted-foreground text-xs">Enrolled learners</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Avg Completion
-            </CardTitle>
-            <div className="rounded-lg bg-amber-600/10 p-2">
-              <Award className="h-4 w-4 text-amber-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {statsLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">
-                {avgCompletion != null ? `${Math.round(avgCompletion)}%` : "—"}
-              </div>
-            )}
-            <p className="text-muted-foreground text-xs">Average rate</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Categories</CardTitle>
-            <div className="rounded-lg bg-purple-600/10 p-2">
-              <FolderOpen className="h-4 w-4 text-purple-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {categoriesLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{totalCategories}</div>
-            )}
-            <p className="text-muted-foreground text-xs">Content categories</p>
-          </CardContent>
-        </Card>
-      </div>
+      <StatStrip>
+        <StatCell
+          eyebrow="Courses"
+          title="Courses created"
+          value={totalCourses}
+          accent="bg-la-ink"
+          loading={coursesLoading}
+        />
+        <StatCell
+          eyebrow="Learners"
+          title="Enrolled learners"
+          value={totalLearners ?? "—"}
+          accent="bg-la-forest"
+          loading={statsLoading}
+        />
+        <StatCell
+          eyebrow="Completion"
+          title="Average rate"
+          value={avgCompletion != null ? `${Math.round(avgCompletion)}%` : "—"}
+          accent="bg-la-ok"
+          loading={statsLoading}
+        />
+        <StatCell
+          eyebrow="Categories"
+          title="Content categories"
+          value={totalCategories}
+          accent="bg-la-amber"
+          loading={categoriesLoading}
+        />
+      </StatStrip>
 
-      {/* Quick Actions Grid */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <Button
-              asChild
-              variant="outline"
-              className="h-auto justify-start gap-3 p-4 text-left whitespace-normal"
-            >
-              <Link to={orgRoutes.courses(orgId)}>
-                <div className="rounded-lg bg-blue-600/10 p-2">
-                  <BookOpen className="h-4 w-4 text-blue-600" />
-                </div>
-                <div className="text-left">
-                  <div className="font-medium">My Courses</div>
-                  <div className="text-muted-foreground text-xs">
-                    View and manage your courses
-                  </div>
-                </div>
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="h-auto justify-start gap-3 p-4 text-left whitespace-normal"
-            >
-              <Link to={orgRoutes.courseNew(orgId)}>
-                <div className="rounded-lg bg-green-600/10 p-2">
-                  <Plus className="h-4 w-4 text-green-600" />
-                </div>
-                <div className="text-left">
-                  <div className="font-medium">New course</div>
-                  <div className="text-muted-foreground text-xs">
-                    Start a new course
-                  </div>
-                </div>
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="h-auto justify-start gap-3 p-4 text-left whitespace-normal"
-            >
-              <Link to={orgRoutes.categories(orgId)}>
-                <div className="rounded-lg bg-purple-600/10 p-2">
-                  <FolderOpen className="h-4 w-4 text-purple-600" />
-                </div>
-                <div className="text-left">
-                  <div className="font-medium">Categories</div>
-                  <div className="text-muted-foreground text-xs">
-                    Organize course content
-                  </div>
-                </div>
-              </Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <ActionRail>
+        <RailLink
+          to={orgRoutes.courses(orgId)}
+          icon={BookOpen}
+          label="My courses"
+        />
+        <RailLink
+          to={orgRoutes.courseNew(orgId)}
+          icon={Plus}
+          label="New course"
+        />
+        <RailLink
+          to={orgRoutes.categories(orgId)}
+          icon={FolderOpen}
+          label="Categories"
+        />
+      </ActionRail>
     </div>
   );
 }
@@ -394,107 +340,63 @@ function LearnerOverview({
   const { data, isLoading } = useCourses({ page: 1, pageSize: 1 });
   const enrolled = data?.meta?.total_docs ?? 0;
 
+  const hint = (text: string) => (
+    <span className="text-la-muted text-sm font-medium">{text}</span>
+  );
+
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">{orgName}</h1>
-        <p className="text-muted-foreground mt-1">Your learning dashboard</p>
-      </div>
+    <div>
+      <DashboardHeader
+        eyebrow="Learner"
+        title={orgName}
+        subtitle="Your learning dashboard"
+      />
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
-              Enrolled Courses
-            </CardTitle>
-            <div className="rounded-lg bg-blue-600/10 p-2">
-              <BookOpen className="h-4 w-4 text-blue-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{enrolled}</div>
-            )}
-            <p className="text-muted-foreground text-xs">Active enrollments</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">In Progress</CardTitle>
-            <div className="rounded-lg bg-yellow-600/10 p-2">
-              <GraduationCap className="h-4 w-4 text-yellow-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-muted-foreground text-sm">
-              Open My learning
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completed</CardTitle>
-            <div className="rounded-lg bg-green-600/10 p-2">
-              <Award className="h-4 w-4 text-green-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-muted-foreground text-sm">
-              Open My learning
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Certificates</CardTitle>
-            <div className="rounded-lg bg-purple-600/10 p-2">
-              <Award className="h-4 w-4 text-purple-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-muted-foreground text-sm">
-              Open Certificates
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <StatStrip>
+        <StatCell
+          eyebrow="Enrolled"
+          title="Active enrollments"
+          value={enrolled}
+          accent="bg-la-ink"
+          loading={isLoading}
+        />
+        <StatCell
+          eyebrow="In progress"
+          title="Track your active courses"
+          value={hint("Open my learning")}
+          accent="bg-la-forest"
+        />
+        <StatCell
+          eyebrow="Completed"
+          title="Finished courses"
+          value={hint("Open my learning")}
+          accent="bg-la-ok"
+        />
+        <StatCell
+          eyebrow="Certificates"
+          title="Earned credentials"
+          value={hint("Open certificates")}
+          accent="bg-la-amber"
+        />
+      </StatStrip>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Quick Actions</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Button asChild variant="outline" className="w-full justify-between">
-            <Link to={orgRoutes.courses(orgId)}>
-              <span className="flex items-center gap-2">
-                <BookOpen className="h-4 w-4" />
-                Browse Courses
-              </span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="w-full justify-between">
-            <Link to={orgRoutes.myLearning(orgId)}>
-              <span className="flex items-center gap-2">
-                <GraduationCap className="h-4 w-4" />
-                My Learning
-              </span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="w-full justify-between">
-            <Link to={orgRoutes.certificates(orgId)}>
-              <span className="flex items-center gap-2">
-                <Award className="h-4 w-4" />
-                My Certificates
-              </span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-        </CardContent>
-      </Card>
+      <ActionRail>
+        <RailLink
+          to={orgRoutes.courses(orgId)}
+          icon={BookOpen}
+          label="Browse courses"
+        />
+        <RailLink
+          to={orgRoutes.myLearning(orgId)}
+          icon={GraduationCap}
+          label="My learning"
+        />
+        <RailLink
+          to={orgRoutes.certificates(orgId)}
+          icon={Award}
+          label="My certificates"
+        />
+      </ActionRail>
     </div>
   );
 }
@@ -518,7 +420,7 @@ export default function ClientDashboard() {
   const DashboardComponent = roleComponents[role] || LearnerOverview;
 
   return (
-    <div className="p-4 sm:p-6">
+    <div className="p-6 lg:p-8">
       <DashboardComponent orgId={orgId} orgName={orgName} />
     </div>
   );

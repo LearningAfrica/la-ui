@@ -52,7 +52,7 @@ export function FormTextareaField<
       render={({ field }) => (
         <FormItem className={className}>
           <FormLabel
-            className="text-sm font-medium text-gray-700"
+            className="text-foreground text-sm font-medium"
             data-testid={textareaLabelTestId}
           >
             {label} {required && <span className="text-destructive">*</span>}
@@ -68,7 +68,7 @@ export function FormTextareaField<
             />
           </FormControl>
           {description && (
-            <p className="text-xs text-gray-500">{description}</p>
+            <p className="text-muted-foreground text-xs">{description}</p>
           )}
           <FormMessage data-testid={errorTestId} />
         </FormItem>

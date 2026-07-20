@@ -56,7 +56,7 @@ export function FormDateTimeField<
       name={name}
       render={({ field }) => (
         <FormItem className={className}>
-          <FormLabel className="text-md font-medium text-gray-700">
+          <FormLabel className="text-md text-foreground font-medium">
             {label} {required && <span className="text-destructive">*</span>}
           </FormLabel>
           <FormControl>
@@ -72,7 +72,7 @@ export function FormDateTimeField<
             />
           </FormControl>
           {description && (
-            <p className="text-xs text-gray-500">{description}</p>
+            <p className="text-muted-foreground text-xs">{description}</p>
           )}
           <FormMessage />
         </FormItem>

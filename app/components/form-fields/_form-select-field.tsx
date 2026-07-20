@@ -129,7 +129,7 @@ export function FormSelectField<
             return (
               <FormItem className={className}>
                 <FormLabel
-                  className="text-sm font-medium text-gray-700"
+                  className="text-foreground text-sm font-medium"
                   data-testid={selectLabelTestId}
                 >
                   {label}{" "}
@@ -259,7 +259,9 @@ export function FormSelectField<
                 )}
 
                 {description && (
-                  <p className="mt-2 text-xs text-gray-500">{description}</p>
+                  <p className="text-muted-foreground mt-2 text-xs">
+                    {description}
+                  </p>
                 )}
 
                 <FormMessage data-testid={errorTestId} />
@@ -286,7 +288,7 @@ export function FormSelectField<
         return (
           <FormItem className={className}>
             <FormLabel
-              className="text-sm font-medium text-gray-700"
+              className="text-foreground text-sm font-medium"
               data-testid={selectLabelTestId}
             >
               {label} {required && <span className="text-destructive">*</span>}
@@ -320,7 +322,7 @@ export function FormSelectField<
               </SelectContent>
             </Select>
             {description && (
-              <p className="text-xs text-gray-500">{description}</p>
+              <p className="text-muted-foreground text-xs">{description}</p>
             )}
             <FormMessage data-testid={errorTestId} />
           </FormItem>

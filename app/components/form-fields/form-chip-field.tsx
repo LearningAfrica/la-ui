@@ -216,7 +216,7 @@ export function FormChipField<
         return (
           <FormItem className={className}>
             <FormLabel
-              className="text-sm font-medium text-gray-700"
+              className="text-foreground text-sm font-medium"
               data-testid={chipLabelTestId}
             >
               {label} {required && <span className="text-destructive">*</span>}
@@ -281,7 +281,7 @@ export function FormChipField<
             )}
 
             {description && (
-              <p className="text-xs text-gray-500">{description}</p>
+              <p className="text-muted-foreground text-xs">{description}</p>
             )}
 
             {fieldState.error && (
@@ -291,7 +291,7 @@ export function FormChipField<
             )}
 
             {maxChips && (
-              <p className="text-xs text-gray-500">
+              <p className="text-muted-foreground text-xs">
                 {chips.length}/{maxChips} items
               </p>
             )}

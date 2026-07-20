@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -24,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import type { InquiryInterface } from "@/features/inquiries/inquiry-queries";
 import { getCategoryLabel, getSizeLabel } from "@/lib/constants/company";
 import Search from "~icons/lucide/search";
@@ -41,18 +41,31 @@ interface AdminInquiriesTableProps {
   isRejecting?: boolean;
 }
 
-const getStatusColor = (status: string) => {
+const getStatusPillClass = (status: string) => {
   switch (status?.toLowerCase()) {
     case "pending":
-      return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";
+      return "bg-la-amber/15 text-la-amber";
     case "approved":
-      return "bg-green-500/10 text-green-500 border-green-500/20";
+      return "bg-la-ok/15 text-la-ok";
     case "rejected":
-      return "bg-red-500/10 text-red-500 border-red-500/20";
+      return "bg-la-bad/10 text-la-bad";
     default:
-      return "bg-gray-500/10 text-gray-500 border-gray-500/20";
+      return "bg-la-cream text-la-ink-2";
   }
 };
+
+function StatusPill({ status }: { status: string }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex rounded-full px-2 py-0.5 text-xs font-medium capitalize",
+        getStatusPillClass(status)
+      )}
+    >
+      {status}
+    </span>
+  );
+}
 
 // Create column helper once outside the component
 const columnHelper = createColumnHelper<InquiryInterface>();
@@ -78,22 +91,32 @@ export function AdminInquiriesTable({
       columnHelper.accessor("company_name", {
         header: "Organization",
         cell: ({ row }) => (
-          <div>
-            <p className="font-medium">{row.original.company_name}</p>
-            <p className="text-muted-foreground text-xs">
-              {getCategoryLabel(row.original.company_category)}
-            </p>
+          <div className="flex items-center gap-3">
+            <div
+              className="bg-la-forest-wash text-la-forest font-display flex size-9 shrink-0 items-center justify-center rounded-md text-sm font-bold uppercase"
+              aria-hidden
+            >
+              {row.original.company_name?.charAt(0) || "?"}
+            </div>
+            <div className="min-w-0">
+              <p className="text-la-ink truncate font-medium">
+                {row.original.company_name}
+              </p>
+              <p className="text-la-muted truncate text-xs">
+                {getCategoryLabel(row.original.company_category)}
+              </p>
+            </div>
           </div>
         ),
       }),
       columnHelper.accessor("user", {
-        header: "Contact Person",
+        header: "Requester",
         cell: ({ row }) => (
-          <div>
-            <p className="text-sm">
+          <div className="min-w-0">
+            <p className="text-la-ink-2 truncate text-sm font-medium">
               {row.original.user.first_name} {row.original.user.last_name}
             </p>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-la-muted truncate text-xs">
               {row.original.user.email}
             </p>
           </div>
@@ -102,23 +125,19 @@ export function AdminInquiriesTable({
       columnHelper.accessor("company_size", {
         header: "Size",
         cell: ({ row }) => (
-          <span className="text-sm">
+          <span className="text-la-ink-2 text-sm">
             {getSizeLabel(row.original.company_size)}
           </span>
         ),
       }),
       columnHelper.accessor("status", {
         header: "Status",
-        cell: ({ row }) => (
-          <Badge className={getStatusColor(row.original.status)}>
-            {row.original.status}
-          </Badge>
-        ),
+        cell: ({ row }) => <StatusPill status={row.original.status} />,
       }),
       columnHelper.accessor("created_at", {
         header: "Submitted",
         cell: ({ row }) => (
-          <span className="text-sm">
+          <span className="text-la-ink-2 text-sm">
             {new Date(row.original.created_at).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
@@ -131,13 +150,15 @@ export function AdminInquiriesTable({
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-1.5">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onViewDetails(row.original)}
+              className="text-la-ink-2"
             >
-              <Eye className="h-4 w-4" />
+              <Eye className="mr-1 h-4 w-4" />
+              View
             </Button>
             {row.original.status.toLowerCase() === "pending" && (
               <>
@@ -146,18 +167,20 @@ export function AdminInquiriesTable({
                   size="sm"
                   onClick={() => onApprove(row.original)}
                   disabled={isApproving || isRejecting}
-                  className="text-green-600 hover:bg-green-50 hover:text-green-700"
+                  className="text-la-ok hover:bg-la-ok/10 hover:text-la-ok"
                 >
-                  <CheckCircle className="h-4 w-4" />
+                  <CheckCircle className="mr-1 h-4 w-4" />
+                  Approve
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => onReject(row.original)}
                   disabled={isApproving || isRejecting}
-                  className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                  className="text-la-bad hover:bg-la-bad/10 hover:text-la-bad"
                 >
-                  <XCircle className="h-4 w-4" />
+                  <XCircle className="mr-1 h-4 w-4" />
+                  Reject
                 </Button>
               </>
             )}
@@ -196,7 +219,7 @@ export function AdminInquiriesTable({
   return (
     <div className="space-y-4">
       {/* Search and Filters */}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <div className="relative max-w-sm flex-1">
           <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform" />
           <Input
@@ -231,13 +254,19 @@ export function AdminInquiriesTable({
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border">
+      <div className="border-la-rule-strong overflow-hidden rounded-lg border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow
+                key={headerGroup.id}
+                className="border-la-rule bg-la-cream hover:bg-la-cream"
+              >
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead
+                    key={header.id}
+                    className="text-la-muted text-[0.7rem] font-semibold tracking-[0.1em] uppercase"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -252,7 +281,7 @@ export function AdminInquiriesTable({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow key={row.id} className="border-la-rule">
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(
@@ -267,9 +296,14 @@ export function AdminInquiriesTable({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-40 text-center"
                 >
-                  No inquiries found.
+                  <p className="font-display text-la-ink text-lg font-semibold">
+                    No inquiries to review
+                  </p>
+                  <p className="text-la-muted mt-1 text-sm">
+                    New onboarding requests will appear here.
+                  </p>
                 </TableCell>
               </TableRow>
             )}

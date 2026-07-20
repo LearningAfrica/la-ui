@@ -54,7 +54,7 @@ export function FormNumberField<
       render={({ field }) => (
         <FormItem className={className}>
           <FormLabel
-            className="text-md font-medium text-gray-700"
+            className="text-md text-foreground font-medium"
             data-testid={inputLabelTestId}
           >
             {label} {required && <span className="text-destructive">*</span>}
@@ -78,7 +78,7 @@ export function FormNumberField<
             </div>
           </FormControl>
           {description && (
-            <p className="text-xs text-gray-500">{description}</p>
+            <p className="text-muted-foreground text-xs">{description}</p>
           )}
           <FormMessage data-testid={errorTestId} />
         </FormItem>

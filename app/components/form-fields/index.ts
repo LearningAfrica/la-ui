@@ -4,6 +4,8 @@ export { FormSelectField, type SelectOption } from "./_form-select-field";
 
 export { FormAsyncSelectField } from "./form-select-field";
 
+export { FormComboboxField, type ComboboxItem } from "./form-combobox-field";
+
 export { FormTextareaField } from "./form-textarea-field";
 
 export { FormChipField } from "./form-chip-field";

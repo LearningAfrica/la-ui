@@ -1,15 +1,12 @@
 import { useMemo } from "react";
 import { Link } from "react-router";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 import Building2 from "~icons/lucide/building-2";
 import FileText from "~icons/lucide/file-text";
 import Users from "~icons/lucide/users";
-import Clock from "~icons/lucide/clock";
 import ArrowRight from "~icons/lucide/arrow-right";
-import CheckCircle from "~icons/lucide/check-circle";
-import XCircle from "~icons/lucide/x-circle";
 import { useAllInquiries } from "@/features/inquiries/inquiry-queries";
 
 export default function SystemDashboard() {
@@ -30,201 +27,249 @@ export default function SystemDashboard() {
     };
   }, [inquiriesData]);
 
-  const recentInquiries = useMemo(
-    () => (inquiriesData?.data || []).slice(0, 5),
+  const pending = useMemo(
+    () =>
+      (inquiriesData?.data || []).filter(
+        (i) => i.status.toLowerCase() === "pending"
+      ),
     [inquiriesData]
   );
 
+  const recentInquiries = useMemo(
+    () => (inquiriesData?.data || []).slice(0, 6),
+    [inquiriesData]
+  );
+
+  // Semantic accents pull from the brand token set, not raw palette colors,
+  // so the whole surface stays on-brand with the orange identity.
   const statCards = [
     {
-      title: "Total Inquiries",
+      key: "total",
+      eyebrow: "Onboarding",
+      title: "Requests",
       value: stats.total,
-      description: "All onboarding requests",
-      icon: FileText,
-      color: "text-blue-600",
-      bgColor: "bg-blue-600/10",
+      accent: "bg-la-ink",
     },
     {
-      title: "Pending Review",
+      key: "pending",
+      eyebrow: "Awaiting you",
+      title: "Pending",
       value: stats.pending,
-      description: "Awaiting your action",
-      icon: Clock,
-      color: "text-yellow-600",
-      bgColor: "bg-yellow-600/10",
+      accent: "bg-la-forest",
+      highlight: stats.pending > 0,
     },
     {
+      key: "approved",
+      eyebrow: "Live",
       title: "Approved",
       value: stats.approved,
-      description: "Active organizations",
-      icon: CheckCircle,
-      color: "text-green-600",
-      bgColor: "bg-green-600/10",
+      accent: "bg-la-ok",
     },
     {
+      key: "rejected",
+      eyebrow: "Declined",
       title: "Rejected",
       value: stats.rejected,
-      description: "Declined requests",
-      icon: XCircle,
-      color: "text-red-600",
-      bgColor: "bg-red-600/10",
+      accent: "bg-la-bad",
     },
   ];
 
   return (
-    <div className="space-y-6 p-6">
-      <div>
-        <h1 className="text-3xl font-bold">System Overview</h1>
-        <p className="text-muted-foreground mt-1">
-          Platform administration and governance
+    <div className="p-6 lg:p-8">
+      {/* Header — eyebrow + display heading, echoing the landing identity */}
+      <header className="mb-8">
+        <p className="text-la-forest mb-2 text-xs font-semibold tracking-[0.2em] uppercase">
+          Platform governance
         </p>
-      </div>
+        <h1 className="font-display text-la-ink text-4xl font-bold tracking-tight lg:text-5xl">
+          System overview
+        </h1>
+        <p className="text-la-muted mt-2 max-w-prose">
+          Approve onboarding requests, manage people, and oversee every
+          organization on the platform.
+        </p>
+      </header>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Stat strip */}
+      <div className="border-la-rule-strong bg-la-rule-strong mb-8 grid gap-px overflow-hidden rounded-lg border sm:grid-cols-2 lg:grid-cols-4">
         {isLoading
           ? [...Array(4)].map((_, i) => (
-              <Card key={i}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <Skeleton className="h-4 w-20" />
-                  <Skeleton className="h-4 w-4 rounded" />
-                </CardHeader>
-                <CardContent>
-                  <Skeleton className="mb-1 h-8 w-16" />
-                  <Skeleton className="h-3 w-24" />
-                </CardContent>
-              </Card>
+              <div key={i} className="bg-la-paper p-5">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="mt-4 h-10 w-14" />
+                <Skeleton className="mt-2 h-3 w-20" />
+              </div>
             ))
-          : statCards.map((stat) => {
-              const Icon = stat.icon;
-
-              return (
-                <Card key={stat.title}>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      {stat.title}
-                    </CardTitle>
-                    <div className={`rounded-lg p-2 ${stat.bgColor}`}>
-                      <Icon className={`h-4 w-4 ${stat.color}`} />
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{stat.value}</div>
-                    <p className="text-muted-foreground text-xs">
-                      {stat.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              );
-            })}
+          : statCards.map((stat) => (
+              <div
+                key={stat.key}
+                className={cn(
+                  "bg-la-paper relative p-5",
+                  stat.highlight && "bg-la-forest-wash"
+                )}
+              >
+                <span
+                  className={cn("absolute inset-x-0 top-0 h-1", stat.accent)}
+                  aria-hidden
+                />
+                <p className="text-la-muted text-[0.7rem] font-semibold tracking-[0.15em] uppercase">
+                  {stat.eyebrow}
+                </p>
+                <p className="font-display text-la-ink mt-3 text-4xl font-bold tabular-nums">
+                  {stat.value}
+                </p>
+                <p className="text-la-ink-2 mt-1 text-sm font-medium">
+                  {stat.title}
+                </p>
+              </div>
+            ))}
       </div>
 
-      {/* Quick Actions + Recent Inquiries */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Button
-              asChild
-              variant="outline"
-              className="w-full justify-between"
-            >
-              <Link to="/system/inquiries">
-                <span className="flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
-                  Review Inquiries
-                  {stats.pending > 0 && (
-                    <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300">
-                      {stats.pending}
-                    </span>
-                  )}
-                </span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="w-full justify-between"
-            >
-              <Link to="/system/users">
-                <span className="flex items-center gap-2">
-                  <Users className="h-4 w-4" />
-                  Manage Users
-                </span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="w-full justify-between"
-            >
-              <Link to="/system/organizations">
-                <span className="flex items-center gap-2">
-                  <Building2 className="h-4 w-4" />
-                  View Organizations
-                </span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Recent Inquiries */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="text-lg">Recent Inquiries</CardTitle>
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/system/inquiries">View all</Link>
-            </Button>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <div className="space-y-3">
-                {[...Array(3)].map((_, i) => (
-                  <Skeleton key={i} className="h-12 w-full" />
-                ))}
-              </div>
-            ) : recentInquiries.length === 0 ? (
-              <p className="text-muted-foreground py-4 text-center text-sm">
-                No inquiries yet
+      <div className="grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+        {/* Pending approvals — the admin's primary job */}
+        <section className="border-la-rule-strong bg-la-paper rounded-lg border">
+          <div className="border-la-rule flex items-center justify-between border-b px-5 py-4">
+            <div>
+              <h2 className="font-display text-la-ink text-lg font-bold">
+                Pending approvals
+              </h2>
+              <p className="text-la-muted text-sm">
+                Organizations waiting to be onboarded
               </p>
-            ) : (
-              <div className="space-y-3">
-                {recentInquiries.map((inquiry) => (
-                  <div
-                    key={inquiry.id}
-                    className="flex items-center justify-between rounded-lg border p-3"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">
-                        {inquiry.company_name}
-                      </p>
-                      <p className="text-muted-foreground truncate text-xs">
-                        {inquiry.user.email}
-                      </p>
-                    </div>
-                    <span
-                      className={`ml-2 rounded-full px-2 py-0.5 text-xs font-medium ${
-                        inquiry.status.toLowerCase() === "pending"
-                          ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300"
-                          : inquiry.status.toLowerCase() === "approved"
-                            ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
-                            : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
-                      }`}
-                    >
-                      {inquiry.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
+            </div>
+            {stats.pending > 0 && (
+              <span className="bg-la-forest text-la-paper inline-flex h-7 min-w-7 items-center justify-center rounded-full px-2 text-sm font-semibold tabular-nums">
+                {stats.pending}
+              </span>
             )}
-          </CardContent>
-        </Card>
+          </div>
+
+          {isLoading ? (
+            <div className="space-y-3 p-5">
+              {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className="h-14 w-full" />
+              ))}
+            </div>
+          ) : pending.length === 0 ? (
+            <div className="px-5 py-14 text-center">
+              <p className="font-display text-la-ink text-lg font-semibold">
+                You&apos;re all caught up
+              </p>
+              <p className="text-la-muted mt-1 text-sm">
+                New onboarding requests will appear here for review.
+              </p>
+            </div>
+          ) : (
+            <ul className="divide-la-rule divide-y">
+              {pending.map((inquiry) => (
+                <li
+                  key={inquiry.id}
+                  className="flex items-center gap-4 px-5 py-4"
+                >
+                  <div
+                    className="bg-la-forest-wash text-la-forest font-display flex size-10 shrink-0 items-center justify-center rounded-md text-sm font-bold uppercase"
+                    aria-hidden
+                  >
+                    {inquiry.company_name?.charAt(0) || "?"}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-la-ink truncate font-medium">
+                      {inquiry.company_name}
+                    </p>
+                    <p className="text-la-muted truncate text-sm">
+                      {inquiry.user.email}
+                    </p>
+                  </div>
+                  <Button asChild size="sm" className="shrink-0">
+                    <Link to="/system/inquiries">Review</Link>
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        {/* Quick actions rail */}
+        <aside className="border-la-rule-strong bg-la-paper rounded-lg border">
+          <div className="border-la-rule border-b px-5 py-4">
+            <h2 className="font-display text-la-ink text-lg font-bold">
+              Manage
+            </h2>
+          </div>
+          <nav className="p-2">
+            {[
+              {
+                to: "/system/inquiries",
+                icon: FileText,
+                label: "Review inquiries",
+                badge: stats.pending || undefined,
+              },
+              { to: "/system/users", icon: Users, label: "Platform users" },
+              {
+                to: "/system/organizations",
+                icon: Building2,
+                label: "Organizations",
+              },
+            ].map(({ to, icon: Icon, label, badge }) => (
+              <Link
+                key={to}
+                to={to}
+                className="group hover:bg-la-cream flex items-center gap-3 rounded-md px-3 py-3 transition-colors"
+              >
+                <span className="bg-la-cream text-la-ink-2 group-hover:bg-la-forest group-hover:text-la-paper flex size-9 items-center justify-center rounded-md transition-colors">
+                  <Icon className="size-4" />
+                </span>
+                <span className="text-la-ink flex-1 font-medium">{label}</span>
+                {badge ? (
+                  <span className="bg-la-forest text-la-paper rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums">
+                    {badge}
+                  </span>
+                ) : null}
+                <ArrowRight className="text-la-muted size-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            ))}
+          </nav>
+
+          {/* Recent activity — quiet, secondary */}
+          {!isLoading && recentInquiries.length > 0 && (
+            <div className="border-la-rule border-t px-5 py-4">
+              <p className="text-la-muted mb-3 text-xs font-semibold tracking-[0.15em] uppercase">
+                Recent activity
+              </p>
+              <ul className="space-y-2.5">
+                {recentInquiries.slice(0, 4).map((inquiry) => (
+                  <li
+                    key={inquiry.id}
+                    className="flex items-center justify-between gap-2"
+                  >
+                    <span className="text-la-ink-2 truncate text-sm">
+                      {inquiry.company_name}
+                    </span>
+                    <StatusPill status={inquiry.status} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </aside>
       </div>
     </div>
+  );
+}
+
+function StatusPill({ status }: { status: string }) {
+  const s = status.toLowerCase();
+
+  return (
+    <span
+      className={cn(
+        "shrink-0 rounded-full px-2 py-0.5 text-xs font-medium capitalize",
+        s === "pending" && "bg-la-amber/15 text-la-amber",
+        s === "approved" && "bg-la-ok/15 text-la-ok",
+        s === "rejected" && "bg-la-bad/10 text-la-bad"
+      )}
+    >
+      {status}
+    </span>
   );
 }

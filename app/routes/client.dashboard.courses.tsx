@@ -1,8 +1,5 @@
 import { useMemo, useState } from "react";
-import type { SVGProps } from "react";
 import { Link, useParams } from "react-router";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,9 +10,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import BookOpen from "~icons/lucide/book-open";
-import Crown from "~icons/lucide/crown";
-import Layers from "~icons/lucide/layers";
 import GraduationCap from "~icons/lucide/graduation-cap";
 import ChevronLeft from "~icons/lucide/chevron-left";
 import ChevronRight from "~icons/lucide/chevron-right";
@@ -43,162 +37,122 @@ import { createMediaUrl } from "@/lib/api";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import { ViewCourseDialog } from "@/components/dashboard/view-course-dialog";
 import { DeleteCourseDialog } from "@/components/dashboard/delete-course-dialog";
-
-type StatTone = "blue" | "amber" | "violet" | "emerald";
-
-const TONE_CLASSES: Record<StatTone, string> = {
-  blue: "bg-[var(--color-la-forest)]/10 text-[var(--color-la-forest)]",
-  amber: "bg-[var(--color-la-amber)]/10 text-[var(--color-la-amber)]",
-  violet:
-    "bg-[var(--color-la-forest-soft)]/10 text-[var(--color-la-forest-soft)]",
-  emerald: "bg-[var(--color-la-ok)]/10 text-[var(--color-la-ok)]",
-};
-
-function StatCard({
-  label,
-  value,
-  icon: Icon,
-  tone,
-  isLoading,
-  hint,
-}: {
-  label: string;
-  value: number;
-  icon: React.ComponentType<SVGProps<SVGSVGElement>>;
-  tone: StatTone;
-  isLoading?: boolean;
-  hint?: string;
-}) {
-  return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-muted-foreground text-sm font-medium">
-          {label}
-        </CardTitle>
-        <div className={cn("rounded-lg p-2", TONE_CLASSES[tone])}>
-          <Icon className="h-4 w-4" />
-        </div>
-      </CardHeader>
-      <CardContent>
-        {isLoading ? (
-          <Skeleton className="h-8 w-16" />
-        ) : (
-          <>
-            <div className="text-2xl font-bold tabular-nums">{value}</div>
-            {hint && (
-              <p className="text-muted-foreground mt-1 text-xs">{hint}</p>
-            )}
-          </>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
+import { CourseForm } from "@/components/dashboard/course-form";
 
 function CourseCard({
   course,
   orgId,
   canManage,
+  onEdit,
 }: {
   course: Course;
   orgId: string;
   canManage: boolean;
+  onEdit: (course: Course) => void;
 }) {
   const deleteModal = useAppModal("delete-course");
   const moduleCount = course.modules?.length ?? 0;
   const lessonCount =
     course.modules?.reduce((acc, m) => acc + (m.contents?.length ?? 0), 0) ?? 0;
+  const primaryTo = canManage
+    ? orgRoutes.courseModules(orgId, course.id)
+    : orgRoutes.coursePreview(orgId, course.id);
 
   return (
-    <Card className="flex flex-col overflow-hidden">
+    <div className="group border-la-rule-strong bg-la-paper flex flex-col overflow-hidden rounded-lg border transition-all hover:-translate-y-0.5 hover:shadow-md">
       {/* Thumbnail */}
-      <OptimisticImage
-        src={
-          course.course_image ? createMediaUrl(course.course_image) : undefined
-        }
-        alt={course.title}
-        wrapperClassName="aspect-[16/9] w-full"
-        iconSize="size-10"
-      />
+      <Link
+        prefetch="intent"
+        to={orgRoutes.coursePreview(orgId, course.id)}
+        className="block"
+      >
+        <OptimisticImage
+          src={
+            course.course_image
+              ? createMediaUrl(course.course_image)
+              : undefined
+          }
+          alt={course.title}
+          wrapperClassName="aspect-[16/9] w-full"
+          iconSize="size-10"
+        />
+      </Link>
 
       {/* Content */}
-      <CardContent className="flex flex-1 flex-col gap-2 p-4">
+      <div className="flex flex-1 flex-col gap-2 p-4">
         {course.category && (
-          <Badge variant="outline" className="w-fit text-xs">
+          <span className="border-la-rule bg-la-cream text-la-ink-2 w-fit rounded-full border px-2.5 py-0.5 text-xs font-medium">
             {course.category.category_name}
-          </Badge>
+          </span>
         )}
-        <h3 className="line-clamp-2 font-semibold">{course.title}</h3>
-        <p className="text-muted-foreground text-sm">
+        <h3 className="font-display text-la-ink line-clamp-2 font-bold">
+          {course.title}
+        </h3>
+        <p className="text-la-muted text-sm tabular-nums">
           {moduleCount} {moduleCount === 1 ? "module" : "modules"} &middot;{" "}
           {lessonCount} {lessonCount === 1 ? "lesson" : "lessons"}
         </p>
-      </CardContent>
+      </div>
 
       {/* Footer */}
-      <div className="border-t px-4 py-3">
-        <div className="flex items-center justify-between">
-          <Badge variant={course.is_premium ? "default" : "secondary"}>
-            {course.is_premium ? `$${course.price} Premium` : "Free"}
-          </Badge>
-          <div className="flex items-center gap-1">
-            {canManage ? (
-              <>
-                <Button asChild size="sm" variant="outline" className="h-8">
-                  <Link
-                    prefetch="intent"
-                    to={orgRoutes.courseModules(orgId, course.id)}
-                  >
-                    Manage
-                    <ArrowRight className="ml-1 h-3.5 w-3.5" />
-                  </Link>
+      <div className="border-la-rule flex items-center justify-between border-t px-4 py-3">
+        <span
+          className={cn(
+            "font-display rounded-full px-2.5 py-0.5 text-xs font-semibold",
+            course.is_premium
+              ? "bg-la-forest-wash text-la-forest"
+              : "bg-la-cream text-la-ink-2"
+          )}
+        >
+          {course.is_premium ? `$${course.price} premium` : "Free"}
+        </span>
+        <div className="flex items-center gap-1">
+          <Button asChild size="sm" variant="outline" className="h-8">
+            <Link prefetch="intent" to={primaryTo}>
+              {canManage ? "Manage" : "View course"}
+              <ArrowRight className="ml-1 h-3.5 w-3.5" />
+            </Link>
+          </Button>
+          {canManage && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <MoreHorizontal className="h-4 w-4" />
+                  <span className="sr-only">Actions</span>
                 </Button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <MoreHorizontal className="h-4 w-4" />
-                      <span className="sr-only">Actions</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild>
-                      <Link to={orgRoutes.coursePreview(orgId, course.id)}>
-                        <Eye className="mr-2 h-4 w-4" />
-                        Preview Course
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to={orgRoutes.courseEdit(orgId, course.id)}>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                      className="text-destructive"
-                      onClick={() => deleteModal.open(course)}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </>
-            ) : (
-              <Button asChild size="sm" variant="outline" className="h-8">
-                <Link
-                  prefetch="intent"
-                  to={orgRoutes.coursePreview(orgId, course.id)}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <Link to={orgRoutes.coursePreview(orgId, course.id)}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    Preview course
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onEdit(course)}>
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-destructive"
+                  onClick={() => deleteModal.open(course)}
                 >
-                  View course
-                  <ArrowRight className="ml-1 h-3.5 w-3.5" />
-                </Link>
-              </Button>
-            )}
-          </div>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </div>
-    </Card>
+    </div>
   );
 }
 
@@ -220,6 +174,15 @@ export default function ClientDashboardCourses() {
 
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  // Course create/edit lives in a right-side Sheet (no full-page nav / overlay modal).
+  const [courseSheet, setCourseSheet] = useState<{
+    open: boolean;
+    course: Course | null;
+  }>({ open: false, course: null });
+  const openCreateCourse = () => setCourseSheet({ open: true, course: null });
+  const openEditCourse = (course: Course) =>
+    setCourseSheet({ open: true, course });
+  const closeCourseSheet = () => setCourseSheet({ open: false, course: null });
 
   const courses = useMemo(() => coursesData?.data ?? [], [coursesData?.data]);
 
@@ -266,67 +229,98 @@ export default function ClientDashboardCourses() {
     };
   }, [courses, coursesData]);
 
+  const statCards = [
+    {
+      key: "total",
+      eyebrow: "Catalog",
+      value: stats.total,
+      title: "Total courses",
+      accent: "bg-la-ink",
+    },
+    {
+      key: "premium",
+      eyebrow: "Premium",
+      value: stats.premium,
+      title: `of ${courses.length} on this page`,
+      accent: "bg-la-forest",
+    },
+    {
+      key: "modules",
+      eyebrow: "Modules",
+      value: stats.modules,
+      title: "Across loaded courses",
+      accent: "bg-la-forest-soft",
+    },
+    {
+      key: "lessons",
+      eyebrow: "Lessons",
+      value: stats.lessons,
+      title: "Across loaded courses",
+      accent: "bg-la-ok",
+    },
+  ];
+
   const totalPages = coursesData?.meta?.total_pages || 1;
   const hasNext = coursesData?.meta?.has_next_page || false;
   const hasPrev = coursesData?.meta?.has_prev_page || false;
 
   return (
-    <div className="space-y-6 p-6">
-      <div>
-        <h1 className="text-3xl font-bold">Courses</h1>
-        <p className="text-muted-foreground mt-1">
-          {canCreate
-            ? "Create and manage courses in your workspace"
-            : "Browse and oversee courses in your workspace"}
+    <div className="p-6 lg:p-8">
+      {/* Header */}
+      <header className="mb-8">
+        <p className="text-la-forest mb-2 text-xs font-semibold tracking-[0.2em] uppercase">
+          Learning workspace
         </p>
-      </div>
+        <h1 className="font-display text-la-ink text-4xl font-bold tracking-tight lg:text-5xl">
+          Courses
+        </h1>
+        <p className="text-la-muted mt-2 max-w-prose">
+          {canCreate
+            ? "Create and manage courses in your workspace."
+            : "Browse and oversee courses in your workspace."}
+        </p>
+      </header>
 
-      {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          label="Total Courses"
-          value={stats.total}
-          icon={GraduationCap}
-          tone="blue"
-          isLoading={isLoading}
-        />
-        <StatCard
-          label="Premium"
-          value={stats.premium}
-          icon={Crown}
-          tone="amber"
-          isLoading={isLoading}
-          hint={`of ${courses.length} on this page`}
-        />
-        <StatCard
-          label="Modules"
-          value={stats.modules}
-          icon={Layers}
-          tone="violet"
-          isLoading={isLoading}
-          hint="across loaded courses"
-        />
-        <StatCard
-          label="Lessons"
-          value={stats.lessons}
-          icon={BookOpen}
-          tone="emerald"
-          isLoading={isLoading}
-          hint="across loaded courses"
-        />
+      {/* Stat strip */}
+      <div className="border-la-rule-strong bg-la-rule-strong mb-8 grid gap-px overflow-hidden rounded-lg border sm:grid-cols-2 lg:grid-cols-4">
+        {isLoading
+          ? [...Array(4)].map((_, i) => (
+              <div key={i} className="bg-la-paper p-5">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="mt-4 h-10 w-14" />
+                <Skeleton className="mt-2 h-3 w-20" />
+              </div>
+            ))
+          : statCards.map((stat) => (
+              <div key={stat.key} className="bg-la-paper relative p-5">
+                <span
+                  className={cn("absolute inset-x-0 top-0 h-1", stat.accent)}
+                  aria-hidden
+                />
+                <p className="text-la-muted text-[0.7rem] font-semibold tracking-[0.15em] uppercase">
+                  {stat.eyebrow}
+                </p>
+                <p className="font-display text-la-ink mt-3 text-4xl font-bold tabular-nums">
+                  {stat.value}
+                </p>
+                <p className="text-la-ink-2 mt-1 text-sm font-medium">
+                  {stat.title}
+                </p>
+              </div>
+            ))}
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <div className="relative">
-            <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2" />
+            <Search className="text-la-muted pointer-events-none absolute top-1/2 left-2.5 size-3.5 -translate-y-1/2" />
             <input
               type="search"
               placeholder="Search courses..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="border-input bg-background placeholder:text-muted-foreground focus:ring-ring h-9 w-52 rounded-lg border px-8 text-sm outline-none focus:ring-1"
+              className="border-la-rule-strong bg-la-paper text-la-ink placeholder:text-la-muted focus:ring-la-forest h-9 w-52 rounded-lg border px-8 text-sm outline-none focus:ring-1"
             />
           </div>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
@@ -334,7 +328,7 @@ export default function ClientDashboardCourses() {
               <SelectValue placeholder="Filter by type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="all">All types</SelectItem>
               <SelectItem value="premium">Premium</SelectItem>
               <SelectItem value="free">Free</SelectItem>
             </SelectContent>
@@ -342,11 +336,9 @@ export default function ClientDashboardCourses() {
         </div>
         <div className="flex items-center gap-2">
           {canCreate && (
-            <Button asChild size="sm">
-              <Link to={orgRoutes.courseNew(orgId)}>
-                <Plus className="mr-1 h-4 w-4" />
-                Create Course
-              </Link>
+            <Button size="sm" onClick={openCreateCourse}>
+              <Plus className="mr-1 h-4 w-4" />
+              Create course
             </Button>
           )}
           <Button
@@ -363,39 +355,42 @@ export default function ClientDashboardCourses() {
         </div>
       </div>
 
-      {/* Course Grid */}
+      {/* Course grid */}
       {isLoading ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Card key={i} className="overflow-hidden">
+            <div
+              key={i}
+              className="border-la-rule-strong bg-la-paper overflow-hidden rounded-lg border"
+            >
               <Skeleton className="aspect-[16/9] w-full" />
-              <CardContent className="space-y-3 p-4">
+              <div className="space-y-3 p-4">
                 <Skeleton className="h-4 w-20" />
                 <Skeleton className="h-5 w-3/4" />
                 <Skeleton className="h-4 w-1/2" />
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       ) : filteredCourses.length === 0 ? (
-        <div className="border-border/60 flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed py-16 text-center">
-          <div className="bg-primary/10 text-primary rounded-full p-3">
+        <div className="border-la-rule-strong bg-la-paper flex flex-col items-center justify-center gap-3 rounded-lg border py-16 text-center">
+          <div className="bg-la-forest-wash text-la-forest rounded-full p-3">
             <GraduationCap className="h-6 w-6" />
           </div>
           <div className="space-y-1">
-            <h3 className="font-semibold">No courses yet</h3>
-            <p className="text-muted-foreground max-w-sm text-sm">
+            <h3 className="font-display text-la-ink text-lg font-semibold">
+              No courses yet
+            </h3>
+            <p className="text-la-muted max-w-sm text-sm">
               {canCreate
                 ? "Create your first course to start adding modules and lessons for your learners."
                 : "Courses created in this organization will appear here."}
             </p>
           </div>
           {canCreate && (
-            <Button asChild className="mt-2">
-              <Link to={orgRoutes.courseNew(orgId)}>
-                <Plus className="mr-1 h-4 w-4" />
-                Create your first course
-              </Link>
+            <Button className="mt-2" onClick={openCreateCourse}>
+              <Plus className="mr-1 h-4 w-4" />
+              Create your first course
             </Button>
           )}
         </div>
@@ -408,13 +403,14 @@ export default function ClientDashboardCourses() {
                 course={course}
                 orgId={orgId}
                 canManage={canCreate}
+                onEdit={openEditCourse}
               />
             ))}
           </div>
 
           {/* Pagination */}
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div className="text-muted-foreground text-sm">
+          <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-la-muted text-sm">
               Page {page} of {totalPages} &bull; {coursesData?.meta?.total_docs}{" "}
               total courses
             </div>
@@ -456,6 +452,41 @@ export default function ClientDashboardCourses() {
           </div>
         </>
       )}
+
+      {/* Create / edit course — right-side Sheet with grouped sections */}
+      <Sheet
+        open={courseSheet.open}
+        onOpenChange={(v) => !v && closeCourseSheet()}
+      >
+        <SheetContent
+          dismissible={false}
+          className="w-full overflow-y-auto sm:max-w-xl"
+        >
+          <SheetHeader>
+            <SheetTitle className="font-display">
+              {courseSheet.course ? "Edit course" : "Create course"}
+            </SheetTitle>
+            <SheetDescription>
+              {courseSheet.course
+                ? "Update the course details."
+                : "Set up a new course in your workspace."}
+            </SheetDescription>
+          </SheetHeader>
+          <div className="px-4 pb-6">
+            {courseSheet.open && (
+              <CourseForm
+                key={courseSheet.course?.id ?? "new"}
+                course={courseSheet.course ?? undefined}
+                onSuccess={() => {
+                  closeCourseSheet();
+                  refetch();
+                }}
+                onCancel={closeCourseSheet}
+              />
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {/* Dialogs */}
       <ViewCourseDialog />

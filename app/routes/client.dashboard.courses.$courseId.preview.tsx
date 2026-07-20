@@ -1,7 +1,5 @@
 import { useMemo, useState } from "react";
 import { useParams, Link } from "react-router";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import ArrowLeft from "~icons/lucide/arrow-left";
@@ -16,6 +14,7 @@ import BookOpen from "~icons/lucide/book-open";
 import CheckCircle2 from "~icons/lucide/check-circle-2";
 import Circle from "~icons/lucide/circle";
 import PlayCircle from "~icons/lucide/play-circle";
+import Award from "~icons/lucide/award";
 import { cn } from "@/lib/utils";
 import { createMediaUrl } from "@/lib/api";
 import {
@@ -82,24 +81,24 @@ function ContentRow({
   return (
     <Link
       to={orgRoutes.lesson(orgId, courseId, content.id)}
-      className="hover:bg-muted/40 group flex items-center gap-3 rounded-md px-2 py-3 transition-colors"
+      className="hover:bg-la-cream group flex items-center gap-3 rounded-md px-2 py-3 transition-colors"
     >
       {isCompleted ? (
-        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-500" />
+        <CheckCircle2 className="text-la-ok h-4 w-4 shrink-0" />
       ) : (
-        <Circle className="text-muted-foreground/50 h-4 w-4 shrink-0" />
+        <Circle className="text-la-muted h-4 w-4 shrink-0" />
       )}
-      <Icon className="text-muted-foreground h-4 w-4 shrink-0" />
+      <Icon className="text-la-muted h-4 w-4 shrink-0" />
       <span
         className={cn(
-          "flex-1 truncate text-sm",
-          isCompleted && "text-muted-foreground"
+          "text-la-ink flex-1 truncate text-sm",
+          isCompleted && "text-la-muted"
         )}
       >
         {content.title}
       </span>
       {duration && (
-        <span className="text-muted-foreground font-mono text-xs tabular-nums">
+        <span className="text-la-muted font-mono text-xs tabular-nums">
           {duration}
         </span>
       )}
@@ -133,32 +132,34 @@ function ModuleSection({
   const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   return (
-    <Card className="overflow-hidden">
+    <div className="border-la-rule-strong bg-la-paper overflow-hidden rounded-lg border">
       <button
         type="button"
-        className="hover:bg-muted/30 flex w-full items-center justify-between gap-4 p-4 text-left transition-colors"
+        className="hover:bg-la-cream flex w-full items-center justify-between gap-4 p-4 text-left transition-colors"
         onClick={() => setExpanded(!expanded)}
       >
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <div className="bg-primary/10 text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold">
+          <div className="bg-la-forest-wash text-la-forest font-display flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold tabular-nums">
             {index + 1}
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="truncate font-semibold">{mod.title}</h3>
-            <div className="text-muted-foreground mt-0.5 flex items-center gap-3 text-xs">
+            <h3 className="font-display text-la-ink truncate font-bold">
+              {mod.title}
+            </h3>
+            <div className="text-la-muted mt-0.5 flex items-center gap-3 text-xs">
               <span>
                 {total} {total === 1 ? "lesson" : "lessons"}
               </span>
               {totalSeconds > 0 && (
                 <>
-                  <span className="text-muted-foreground/40">·</span>
+                  <span className="text-la-muted/40">·</span>
                   <span>{formatDuration(totalSeconds)}</span>
                 </>
               )}
               {completed > 0 && (
                 <>
-                  <span className="text-muted-foreground/40">·</span>
-                  <span className="text-emerald-600 dark:text-emerald-500">
+                  <span className="text-la-muted/40">·</span>
+                  <span className="text-la-ok">
                     {completed}/{total} done
                   </span>
                 </>
@@ -168,29 +169,29 @@ function ModuleSection({
         </div>
         <div className="flex items-center gap-3">
           {total > 0 && (
-            <div className="bg-muted hidden h-1.5 w-24 overflow-hidden rounded-full sm:block">
+            <div className="bg-la-cream hidden h-1.5 w-24 overflow-hidden rounded-full sm:block">
               <div
-                className="h-full bg-emerald-500 transition-all"
+                className="bg-la-ok h-full transition-all"
                 style={{ width: `${pct}%` }}
               />
             </div>
           )}
           {expanded ? (
-            <ChevronDown className="text-muted-foreground h-4 w-4" />
+            <ChevronDown className="text-la-muted h-4 w-4" />
           ) : (
-            <ChevronRight className="text-muted-foreground h-4 w-4" />
+            <ChevronRight className="text-la-muted h-4 w-4" />
           )}
         </div>
       </button>
 
       {expanded && (
-        <CardContent className="border-t px-2 pt-2 pb-2">
+        <div className="border-la-rule border-t px-2 pt-2 pb-2">
           {mod.contents.length === 0 ? (
-            <p className="text-muted-foreground py-4 text-center text-sm">
+            <p className="text-la-muted py-4 text-center text-sm">
               No content in this module yet.
             </p>
           ) : (
-            <div className="divide-y">
+            <div className="divide-la-rule divide-y">
               {mod.contents.map((content) => (
                 <ContentRow
                   key={content.id}
@@ -202,9 +203,9 @@ function ModuleSection({
               ))}
             </div>
           )}
-        </CardContent>
+        </div>
       )}
-    </Card>
+    </div>
   );
 }
 
@@ -269,7 +270,7 @@ export default function CoursePreviewPage() {
 
   if (courseLoading) {
     return (
-      <div className="space-y-6 p-6">
+      <div className="space-y-6 p-6 lg:p-8">
         <Skeleton className="h-10 w-64" />
         <Skeleton className="h-72 w-full" />
         <Skeleton className="h-32 w-full" />
@@ -279,141 +280,130 @@ export default function CoursePreviewPage() {
 
   if (!course) {
     return (
-      <div className="p-6 text-center">
-        <p className="text-muted-foreground">Course not found.</p>
+      <div className="p-6 text-center lg:p-8">
+        <p className="font-display text-la-ink text-lg font-semibold">
+          Course not found
+        </p>
+        <p className="text-la-muted mt-1 text-sm">
+          This course may have been moved or removed.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 p-4 sm:p-6">
-      <Link to={orgRoutes.courses(orgId)}>
-        <Button variant="ghost" size="sm">
-          <ArrowLeft className="mr-1 h-4 w-4" />
-          Back to Courses
-        </Button>
+    <div className="p-4 sm:p-6 lg:p-8">
+      <Link
+        to={orgRoutes.courses(orgId)}
+        className="text-la-muted hover:text-la-ink mb-6 inline-flex items-center gap-1 text-sm font-medium transition-colors"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to courses
       </Link>
 
-      {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl border">
-        {course.course_image && (
-          <div className="absolute inset-0 -z-10">
-            <img
-              src={createMediaUrl(course.course_image)}
-              alt=""
-              className="h-full w-full mask-b-from-30% mask-b-to-90% object-cover object-center opacity-30 dark:opacity-20"
-            />
-            <div className="bg-background/80 absolute inset-0" />
-          </div>
-        )}
-        <div className="relative px-6 py-12 sm:px-10 sm:py-16">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-            <div className="max-w-3xl space-y-6">
-              <div className="flex flex-wrap gap-2">
-                {course.category && (
-                  <Badge variant="secondary">
-                    {course.category.category_name}
-                  </Badge>
-                )}
-                <Badge variant={course.is_premium ? "default" : "outline"}>
-                  {course.is_premium ? "Premium" : "Free"}
-                </Badge>
-                {course.is_private && <Badge variant="outline">Private</Badge>}
-              </div>
+      <div className="grid gap-8 lg:grid-cols-[1.7fr_1fr]">
+        {/* Left column — editorial */}
+        <div className="space-y-8">
+          <header className="space-y-4">
+            <p className="text-la-forest text-xs font-semibold tracking-[0.2em] uppercase">
+              {course.category?.category_name ?? "Course"}
+            </p>
+            <h1 className="font-display text-la-ink text-4xl font-bold tracking-tight text-balance lg:text-5xl">
+              {course.title}
+            </h1>
 
-              <h1 className="text-3xl font-bold tracking-tight text-balance sm:text-4xl lg:text-5xl">
-                {course.title}
-              </h1>
+            {course.overview && (
+              <p className="text-la-ink-2 max-w-2xl text-base text-pretty sm:text-lg">
+                {course.overview}
+              </p>
+            )}
 
-              {course.overview && (
-                <p className="text-muted-foreground max-w-2xl text-base text-pretty sm:text-lg">
-                  {course.overview}
-                </p>
-              )}
-
-              <div className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium">
-                <div className="flex items-center gap-1.5">
-                  <Layers className="h-4 w-4" />
-                  <span>
-                    {modulesList.length}{" "}
-                    {modulesList.length === 1 ? "module" : "modules"}
+            <div className="text-la-muted flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium">
+              <span className="flex items-center gap-1.5">
+                <Layers className="h-4 w-4" />
+                {modulesList.length}{" "}
+                {modulesList.length === 1 ? "module" : "modules"}
+              </span>
+              <span className="text-la-muted/40">·</span>
+              <span className="flex items-center gap-1.5">
+                <BookOpen className="h-4 w-4" />
+                {totals.lessons} {totals.lessons === 1 ? "lesson" : "lessons"}
+              </span>
+              {totals.seconds > 0 && (
+                <>
+                  <span className="text-la-muted/40">·</span>
+                  <span className="flex items-center gap-1.5">
+                    <Clock className="h-4 w-4" />
+                    {formatDuration(totals.seconds)}
                   </span>
-                </div>
-                <span className="text-muted-foreground/40">·</span>
-                <div className="flex items-center gap-1.5">
-                  <BookOpen className="h-4 w-4" />
-                  <span>
-                    {totals.lessons}{" "}
-                    {totals.lessons === 1 ? "lesson" : "lessons"}
-                  </span>
-                </div>
-                {totals.seconds > 0 && (
-                  <>
-                    <span className="text-muted-foreground/40">·</span>
-                    <div className="flex items-center gap-1.5">
-                      <Clock className="h-4 w-4" />
-                      <span>{formatDuration(totals.seconds)}</span>
-                    </div>
-                  </>
-                )}
-              </div>
-
-              {isEnrolled && (
-                <div className="max-w-md space-y-1.5">
-                  <div className="text-muted-foreground flex items-center justify-between text-xs font-medium">
-                    <span>Your progress</span>
-                    <span>
-                      {completedCount}/{totalLessons} lessons ·{" "}
-                      {progressPercent}%
-                    </span>
-                  </div>
-                  <div className="mt-2 flex items-center gap-2">
-                    <div className="bg-muted h-2 flex-1 overflow-hidden rounded-full">
-                      <div
-                        className="bg-primary h-full rounded-full transition-all"
-                        style={{ width: `${progressPercent}%` }}
-                      />
-                    </div>
-                    <span className="text-muted-foreground text-sm">
-                      {progressPercent}%
-                    </span>
-                  </div>
-                </div>
+                </>
               )}
-
-              <div className="flex flex-wrap items-center gap-3 pt-2">
-                {ctaTo ? (
-                  <Button asChild size="lg">
-                    <Link to={ctaTo}>
-                      <PlayCircle className="mr-2 h-5 w-5" />
-                      {ctaLabel}
-                    </Link>
-                  </Button>
-                ) : (
-                  <Button size="lg" disabled>
-                    <PlayCircle className="mr-2 h-5 w-5" />
-                    No lessons yet
-                  </Button>
-                )}
-                {isEnrolled ? (
-                  <Button variant="outline" size="lg" disabled>
-                    <CheckCircle2 className="mr-2 h-5 w-5 text-emerald-500" />
-                    Enrolled
-                  </Button>
-                ) : (
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    onClick={() => enroll.mutate(courseId!)}
-                    disabled={enroll.isPending}
-                  >
-                    {enroll.isPending ? "Enrolling..." : "Enroll"}
-                  </Button>
-                )}
-              </div>
             </div>
+
+            {isEnrolled && (
+              <div className="max-w-md space-y-2 pt-2">
+                <div className="text-la-muted flex items-center justify-between text-xs font-medium">
+                  <span>Your progress</span>
+                  <span className="tabular-nums">
+                    {completedCount}/{totalLessons} lessons · {progressPercent}%
+                  </span>
+                </div>
+                <div className="bg-la-cream h-2 overflow-hidden rounded-full">
+                  <div
+                    className="bg-la-forest h-full rounded-full transition-all"
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+              </div>
+            )}
+          </header>
+
+          {/* Modules */}
+          <section className="space-y-4">
+            <h2 className="font-display text-la-ink text-lg font-bold">
+              Course content
+            </h2>
+            {modulesLoading ? (
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton key={i} className="h-20 w-full" />
+                ))}
+              </div>
+            ) : modulesList.length === 0 ? (
+              <div className="border-la-rule-strong bg-la-paper rounded-lg border py-10 text-center">
+                <Layers className="text-la-muted mx-auto mb-2 h-8 w-8" />
+                <p className="font-display text-la-ink text-lg font-semibold">
+                  No modules yet
+                </p>
+                <p className="text-la-muted mt-1 text-sm">
+                  Content will appear here once modules are added.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {modulesList.map((mod, i) => (
+                  <ModuleSection
+                    key={mod.id}
+                    module={mod}
+                    orgId={orgId}
+                    courseId={courseId!}
+                    index={i}
+                    defaultExpanded={
+                      nextLesson ? nextLesson.moduleIndex === i : i === 0
+                    }
+                    completedSet={completedSet}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+
+        {/* Right column — sticky enroll card */}
+        <aside className="lg:sticky lg:top-6 lg:self-start">
+          <div className="border-la-rule-strong bg-la-paper overflow-hidden rounded-lg border">
             {course.course_image && (
-              <div className="bg-muted relative aspect-video w-full shrink-0 overflow-hidden rounded-xl border shadow-lg lg:w-md">
+              <div className="bg-la-cream aspect-video w-full overflow-hidden">
                 <img
                   src={createMediaUrl(course.course_image)}
                   alt={course.title}
@@ -421,45 +411,90 @@ export default function CoursePreviewPage() {
                 />
               </div>
             )}
-          </div>
-        </div>
-      </div>
+            <div className="space-y-5 p-5">
+              <div className="flex items-baseline gap-2">
+                <span className="font-display text-la-ink text-3xl font-bold">
+                  {course.is_premium ? `$${course.price}` : "Free"}
+                </span>
+                {course.is_premium && (
+                  <span className="text-la-muted text-sm">premium</span>
+                )}
+              </div>
 
-      {/* Modules */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold tracking-tight">Course Content</h2>
-        {modulesLoading ? (
-          <div className="space-y-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="h-20 w-full" />
-            ))}
+              <div className="flex flex-col gap-2">
+                {ctaTo ? (
+                  <Button asChild size="lg" className="w-full">
+                    <Link to={ctaTo}>
+                      <PlayCircle className="mr-2 h-5 w-5" />
+                      {ctaLabel}
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button size="lg" className="w-full" disabled>
+                    <PlayCircle className="mr-2 h-5 w-5" />
+                    No lessons yet
+                  </Button>
+                )}
+                {isEnrolled ? (
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full"
+                    disabled
+                  >
+                    <CheckCircle2 className="text-la-ok mr-2 h-5 w-5" />
+                    Enrolled
+                  </Button>
+                ) : (
+                  <Button
+                    size="lg"
+                    className="w-full"
+                    onClick={() => enroll.mutate(courseId!)}
+                    disabled={enroll.isPending}
+                  >
+                    {enroll.isPending ? "Enrolling..." : "Enroll"}
+                  </Button>
+                )}
+              </div>
+
+              <dl className="divide-la-rule border-la-rule divide-y border-t text-sm">
+                <div className="flex items-center justify-between py-2.5">
+                  <dt className="text-la-muted">Modules</dt>
+                  <dd className="text-la-ink font-medium tabular-nums">
+                    {modulesList.length}
+                  </dd>
+                </div>
+                <div className="flex items-center justify-between py-2.5">
+                  <dt className="text-la-muted">Lessons</dt>
+                  <dd className="text-la-ink font-medium tabular-nums">
+                    {totals.lessons}
+                  </dd>
+                </div>
+                {totals.seconds > 0 && (
+                  <div className="flex items-center justify-between py-2.5">
+                    <dt className="text-la-muted">Duration</dt>
+                    <dd className="text-la-ink font-medium tabular-nums">
+                      {formatDuration(totals.seconds)}
+                    </dd>
+                  </div>
+                )}
+                {course.category && (
+                  <div className="flex items-center justify-between py-2.5">
+                    <dt className="text-la-muted">Category</dt>
+                    <dd className="text-la-ink font-medium">
+                      {course.category.category_name}
+                    </dd>
+                  </div>
+                )}
+              </dl>
+
+              <div className="text-la-ink-2 border-la-rule flex items-center gap-2 border-t pt-4 text-sm">
+                <Award className="text-la-forest h-4 w-4 shrink-0" />
+                Earn a certificate on completion.
+              </div>
+            </div>
           </div>
-        ) : modulesList.length === 0 ? (
-          <Card>
-            <CardContent className="py-10 text-center">
-              <Layers className="text-muted-foreground mx-auto mb-2 h-8 w-8" />
-              <p className="text-muted-foreground text-sm">
-                No modules have been added to this course yet.
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-3">
-            {modulesList.map((mod, i) => (
-              <ModuleSection
-                key={mod.id}
-                module={mod}
-                orgId={orgId}
-                courseId={courseId!}
-                index={i}
-                defaultExpanded={
-                  nextLesson ? nextLesson.moduleIndex === i : i === 0
-                }
-                completedSet={completedSet}
-              />
-            ))}
-          </div>
-        )}
+        </aside>
       </div>
     </div>
   );

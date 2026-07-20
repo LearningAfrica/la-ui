@@ -1,11 +1,7 @@
 import { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import Users from "~icons/lucide/users";
-import ShieldCheck from "~icons/lucide/shield-check";
-import UserCheck from "~icons/lucide/user-check";
-import UserX from "~icons/lucide/user-x";
+import { cn } from "@/lib/utils";
 import ChevronLeft from "~icons/lucide/chevron-left";
 import ChevronRight from "~icons/lucide/chevron-right";
 import RefreshCw from "~icons/lucide/refresh-cw";
@@ -33,13 +29,49 @@ export default function SystemDashboardUsers() {
   const hasNext = usersData?.meta?.has_next_page || false;
   const hasPrev = usersData?.meta?.has_prev_page || false;
 
+  const statCards = [
+    {
+      key: "total",
+      eyebrow: "All",
+      title: "Users",
+      value: stats.total,
+      accent: "bg-la-ink",
+    },
+    {
+      key: "admins",
+      eyebrow: "Elevated",
+      title: "Admins",
+      value: "—",
+      accent: "bg-la-forest",
+    },
+    {
+      key: "verified",
+      eyebrow: "Confirmed",
+      title: "Verified",
+      value: stats.verified,
+      accent: "bg-la-ok",
+    },
+    {
+      key: "unverified",
+      eyebrow: "Awaiting",
+      title: "Unverified",
+      value: stats.unverified,
+      accent: "bg-la-amber",
+    },
+  ];
+
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8 p-6 lg:p-8">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">User Management</h1>
-          <p className="text-muted-foreground mt-1">
-            View and manage all platform users
+          <p className="text-la-forest mb-2 text-xs font-semibold tracking-[0.2em] uppercase">
+            People
+          </p>
+          <h1 className="font-display text-la-ink text-4xl font-bold tracking-tight lg:text-5xl">
+            User management
+          </h1>
+          <p className="text-la-muted mt-2 max-w-prose">
+            Everyone with an account across the platform.
           </p>
         </div>
         <Button
@@ -53,78 +85,48 @@ export default function SystemDashboardUsers() {
           />
           Refresh
         </Button>
-      </div>
+      </header>
 
-      {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <div className="rounded-lg bg-blue-600/10 p-2">
-              <Users className="h-4 w-4 text-blue-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{stats.total}</div>
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Admins</CardTitle>
-            <div className="rounded-lg bg-purple-600/10 p-2">
-              <ShieldCheck className="h-4 w-4 text-purple-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">—</div>
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Verified</CardTitle>
-            <div className="rounded-lg bg-green-600/10 p-2">
-              <UserCheck className="h-4 w-4 text-green-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{stats.verified}</div>
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Unverified</CardTitle>
-            <div className="rounded-lg bg-red-600/10 p-2">
-              <UserX className="h-4 w-4 text-red-600" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{stats.unverified}</div>
-            )}
-          </CardContent>
-        </Card>
+      {/* Stat strip */}
+      <div className="border-la-rule-strong bg-la-rule-strong grid gap-px overflow-hidden rounded-lg border sm:grid-cols-2 lg:grid-cols-4">
+        {isLoading
+          ? [...Array(4)].map((_, i) => (
+              <div key={i} className="bg-la-paper p-5">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="mt-4 h-10 w-14" />
+                <Skeleton className="mt-2 h-3 w-20" />
+              </div>
+            ))
+          : statCards.map((stat) => (
+              <div key={stat.key} className="bg-la-paper relative p-5">
+                <span
+                  className={cn("absolute inset-x-0 top-0 h-1", stat.accent)}
+                  aria-hidden
+                />
+                <p className="text-la-muted text-[0.7rem] font-semibold tracking-[0.15em] uppercase">
+                  {stat.eyebrow}
+                </p>
+                <p className="font-display text-la-ink mt-3 text-4xl font-bold tabular-nums">
+                  {stat.value}
+                </p>
+                <p className="text-la-ink-2 mt-1 text-sm font-medium">
+                  {stat.title}
+                </p>
+              </div>
+            ))}
       </div>
 
       {/* Users Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>All Users</CardTitle>
-        </CardHeader>
-        <CardContent>
+      <div className="border-la-rule-strong bg-la-paper rounded-lg border">
+        <div className="border-la-rule border-b px-5 py-4">
+          <h2 className="font-display text-la-ink text-lg font-bold">
+            All users
+          </h2>
+          <p className="text-la-muted text-sm">
+            Search and filter people by verification status.
+          </p>
+        </div>
+        <div className="p-5">
           {isLoading ? (
             <div className="space-y-3">
               {Array.from({ length: 5 }).map((_, i) => (
@@ -137,8 +139,8 @@ export default function SystemDashboardUsers() {
 
               {/* Pagination */}
               {users.length > 0 && (
-                <div className="mt-4 flex items-center justify-between">
-                  <div className="text-muted-foreground text-sm">
+                <div className="border-la-rule mt-4 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+                  <div className="text-la-muted text-sm">
                     Page {page} of {totalPages} • {usersData?.meta?.total_docs}{" "}
                     total users
                   </div>
@@ -166,8 +168,8 @@ export default function SystemDashboardUsers() {
               )}
             </>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

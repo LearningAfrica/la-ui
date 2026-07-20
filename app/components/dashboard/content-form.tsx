@@ -29,6 +29,30 @@ interface ContentFormProps {
   modulePk: string;
   content?: ModuleContent;
   redirectTo?: string;
+  /** Preset the content type for a fresh lesson (used by the curriculum builder's type picker). */
+  initialType?: ContentType;
+  /** Called after a successful save instead of navigating. When set, the form stays put (e.g. inside a Sheet). */
+  onSuccess?: () => void;
+  /** Custom cancel handler instead of navigating back (e.g. close a Sheet). */
+  onCancel?: () => void;
+}
+
+function typeDefaults(type: ContentType): ModuleContentFormData {
+  const base = { title: "", order: 0 };
+
+  switch (type) {
+    case "video":
+      return {
+        ...base,
+        content_type: "video",
+        video_url: "",
+        duration_seconds: 0,
+      };
+    case "file":
+      return { ...base, content_type: "file", file_name: "", file: "" };
+    default:
+      return { ...base, content_type: "text", body: "" };
+  }
 }
 
 function contentToFormValues(content: ModuleContent): ModuleContentFormData {
@@ -61,6 +85,9 @@ export function ContentForm({
   modulePk,
   content,
   redirectTo,
+  initialType,
+  onSuccess,
+  onCancel,
 }: ContentFormProps) {
   const navigate = useNavigate();
   const { orgId = "" } = useParams<{ orgId: string }>();
@@ -73,7 +100,9 @@ export function ContentForm({
     resolver: moduleContentResolver,
     defaultValues: content
       ? contentToFormValues(content)
-      : defaultContentValues,
+      : initialType
+        ? typeDefaults(initialType)
+        : defaultContentValues,
   });
 
   const contentType = useWatch({ control: form.control, name: "content_type" });
@@ -151,7 +180,7 @@ export function ContentForm({
         break;
     }
 
-    const done = () => navigate(back);
+    const done = onSuccess ?? (() => navigate(back));
 
     if (isEditing && content) {
       return updateContent.mutateAsync(
@@ -267,18 +296,19 @@ export function ContentForm({
           </div>
         )}
 
-        <div className="flex justify-end gap-3 border-t pt-6">
+        {/* Sticky action bar — stays in view without scrolling to the bottom */}
+        <div className="border-la-rule bg-la-paper sticky bottom-0 z-10 -mx-4 flex justify-end gap-3 border-t px-4 py-4">
           <Button
             type="button"
             variant="outline"
-            onClick={() => navigate(back)}
+            onClick={onCancel ?? (() => navigate(back))}
             disabled={isLoading}
           >
             Cancel
           </Button>
           <Button type="submit" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isEditing ? "Save Changes" : "Add Content"}
+            {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
+            {isEditing ? "Save changes" : "Add content"}
           </Button>
         </div>
       </form>

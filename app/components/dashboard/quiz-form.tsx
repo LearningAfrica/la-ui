@@ -3,14 +3,8 @@ import { useForm, useFieldArray, useWatch, Controller } from "react-hook-form";
 import type { Control, FieldValues } from "react-hook-form";
 import { useNavigate, useParams } from "react-router";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
 import { Form } from "@/components/ui/form";
-import {
-  FormTextField,
-  FormTextareaField,
-  FormNumberField,
-} from "@/components/form-fields";
+import { FormTextField, FormTextareaField } from "@/components/form-fields";
 import {
   quizResolver,
   defaultQuizValues,
@@ -21,6 +15,7 @@ import ChevronRight from "~icons/lucide/chevron-right";
 import Loader2 from "~icons/lucide/loader-2";
 import Plus from "~icons/lucide/plus";
 import Trash2 from "~icons/lucide/trash-2";
+import Check from "~icons/lucide/check";
 import {
   useCreateQuiz,
   useUpdateQuiz,
@@ -52,6 +47,34 @@ function quizToFormValues(quiz: Quiz): QuizFormData {
   };
 }
 
+/** Flat, hairline-separated group — matches the course form. */
+function Section({
+  title,
+  hint,
+  action,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="border-la-rule border-t pt-6 first:border-t-0 first:pt-0">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h3 className="font-display text-la-ink text-sm font-bold">
+            {title}
+          </h3>
+          {hint && <p className="text-la-muted mt-0.5 text-xs">{hint}</p>}
+        </div>
+        {action}
+      </div>
+      <div className="mt-4 space-y-4">{children}</div>
+    </section>
+  );
+}
+
 function ChoicesFieldArray({
   control,
   questionIndex,
@@ -69,8 +92,8 @@ function ChoicesFieldArray({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <label className="text-muted-foreground text-xs font-medium">
-          Answers (mark the correct ones)
+        <label className="text-la-muted text-xs font-medium">
+          Answers — tap the circle to mark the correct one
         </label>
         <Button
           type="button"
@@ -79,7 +102,7 @@ function ChoicesFieldArray({
           onClick={() => append({ choice_text: "", is_correct: false })}
           disabled={disabled}
         >
-          <Plus className="mr-1 h-3 w-3" />
+          <Plus className="mr-1 size-3" />
           Add answer
         </Button>
       </div>
@@ -115,50 +138,63 @@ function ChoiceRow({
   onRemove: () => void;
   disabled: boolean;
 }) {
-  const correctId = `choice-correct-${questionIndex}-${choiceIndex}`;
+  const base = `questions.${questionIndex}.choices.${choiceIndex}`;
 
   return (
-    <div className="flex items-start gap-2">
-      <Controller
-        control={control}
-        name={`questions.${questionIndex}.choices.${choiceIndex}.is_correct`}
-        render={({ field }) => (
-          <div className="flex items-center gap-1 pt-2">
-            <Checkbox
-              id={correctId}
-              checked={!!field.value}
-              onCheckedChange={(checked) => field.onChange(!!checked)}
+    <Controller
+      control={control}
+      name={`${base}.is_correct`}
+      render={({ field: correct }) => {
+        const isCorrect = !!correct.value;
+
+        return (
+          <div
+            className={cn(
+              "focus-within:border-la-forest focus-within:ring-la-forest/30 flex items-center gap-2 rounded-lg border px-2 py-1.5 transition-colors focus-within:ring-2",
+              isCorrect ? "border-la-ok/40 bg-la-ok/5" : "border-la-rule-strong"
+            )}
+          >
+            <button
+              type="button"
+              onClick={() => correct.onChange(!isCorrect)}
               disabled={disabled}
-            />
-            <Label
-              htmlFor={correctId}
-              className="text-muted-foreground cursor-pointer text-xs"
+              aria-pressed={isCorrect}
+              aria-label={isCorrect ? "Correct answer" : "Mark as correct"}
+              className={cn(
+                "flex size-6 shrink-0 items-center justify-center rounded-full border transition-colors",
+                isCorrect
+                  ? "border-la-ok bg-la-ok text-white"
+                  : "border-la-rule-strong hover:border-la-ok text-transparent"
+              )}
             >
-              Correct
-            </Label>
+              <Check className="size-3.5" />
+            </button>
+            <Controller
+              control={control}
+              name={`${base}.choice_text`}
+              render={({ field }) => (
+                <input
+                  {...field}
+                  value={field.value ?? ""}
+                  placeholder={`Answer ${choiceIndex + 1}`}
+                  disabled={disabled}
+                  className="text-la-ink placeholder:text-la-muted flex-1 bg-transparent text-sm outline-none"
+                />
+              )}
+            />
+            <button
+              type="button"
+              onClick={onRemove}
+              disabled={disabled || !canRemove}
+              aria-label="Remove answer"
+              className="text-la-muted hover:text-la-bad shrink-0 transition-colors disabled:opacity-30"
+            >
+              <Trash2 className="size-4" />
+            </button>
           </div>
-        )}
-      />
-      <div className="flex-1">
-        <FormTextField
-          control={control}
-          name={`questions.${questionIndex}.choices.${choiceIndex}.choice_text`}
-          label=""
-          placeholder={`Answer ${choiceIndex + 1}`}
-          disabled={disabled}
-        />
-      </div>
-      <Button
-        type="button"
-        variant="ghost"
-        size="sm"
-        onClick={onRemove}
-        disabled={disabled || !canRemove}
-        className="mt-1 text-red-600 hover:text-red-700"
-      >
-        <Trash2 className="h-4 w-4" />
-      </Button>
-    </div>
+        );
+      }}
+    />
   );
 }
 
@@ -193,46 +229,55 @@ function QuestionCard({
   const preview = (questionText || "").trim() || "Untitled question";
 
   return (
-    <div className="overflow-hidden rounded-lg border">
-      <button
-        type="button"
-        onClick={onToggle}
+    <div className="border-la-rule-strong bg-la-paper overflow-hidden rounded-lg border">
+      <div
         className={cn(
-          "hover:bg-muted/40 flex w-full items-center gap-3 p-3 text-left transition-colors",
-          expanded && "bg-muted/30"
+          "flex w-full items-center gap-3 p-3",
+          expanded && "border-la-rule border-b"
         )}
       >
-        {expanded ? (
-          <ChevronDown className="text-muted-foreground h-4 w-4 shrink-0" />
-        ) : (
-          <ChevronRight className="text-muted-foreground h-4 w-4 shrink-0" />
-        )}
-        <div className="bg-primary/10 text-primary flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold">
-          {qi + 1}
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium">{preview}</p>
-          <p className="text-muted-foreground text-xs">
-            {choices?.length ?? 0} answers · {correctCount} correct
-          </p>
-        </div>
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          size="sm"
-          onClick={(e) => {
-            e.stopPropagation();
-            onRemove();
-          }}
-          disabled={disabled || totalQuestions <= 1}
-          className="text-red-600 hover:text-red-700"
+          onClick={onToggle}
+          className="flex min-w-0 flex-1 items-center gap-3 text-left"
         >
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </button>
+          {expanded ? (
+            <ChevronDown className="text-la-muted size-4 shrink-0" />
+          ) : (
+            <ChevronRight className="text-la-muted size-4 shrink-0" />
+          )}
+          <div className="bg-la-forest-wash text-la-forest font-display flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold">
+            {qi + 1}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-la-ink truncate text-sm font-medium">
+              {preview}
+            </p>
+            <p className="text-la-muted text-xs">
+              {choices?.length ?? 0} answers ·{" "}
+              <span
+                className={cn(
+                  correctCount === 0 ? "text-la-bad" : "text-la-ok"
+                )}
+              >
+                {correctCount} correct
+              </span>
+            </p>
+          </div>
+        </button>
+        <button
+          type="button"
+          onClick={onRemove}
+          disabled={disabled || totalQuestions <= 1}
+          aria-label="Remove question"
+          className="text-la-muted hover:text-la-bad shrink-0 transition-colors disabled:opacity-30"
+        >
+          <Trash2 className="size-4" />
+        </button>
+      </div>
 
       {expanded && (
-        <div className="space-y-3 border-t p-4">
+        <div className="space-y-4 p-4">
           <FormTextareaField
             control={control}
             name={`questions.${qi}.question_text`}
@@ -242,7 +287,6 @@ function QuestionCard({
             disabled={disabled}
             rows={2}
           />
-
           <ChoicesFieldArray
             control={control}
             questionIndex={qi}
@@ -342,13 +386,13 @@ export function QuizForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <Section title="Details" hint="Name the quiz and set the pass mark.">
           <FormTextField
             control={form.control}
             name="title"
-            label="Quiz Title"
-            placeholder="e.g. Module 1 Knowledge Check"
+            label="Quiz title"
+            placeholder="e.g. Module 1 knowledge check"
             required
             disabled={isLoading}
           />
@@ -360,26 +404,53 @@ export function QuizForm({
             disabled={isLoading}
             rows={2}
           />
-          <FormNumberField
+          <Controller
             control={form.control}
             name="passing_score"
-            label="Passing Score (%)"
-            placeholder="70"
-            required
-            disabled={isLoading}
-            inputProps={{ min: 0, max: 100 }}
-          />
-        </div>
+            render={({ field, fieldState }) => {
+              // Schema stores an integer percent (0–100).
+              const pct = Math.round(Number(field.value) || 0);
 
-        <div className="space-y-4">
-          <div className="flex items-center justify-between gap-2">
-            <div>
-              <h3 className="text-sm font-semibold">Questions</h3>
-              <p className="text-muted-foreground text-xs">
-                Add at least one question. Each needs two or more answers with
-                at least one correct.
-              </p>
-            </div>
+              return (
+                <div className="space-y-2">
+                  <label
+                    htmlFor="passing-score"
+                    className="text-la-ink text-sm font-medium"
+                  >
+                    Passing score{" "}
+                    <span className="text-la-muted font-normal">— {pct}%</span>
+                  </label>
+                  <input
+                    id="passing-score"
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={5}
+                    value={pct}
+                    disabled={isLoading}
+                    aria-label="Passing score percentage"
+                    aria-valuetext={`${pct} percent`}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    className="accent-la-forest focus-visible:ring-la-forest w-full rounded focus-visible:ring-2 focus-visible:outline-none"
+                  />
+                  <p className="text-la-muted text-xs">
+                    Learners must score at least {pct}% to pass.
+                  </p>
+                  {fieldState.error && (
+                    <p className="text-la-bad text-xs">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </div>
+              );
+            }}
+          />
+        </Section>
+
+        <Section
+          title="Questions"
+          hint="Each question needs 2+ answers and at least one correct."
+          action={
             <Button
               type="button"
               variant="outline"
@@ -387,11 +458,11 @@ export function QuizForm({
               onClick={handleAddQuestion}
               disabled={isLoading}
             >
-              <Plus className="mr-1 h-3 w-3" />
-              Add Question
+              <Plus className="mr-1 size-3" />
+              Add question
             </Button>
-          </div>
-
+          }
+        >
           <div className="space-y-2">
             {questionFields.map((q, qi) => (
               <QuestionCard
@@ -413,14 +484,15 @@ export function QuizForm({
             size="sm"
             onClick={handleAddQuestion}
             disabled={isLoading}
-            className="w-full"
+            className="w-full border-dashed"
           >
-            <Plus className="mr-1 h-4 w-4" />
-            Add Question
+            <Plus className="mr-1 size-4" />
+            Add question
           </Button>
-        </div>
+        </Section>
 
-        <div className="flex justify-end gap-3 border-t pt-6">
+        {/* Sticky action bar */}
+        <div className="border-la-rule bg-la-paper sticky bottom-0 z-10 -mx-4 flex justify-end gap-3 border-t px-4 py-4">
           <Button
             type="button"
             variant="outline"
@@ -430,8 +502,8 @@ export function QuizForm({
             Cancel
           </Button>
           <Button type="submit" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isEditing ? "Save Changes" : "Create Quiz"}
+            {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
+            {isEditing ? "Save changes" : "Create quiz"}
           </Button>
         </div>
       </form>

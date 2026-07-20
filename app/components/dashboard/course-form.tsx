@@ -16,7 +16,7 @@ import {
   FormNumberField,
   FormSwitchField,
   FormChipField,
-  FormAsyncSelectField,
+  FormComboboxField,
   FormImageUploadField,
 } from "@/components/form-fields";
 import { orgRoutes } from "@/lib/utils/org-routes";
@@ -25,9 +25,37 @@ import type { Course } from "@/features/courses/course-queries";
 interface CourseFormProps {
   course?: Course;
   redirectTo?: string;
+  /** Called after a successful save instead of navigating (e.g. inside a Sheet). */
+  onSuccess?: () => void;
+  /** Custom cancel handler instead of navigating back (e.g. close a Sheet). */
+  onCancel?: () => void;
 }
 
-export function CourseForm({ course, redirectTo }: CourseFormProps) {
+/** A flat, hairline-separated group — no raised card chrome. */
+function Section({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="border-la-rule border-t pt-6 first:border-t-0 first:pt-0">
+      <h3 className="font-display text-la-ink text-sm font-bold">{title}</h3>
+      {hint && <p className="text-la-muted mt-0.5 text-xs">{hint}</p>}
+      <div className="mt-4 space-y-4">{children}</div>
+    </section>
+  );
+}
+
+export function CourseForm({
+  course,
+  redirectTo,
+  onSuccess,
+  onCancel,
+}: CourseFormProps) {
   const navigate = useNavigate();
   const { orgId = "" } = useParams<{ orgId: string }>();
   const isEditing = !!course;
@@ -79,7 +107,7 @@ export function CourseForm({ course, redirectTo }: CourseFormProps) {
       organization: selectedOrganization?.id ?? data.organization,
     };
 
-    const done = () => navigate(redirectTo ?? coursesPath);
+    const done = onSuccess ?? (() => navigate(redirectTo ?? coursesPath));
 
     return isEditing
       ? updateMutation.mutateAsync(
@@ -89,6 +117,8 @@ export function CourseForm({ course, redirectTo }: CourseFormProps) {
       : createMutation.mutateAsync(payload, { onSuccess: done });
   });
 
+  const cancel = onCancel ?? (() => navigate(redirectTo ?? coursesPath));
+
   const isLoading =
     createMutation.isPending ||
     updateMutation.isPending ||
@@ -96,94 +126,113 @@ export function CourseForm({ course, redirectTo }: CourseFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={handleFormSubmit} className="space-y-6">
-        <FormImageUploadField
-          control={form.control}
-          name="course_image"
-          label="Course Image"
-          disabled={isLoading}
-        />
-
-        <FormTextField
-          control={form.control}
-          name="title"
-          label="Course Title"
-          placeholder="Enter course title"
-          required
-          disabled={isLoading}
-        />
-
-        <FormAsyncSelectField
-          control={form.control}
-          name="category"
-          label="Category"
-          placeholder="Select a category"
-          options={categoryOptions}
-          required
-          disabled={isLoading}
-        />
-
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <FormSwitchField
+      <form onSubmit={handleFormSubmit} className="space-y-8">
+        <Section
+          title="Details"
+          hint="Name the course and place it in a category."
+        >
+          <FormTextField
             control={form.control}
-            name="is_premium"
-            label="Premium Course"
-            description="Charge a price for this course"
-            disabled={isLoading}
-          />
-
-          <FormSwitchField
-            control={form.control}
-            name="is_private"
-            label="Private Course"
-            description="Only invited learners can access"
-            disabled={isLoading}
-          />
-        </div>
-
-        {isPremium && (
-          <FormNumberField
-            control={form.control}
-            name="price"
-            label="Price"
-            placeholder="0.00"
+            name="title"
+            label="Course title"
+            placeholder="Enter course title"
             required
             disabled={isLoading}
-            inputProps={{ min: 0, step: 0.01 }}
           />
-        )}
+          <FormComboboxField
+            control={form.control}
+            name="category"
+            label="Category"
+            placeholder="Select a category"
+            searchPlaceholder="Search categories..."
+            items={categoryOptions}
+            required
+            disabled={isLoading}
+          />
+          <FormTextareaField
+            control={form.control}
+            name="overview"
+            label="Overview"
+            placeholder="Describe what this course covers..."
+            required
+            disabled={isLoading}
+          />
+        </Section>
 
-        <FormChipField
-          control={form.control}
-          name="tags"
-          label="Tags"
-          placeholder="Type a tag and press Enter"
-          required
-          disabled={isLoading}
-          description="Add at least one tag to help learners discover this course"
-        />
+        <Section
+          title="Cover image"
+          hint="Shown on the course card and detail page."
+        >
+          <FormImageUploadField
+            control={form.control}
+            name="course_image"
+            label=""
+            disabled={isLoading}
+          />
+        </Section>
 
-        <FormTextareaField
-          control={form.control}
-          name="overview"
-          label="Overview"
-          placeholder="Describe what this course covers..."
-          required
-          disabled={isLoading}
-        />
+        <Section
+          title="Access & pricing"
+          hint="Control who can enroll and whether it costs anything."
+        >
+          {/* Flat hairline-separated setting rows — no boxed toggles */}
+          <div className="border-la-rule-strong divide-la-rule divide-y overflow-hidden rounded-lg border">
+            <FormSwitchField
+              control={form.control}
+              name="is_premium"
+              label="Premium course"
+              description="Charge a price for this course"
+              disabled={isLoading}
+              className="rounded-none border-0 px-4 py-3.5"
+            />
+            {isPremium && (
+              <div className="px-4 py-3.5">
+                <FormNumberField
+                  control={form.control}
+                  name="price"
+                  label="Price"
+                  placeholder="0.00"
+                  required
+                  disabled={isLoading}
+                  inputProps={{ min: 0, step: 0.01 }}
+                />
+              </div>
+            )}
+            <FormSwitchField
+              control={form.control}
+              name="is_private"
+              label="Private course"
+              description="Only invited learners can access"
+              disabled={isLoading}
+              className="rounded-none border-0 px-4 py-3.5"
+            />
+          </div>
+        </Section>
 
-        <div className="flex justify-end gap-3 border-t pt-6">
+        <Section title="Discovery" hint="Tags help learners find this course.">
+          <FormChipField
+            control={form.control}
+            name="tags"
+            label=""
+            placeholder="Type a tag and press Enter"
+            required
+            disabled={isLoading}
+          />
+        </Section>
+
+        {/* Sticky action bar — stays in view without scrolling to the bottom */}
+        <div className="border-la-rule bg-la-paper sticky bottom-0 z-10 -mx-4 flex justify-end gap-3 border-t px-4 py-4">
           <Button
             type="button"
             variant="outline"
-            onClick={() => navigate(redirectTo ?? coursesPath)}
+            onClick={cancel}
             disabled={isLoading}
           >
             Cancel
           </Button>
           <Button type="submit" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isEditing ? "Save Changes" : "Create Course"}
+            {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
+            {isEditing ? "Save changes" : "Create course"}
           </Button>
         </div>
       </form>

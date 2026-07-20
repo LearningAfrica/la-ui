@@ -25,7 +25,7 @@ export default function SignUpPage() {
   const [searchParams] = useSearchParams();
 
   return (
-    <AuthLayout className="py-12">
+    <AuthLayout>
       <RegisterForm searchParams={searchParams} />
     </AuthLayout>
   );

@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as SheetPrimitive from "@radix-ui/react-dialog";
+import { Dialog as SheetPrimitive } from "radix-ui";
 import XIcon from "~icons/lucide/x";
 
 import { cn } from "@/lib/utils";
@@ -46,15 +46,34 @@ function SheetContent({
   className,
   children,
   side = "right",
+  dismissible = true,
+  onPointerDownOutside,
+  onEscapeKeyDown,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
   side?: "top" | "right" | "bottom" | "left";
+  /**
+   * When false, clicking the overlay or pressing Escape will NOT close the
+   * sheet — use for panels holding unsaved form input. The X button and any
+   * explicit Cancel still close it, so there's always a way out.
+   */
+  dismissible?: boolean;
 }) {
   return (
     <SheetPortal>
       <SheetOverlay />
       <SheetPrimitive.Content
         data-slot="sheet-content"
+        onPointerDownOutside={(e) => {
+          if (!dismissible) e.preventDefault();
+
+          onPointerDownOutside?.(e);
+        }}
+        onEscapeKeyDown={(e) => {
+          if (!dismissible) e.preventDefault();
+
+          onEscapeKeyDown?.(e);
+        }}
         className={cn(
           "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
           side === "right" &&

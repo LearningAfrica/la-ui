@@ -124,13 +124,19 @@ export default function SystemDashboardInquiries() {
   const hasPrev = inquiriesData?.meta?.has_prev_page || false;
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-8 p-6 lg:p-8">
       {/* Page Header */}
-      <div className="flex items-center justify-between">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Organization Inquiries</h1>
-          <p className="text-muted-foreground mt-1">
-            Review and manage organization onboarding requests
+          <p className="text-la-forest mb-2 text-xs font-semibold tracking-[0.2em] uppercase">
+            Approvals queue
+          </p>
+          <h1 className="font-display text-la-ink text-4xl font-bold tracking-tight lg:text-5xl">
+            Organization inquiries
+          </h1>
+          <p className="text-la-muted mt-2 max-w-prose">
+            Review onboarding requests and approve the organizations joining the
+            platform.
           </p>
         </div>
         <Button
@@ -144,66 +150,70 @@ export default function SystemDashboardInquiries() {
           />
           Refresh
         </Button>
-      </div>
+      </header>
 
       {/* Stats Cards */}
       <InquiryStatsCards stats={stats} isLoading={inquiriesLoading} />
 
       {/* Inquiries Table */}
-      <div className="rounded-lg border bg-white p-6 dark:bg-gray-900">
-        <div className="mb-4">
-          <h2 className="text-xl font-semibold">All Inquiries</h2>
-          <p className="text-muted-foreground text-sm">
-            View and manage all organization requests
+      <div className="border-la-rule-strong bg-la-paper rounded-lg border">
+        <div className="border-la-rule border-b px-5 py-4">
+          <h2 className="font-display text-la-ink text-lg font-bold">
+            All inquiries
+          </h2>
+          <p className="text-la-muted text-sm">
+            Every onboarding request, with the newest first.
           </p>
         </div>
 
-        {inquiriesLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-muted-foreground">Loading inquiries...</div>
-          </div>
-        ) : (
-          <>
-            <AdminInquiriesTable
-              inquiries={inquiriesData?.data || []}
-              onViewDetails={handleViewDetails}
-              onApprove={handleApproveClick}
-              onReject={handleRejectClick}
-              isApproving={approveMutation.isPending}
-              isRejecting={rejectMutation.isPending}
-            />
+        <div className="p-5">
+          {inquiriesLoading ? (
+            <div className="text-la-muted flex items-center justify-center py-12">
+              Loading inquiries...
+            </div>
+          ) : (
+            <>
+              <AdminInquiriesTable
+                inquiries={inquiriesData?.data || []}
+                onViewDetails={handleViewDetails}
+                onApprove={handleApproveClick}
+                onReject={handleRejectClick}
+                isApproving={approveMutation.isPending}
+                isRejecting={rejectMutation.isPending}
+              />
 
-            {/* Pagination */}
-            {inquiriesData && inquiriesData.data.length > 0 && (
-              <div className="mt-4 flex items-center justify-between">
-                <div className="text-muted-foreground text-sm">
-                  Page {page} of {totalPages} • {inquiriesData.meta.total_docs}{" "}
-                  total inquiries
+              {/* Pagination */}
+              {inquiriesData && inquiriesData.data.length > 0 && (
+                <div className="border-la-rule mt-4 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+                  <div className="text-la-muted text-sm">
+                    Page {page} of {totalPages} •{" "}
+                    {inquiriesData.meta.total_docs} total inquiries
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
+                      disabled={!hasPrev}
+                    >
+                      <ChevronLeft className="mr-1 h-4 w-4" />
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPage((p) => p + 1)}
+                      disabled={!hasNext}
+                    >
+                      Next
+                      <ChevronRight className="ml-1 h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={!hasPrev}
-                  >
-                    <ChevronLeft className="mr-1 h-4 w-4" />
-                    Previous
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage((p) => p + 1)}
-                    disabled={!hasNext}
-                  >
-                    Next
-                    <ChevronRight className="ml-1 h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            )}
-          </>
-        )}
+              )}
+            </>
+          )}
+        </div>
       </div>
 
       {/* Inquiry Details Dialog */}

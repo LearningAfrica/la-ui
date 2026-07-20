@@ -191,7 +191,7 @@ export default function ClientDashboardCertificates() {
   const previewUrl = preview ? resolveCertificateUrl(preview.pdf_url) : null;
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-6 lg:p-8">
       <div>
         <h1 className="text-3xl font-bold">My Certificates</h1>
         <p className="text-muted-foreground mt-1">

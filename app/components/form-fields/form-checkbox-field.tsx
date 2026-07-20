@@ -79,8 +79,8 @@ export function FormCheckboxField<
                 <Label
                   className={`cursor-pointer text-sm font-medium ${
                     disabled
-                      ? "cursor-not-allowed text-gray-400"
-                      : "text-gray-700"
+                      ? "text-muted-foreground cursor-not-allowed"
+                      : "text-foreground"
                   }`}
                   data-testid={checkboxLabelTestId}
                 >
@@ -88,7 +88,7 @@ export function FormCheckboxField<
                   {required && <span className="text-destructive">*</span>}
                 </Label>
                 {description && (
-                  <p className="text-sm text-gray-500">{description}</p>
+                  <p className="text-muted-foreground text-sm">{description}</p>
                 )}
               </div>
             </div>
@@ -115,13 +115,13 @@ export function FormCheckboxField<
       render={({ field }) => (
         <FormItem className={className}>
           <FormLabel
-            className="text-sm font-medium text-gray-700"
+            className="text-foreground text-sm font-medium"
             data-testid={checkboxLabelTestId}
           >
             {label} {required && <span className="text-destructive">*</span>}
           </FormLabel>
           {description && (
-            <p className="mb-2 text-sm text-gray-500">{description}</p>
+            <p className="text-muted-foreground mb-2 text-sm">{description}</p>
           )}
           <FormControl>
             <div
@@ -162,15 +162,15 @@ export function FormCheckboxField<
                     <Label
                       className={`cursor-pointer text-sm font-normal ${
                         disabled || option.disabled
-                          ? "cursor-not-allowed text-gray-400"
-                          : "text-gray-700"
+                          ? "text-muted-foreground cursor-not-allowed"
+                          : "text-foreground"
                       }`}
                       data-testid={`${String(name)}-checkbox-label-${index}`}
                     >
                       {option.label}
                     </Label>
                     {option.description && (
-                      <span className="mt-1 text-xs text-gray-500">
+                      <span className="text-muted-foreground mt-1 text-xs">
                         {option.description}
                       </span>
                     )}

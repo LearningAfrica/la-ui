@@ -60,13 +60,13 @@ export function FormRadioGroupField<
       render={({ field }) => (
         <FormItem className={className}>
           <FormLabel
-            className="text-sm font-medium text-gray-700"
+            className="text-foreground text-sm font-medium"
             data-testid={radioGroupLabelTestId}
           >
             {label} {required && <span className="text-destructive">*</span>}
           </FormLabel>
           {description && (
-            <p className="mb-2 text-sm text-gray-500">{description}</p>
+            <p className="text-muted-foreground mb-2 text-sm">{description}</p>
           )}
           <FormControl>
             <RadioGroup
@@ -97,15 +97,15 @@ export function FormRadioGroupField<
                       htmlFor={`${String(name)}-${option.value}`}
                       className={`cursor-pointer text-sm font-normal ${
                         disabled || option.disabled
-                          ? "cursor-not-allowed text-gray-400"
-                          : "text-gray-700"
+                          ? "text-muted-foreground cursor-not-allowed"
+                          : "text-foreground"
                       }`}
                       data-testid={`${String(name)}-radio-label-${index}`}
                     >
                       {option.label}
                     </Label>
                     {option.description && (
-                      <span className="mt-1 text-xs text-gray-500">
+                      <span className="text-muted-foreground mt-1 text-xs">
                         {option.description}
                       </span>
                     )}

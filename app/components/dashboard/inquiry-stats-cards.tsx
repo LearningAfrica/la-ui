@@ -1,9 +1,4 @@
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import FileText from "~icons/lucide/file-text";
-import Clock from "~icons/lucide/clock";
-import CheckCircle from "~icons/lucide/check-circle";
-import XCircle from "~icons/lucide/x-circle";
+import { cn } from "@/lib/utils";
 import type { InquiryStats } from "@/features/inquiries/inquiry-queries";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -16,84 +11,71 @@ export function InquiryStatsCards({
   stats,
   isLoading,
 }: InquiryStatsCardsProps) {
-  if (isLoading) {
-    return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {[...Array(4)].map((_, i) => (
-          <Card key={i}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-4 w-4 rounded" />
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="mb-1 h-8 w-16" />
-              <Skeleton className="h-3 w-24" />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    );
-  }
-
   const statCards = [
     {
-      title: "Total Inquiries",
+      key: "total",
+      eyebrow: "All time",
+      title: "Requests",
       value: stats?.total || 0,
-      description: "All time inquiries",
-      icon: FileText,
-      color: "text-blue-600",
-      bgColor: "bg-blue-600/10",
+      accent: "bg-la-ink",
     },
     {
+      key: "pending",
+      eyebrow: "Awaiting you",
       title: "Pending",
       value: stats?.pending || 0,
-      description: "Awaiting review",
-      icon: Clock,
-      color: "text-yellow-600",
-      bgColor: "bg-yellow-600/10",
+      accent: "bg-la-amber",
+      highlight: (stats?.pending || 0) > 0,
     },
     {
+      key: "approved",
+      eyebrow: "Live",
       title: "Approved",
       value: stats?.approved || 0,
-      description: "Organizations created",
-      icon: CheckCircle,
-      color: "text-green-600",
-      bgColor: "bg-green-600/10",
+      accent: "bg-la-ok",
     },
     {
+      key: "rejected",
+      eyebrow: "Declined",
       title: "Rejected",
       value: stats?.rejected || 0,
-      description: "Declined requests",
-      icon: XCircle,
-      color: "text-red-600",
-      bgColor: "bg-red-600/10",
+      accent: "bg-la-bad",
     },
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {statCards.map((stat, index) => {
-        const Icon = stat.icon;
-
-        return (
-          <Card key={index}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {stat.title}
-              </CardTitle>
-              <div className={`rounded-lg p-2 ${stat.bgColor}`}>
-                <Icon className={`h-4 w-4 ${stat.color}`} />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-muted-foreground text-xs">
-                {stat.description}
+    <div className="border-la-rule-strong bg-la-rule-strong grid gap-px overflow-hidden rounded-lg border sm:grid-cols-2 lg:grid-cols-4">
+      {isLoading
+        ? [...Array(4)].map((_, i) => (
+            <div key={i} className="bg-la-paper p-5">
+              <Skeleton className="h-3 w-16" />
+              <Skeleton className="mt-4 h-10 w-14" />
+              <Skeleton className="mt-2 h-3 w-20" />
+            </div>
+          ))
+        : statCards.map((stat) => (
+            <div
+              key={stat.key}
+              className={cn(
+                "bg-la-paper relative p-5",
+                stat.highlight && "bg-la-forest-wash"
+              )}
+            >
+              <span
+                className={cn("absolute inset-x-0 top-0 h-1", stat.accent)}
+                aria-hidden
+              />
+              <p className="text-la-muted text-[0.7rem] font-semibold tracking-[0.15em] uppercase">
+                {stat.eyebrow}
               </p>
-            </CardContent>
-          </Card>
-        );
-      })}
+              <p className="font-display text-la-ink mt-3 text-4xl font-bold tabular-nums">
+                {stat.value}
+              </p>
+              <p className="text-la-ink-2 mt-1 text-sm font-medium">
+                {stat.title}
+              </p>
+            </div>
+          ))}
     </div>
   );
 }

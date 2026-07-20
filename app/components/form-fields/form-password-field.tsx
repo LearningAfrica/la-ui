@@ -152,7 +152,7 @@ export function FormPasswordField<
         return (
           <FormItem className={className}>
             <FormLabel
-              className="text-md font-medium text-gray-700"
+              className="text-md text-foreground font-medium"
               data-testid={inputLabelTestId}
             >
               {label} {required && <span className="text-destructive">*</span>}
@@ -206,7 +206,7 @@ export function FormPasswordField<
 
                 {/* Strength Label */}
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-600">
+                  <span className="text-muted-foreground text-xs">
                     Password strength:{" "}
                     <span
                       className={`font-medium ${
@@ -226,7 +226,7 @@ export function FormPasswordField<
 
                 {/* Feedback */}
                 {strength?.feedback && strength.feedback.length > 0 && (
-                  <ul className="space-y-1 text-xs text-gray-500">
+                  <ul className="text-muted-foreground space-y-1 text-xs">
                     {strength.feedback.map((item, index) => (
                       <li key={index} className="flex items-center gap-1">
                         <span className="h-1 w-1 rounded-full bg-gray-400" />
@@ -239,7 +239,7 @@ export function FormPasswordField<
             )}
 
             {description && (
-              <p className="text-xs text-gray-500">{description}</p>
+              <p className="text-muted-foreground text-xs">{description}</p>
             )}
 
             <FormMessage data-testid={errorTestId} />

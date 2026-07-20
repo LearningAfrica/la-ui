@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as SelectPrimitive from "@radix-ui/react-select";
+import { Select as SelectPrimitive } from "radix-ui";
 import CheckIcon from "~icons/lucide/check";
 import ChevronDownIcon from "~icons/lucide/chevron-down";
 import ChevronUpIcon from "~icons/lucide/chevron-up";

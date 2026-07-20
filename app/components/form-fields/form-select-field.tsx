@@ -142,13 +142,13 @@ export function FormAsyncSelectField<
       render={({ field }) => (
         <FormItem className={className}>
           <FormLabel
-            className="text-md font-medium text-gray-700"
+            className="text-md text-foreground font-medium"
             data-testid={selectLabelTestId}
           >
             {label} {required && <span className="text-destructive">*</span>}
           </FormLabel>
           {description && (
-            <p className="mb-2 text-sm text-gray-500">{description}</p>
+            <p className="text-muted-foreground mb-2 text-sm">{description}</p>
           )}
           <FormControl>
             <div data-testid={selectTestId}>

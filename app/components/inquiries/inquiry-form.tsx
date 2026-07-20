@@ -84,7 +84,7 @@ export function InquiryForm() {
             <FormTextField
               control={form.control}
               name="company_name"
-              label="Organization Name"
+              label="Organization name"
               placeholder="Enter organization name"
               required
             />
@@ -92,7 +92,7 @@ export function InquiryForm() {
             <FormAsyncSelectField
               control={form.control}
               name="company_category"
-              label="Organization Type"
+              label="Organization type"
               placeholder="Select organization type"
               required
               options={[...COMPANY_CATEGORIES]}
@@ -101,7 +101,7 @@ export function InquiryForm() {
             <FormAsyncSelectField
               control={form.control}
               name="company_size"
-              label="Company Size"
+              label="Company size"
               placeholder="Select user range"
               required
               className="md:col-span-2"
@@ -135,12 +135,6 @@ export function InquiryForm() {
             render={({ field }) => (
               <FormItem className="flex flex-row items-start space-y-0 space-x-3">
                 <FormControl>
-                  {/* <input
-                      type="checkbox"
-                      className="h-4 w-4 rounded border-gray-300"
-                      checked={field.value}
-                      onChange={field.onChange}
-                    /> */}
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
@@ -162,16 +156,15 @@ export function InquiryForm() {
           <div className="flex flex-col-reverse gap-3 sm:flex-row sm:gap-4">
             <Button
               type="submit"
-              variant="gradient"
               disabled={createInquiryMutation.isPending}
               className="w-full sm:w-auto"
             >
-              {createInquiryMutation.status === "pending" ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {createInquiryMutation.isPending ? (
+                <Loader2 className="mr-2 size-4 animate-spin" />
               ) : null}
               {createInquiryMutation.isPending
-                ? "Submitting..."
-                : "Submit Inquiry"}
+                ? "Submitting request…"
+                : "Submit request"}
             </Button>
             <Button
               type="button"

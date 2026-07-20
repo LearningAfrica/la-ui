@@ -42,7 +42,7 @@ function ClientDashboardCategoriesInner() {
   const hasPrev = categoriesData?.meta?.has_prev_page || false;
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6 p-6 lg:p-8">
       <div>
         <h1 className="text-3xl font-bold">Content Categories</h1>
         <p className="text-muted-foreground mt-1">
