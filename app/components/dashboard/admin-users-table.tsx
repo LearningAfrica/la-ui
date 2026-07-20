@@ -101,7 +101,7 @@ export function AdminUsersTable({ users }: AdminUsersTableProps) {
               "inline-flex rounded-full px-2 py-0.5 text-xs font-medium capitalize",
               getValue()
                 ? "bg-la-ok/15 text-la-ok"
-                : "bg-la-amber/15 text-la-amber"
+                : "bg-la-amber/15 text-la-amber-deep"
             )}
           >
             {getValue() ? "Verified" : "Unverified"}

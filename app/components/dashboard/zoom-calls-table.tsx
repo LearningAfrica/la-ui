@@ -1,12 +1,5 @@
-import { useMemo, useState } from "react";
-import {
-  useReactTable,
-  getCoreRowModel,
-  flexRender,
-  type ColumnDef,
-} from "@tanstack/react-table";
+import { useState } from "react";
 import moment from "moment";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -33,6 +26,8 @@ import Trash2 from "~icons/lucide/trash-2";
 import Video from "~icons/lucide/video";
 import RefreshCw from "~icons/lucide/refresh-cw";
 import Copy from "~icons/lucide/copy";
+import Clock from "~icons/lucide/clock";
+import CalendarX from "~icons/lucide/calendar-x";
 import type { ZoomCall } from "@/features/zoom-calls/zoom-call-queries";
 import { useDeleteZoomCall } from "@/features/zoom-calls/zoom-call-mutations";
 import {
@@ -42,9 +37,10 @@ import {
 } from "@/features/zoom-calls/session-status";
 import { orgRoutes } from "@/lib/utils/org-routes";
 import { useAppModal } from "@/stores/filters/modal-hooks";
+import { cn } from "@/lib/utils";
 import type { OrganizationMembershipRole } from "@/features/organizations/organization-queries";
 
-interface ZoomCallsTableProps {
+interface ZoomCallsListProps {
   calls: ZoomCall[];
   isLoading?: boolean;
   error?: Error | null;
@@ -52,13 +48,16 @@ interface ZoomCallsTableProps {
   userRole: OrganizationMembershipRole | undefined;
 }
 
+// Sessions are time-based events, so they read better as cards than a table:
+// a prominent date, a big Join CTA, live sessions highlighted, and it stacks
+// cleanly on mobile instead of forcing horizontal scroll.
 export function ZoomCallsTable({
   calls,
   isLoading = false,
   error = null,
   onRefresh,
   userRole,
-}: ZoomCallsTableProps) {
+}: ZoomCallsListProps) {
   const { orgId = "" } = useParams<{ orgId: string }>();
   const navigate = useNavigate();
   const editModal = useAppModal("create-or-update-zoom-call");
@@ -66,125 +65,6 @@ export function ZoomCallsTable({
   const [pendingDelete, setPendingDelete] = useState<ZoomCall | null>(null);
 
   const canManage = userRole === "admin" || userRole === "instructor";
-
-  const columns = useMemo<ColumnDef<ZoomCall>[]>(
-    () => [
-      {
-        accessorKey: "topic",
-        header: "Topic",
-        cell: ({ row }) => (
-          <div className="flex items-center gap-2">
-            <Video className="text-muted-foreground h-4 w-4" />
-            <span className="font-medium">{row.original.topic}</span>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "start_time",
-        header: "Starts",
-        cell: ({ row }) => (
-          <div className="flex flex-col">
-            <span className="text-sm">
-              {moment(row.original.start_time).format("MMM D, h:mm A")}
-            </span>
-            <span className="text-muted-foreground text-xs">
-              {moment(row.original.start_time).fromNow()}
-            </span>
-          </div>
-        ),
-      },
-      {
-        accessorKey: "duration",
-        header: "Duration",
-        cell: ({ row }) => (
-          <span className="text-sm">{row.original.duration} min</span>
-        ),
-      },
-      {
-        accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => {
-          const s = getSessionStatus(row.original);
-
-          return (
-            <Badge variant="outline" className={SESSION_STATUS_CLASS[s]}>
-              {SESSION_STATUS_LABEL[s]}
-            </Badge>
-          );
-        },
-      },
-      {
-        id: "actions",
-        header: "Actions",
-        cell: ({ row }) => {
-          const call = row.original;
-          const s = getSessionStatus(call);
-          const canJoin = s === "live" || s === "upcoming";
-
-          return (
-            <div className="flex items-center gap-2">
-              {canJoin && (
-                <Button
-                  size="sm"
-                  variant="default"
-                  className="bg-green-600 hover:bg-green-700"
-                  onClick={() =>
-                    navigate(orgRoutes.liveSessionJoin(orgId, call.id))
-                  }
-                >
-                  <Video className="mr-1 h-3 w-3" />
-                  Join
-                </Button>
-              )}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  {call.join_url && (
-                    <DropdownMenuItem
-                      onClick={() =>
-                        navigator.clipboard.writeText(call.join_url)
-                      }
-                    >
-                      <Copy className="mr-2 h-4 w-4" />
-                      Copy Join Link
-                    </DropdownMenuItem>
-                  )}
-                  {canManage && (
-                    <>
-                      <DropdownMenuItem onClick={() => editModal.open(call)}>
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit Session
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        onClick={() => setPendingDelete(call)}
-                        className="text-red-600 focus:text-red-600"
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete Session
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          );
-        },
-      },
-    ],
-    [editModal, canManage, navigate, orgId]
-  );
-
-  const table = useReactTable({
-    data: calls,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
 
   const handleConfirmDelete = () => {
     if (!pendingDelete) return;
@@ -196,7 +76,7 @@ export function ZoomCallsTable({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {onRefresh && (
         <div className="flex justify-end">
           <Button
@@ -206,107 +86,182 @@ export function ZoomCallsTable({
             disabled={isLoading}
           >
             <RefreshCw
-              className={`mr-2 h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
+              className={cn("mr-2 size-4", isLoading && "animate-spin")}
             />
             Refresh
           </Button>
         </div>
       )}
 
-      <div className="rounded-lg border">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-muted/50">
-              <tr>
-                {table.getHeaderGroups()[0]?.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className="px-4 py-3 text-left text-sm font-medium"
-                  >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {isLoading ? (
-                <tr>
-                  <td
-                    colSpan={columns.length}
-                    className="px-4 py-8 text-center"
-                  >
-                    <div className="flex items-center justify-center">
-                      <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                      Loading sessions...
-                    </div>
-                  </td>
-                </tr>
-              ) : error ? (
-                <tr>
-                  <td
-                    colSpan={columns.length}
-                    className="text-destructive px-4 py-8 text-center"
-                  >
-                    Error loading sessions: {error.message}
-                  </td>
-                </tr>
-              ) : table.getRowModel().rows.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={columns.length}
-                    className="text-muted-foreground px-4 py-8 text-center text-sm"
-                  >
-                    No live sessions scheduled.
-                  </td>
-                </tr>
-              ) : (
-                table.getRowModel().rows.map((row) => (
-                  <tr
-                    key={row.id}
-                    className="hover:bg-muted/50 border-t transition-colors"
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="px-4 py-3">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </td>
-                    ))}
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+      {isLoading ? (
+        <div className="space-y-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="border-la-rule-strong bg-la-paper h-20 animate-pulse rounded-lg border"
+            />
+          ))}
         </div>
-      </div>
+      ) : error ? (
+        <p className="text-la-bad py-8 text-center text-sm">
+          Couldn&apos;t load sessions. Try refreshing.
+        </p>
+      ) : calls.length === 0 ? (
+        <div className="border-la-rule-strong rounded-lg border border-dashed px-6 py-14 text-center">
+          <CalendarX className="text-la-muted mx-auto size-8" />
+          <p className="font-display text-la-ink mt-4 text-lg font-semibold">
+            No sessions scheduled
+          </p>
+          <p className="text-la-muted mt-1 text-sm">
+            {canManage
+              ? "Schedule a Zoom session and it will appear here."
+              : "Live sessions will appear here once scheduled."}
+          </p>
+        </div>
+      ) : (
+        <ul className="space-y-3">
+          {calls.map((call) => {
+            const s = getSessionStatus(call);
+            const isLive = s === "live";
+            const canJoin = s === "live" || s === "upcoming";
+            const start = moment(call.start_time);
+
+            return (
+              <li
+                key={call.id}
+                className={cn(
+                  "flex flex-col gap-4 rounded-lg border p-4 transition-colors sm:flex-row sm:items-center",
+                  isLive
+                    ? "border-la-ok/50 bg-la-ok/5"
+                    : "border-la-rule-strong bg-la-paper"
+                )}
+              >
+                {/* Date tile + details */}
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <div
+                    className={cn(
+                      "flex size-12 shrink-0 flex-col items-center justify-center rounded-lg",
+                      isLive
+                        ? "bg-la-ok/15 text-la-ok"
+                        : "bg-la-cream text-la-ink"
+                    )}
+                  >
+                    <span className="text-[10px] font-semibold uppercase opacity-70">
+                      {start.format("MMM")}
+                    </span>
+                    <span className="font-display text-lg leading-none font-bold">
+                      {start.format("D")}
+                    </span>
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-display text-la-ink truncate font-bold">
+                      {call.topic}
+                    </h3>
+                    <p className="text-la-muted mt-0.5 flex items-center gap-1.5 text-xs">
+                      <Clock className="size-3.5 shrink-0" />
+                      {start.format("ddd, MMM D · h:mm A")} · {call.duration}{" "}
+                      min
+                      <span className="text-la-ink-2">· {start.fromNow()}</span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* Status + actions */}
+                <div className="flex shrink-0 items-center gap-2 pl-15 sm:pl-0">
+                  {isLive && (
+                    <span
+                      className="bg-la-ok size-2 animate-pulse rounded-full"
+                      aria-hidden
+                    />
+                  )}
+                  <span
+                    className={cn(
+                      "rounded-full border px-2.5 py-0.5 text-xs font-medium",
+                      SESSION_STATUS_CLASS[s]
+                    )}
+                  >
+                    {SESSION_STATUS_LABEL[s]}
+                  </span>
+                  {canJoin && (
+                    <Button
+                      size="sm"
+                      onClick={() =>
+                        navigate(orgRoutes.liveSessionJoin(orgId, call.id))
+                      }
+                    >
+                      <Video className="mr-1 size-3.5" />
+                      Join
+                    </Button>
+                  )}
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-8"
+                        aria-label="Session actions"
+                      >
+                        <MoreVertical className="size-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {call.join_url && (
+                        <DropdownMenuItem
+                          onClick={() =>
+                            navigator.clipboard.writeText(call.join_url)
+                          }
+                        >
+                          <Copy className="mr-2 size-4" />
+                          Copy join link
+                        </DropdownMenuItem>
+                      )}
+                      {canManage && (
+                        <>
+                          <DropdownMenuItem
+                            onClick={() => editModal.open(call)}
+                          >
+                            <Pencil className="mr-2 size-4" />
+                            Edit session
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => setPendingDelete(call)}
+                            className="text-la-bad focus:text-la-bad"
+                          >
+                            <Trash2 className="mr-2 size-4" />
+                            Delete session
+                          </DropdownMenuItem>
+                        </>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
 
       <AlertDialog
         open={!!pendingDelete}
-        onOpenChange={(open) => !open && setPendingDelete(null)}
+        onOpenChange={(v) => !v && setPendingDelete(null)}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete session?</AlertDialogTitle>
+            <AlertDialogTitle>Delete this session?</AlertDialogTitle>
             <AlertDialogDescription>
-              {pendingDelete
-                ? `"${pendingDelete.topic}" will be cancelled for all participants.`
-                : ""}
+              &ldquo;{pendingDelete?.topic}&rdquo; will be permanently removed.
+              This cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleteMutation.isPending}>
-              Cancel
-            </AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
+              className="bg-la-bad hover:bg-la-bad/90 text-white"
               onClick={handleConfirmDelete}
-              disabled={deleteMutation.isPending}
-              className="bg-red-600 text-white hover:bg-red-700"
             >
-              Delete
+              Delete session
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

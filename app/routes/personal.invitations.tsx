@@ -134,7 +134,7 @@ function StatusPill({ status }: { status: string }) {
     <span
       className={cn(
         "shrink-0 rounded-full px-2 py-0.5 text-xs font-medium capitalize",
-        status === "pending" && "bg-la-amber/15 text-la-amber",
+        status === "pending" && "bg-la-amber/15 text-la-amber-deep",
         status === "accepted" && "bg-la-ok/15 text-la-ok",
         status === "declined" && "bg-la-bad/10 text-la-bad"
       )}

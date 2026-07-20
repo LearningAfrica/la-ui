@@ -149,6 +149,7 @@ export function CreateOrUpdateZoomCallDialog() {
     >
       <SheetContent
         side="right"
+        dismissible={false}
         className="flex w-full flex-col gap-0 p-0 sm:max-w-lg"
       >
         <SheetHeader className="border-b">

@@ -63,6 +63,9 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+// Default document title so every route has one (leaf routes override).
+export const meta = () => [{ title: "Learning Africa" }];
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">

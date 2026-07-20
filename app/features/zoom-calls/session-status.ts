@@ -31,7 +31,7 @@ export const SESSION_STATUS_LABEL: Record<SessionStatus, string> = {
 };
 
 export const SESSION_STATUS_CLASS: Record<SessionStatus, string> = {
-  upcoming: "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300",
-  live: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",
-  past: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
+  upcoming: "bg-la-amber/15 text-la-amber-deep border-transparent",
+  live: "bg-la-ok/15 text-la-ok border-transparent",
+  past: "bg-la-cream text-la-muted border-transparent",
 };

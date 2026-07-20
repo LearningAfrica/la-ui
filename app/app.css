@@ -31,11 +31,16 @@
   --color-la-paper: #ffffff;
   --color-la-ink: #0a0a0a;
   --color-la-ink-2: #404040;
-  --color-la-muted: #737373;
+  /* #666 clears WCAG AA (>=4.5:1) on both white and the cream shell bg;
+     #737373 failed (~4.3:1) on the gray surface. */
+  --color-la-muted: #666666;
   --color-la-rule: rgba(10, 10, 10, 0.08);
   --color-la-rule-strong: rgba(10, 10, 10, 0.15);
-  /* Primary brand: vivid orange from learningafrica.com production. */
-  --color-la-forest: #f54900;
+  /* Primary brand orange. Deepened from the production #f54900 so white
+     text (buttons, avatar) and orange-on-white text (eyebrows) clear
+     WCAG AA — #f54900 was only ~3.6:1. Revert to #f54900 to prioritise
+     vibrancy over AA. */
+  --color-la-forest: #cc3d00;
   --color-la-forest-deep: #c63b00;
   --color-la-forest-soft: #ff6d33;
   --color-la-forest-wash: #fff1eb;
@@ -44,6 +49,9 @@
   --color-la-terracotta-deep: #b84520;
   --color-la-amber: #ffb900;
   --color-la-amber-soft: #ffd24d;
+  /* Dark amber for TEXT — #ffb900 as text fails contrast (~1.6:1); this
+     clears AA on the pale amber pill tint. Flips light in dark mode. */
+  --color-la-amber-deep: #8a5a00;
   /* Semantic */
   --color-la-ok: #2d8a55;
   --color-la-warn: #ffb900;
@@ -164,6 +172,8 @@ html:has(.la-shell-bg) {
   --color-la-terracotta-deep: #d96840;
   --color-la-amber: #ffcc33;
   --color-la-amber-soft: #ffb900;
+  /* Light amber for text on dark surfaces (readable on the pale amber tint). */
+  --color-la-amber-deep: #ffd27a;
   --color-la-ok: #4ab574;
   --color-la-warn: #ffcc33;
   --color-la-bad: #ff4d4d;

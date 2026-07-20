@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import AsyncSelect from "@/components/ui/async-select";
+import { cn } from "@/lib/utils";
 import Plus from "~icons/lucide/plus";
-import Video from "~icons/lucide/video";
+import RefreshCw from "~icons/lucide/refresh-cw";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { useZoomCalls } from "@/features/zoom-calls/zoom-call-queries";
 import { useCourses } from "@/features/courses/course-queries";
@@ -26,14 +26,16 @@ export default function ClientDashboardLiveSessions() {
   const calls = useMemo(() => data?.data ?? [], [data]);
 
   return (
-    <div className="space-y-6 p-6 lg:p-8">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="p-6 lg:p-8">
+      <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="flex items-center gap-2 text-2xl font-bold sm:text-3xl">
-            <Video className="h-6 w-6" />
-            Live Sessions
+          <p className="text-la-forest mb-2 text-xs font-semibold tracking-[0.2em] uppercase">
+            Live classes
+          </p>
+          <h1 className="font-display text-la-ink text-4xl font-bold tracking-tight lg:text-5xl">
+            Live sessions
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-la-muted mt-2 max-w-prose">
             {canManage
               ? "Schedule and manage Zoom sessions for your organization."
               : "Upcoming live sessions hosted by your organization."}
@@ -41,40 +43,49 @@ export default function ClientDashboardLiveSessions() {
         </div>
         {canManage && (
           <Button onClick={() => createCallModal.open(undefined)}>
-            <Plus className="mr-1 h-4 w-4" />
-            Schedule Session
+            <Plus className="mr-1 size-4" />
+            Schedule session
           </Button>
         )}
+      </header>
+
+      {/* Toolbar — filter left, refresh right. Cards sit directly on the page
+          (no wrapping panel) so we don't nest borders. */}
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="w-full sm:w-56">
+          <AsyncSelect
+            value={courseFilter}
+            onChange={(v) => setCourseFilter(v ? String(v) : "all")}
+            placeholder="All courses"
+            options={[
+              { value: "all", label: "All courses" },
+              ...(coursesData?.data?.map((c) => ({
+                value: c.id,
+                label: c.title,
+              })) ?? []),
+            ]}
+          />
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => refetch()}
+          disabled={isLoading}
+          className="self-start sm:self-auto"
+        >
+          <RefreshCw
+            className={cn("mr-1 size-4", isLoading && "animate-spin")}
+          />
+          Refresh
+        </Button>
       </div>
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between gap-4">
-          <CardTitle>Sessions</CardTitle>
-          <div className="w-56">
-            <AsyncSelect
-              value={courseFilter}
-              onChange={(v) => setCourseFilter(v ? String(v) : "all")}
-              placeholder="All courses"
-              options={[
-                { value: "all", label: "All courses" },
-                ...(coursesData?.data?.map((c) => ({
-                  value: c.id,
-                  label: c.title,
-                })) ?? []),
-              ]}
-            />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <ZoomCallsTable
-            calls={calls}
-            isLoading={isLoading}
-            error={error as Error | null}
-            onRefresh={() => refetch()}
-            userRole={role}
-          />
-        </CardContent>
-      </Card>
+      <ZoomCallsTable
+        calls={calls}
+        isLoading={isLoading}
+        error={error as Error | null}
+        userRole={role}
+      />
 
       <CreateOrUpdateZoomCallDialog />
     </div>

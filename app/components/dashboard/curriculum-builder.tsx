@@ -496,7 +496,7 @@ function ModuleCard({
                   onClick={() => setSheet((s) => ({ ...s, step: "ai" }))}
                   className="border-la-rule-strong hover:border-la-forest hover:bg-la-forest-wash flex items-start gap-3 rounded-lg border p-4 text-left transition-colors"
                 >
-                  <span className="bg-la-amber/15 text-la-amber flex size-9 shrink-0 items-center justify-center rounded-md">
+                  <span className="bg-la-amber/15 text-la-amber-deep flex size-9 shrink-0 items-center justify-center rounded-md">
                     <Sparkles className="size-4" />
                   </span>
                   <span>

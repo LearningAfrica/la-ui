@@ -44,7 +44,7 @@ interface AdminInquiriesTableProps {
 const getStatusPillClass = (status: string) => {
   switch (status?.toLowerCase()) {
     case "pending":
-      return "bg-la-amber/15 text-la-amber";
+      return "bg-la-amber/15 text-la-amber-deep";
     case "approved":
       return "bg-la-ok/15 text-la-ok";
     case "rejected":
