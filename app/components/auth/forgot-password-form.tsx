@@ -60,6 +60,7 @@ export function ForgotPasswordForm({ searchParams }: ForgotPasswordFormProps) {
             type="email"
             placeholder="you@example.com"
             disabled={forgotMutation.isPending}
+            inputProps={{ autoComplete: "email" }}
           />
           <Button
             type="submit"

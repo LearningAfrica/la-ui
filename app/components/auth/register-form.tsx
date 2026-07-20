@@ -101,6 +101,7 @@ export function RegisterForm({
               label="First Name"
               placeholder="John"
               disabled={registerMutation.isPending}
+              inputProps={{ autoComplete: "given-name" }}
             />
 
             <FormTextField
@@ -109,6 +110,7 @@ export function RegisterForm({
               label="Last Name"
               placeholder="Maina"
               disabled={registerMutation.isPending}
+              inputProps={{ autoComplete: "family-name" }}
             />
           </div>
 
@@ -119,6 +121,7 @@ export function RegisterForm({
             type="email"
             placeholder="you@example.com"
             disabled={registerMutation.isPending}
+            inputProps={{ autoComplete: "email" }}
           />
 
           <FormTextField
@@ -128,6 +131,7 @@ export function RegisterForm({
             placeholder="Your Username"
             disabled={registerMutation.isPending}
             description="You can add this later if you're not sure yet"
+            inputProps={{ autoComplete: "username" }}
           />
 
           <FormPasswordField
