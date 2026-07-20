@@ -25,17 +25,20 @@ function ProgressBar({ value }: { value: number }) {
   const isCompleted = pct === 100;
 
   return (
-    <div className="flex items-center gap-3">
-      <div className="bg-muted h-2 w-40 overflow-hidden rounded-full">
+    <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+      {/* Narrower on mobile so it doesn't crush the learner name beside it. */}
+      <div className="bg-la-cream h-2 w-20 overflow-hidden rounded-full sm:w-40">
         <div
           className={cn(
             "h-full rounded-full transition-all",
-            isCompleted ? "bg-emerald-500" : "bg-primary/60"
+            isCompleted ? "bg-la-ok" : "bg-la-forest"
           )}
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="w-10 text-right text-sm tabular-nums">{pct}%</span>
+      <span className="text-la-ink w-9 text-right text-sm font-medium tabular-nums">
+        {pct}%
+      </span>
     </div>
   );
 }
@@ -93,17 +96,20 @@ export default function ClientDashboardOrgProgress() {
 
   return (
     <OrgRoleGuard allowedRoles={["admin"]}>
-      <div className="space-y-6 p-6">
-        <div>
-          <h1 className="flex items-center gap-2 text-2xl font-bold sm:text-3xl">
-            <TrendingUp className="h-6 w-6" />
+      <div className="space-y-6 p-6 lg:p-8">
+        <header>
+          <p className="text-la-forest mb-2 text-xs font-semibold tracking-[0.2em] uppercase">
+            Analytics
+          </p>
+          <h1 className="font-display text-la-ink flex items-center gap-2 text-4xl font-bold tracking-tight lg:text-5xl">
+            <TrendingUp className="h-8 w-8" />
             Course Progress
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-la-muted mt-2">
             How learners are progressing across your organization&apos;s
             courses.
           </p>
-        </div>
+        </header>
 
         {isLoading ? (
           <div className="text-muted-foreground flex items-center gap-2 p-6 text-sm">
@@ -136,12 +142,12 @@ export default function ClientDashboardOrgProgress() {
                   key={course.course_id}
                   className="overflow-hidden rounded-lg border"
                 >
-                  <div className="bg-muted/50 flex items-center justify-between gap-3 px-4 py-3">
-                    <div className="min-w-0">
-                      <h2 className="truncate text-sm font-semibold">
+                  <div className="bg-la-cream/60 flex items-center justify-between gap-3 px-4 py-3">
+                    <div className="min-w-0 flex-1">
+                      <h2 className="font-display text-la-ink truncate text-sm font-semibold">
                         {course.course_title}
                       </h2>
-                      <p className="text-muted-foreground text-xs">
+                      <p className="text-la-muted text-xs">
                         {learners.length}{" "}
                         {learners.length === 1 ? "learner" : "learners"}{" "}
                         enrolled
