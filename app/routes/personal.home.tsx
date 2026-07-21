@@ -155,18 +155,18 @@ export default function PersonalHome() {
 
 function WelcomeCard({ firstName }: { firstName: string }) {
   return (
-    <section className="bg-la-forest text-la-paper rounded p-6">
-      <p className="font-display text-la-paper/80 text-[10px] font-medium tracking-[0.2em] uppercase">
+    <header>
+      <p className="text-la-forest mb-2 text-xs font-semibold tracking-[0.2em] uppercase">
         Welcome back
       </p>
-      <h2 className="font-display mt-1 text-2xl font-medium tracking-tight">
+      <h1 className="font-display text-la-ink text-4xl font-bold tracking-tight lg:text-5xl">
         Hi {firstName} — here&apos;s where things stand.
-      </h2>
-      <p className="mt-2 max-w-xl text-[13px] opacity-80">
+      </h1>
+      <p className="text-la-muted mt-2 max-w-xl">
         Track invitations, browse the organizations you&apos;re a member of, and
         jump into the workspace you&apos;re working in today.
       </p>
-    </section>
+    </header>
   );
 }
 

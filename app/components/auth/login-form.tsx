@@ -54,6 +54,12 @@ export function LoginForm({
         // Update auth store
         login(result);
 
+        // Flush any organization carried over from a previous session before we
+        // (maybe) set this user's below. Without this, a stale org leaks to users
+        // who don't get one assigned — super admins, or users with zero orgs —
+        // and org-scoped requests would send the previous user's org id.
+        setSelectedOrganization(null);
+
         if (!result.user.is_verified) {
           navigate(
             "/email-verification-pending" +

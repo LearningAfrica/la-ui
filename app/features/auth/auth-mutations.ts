@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import type {
   LoginFormData,
@@ -51,6 +51,8 @@ interface ErrorResponse {
 
 // Login Mutation
 export const useLogin = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationKey: authMutationKeys.login(),
     mutationFn: async (data: LoginFormData) => {
@@ -60,6 +62,13 @@ export const useLogin = () => {
       );
 
       return response.data;
+    },
+    // Wipe any cached data from a previous session. Queries are keyed by org,
+    // not user, so without this the incoming user could briefly see the last
+    // user's cached lists (certificates, progress, members). Logout is spread
+    // across layouts + the 401 refresh path, so login is the single choke point.
+    onSuccess: () => {
+      queryClient.clear();
     },
     onError: (error) => {
       toast.error({
