@@ -6,18 +6,18 @@ import { BackgroundPattern } from "./background-pattern";
 const STEPS = [
   {
     n: "01",
-    title: "Tell us about your organization",
-    body: "Share who you are — company, NGO, training provider, or institution — plus the size and what you want to teach.",
+    title: "Explore",
+    body: "Create an account and walk the platform the way a learner would — courses, quizzes, certificates, the lot.",
   },
   {
     n: "02",
-    title: "We review and reach out",
-    body: "Our team reviews each request and gets back within a few business days.",
+    title: "Consult",
+    body: "Book a discovery call. We demo the platform against your organization's actual training needs, free of charge.",
   },
   {
     n: "03",
-    title: "Set up your workspace",
-    body: "Once approved, you create your account, invite your team, and start building.",
+    title: "Deploy",
+    body: "We set up your branded workspace, load or build your content, and you begin the transition to modern training.",
   },
 ];
 
@@ -31,12 +31,11 @@ export function LandingOnboarding() {
         <div className="mb-12 grid gap-5 md:grid-cols-12">
           <div className="md:col-span-3">
             <div className="font-display text-la-muted text-[10px] font-medium tracking-[0.25em] uppercase">
-              ¶ 01 Onboarding
+              ¶ 05 Getting started
             </div>
           </div>
           <h2 className="font-display text-la-ink text-[36px] leading-[1.05] font-medium tracking-[-0.035em] sm:text-[44px] md:col-span-9 md:text-[56px]">
-            Onboard your organization{" "}
-            <span className="text-la-forest">in three steps.</span>
+            Getting started is <span className="text-la-forest">simple.</span>
           </h2>
         </div>
 
@@ -67,7 +66,7 @@ export function LandingOnboarding() {
               Ready when you are
             </p>
             <h3 className="font-display mt-3 text-[28px] leading-tight font-medium tracking-[-0.025em] sm:text-[32px]">
-              Submit an inquiry. Free, no commitment.
+              Book a discovery call. Free, no commitment.
             </h3>
             <p className="text-la-paper/80 mt-4 text-[14px] leading-[1.6]">
               We review every request and reply personally. Tell us what you

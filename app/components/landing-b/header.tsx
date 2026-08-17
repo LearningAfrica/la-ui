@@ -17,14 +17,12 @@ import {
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
 
-import { LALogo } from "./la-logo";
-
 const NAV_ITEMS = [
-  { label: "Onboarding", to: "#onboarding" },
-  { label: "Platform", to: "#platform" },
-  { label: "Audiences", to: "#sectors" },
-  { label: "Impact", to: "#impact" },
-  { label: "How", to: "#how" },
+  { label: "Why", to: "/#why" },
+  { label: "Features", to: "/#features" },
+  { label: "Solutions", to: "/#sectors" },
+  { label: "Pricing", to: "/pricing" },
+  { label: "FAQ", to: "/#faq" },
 ];
 
 type Props = {
@@ -59,24 +57,27 @@ export function LandingHeader({ isAuthenticated }: Props) {
   return (
     <header className="border-la-rule bg-la-paper sticky top-0 z-40 border-b">
       <div className="mx-auto flex h-14 max-w-[1280px] items-center px-5 md:px-10">
-        <Link
-          to="/"
-          prefetch="intent"
-          className="font-display text-la-ink flex items-center gap-2 text-[14px] font-semibold tracking-tight"
-        >
-          <LALogo />
-          Learning Africa
+        <Link to="/" prefetch="intent" className="flex items-center">
+          <img
+            src="/brand/logo-full.webp"
+            alt="Learning Africa — Education Rethought"
+            width={600}
+            height={257}
+            className="h-8 w-auto object-contain"
+            decoding="async"
+          />
         </Link>
 
         <nav className="font-display text-la-ink-2 ml-12 hidden items-center gap-7 text-[13px] font-medium md:flex">
           {NAV_ITEMS.map((item) => (
-            <a
+            <Link
               key={item.label}
-              href={item.to}
+              to={item.to}
+              prefetch="intent"
               className="hover:text-la-ink transition-colors"
             >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -166,14 +167,15 @@ export function LandingHeader({ isAuthenticated }: Props) {
         <div className={cn("border-la-rule border-t md:hidden")}>
           <nav className="mx-auto flex max-w-[1280px] flex-col gap-1 px-5 py-3">
             {NAV_ITEMS.map((item) => (
-              <a
+              <Link
                 key={item.label}
-                href={item.to}
-                onClick={() => setMobileOpen(false)}
+                to={item.to}
+                prefetch="intent"
+                onClick={closeMobile}
                 className="font-display text-la-ink-2 hover:bg-la-cream rounded px-3 py-2 text-[14px] font-medium"
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
             <div className="border-la-rule mt-2 flex flex-col gap-2 border-t pt-2">
               {isAuthenticated ? (

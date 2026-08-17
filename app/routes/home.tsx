@@ -1,16 +1,17 @@
 import { href, type LinksFunction } from "react-router";
 
 import {
+  FAQS,
   LandingCTA,
+  LandingFAQ,
+  LandingFeatures,
   LandingFooter,
   LandingHeader,
   LandingHero,
-  LandingHow,
   LandingImpact,
   LandingOnboarding,
-  LandingPlatform,
   LandingSectors,
-  LandingVoices,
+  LandingWhy,
 } from "@/components/landing-b";
 import { generateSEOTags } from "@/lib/utils/seo";
 import {
@@ -23,42 +24,23 @@ import { useAuthStore } from "@/stores/auth/auth-hooks";
 export const links: LinksFunction = () => [
   {
     rel: "preload",
-    href: "https://images.unsplash.com/photo-1620969910995-4bbe4eaa32c1?q=80&w=820&auto=format&fit=crop",
+    href: "/illustrations/graduate-certificate.webp",
     as: "image",
     type: "image/webp",
-  },
-];
-
-const HOME_FAQS = [
-  {
-    q: "Who is Learning Africa for?",
-    a: "Any organization that wants to train its people — companies, NGOs, training providers, and institutions. Admins set up the workspace, instructors build courses, and learners enroll and earn certificates.",
-  },
-  {
-    q: "How much does it cost?",
-    a: "Signing up is free. Organizations can request a custom plan with additional features through our inquiry form.",
-  },
-  {
-    q: "Can my organization onboard?",
-    a: "Yes. Submit an inquiry from the homepage. We review every request and reply with next steps within a few business days.",
-  },
-  {
-    q: "Do learners get verifiable credentials?",
-    a: "Yes. Course completions issue digital certificates that are verifiable and portable, so learners can share them anywhere.",
   },
 ];
 
 export function meta() {
   return [
     ...generateSEOTags({
-      title: "Learning Africa — The complete learning management platform",
+      title: "Learning Africa — Education Rethought",
       description:
-        "Create courses, track learner progress, and issue verifiable certificates with Learning Africa — the complete learning management platform for organizations, training providers, and teams everywhere.",
+        "An enterprise-grade LMS by Chomoka Studios. Live training, self-paced courses, SCORM and xAPI, gamification, branded certificates, and custom e-learning content production.",
       url: href("/"),
       image: "/og.png",
       keywords:
-        "learning africa,learning management platform,course management,organizational learning,certificates,team training,online courses,instructor platform",
-      jsonLd: [organizationSchema(), websiteSchema(), faqSchema(HOME_FAQS)],
+        "learning africa,chomoka studios,learning management system,lms africa,scorm,xapi,e-learning content,corporate training,compliance training,branded certificates",
+      jsonLd: [organizationSchema(), websiteSchema(), faqSchema(FAQS)],
     }),
   ];
 }
@@ -71,12 +53,12 @@ export default function Home() {
       <LandingHeader isAuthenticated={isAuthenticated} />
       <main>
         <LandingHero />
-        <LandingOnboarding />
-        <LandingPlatform />
+        <LandingWhy />
+        <LandingFeatures />
         <LandingSectors />
         <LandingImpact />
-        <LandingHow />
-        <LandingVoices />
+        <LandingOnboarding />
+        <LandingFAQ />
         <LandingCTA />
       </main>
       <LandingFooter />

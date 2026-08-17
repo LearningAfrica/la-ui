@@ -86,6 +86,9 @@ export default [
       "routes/auth.reset-password-confirmation.tsx"
     ),
     route("/inquiry", "routes/inquiry.tsx"),
+    route("/pricing", "routes/pricing.tsx"),
+    route("/terms", "routes/terms.tsx"),
+    route("/privacy", "routes/privacy.tsx"),
     route(
       "/email-verification-pending",
       "routes/email-verification-pending.tsx"

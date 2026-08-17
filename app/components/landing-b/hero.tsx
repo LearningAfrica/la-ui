@@ -1,17 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router";
 
-import { OptimisticImage } from "@/components/ui/optimistic-image";
 import { useAuthStore } from "@/stores/auth/auth-hooks";
 
 import { AfricaMap } from "./africa-map";
 import { BackgroundPattern } from "./background-pattern";
 
 const HIGHLIGHTS = [
-  { l: "Free to start" },
-  { l: "Multi-tenant" },
-  { l: "Verifiable certificates" },
-  { l: "Self-serve setup" },
+  { l: "Live training built in" },
+  { l: "Self-paced 24/7/365" },
+  { l: "SCORM & xAPI ready" },
+  { l: "Branded certificates" },
 ];
 
 export function LandingHero() {
@@ -63,20 +62,18 @@ export function LandingHero() {
             <div className="mb-7 flex items-center gap-3">
               <span aria-hidden className="bg-la-ink h-px w-6 shrink-0" />
               <span className="font-display text-la-muted text-[10px] font-medium tracking-[0.2em] uppercase">
-                Empowering Africa Through Learning
+                By Chomoka Studios
               </span>
             </div>
             <h1 className="font-display text-la-ink text-[44px] leading-[1.02] font-medium tracking-[-0.04em] sm:text-[56px] lg:text-[72px] lg:tracking-[-0.045em]">
-              Transform Your
+              Education
               <br />
-              Organization&apos;s
-              <br />
-              <span className="text-la-forest">Learning.</span>
+              <span className="text-la-forest">Rethought.</span>
             </h1>
             <p className="text-la-ink-2 mt-7 max-w-[520px] text-[16px] leading-[1.55] sm:text-[17px]">
-              The complete learning management platform for modern
-              organizations. Create courses, track progress, and issue
-              certificates — all in one place.
+              An enterprise-grade learning management system, blended with
+              custom animation, gamification, and interactive content — turning
+              dry material into training people actually finish.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
               {isAuthenticated ? (
@@ -97,11 +94,11 @@ export function LandingHero() {
                     Sign up — it&apos;s free →
                   </Link>
                   <Link
-                    to="/sign-in"
+                    to="/inquiry"
                     prefetch="intent"
                     className="font-display border-la-rule-strong text-la-ink hover:bg-la-cream inline-flex h-12 items-center rounded border px-6 text-[14px] font-medium transition-colors"
                   >
-                    Sign in
+                    Book a demo
                   </Link>
                 </>
               )}
@@ -113,18 +110,22 @@ export function LandingHero() {
 
           {/* Right: photo + map */}
           <div className="flex flex-col gap-3 lg:col-span-6">
-            <div className="relative aspect-[5/4] overflow-hidden rounded">
-              <OptimisticImage
-                src="https://images.unsplash.com/photo-1620969910995-4bbe4eaa32c1?q=80&w=820&auto=format&fit=crop"
-                alt="Learners in an African classroom using Learning Africa platform"
-                wrapperClassName="absolute inset-0"
+            <div className="relative aspect-[7/5]">
+              <img
+                src="/illustrations/graduate-certificate.webp"
+                alt="A graduate stepping out of a phone screen beside a certificate badge"
+                width={1600}
+                height={1136}
+                className="h-full w-full object-contain"
                 fetchPriority="high"
                 loading="eager"
                 decoding="async"
               />
-              <div className="absolute right-4 bottom-4 left-4 flex items-end justify-between gap-3">
+              <div className="absolute right-4 bottom-0 left-4 flex items-end justify-between gap-3">
                 <div className="bg-la-paper/95 font-display text-la-ink rounded px-3.5 py-2.5 text-[12px] backdrop-blur-sm">
-                  <div className="font-semibold">Pan-African platform</div>
+                  <div className="font-semibold">
+                    Built for Africa, scaled for the world
+                  </div>
                   <div className="text-la-muted text-[11px]">
                     Hover the map below
                   </div>
@@ -150,7 +151,7 @@ export function LandingHero() {
                 <div className="font-display text-la-ink mb-2 text-[18px] leading-snug font-medium tracking-tight">
                   {hovered
                     ? "Hover or click to explore"
-                    : "Learners and instructors in every country."}
+                    : "Seamless delivery to learners wherever they are."}
                 </div>
                 <div className="text-la-muted text-[12px]">
                   {hovered

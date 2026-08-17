@@ -16,10 +16,10 @@ export function LandingCTA() {
           </div>
           <div className="relative">
             <div className="font-display text-la-paper/70 text-[10px] font-medium tracking-[0.25em] uppercase">
-              Free · Always
+              Education Rethought
             </div>
             <h2 className="font-display mt-4 text-[36px] leading-[1.02] font-medium tracking-[-0.04em] sm:text-[48px] md:text-[56px]">
-              Start learning, free.
+              Do more with Learning Africa.
             </h2>
           </div>
           <div className="relative flex shrink-0 flex-wrap gap-3">

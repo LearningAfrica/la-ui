@@ -2,20 +2,20 @@ import { BackgroundPattern } from "./background-pattern";
 
 const PILLARS = [
   {
-    label: "Enrolment",
-    body: "Track learners onboarded and active across courses and cohorts.",
+    label: "Engagement",
+    body: "Who started, who stalled, and which lessons lose people — per learner and per cohort.",
   },
   {
     label: "Completion",
-    body: "Lesson and module completion at the learner, cohort, and organization level.",
+    body: "Lesson, module, and course completion rates, tracked against your deadlines.",
   },
   {
-    label: "Credentials",
-    body: "Verifiable credentials issued and portable across the network.",
+    label: "Assessment",
+    body: "Quiz and exam results, with certificates issued automatically on a pass.",
   },
   {
-    label: "Outcomes",
-    body: "Downstream signals: skills gained, promotions, new opportunities.",
+    label: "Audit trail",
+    body: "SCORM and xAPI records that stand up as evidence of structured training.",
   },
 ];
 
@@ -32,14 +32,14 @@ export function LandingImpact() {
         <div className="grid gap-12 md:grid-cols-12 md:gap-5">
           <div className="md:col-span-5">
             <div className="font-display text-[10px] font-medium tracking-[0.25em] text-(--color-la-amber) uppercase">
-              ¶ 04 Impact
+              ¶ 04 Analytics
             </div>
             <h2 className="font-display text-la-paper mt-4 text-[36px] leading-[1.05] font-medium tracking-[-0.035em] sm:text-[44px] md:text-[56px]">
-              Quietly, at the scale of a continent.
+              Deep insight, not just a completion tick.
             </h2>
             <p className="text-la-paper/70 mt-6 max-w-[440px] text-[16px] leading-[1.6]">
-              We measure what matters: enrolment, completion, credential
-              portability, and downstream learner outcomes.
+              Every interaction is tracked to standard, so you can prove what
+              was learned — to your board, or to your regulator.
             </p>
           </div>
 
