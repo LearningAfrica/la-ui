@@ -9,7 +9,7 @@ export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 30_000, // 30 seconds timeout
   headers: {
-    "Content-Type": "application/json",
+    Accept: "application/json",
   },
 });
 
@@ -57,6 +57,13 @@ function addRefreshSubscriber(cb: (token: string) => void) {
 // Request interceptor to add auth token
 apiClient.interceptors.request.use(
   (config) => {
+    // Do not set Content-Type for FormData requests. Axios/the browser must add
+    // the multipart boundary; a global application/json header causes Django
+    // REST Framework to receive file fields as non-file values.
+    if (typeof FormData !== "undefined" && config.data instanceof FormData) {
+      config.headers.delete("Content-Type");
+    }
+
     const token = getAuthToken();
 
     if (token) {
@@ -146,6 +153,16 @@ apiClient.interceptors.response.use(
   }
 );
 
-export const createMediaUrl = (path: string) => `${API_BASE_URL}${path}`;
+export const createMediaUrl = (path?: string | null): string => {
+  if (!path) return "";
+
+  if (/^(?:https?:|blob:|data:)/i.test(path)) return path;
+
+  try {
+    return new URL(path, new URL(API_BASE_URL).origin).toString();
+  } catch {
+    return path;
+  }
+};
 
 export default apiClient;

@@ -10,6 +10,7 @@ import File from "~icons/lucide/file";
 import FileText from "~icons/lucide/file-text";
 import ListTree from "~icons/lucide/list-tree";
 import Video from "~icons/lucide/video";
+import MousePointerClick from "~icons/lucide/mouse-pointer-click";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,6 +25,8 @@ import type { ModuleContent } from "@/features/module-contents/module-content-qu
 import type { CourseModuleDetail } from "@/features/modules/module-queries";
 import { orgRoutes } from "@/lib/utils/org-routes";
 import { useAppModal } from "@/stores/filters/modal-hooks";
+import { InteractiveContentPlayer } from "@/components/dashboard/interactive-content-player";
+import { FileContentViewer } from "@/components/dashboard/file-content-viewer";
 
 interface FlatItem {
   content: ModuleContent;
@@ -104,30 +107,6 @@ function VideoBody({ content }: { content: ModuleContent }) {
           className="lesson-prose"
           dangerouslySetInnerHTML={{ __html: content.data.body }}
         />
-      )}
-    </div>
-  );
-}
-
-function FileBody({ content }: { content: ModuleContent }) {
-  return (
-    <div className="bg-muted/50 flex items-center gap-4 rounded-xl border p-5">
-      <File className="text-muted-foreground h-10 w-10 shrink-0" />
-      <div className="min-w-0 flex-1">
-        <p className="truncate font-medium">
-          {content.data.file_name ?? "Attachment"}
-        </p>
-        <p className="text-muted-foreground text-sm">
-          File attachment for this lesson
-        </p>
-      </div>
-      {content.data.file && (
-        <Button asChild variant="outline" size="sm">
-          <a href={content.data.file} target="_blank" rel="noopener noreferrer">
-            <ExternalLink className="mr-1 h-3.5 w-3.5" />
-            Open
-          </a>
-        </Button>
       )}
     </div>
   );
@@ -232,7 +211,12 @@ export default function LessonReaderPage() {
   }
 
   const { content, module: mod } = current;
-  const typeIcons = { text: FileText, video: Video, file: File };
+  const typeIcons = {
+    text: FileText,
+    video: Video,
+    file: File,
+    interactive: MousePointerClick,
+  };
   const TypeIcon = typeIcons[content.content_type] ?? FileText;
 
   const handleMarkComplete = () => {
@@ -308,7 +292,20 @@ export default function LessonReaderPage() {
             {content.content_type === "video" && (
               <VideoBody content={content} />
             )}
-            {content.content_type === "file" && <FileBody content={content} />}
+            {content.content_type === "file" && (
+              <FileContentViewer
+                key={content.id}
+                content={content}
+                coursePk={courseId!}
+                modulePk={mod.id}
+              />
+            )}
+            {content.content_type === "interactive" && (
+              <InteractiveContentPlayer
+                contentId={content.id}
+                onCompleted={handleMarkComplete}
+              />
+            )}
           </div>
 
           {/* Mark complete */}

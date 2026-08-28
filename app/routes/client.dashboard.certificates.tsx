@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/sheet";
 import Award from "~icons/lucide/award";
 import Download from "~icons/lucide/download";
+import Share2 from "~icons/lucide/share-2";
 import Eye from "~icons/lucide/eye";
 import Loader2 from "~icons/lucide/loader-2";
 import { toast } from "@/lib/toast";
@@ -55,6 +56,33 @@ async function downloadCertificate(c: Certificate, url: string) {
       message: "Download failed",
       description: "Could not download the certificate. Try again.",
     });
+  }
+}
+
+async function shareCertificate(c: Certificate) {
+  if (!c.share_url) {
+    toast.error({ message: "Sharing is not available for this certificate." });
+
+    return;
+  }
+
+  const shareData = {
+    title: `${c.course_title ?? "Course"} certificate`,
+    text: `My Learning Africa certificate: ${c.certificate_id}`,
+    url: c.share_url,
+  };
+
+  try {
+    if (navigator.share && navigator.canShare?.(shareData)) {
+      await navigator.share(shareData);
+    } else {
+      await navigator.clipboard.writeText(c.share_url);
+      toast.success({ message: "Share link copied" });
+    }
+  } catch (error) {
+    if ((error as DOMException)?.name !== "AbortError") {
+      toast.error({ message: "Could not share the certificate." });
+    }
   }
 }
 
@@ -171,6 +199,15 @@ function CertificateCard({
           View
         </Button>
         <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Share certificate"
+          disabled={!certificate.share_url}
+          onClick={() => shareCertificate(certificate)}
+        >
+          <Share2 className="h-4 w-4" />
+        </Button>
+        <Button
           className="flex-1"
           disabled={!pdfUrl}
           onClick={() => pdfUrl && downloadCertificate(certificate, pdfUrl)}
@@ -268,6 +305,15 @@ export default function ClientDashboardCertificates() {
           )}
           {preview && previewUrl && (
             <SheetFooter className="p-0">
+              <Button
+                variant="outline"
+                className="w-full sm:w-auto"
+                disabled={!preview.share_url}
+                onClick={() => shareCertificate(preview)}
+              >
+                <Share2 className="mr-2 h-4 w-4" />
+                Share
+              </Button>
               <Button
                 className="w-full sm:w-auto"
                 onClick={() => downloadCertificate(preview, previewUrl)}

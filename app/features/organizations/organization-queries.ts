@@ -117,7 +117,13 @@ export interface OrganizationInvite {
   email: string;
   role: OrganizationMembershipRole;
   is_used: boolean;
+  status: "pending" | "accepted" | "declined" | "revoked";
+  is_expired: boolean;
   expiration_time: string;
+  created_at: string;
+  last_sent_at: string | null;
+  organization_name?: string | null;
+  invited_by_name?: string | null;
 }
 
 export interface InvitesFilters {

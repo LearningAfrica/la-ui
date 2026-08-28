@@ -1,15 +1,22 @@
 import { useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import { Button } from "@/components/ui/button";
 import AsyncSelect from "@/components/ui/async-select";
 import { cn } from "@/lib/utils";
 import Plus from "~icons/lucide/plus";
 import RefreshCw from "~icons/lucide/refresh-cw";
+import CalendarDays from "~icons/lucide/calendar-days";
+import List from "~icons/lucide/list";
+import Download from "~icons/lucide/download";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import { useZoomCalls } from "@/features/zoom-calls/zoom-call-queries";
 import { useCourses } from "@/features/courses/course-queries";
 import { ZoomCallsTable } from "@/components/dashboard/zoom-calls-table";
 import { CreateOrUpdateZoomCallDialog } from "@/components/dashboard/create-or-update-zoom-call-dialog";
 import { useAppModal } from "@/stores/filters/modal-hooks";
+import { LiveSessionsCalendar } from "@/components/dashboard/live-sessions/live-sessions-calendar";
+import { apiClient } from "@/lib/api";
+import { orgRoutes } from "@/lib/utils/org-routes";
 
 export default function ClientDashboardLiveSessions() {
   const { selectedOrganization } = useOrganizationStore();
@@ -17,13 +24,32 @@ export default function ClientDashboardLiveSessions() {
   const canManage = role === "admin" || role === "instructor";
 
   const createCallModal = useAppModal("create-or-update-zoom-call");
+  const navigate = useNavigate();
+  const { orgId = "" } = useParams<{ orgId: string }>();
+  const [view, setView] = useState<"list" | "calendar">("list");
 
   const [courseFilter, setCourseFilter] = useState<string>("all");
   const { data, isLoading, error, refetch } = useZoomCalls(
-    courseFilter !== "all" ? { course: courseFilter } : {}
+    courseFilter !== "all"
+      ? { course: courseFilter, page_size: 100 }
+      : { page_size: 100 }
   );
   const { data: coursesData } = useCourses({ page: 1, pageSize: 100 });
   const calls = useMemo(() => data?.data ?? [], [data]);
+
+  const downloadCalendar = async () => {
+    const response = await apiClient.get<Blob>(
+      "/api/call/zoom-calls/calendar-feed/",
+      { responseType: "blob" }
+    );
+    const url = URL.createObjectURL(response.data);
+    const anchor = document.createElement("a");
+
+    anchor.href = url;
+    anchor.download = "learning-africa-calendar.ics";
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="p-6 lg:p-8">
@@ -66,26 +92,54 @@ export default function ClientDashboardLiveSessions() {
             ]}
           />
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => refetch()}
-          disabled={isLoading}
-          className="self-start sm:self-auto"
-        >
-          <RefreshCw
-            className={cn("mr-1 size-4", isLoading && "animate-spin")}
-          />
-          Refresh
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline" size="sm" onClick={downloadCalendar}>
+            <Download className="mr-1 size-4" /> Calendar file
+          </Button>
+          <div className="flex rounded-md border p-0.5">
+            <Button
+              variant={view === "list" ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => setView("list")}
+            >
+              <List className="mr-1 size-4" /> List
+            </Button>
+            <Button
+              variant={view === "calendar" ? "secondary" : "ghost"}
+              size="sm"
+              onClick={() => setView("calendar")}
+            >
+              <CalendarDays className="mr-1 size-4" /> Calendar
+            </Button>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            disabled={isLoading}
+            className="self-start sm:self-auto"
+          >
+            <RefreshCw
+              className={cn("mr-1 size-4", isLoading && "animate-spin")}
+            />
+            Refresh
+          </Button>
+        </div>
       </div>
 
-      <ZoomCallsTable
-        calls={calls}
-        isLoading={isLoading}
-        error={error as Error | null}
-        userRole={role}
-      />
+      {view === "list" ? (
+        <ZoomCallsTable
+          calls={calls}
+          isLoading={isLoading}
+          error={error as Error | null}
+          userRole={role}
+        />
+      ) : (
+        <LiveSessionsCalendar
+          calls={calls}
+          onOpen={(call) => navigate(orgRoutes.liveSessionJoin(orgId, call.id))}
+        />
+      )}
 
       <CreateOrUpdateZoomCallDialog />
     </div>

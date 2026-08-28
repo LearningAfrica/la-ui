@@ -15,6 +15,7 @@ import CheckCircle2 from "~icons/lucide/check-circle-2";
 import Circle from "~icons/lucide/circle";
 import PlayCircle from "~icons/lucide/play-circle";
 import Award from "~icons/lucide/award";
+import Sparkles from "~icons/lucide/sparkles";
 import { cn } from "@/lib/utils";
 import { createMediaUrl } from "@/lib/api";
 import {
@@ -74,7 +75,12 @@ function ContentRow({
   courseId: string;
   isCompleted: boolean;
 }) {
-  const typeIcons = { text: FileText, video: Video, file: File };
+  const typeIcons = {
+    text: FileText,
+    video: Video,
+    file: File,
+    interactive: Sparkles,
+  };
   const Icon = typeIcons[content.content_type] ?? FileText;
   const duration = formatLessonDuration(content.data.duration_seconds);
 

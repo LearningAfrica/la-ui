@@ -16,13 +16,18 @@ export interface ModuleContentData {
   // file content
   file_name?: string;
   file?: string;
+  format?: "native" | "html5" | "scorm12" | "scorm2004" | "external";
+  external_url?: string;
+  definition?: { blocks: Array<Record<string, unknown>> };
+  xapi_enabled?: boolean;
+  launch_path?: string;
 }
 
 export interface ModuleContent {
   id: string;
   title: string;
   order: number;
-  content_type: "text" | "video" | "file";
+  content_type: "text" | "video" | "file" | "interactive";
   data: ModuleContentData;
 }
 
@@ -55,5 +60,26 @@ export const useModuleContent = (
       return response.data;
     },
     enabled: !!coursePk && !!modulePk && !!id,
+  });
+};
+
+export const useModuleContentFile = (
+  coursePk: string,
+  modulePk: string,
+  id: string,
+  enabled = true
+) => {
+  return useQuery({
+    queryKey: moduleContentQueryKeys.file(coursePk, modulePk, id),
+    queryFn: async () => {
+      const response = await apiClient.get<Blob>(
+        `/api/courses/${coursePk}/modules/${modulePk}/contents/${id}/file/`,
+        { responseType: "blob" }
+      );
+
+      return response.data;
+    },
+    enabled: enabled && !!coursePk && !!modulePk && !!id,
+    staleTime: 5 * 60 * 1000,
   });
 };

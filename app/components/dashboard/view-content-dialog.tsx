@@ -11,6 +11,7 @@ import FileText from "~icons/lucide/file-text";
 import Video from "~icons/lucide/video";
 import File from "~icons/lucide/file";
 import ExternalLink from "~icons/lucide/external-link";
+import Sparkles from "~icons/lucide/sparkles";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import type { ModuleContent } from "@/features/module-contents/module-content-queries";
 
@@ -24,6 +25,7 @@ const typeIcons = {
   text: FileText,
   video: Video,
   file: File,
+  interactive: Sparkles,
 } as const;
 
 export function ViewContentDialog() {

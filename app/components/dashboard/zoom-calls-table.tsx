@@ -28,6 +28,8 @@ import RefreshCw from "~icons/lucide/refresh-cw";
 import Copy from "~icons/lucide/copy";
 import Clock from "~icons/lucide/clock";
 import CalendarX from "~icons/lucide/calendar-x";
+import CalendarPlus from "~icons/lucide/calendar-plus";
+import { apiClient } from "@/lib/api";
 import type { ZoomCall } from "@/features/zoom-calls/zoom-call-queries";
 import { useDeleteZoomCall } from "@/features/zoom-calls/zoom-call-mutations";
 import {
@@ -73,6 +75,20 @@ export function ZoomCallsTable({
       { id: pendingDelete.id, topic: pendingDelete.topic },
       { onSettled: () => setPendingDelete(null) }
     );
+  };
+
+  const downloadCalendar = async (call: ZoomCall) => {
+    const response = await apiClient.get<Blob>(
+      call.calendar_url ?? `/api/call/zoom-calls/${call.id}/calendar/`,
+      { responseType: "blob" }
+    );
+    const url = URL.createObjectURL(response.data);
+    const anchor = document.createElement("a");
+
+    anchor.href = url;
+    anchor.download = `${call.topic.replace(/[^a-z0-9]+/gi, "-")}.ics`;
+    anchor.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -215,6 +231,22 @@ export function ZoomCallsTable({
                         >
                           <Copy className="mr-2 size-4" />
                           Copy join link
+                        </DropdownMenuItem>
+                      )}
+                      <DropdownMenuItem onClick={() => downloadCalendar(call)}>
+                        <CalendarPlus className="mr-2 size-4" />
+                        Download calendar event
+                      </DropdownMenuItem>
+                      {call.google_calendar_url && (
+                        <DropdownMenuItem asChild>
+                          <a
+                            href={call.google_calendar_url}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <CalendarPlus className="mr-2 size-4" />
+                            Add to Google Calendar
+                          </a>
                         </DropdownMenuItem>
                       )}
                       {canManage && (

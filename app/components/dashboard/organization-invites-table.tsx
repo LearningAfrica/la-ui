@@ -149,23 +149,22 @@ export function OrganizationInvitesTable({
         },
       },
       {
-        accessorKey: "is_used",
+        accessorKey: "status",
         header: "Status",
         cell: ({ row }) => {
-          const isUsed = row.getValue("is_used") as boolean;
-          const isExpired = moment(row.original.expiration_time).isBefore(
-            moment()
-          );
+          const invite = row.original;
 
-          if (isUsed) {
-            return <Badge variant="default">Used</Badge>;
-          }
-
-          if (isExpired) {
+          if (invite.is_expired && invite.status === "pending") {
             return <Badge variant="outline">Expired</Badge>;
           }
 
-          return <Badge variant="secondary">Pending</Badge>;
+          return (
+            <Badge
+              variant={invite.status === "pending" ? "secondary" : "default"}
+            >
+              {invite.status.charAt(0).toUpperCase() + invite.status.slice(1)}
+            </Badge>
+          );
         },
       },
       {
@@ -189,7 +188,8 @@ export function OrganizationInvitesTable({
         header: "Actions",
         cell: ({ row }) => {
           const invite = row.original;
-          const isUsed = invite.is_used;
+          const isPendingInvite =
+            invite.status === "pending" && !invite.is_expired;
           const isPending =
             resendMutation.isPending || revokeMutation.isPending;
 
@@ -209,7 +209,7 @@ export function OrganizationInvitesTable({
                   <Copy className="mr-2 h-4 w-4" />
                   Copy Email
                 </DropdownMenuItem>
-                {!isUsed && (
+                {isPendingInvite && (
                   <>
                     <DropdownMenuItem
                       onClick={() =>

@@ -182,66 +182,43 @@ export const useToggleMemberStatus = (organizationId: string) => {
   });
 };
 
-// Revoke Invite Mutation — removes a pending invite the org sent out. The
-// backend revoke endpoint isn't reliable yet, so the UI reports success
-// regardless and just refetches to sync with whatever the server kept.
 export const useRevokeInvite = (organizationId: string) => {
   const queryClient = useQueryClient();
-
-  const notifyDone = () => {
-    queryClient.invalidateQueries({
-      queryKey: organizationQueryKeys.organizationInvites(organizationId),
-    });
-    toast.success({
-      message: "Invitation revoked",
-      description: "The invite is no longer visible to the recipient.",
-    });
-  };
 
   return useMutation({
     mutationKey: organizationMutationKeys.revokeInvite(organizationId),
     mutationFn: async (inviteId: number) => {
-      try {
-        const response = await apiClient.delete(
-          `/api/invite/organization-user-invites/${inviteId}/`
-        );
+      const response = await apiClient.delete(
+        `/api/invite/organization-user-invites/${inviteId}/`,
+        { params: { organization_id: organizationId } }
+      );
 
-        return response.data;
-      } catch {
-        // Swallow — backend may return an error even when the invite is
-        // effectively revoked. UI treats the action as complete.
-        return null;
-      }
+      return response.data;
     },
-    onSuccess: notifyDone,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: organizationQueryKeys.organizationInvites(organizationId),
+      });
+      toast.success({ message: "Invitation revoked" });
+    },
+    onError: (error) => {
+      toast.error({
+        message: extractError(error, "Failed to revoke invitation"),
+      });
+    },
   });
 };
 
-// Resend Invite Mutation — re-posts an invite with the same email/role so
-// the recipient receives a fresh email. Backend has no dedicated resend
-// endpoint; the old invite is best-effort revoked (failure is swallowed)
-// before the new POST so the expiration resets where possible.
 export const useResendInvite = (organizationId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationKey: organizationMutationKeys.resendInvite(organizationId),
     mutationFn: async (invite: OrganizationInvite) => {
-      try {
-        await apiClient.delete(
-          `/api/invite/organization-user-invites/${invite.id}/`
-        );
-      } catch {
-        // Revoke is unreliable server-side — keep going either way.
-      }
-
       const response = await apiClient.post(
-        "/api/invite/organization-user-invites/",
-        {
-          receiver_emails: [invite.email],
-          role: invite.role,
-          organization_id: organizationId,
-        }
+        `/api/invite/organization-user-invites/${invite.id}/resend/`,
+        {},
+        { params: { organization_id: organizationId } }
       );
 
       return response.data;

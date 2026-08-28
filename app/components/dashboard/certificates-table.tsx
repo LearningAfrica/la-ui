@@ -3,7 +3,10 @@ import Award from "~icons/lucide/award";
 import Download from "~icons/lucide/download";
 import Eye from "~icons/lucide/eye";
 import RefreshCw from "~icons/lucide/refresh-cw";
+import Share2 from "~icons/lucide/share-2";
 import { Button } from "@/components/ui/button";
+import { apiClient } from "@/lib/api";
+import { toast } from "@/lib/toast";
 import {
   resolveCertificateUrl,
   type Certificate,
@@ -13,6 +16,47 @@ interface CertificatesTableProps {
   certificates: Certificate[];
   isLoading?: boolean;
   error?: Error | null;
+}
+
+async function openCertificate(url: string, download = false) {
+  try {
+    const response = await apiClient.get<Blob>(url, { responseType: "blob" });
+    const objectUrl = URL.createObjectURL(response.data);
+
+    if (download) {
+      const anchor = document.createElement("a");
+
+      anchor.href = objectUrl;
+      anchor.download = "certificate.pdf";
+      anchor.click();
+      URL.revokeObjectURL(objectUrl);
+    } else {
+      window.open(objectUrl, "_blank", "noopener,noreferrer");
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
+    }
+  } catch {
+    toast.error({ message: "Could not open the certificate." });
+  }
+}
+
+async function shareCertificate(certificate: Certificate) {
+  if (!certificate.share_url) return;
+
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: certificate.course_title ?? "Certificate",
+        url: certificate.share_url,
+      });
+    } else {
+      await navigator.clipboard.writeText(certificate.share_url);
+      toast.success({ message: "Share link copied" });
+    }
+  } catch (error) {
+    if ((error as DOMException)?.name !== "AbortError") {
+      toast.error({ message: "Could not share the certificate." });
+    }
+  }
 }
 
 export function CertificatesTable({
@@ -94,21 +138,30 @@ export function CertificatesTable({
                     <td className="px-4 py-3">
                       {pdfUrl ? (
                         <div className="flex items-center gap-2">
-                          <Button asChild size="sm" variant="outline">
-                            <a
-                              href={pdfUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              <Eye className="mr-1 h-3 w-3" />
-                              View
-                            </a>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => openCertificate(pdfUrl)}
+                          >
+                            <Eye className="mr-1 h-3 w-3" />
+                            View
                           </Button>
-                          <Button asChild size="sm" variant="ghost">
-                            <a href={pdfUrl} download>
-                              <Download className="mr-1 h-3 w-3" />
-                              Download
-                            </a>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => openCertificate(pdfUrl, true)}
+                          >
+                            <Download className="mr-1 h-3 w-3" />
+                            Download
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            disabled={!cert.share_url}
+                            onClick={() => shareCertificate(cert)}
+                          >
+                            <Share2 className="mr-1 h-3 w-3" />
+                            Share
                           </Button>
                         </div>
                       ) : (

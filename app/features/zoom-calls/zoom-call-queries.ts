@@ -9,7 +9,7 @@ import type { Paginated } from "@/lib/types/api";
 
 export interface ZoomCall {
   id: string;
-  host: string;
+  host: { id: string; email: string; first_name?: string; last_name?: string };
   host_name?: string;
   topic: string;
   description?: string;
@@ -19,6 +19,14 @@ export interface ZoomCall {
   status: ZoomCallStatus;
   course?: string | null;
   course_title?: string | null;
+  invitees?: Array<{
+    id: string;
+    email: string;
+    name: string;
+    notification_status: "pending" | "sent" | "failed";
+  }>;
+  calendar_url?: string;
+  google_calendar_url?: string;
   created_at?: string;
 }
 

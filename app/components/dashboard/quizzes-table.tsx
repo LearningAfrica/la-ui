@@ -121,7 +121,7 @@ export function QuizzesTable({
         },
       },
     ],
-    [coursePk, modulePk]
+    [coursePk, modulePk, orgId]
   );
 
   const table = useReactTable({

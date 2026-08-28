@@ -112,7 +112,7 @@ export interface CourseProgressContent {
   id: string;
   title: string;
   order: number;
-  content_type: "text" | "video" | "file";
+  content_type: "text" | "video" | "file" | "interactive";
   data: Record<string, unknown>;
   is_completed: boolean;
 }

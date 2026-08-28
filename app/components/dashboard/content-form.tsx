@@ -23,6 +23,10 @@ import {
   FormSelectField,
 } from "@/components/form-fields";
 import { orgRoutes } from "@/lib/utils/org-routes";
+import {
+  NativeInteractiveBuilder,
+  type NativeBlock,
+} from "./native-interactive-builder";
 
 interface ContentFormProps {
   coursePk: string;
@@ -38,7 +42,7 @@ interface ContentFormProps {
 }
 
 function typeDefaults(type: ContentType): ModuleContentFormData {
-  const base = { title: "", order: 0 };
+  const base = { title: "", order: 0, xapi_enabled: false };
 
   switch (type) {
     case "video":
@@ -50,13 +54,49 @@ function typeDefaults(type: ContentType): ModuleContentFormData {
       };
     case "file":
       return { ...base, content_type: "file", file_name: "", file: "" };
+    case "interactive":
+      return {
+        ...base,
+        content_type: "interactive",
+        format: "native",
+        package_file: undefined,
+        external_url: "",
+        definition: {
+          version: 2,
+          learningObjective: "",
+          completionMode: "all",
+          passScore: 70,
+          showCelebration: true,
+          presentationMode: "journey",
+          motionIntensity: "playful",
+          showProgress: true,
+          showPoints: true,
+          showStreak: true,
+          blocks: [
+            {
+              id: "starter-accordion",
+              type: "accordion",
+              title: "Explore this topic",
+              instructions: "Open every section to explore the topic.",
+              required: true,
+              points: 10,
+              items: [{ title: "Section 1", content: "" }],
+            },
+          ],
+        },
+        xapi_enabled: true,
+      };
     default:
       return { ...base, content_type: "text", body: "" };
   }
 }
 
 function contentToFormValues(content: ModuleContent): ModuleContentFormData {
-  const base = { title: content.title, order: content.order };
+  const base = {
+    title: content.title,
+    order: content.order,
+    xapi_enabled: false,
+  };
 
   switch (content.content_type) {
     case "text":
@@ -74,6 +114,20 @@ function contentToFormValues(content: ModuleContent): ModuleContentFormData {
         content_type: "file",
         file_name: content.data.file_name ?? "",
         file: content.data.file ?? "",
+      };
+    case "interactive":
+      return {
+        ...base,
+        content_type: "interactive",
+        format: content.data.format ?? "native",
+        package_file: ["html5", "scorm12", "scorm2004"].includes(
+          content.data.format ?? ""
+        )
+          ? "existing"
+          : undefined,
+        external_url: content.data.external_url ?? "",
+        definition: content.data.definition ?? { blocks: [] },
+        xapi_enabled: content.data.xapi_enabled ?? true,
       };
     default:
       return { ...defaultContentValues, ...base };
@@ -106,11 +160,25 @@ export function ContentForm({
   });
 
   const contentType = useWatch({ control: form.control, name: "content_type" });
+  const fileName = useWatch({ control: form.control, name: "file_name" });
+  const xapiEnabled = useWatch({
+    control: form.control,
+    name: "xapi_enabled",
+  });
+  const interactiveFormat = useWatch({ control: form.control, name: "format" });
+  const interactiveDefinition = useWatch({
+    control: form.control,
+    name: "definition",
+  });
 
   const handleContentTypeChange = useCallback(
     (newType: string) => {
       const currentValues = form.getValues();
-      const base = { title: currentValues.title, order: currentValues.order };
+      const base = {
+        title: currentValues.title,
+        order: currentValues.order,
+        xapi_enabled: false,
+      };
 
       switch (newType as ContentType) {
         case "text":
@@ -132,6 +200,11 @@ export function ContentForm({
             file: "",
           });
           break;
+        case "interactive":
+          form.reset(typeDefaults("interactive"));
+          form.setValue("title", base.title);
+          form.setValue("order", base.order);
+          break;
       }
     },
     [form]
@@ -145,14 +218,7 @@ export function ContentForm({
 
       form.setValue("file_name", file.name);
 
-      const reader = new FileReader();
-
-      reader.onloadend = () => {
-        const base64 = (reader.result as string).split(",")[1];
-
-        form.setValue("file", base64);
-      };
-      reader.readAsDataURL(file);
+      form.setValue("file", file);
     },
     [form]
   );
@@ -176,7 +242,19 @@ export function ContentForm({
         break;
       case "file":
         payload.file_name = data.file_name;
-        payload.file = data.file;
+
+        if (data.file instanceof File) payload.file = data.file;
+
+        break;
+      case "interactive":
+        payload.format = data.format;
+
+        if (data.package_file instanceof File)
+          payload.package_file = data.package_file;
+
+        payload.external_url = data.external_url;
+        payload.definition = data.definition;
+        payload.xapi_enabled = data.xapi_enabled;
         break;
     }
 
@@ -283,16 +361,103 @@ export function ContentForm({
               disabled={isLoading}
               className="border-input bg-background file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 block w-full rounded-md border px-3 py-2 text-sm file:mr-4 file:rounded-md file:border-0 file:px-4 file:py-1 file:text-sm file:font-medium"
             />
-            {form.watch("file_name") && (
+            {fileName && (
               <p className="text-muted-foreground text-xs">
-                Selected: {form.watch("file_name")}
+                Selected: {fileName}
               </p>
             )}
             {form.formState.errors.file && (
               <p className="text-destructive text-xs">
-                {form.formState.errors.file.message}
+                {String(
+                  form.formState.errors.file.message ?? "A file is required"
+                )}
               </p>
             )}
+          </div>
+        )}
+
+        {contentType === "interactive" && (
+          <div className="space-y-5">
+            <FormSelectField
+              control={form.control}
+              name="format"
+              label="Interactive format"
+              required
+              disabled={isLoading || isEditing}
+              options={[
+                { value: "native", label: "Build in Learning Africa" },
+                { value: "scorm12", label: "Import SCORM 1.2" },
+                { value: "scorm2004", label: "Import SCORM 2004" },
+                { value: "html5", label: "Import HTML5 package" },
+                { value: "external", label: "Embed H5P or external activity" },
+              ]}
+            />
+
+            {interactiveFormat === "native" && (
+              <NativeInteractiveBuilder
+                value={
+                  interactiveDefinition as {
+                    version?: 1 | 2;
+                    blocks: NativeBlock[];
+                  }
+                }
+                disabled={isLoading}
+                onChange={(definition) =>
+                  form.setValue("definition", definition, {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                  })
+                }
+              />
+            )}
+
+            {["scorm12", "scorm2004", "html5"].includes(
+              interactiveFormat ?? ""
+            ) && (
+              <div className="space-y-2">
+                <label className="text-sm font-medium">
+                  Course package <span className="text-destructive">*</span>
+                </label>
+                <input
+                  type="file"
+                  accept=".zip,.scorm,application/zip"
+                  disabled={isLoading}
+                  onChange={(event) =>
+                    form.setValue("package_file", event.target.files?.[0], {
+                      shouldValidate: true,
+                    })
+                  }
+                  className="border-input bg-background block w-full rounded-md border px-3 py-2 text-sm"
+                />
+                <p className="text-muted-foreground text-xs">
+                  Upload a package up to 250 MB. SCORM packages must contain
+                  imsmanifest.xml; HTML5 packages must contain index.html.
+                </p>
+              </div>
+            )}
+
+            {interactiveFormat === "external" && (
+              <FormTextField
+                control={form.control}
+                name="external_url"
+                label="H5P or activity embed URL"
+                placeholder="https://..."
+                type="url"
+                required
+                disabled={isLoading}
+              />
+            )}
+
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={xapiEnabled}
+                onChange={(event) =>
+                  form.setValue("xapi_enabled", event.target.checked)
+                }
+              />
+              Record learner interactions using xAPI
+            </label>
           </div>
         )}
 

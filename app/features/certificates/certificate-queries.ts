@@ -14,6 +14,8 @@ export interface Certificate {
   learner_email?: string;
   issued_at: string;
   pdf_url: string | null;
+  download_url?: string | null;
+  share_url?: string | null;
 }
 
 /**

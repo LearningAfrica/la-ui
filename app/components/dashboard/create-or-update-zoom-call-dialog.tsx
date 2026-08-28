@@ -18,6 +18,8 @@ import {
   FormDateTimeField,
 } from "@/components/form-fields";
 import { useCourses } from "@/features/courses/course-queries";
+import { useMyOrganizationMembers } from "@/features/organizations/organization-queries";
+import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 import {
   zoomCallResolver,
   defaultZoomCallValues,
@@ -70,6 +72,7 @@ function callToFormValues(call: ZoomCall): ZoomCallFormData {
     start_time: toDatetimeLocal(call.start_time),
     duration: call.duration,
     course: call.course ?? "none",
+    invitee_ids: call.invitees?.map((invitee) => invitee.id) ?? [],
   };
 }
 
@@ -77,10 +80,15 @@ export function CreateOrUpdateZoomCallDialog() {
   const modal = useAppModal("create-or-update-zoom-call");
   const createCall = useCreateZoomCall();
   const updateCall = useUpdateZoomCall();
+  const { selectedOrganization } = useOrganizationStore();
 
   const isEditing = !!modal.data?.id;
 
   const { data: coursesData } = useCourses({ page: 1, pageSize: 100 });
+  const { data: membersData } = useMyOrganizationMembers({
+    organizationId: selectedOrganization?.id ?? "",
+    filters: { page: 1, page_size: 100, is_active: true },
+  });
   const courseOptions = [
     { label: "Org-wide session", value: "none" },
     ...(coursesData?.data?.map((c) => ({ label: c.title, value: c.id })) ?? []),
@@ -110,6 +118,8 @@ export function CreateOrUpdateZoomCallDialog() {
 
   const minDateTime = toDatetimeLocal(new Date().toISOString());
   const duration = useWatch({ control: form.control, name: "duration" });
+  const inviteeIds =
+    useWatch({ control: form.control, name: "invitee_ids" }) ?? [];
 
   const handleSubmit = form.handleSubmit((data) => {
     const payload = {
@@ -117,7 +127,8 @@ export function CreateOrUpdateZoomCallDialog() {
       description: data.description,
       start_time: new Date(data.start_time).toISOString(),
       duration: data.duration,
-      course: data.course && data.course !== "none" ? data.course : null,
+      course_id: data.course && data.course !== "none" ? data.course : null,
+      invitee_ids: data.invitee_ids,
     };
 
     if (isEditing && modal.data?.id) {
@@ -236,6 +247,58 @@ export function CreateOrUpdateZoomCallDialog() {
                   disabled={isLoading}
                   inputProps={{ min: 5, max: 480 }}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <div>
+                  <p className="text-sm font-medium">Invite members</p>
+                  <p className="text-muted-foreground text-xs">
+                    Selected members receive an email and see the session in
+                    their calendar.
+                  </p>
+                </div>
+                <div className="max-h-44 space-y-1 overflow-y-auto rounded-md border p-2">
+                  {(membersData?.data ?? []).map((member) => {
+                    const checked = inviteeIds.includes(member.id);
+
+                    return (
+                      <label
+                        key={member.id}
+                        className="hover:bg-muted flex cursor-pointer items-center gap-3 rounded px-2 py-2 text-sm"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          disabled={isLoading}
+                          onChange={(event) => {
+                            const next = event.target.checked
+                              ? [...inviteeIds, member.id]
+                              : inviteeIds.filter((id) => id !== member.id);
+
+                            form.setValue("invitee_ids", next, {
+                              shouldDirty: true,
+                            });
+                          }}
+                        />
+                        <span className="min-w-0">
+                          <span className="block truncate font-medium">
+                            {[member.first_name, member.last_name]
+                              .filter(Boolean)
+                              .join(" ") || member.email}
+                          </span>
+                          <span className="text-muted-foreground block truncate text-xs">
+                            {member.email}
+                          </span>
+                        </span>
+                      </label>
+                    );
+                  })}
+                  {(membersData?.data ?? []).length === 0 && (
+                    <p className="text-muted-foreground px-2 py-4 text-center text-xs">
+                      No active organization members found.
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
 

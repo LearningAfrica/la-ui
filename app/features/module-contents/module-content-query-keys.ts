@@ -4,6 +4,11 @@ export const moduleContentQueryKeys = {
     [...moduleContentQueryKeys.all, coursePk, modulePk, page] as const,
   content: (coursePk: string, modulePk: string, id: string) =>
     [...moduleContentQueryKeys.all, coursePk, modulePk, id] as const,
+  file: (coursePk: string, modulePk: string, id: string) =>
+    [
+      ...moduleContentQueryKeys.content(coursePk, modulePk, id),
+      "file",
+    ] as const,
 };
 
 export const moduleContentMutationKeys = {

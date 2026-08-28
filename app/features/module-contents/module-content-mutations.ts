@@ -13,7 +13,7 @@ export interface CreateContentPayload {
   coursePk: string;
   modulePk: string;
   title: string;
-  content_type: "text" | "video" | "file";
+  content_type: "text" | "video" | "file" | "interactive";
   order?: number;
   // text
   body?: string;
@@ -22,7 +22,31 @@ export interface CreateContentPayload {
   duration_seconds?: number;
   // file
   file_name?: string;
-  file?: string;
+  file?: string | File;
+  format?: string;
+  package_file?: File;
+  external_url?: string;
+  definition?: Record<string, unknown>;
+  xapi_enabled?: boolean;
+}
+
+function contentPayload(data: Record<string, unknown>) {
+  const hasFile =
+    data.file instanceof File || data.package_file instanceof File;
+
+  if (!hasFile) return data;
+
+  const form = new FormData();
+
+  Object.entries(data).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+
+    if (value instanceof File) form.append(key, value);
+    else if (typeof value === "object") form.append(key, JSON.stringify(value));
+    else form.append(key, String(value));
+  });
+
+  return form;
 }
 
 export const useCreateModuleContent = () => {
@@ -37,7 +61,7 @@ export const useCreateModuleContent = () => {
     }: CreateContentPayload) => {
       const response = await apiClient.post<ModuleContent>(
         `/api/courses/${coursePk}/modules/${modulePk}/contents/`,
-        data
+        contentPayload(data)
       );
 
       return response.data;
@@ -64,13 +88,18 @@ export interface UpdateContentPayload {
   modulePk: string;
   id: string;
   title?: string;
-  content_type?: "text" | "video" | "file";
+  content_type?: "text" | "video" | "file" | "interactive";
   order?: number;
   body?: string;
   video_url?: string;
   duration_seconds?: number;
   file_name?: string;
-  file?: string;
+  file?: string | File;
+  format?: string;
+  package_file?: File;
+  external_url?: string;
+  definition?: Record<string, unknown>;
+  xapi_enabled?: boolean;
 }
 
 export const useUpdateModuleContent = () => {
@@ -86,7 +115,7 @@ export const useUpdateModuleContent = () => {
     }: UpdateContentPayload) => {
       const response = await apiClient.patch<ModuleContent>(
         `/api/courses/${coursePk}/modules/${modulePk}/contents/${id}/`,
-        data
+        contentPayload(data)
       );
 
       return response.data;

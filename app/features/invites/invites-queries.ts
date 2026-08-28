@@ -9,6 +9,10 @@ export interface Invite {
   role: "admin" | "instructor" | "learner";
   email: string;
   is_used: boolean;
+  status: "pending" | "accepted" | "declined" | "revoked";
+  is_expired: boolean;
+  organization_name?: string | null;
+  invited_by_name?: string | null;
   expiration_time: string;
 }
 
