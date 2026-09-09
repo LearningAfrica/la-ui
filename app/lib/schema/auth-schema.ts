@@ -66,6 +66,7 @@ export const forgotPasswordResolver = zodResolver(forgotPasswordSchema);
 // Reset Password Schema
 export const resetPasswordSchema = z
   .object({
+    email: z.string().email("Please enter a valid email address"),
     otp_code: z
       .string()
       .min(6, "OTP must be 6 digits")

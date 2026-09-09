@@ -4,6 +4,7 @@ import { apiClient } from "@/lib/api";
 import type { Paginated } from "@/lib/types/api";
 import type { ModuleContent } from "@/features/module-contents/module-content-queries";
 import type { User } from "@/features/users/user-queries";
+import type { Quiz } from "@/features/quizzes/quiz-queries";
 import { useOrganizationStore } from "@/stores/organization/organization-hooks";
 
 export interface CourseInstructor {
@@ -124,6 +125,7 @@ export interface CourseProgressModule {
   order: number;
   module_progress: number;
   contents: CourseProgressContent[];
+  quizzes: Array<Quiz & { is_completed: boolean }>;
 }
 
 // Backend returns the enriched course with nested module → content progress.

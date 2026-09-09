@@ -9,6 +9,7 @@ import {
 } from "@/lib/schema/auth-schema";
 import { useForgotPassword } from "@/features/auth/auth-mutations";
 import { FormTextField } from "@/components/form-fields/form-text-field";
+import { extractError } from "@/lib/error";
 
 interface ForgotPasswordFormProps {
   searchParams?: URLSearchParams;
@@ -25,10 +26,12 @@ export function ForgotPasswordForm({ searchParams }: ForgotPasswordFormProps) {
   const onSubmit = form.handleSubmit(async (data) => {
     await forgotMutation.mutateAsync(data, {
       onSuccess: () => {
-        navigate("/reset-password-confirmation");
+        navigate("/reset-password-confirmation", {
+          state: { email: data.email },
+        });
       },
       onError: (error) => {
-        form.setError("root", { message: error.message });
+        form.setError("root", { message: extractError(error) });
       },
     });
   });
@@ -43,7 +46,7 @@ export function ForgotPasswordForm({ searchParams }: ForgotPasswordFormProps) {
           Forgot your password?
         </h1>
         <p className="text-la-muted mt-2 text-sm">
-          Enter your email and we&apos;ll send you a reset link.
+          Enter your email and we&apos;ll send you a one-time reset code.
         </p>
       </div>
       <Form {...form}>

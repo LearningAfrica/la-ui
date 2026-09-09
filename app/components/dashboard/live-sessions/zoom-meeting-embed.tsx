@@ -2,38 +2,55 @@ import { useEffect, useState } from "react";
 import Loader2 from "~icons/lucide/loader-2";
 import { useZoomCallJoinInfo } from "@/features/zoom-calls/zoom-call-queries";
 
-// Ported from the working zoom-x reference: load Zoom's Client View (`ZoomMtg`)
-// from Zoom's CDN <script> tags instead of importing the npm package. The npm
-// bundle computes its asset publicPath from `document.currentScript`, which is
-// null inside a Vite ESM build ("Automatic publicPath is not supported"). The
-// CDN bundle also ships Zoom's own React, so it never touches the host app's
-// React 19. Version must match the installed @zoom/meetingsdk (6.1.0).
+// Client View must own a root outside the host React tree. Zoom bundles its own
+// React runtime and mutates this node directly; rendering #zmmtg-root through
+// React causes error #299 when an error or route change removes the container.
 const ZOOM_VERSION = "6.1.0";
 const ZOOM_CDN = `https://source.zoom.us/${ZOOM_VERSION}`;
 
 function loadScript(src: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    if (document.querySelector(`script[data-zoom="${src}"]`)) return resolve();
+    const existing = document.querySelector<HTMLScriptElement>(
+      `script[data-zoom="${src}"]`
+    );
 
-    const s = document.createElement("script");
+    if (existing?.dataset.loaded === "true") return resolve();
 
-    s.src = src;
-    s.async = false; // preserve execution order
-    s.dataset.zoom = src;
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error(`Failed to load ${src}`));
-    document.head.appendChild(s);
+    if (existing) {
+      existing.addEventListener("load", () => resolve(), { once: true });
+      existing.addEventListener(
+        "error",
+        () => reject(new Error(`Failed to load ${src}`)),
+        { once: true }
+      );
+
+      return;
+    }
+
+    const script = document.createElement("script");
+
+    script.src = src;
+    script.async = false;
+    script.dataset.zoom = src;
+    script.onload = () => {
+      script.dataset.loaded = "true";
+      resolve();
+    };
+    script.onerror = () => {
+      script.remove();
+      reject(new Error(`Failed to load ${src}`));
+    };
+    document.head.appendChild(script);
   });
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function loadZoomMtg(): Promise<any> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const w = window as any;
+  const hostWindow = window as any;
 
-  if (w.ZoomMtg) return w.ZoomMtg;
+  if (hostWindow.ZoomMtg) return hostWindow.ZoomMtg;
 
-  // Order matters: vendor deps first, then the main SDK.
   await loadScript(`${ZOOM_CDN}/lib/vendor/react.min.js`);
   await loadScript(`${ZOOM_CDN}/lib/vendor/react-dom.min.js`);
   await loadScript(`${ZOOM_CDN}/lib/vendor/redux.min.js`);
@@ -41,12 +58,39 @@ async function loadZoomMtg(): Promise<any> {
   await loadScript(`${ZOOM_CDN}/lib/vendor/lodash.min.js`);
   await loadScript(`${ZOOM_CDN}/zoom-meeting-${ZOOM_VERSION}.min.js`);
 
-  return w.ZoomMtg;
+  return hostWindow.ZoomMtg;
 }
 
-export function ZoomMeetingEmbed({ sessionId }: { sessionId: string }) {
+function createZoomRoot(): HTMLDivElement {
+  document.getElementById("zmmtg-root")?.remove();
+
+  const root = document.createElement("div");
+
+  root.id = "zmmtg-root";
+  root.dataset.learningAfricaZoomRoot = "true";
+  document.body.appendChild(root);
+
+  return root;
+}
+
+function errorReason(value: unknown, fallback: string): string {
+  if (!value || typeof value !== "object") return fallback;
+
+  const candidate = value as { reason?: unknown; errorMessage?: unknown };
+
+  return String(candidate.reason ?? candidate.errorMessage ?? fallback);
+}
+
+export function ZoomMeetingEmbed({
+  sessionId,
+  leavePath,
+}: {
+  sessionId: string;
+  leavePath: string;
+}) {
   const { data, isLoading, error } = useZoomCallJoinInfo(sessionId, true);
   const [joinError, setJoinError] = useState<string | null>(null);
+  const [isJoining, setIsJoining] = useState(true);
 
   useEffect(() => {
     if (!data) return;
@@ -54,6 +98,15 @@ export function ZoomMeetingEmbed({ sessionId }: { sessionId: string }) {
     let cancelled = false;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let zoom: any;
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousBodyPaddingRight = document.body.style.paddingRight;
+    const zoomRoot = createZoomRoot();
+
+    const cleanup = () => {
+      zoomRoot.remove();
+      document.body.style.overflow = previousBodyOverflow;
+      document.body.style.paddingRight = previousBodyPaddingRight;
+    };
 
     (async () => {
       try {
@@ -66,11 +119,14 @@ export function ZoomMeetingEmbed({ sessionId }: { sessionId: string }) {
         ZoomMtg.preLoadWasm();
         ZoomMtg.prepareWebSDK();
 
-        const leaveUrl = data.leaveUrl || window.location.origin;
+        const leaveUrl = new URL(leavePath, window.location.origin).toString();
 
         ZoomMtg.init({
           leaveUrl,
+          leaveOnPageUnload: true,
           success: () => {
+            if (cancelled) return;
+
             ZoomMtg.join({
               sdkKey: data.sdkKey,
               signature: data.signature,
@@ -78,29 +134,45 @@ export function ZoomMeetingEmbed({ sessionId }: { sessionId: string }) {
               userName: data.userName,
               userEmail: data.userEmail,
               passWord: data.passWord ?? "",
-              success: () => {},
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              error: (e: any) => {
-                if (!cancelled)
-                  setJoinError(
-                    String(e?.reason ?? "Failed to join the meeting")
-                  );
+              success: () => {
+                if (!cancelled) setIsJoining(false);
+              },
+              error: (joinFailure: unknown) => {
+                if (cancelled) return;
+
+                zoomRoot.style.display = "none";
+                window.setTimeout(cleanup, 500);
+                setIsJoining(false);
+                setJoinError(
+                  errorReason(joinFailure, "Failed to join the meeting")
+                );
               },
             });
           },
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          error: (e: any) => {
-            if (!cancelled)
-              setJoinError(
-                String(e?.reason ?? "Failed to initialize the meeting")
-              );
+          error: (initializationFailure: unknown) => {
+            if (cancelled) return;
+
+            zoomRoot.style.display = "none";
+            window.setTimeout(cleanup, 500);
+            setIsJoining(false);
+            setJoinError(
+              errorReason(
+                initializationFailure,
+                "Failed to initialize the meeting"
+              )
+            );
           },
         });
-      } catch (e) {
-        if (!cancelled)
-          setJoinError(
-            e instanceof Error ? e.message : "Failed to join the meeting"
-          );
+      } catch (loadFailure) {
+        if (cancelled) return;
+
+        cleanup();
+        setIsJoining(false);
+        setJoinError(
+          loadFailure instanceof Error
+            ? loadFailure.message
+            : "Failed to join the meeting"
+        );
       }
     })();
 
@@ -108,21 +180,14 @@ export function ZoomMeetingEmbed({ sessionId }: { sessionId: string }) {
       cancelled = true;
 
       try {
-        zoom?.leaveMeeting?.();
+        zoom?.leaveMeeting?.({ success: cleanup, error: cleanup });
       } catch {
-        /* not in a meeting */
+        cleanup();
       }
-    };
-  }, [data]);
 
-  if (isLoading) {
-    return (
-      <div className="text-muted-foreground flex h-[70vh] items-center justify-center">
-        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-        Preparing session…
-      </div>
-    );
-  }
+      window.setTimeout(cleanup, 500);
+    };
+  }, [data, leavePath]);
 
   if (error) {
     return (
@@ -141,5 +206,14 @@ export function ZoomMeetingEmbed({ sessionId }: { sessionId: string }) {
     );
   }
 
-  return <div id="zmmtg-root" />;
+  if (isLoading || isJoining) {
+    return (
+      <div className="text-muted-foreground flex h-[70vh] items-center justify-center">
+        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+        Preparing session…
+      </div>
+    );
+  }
+
+  return null;
 }

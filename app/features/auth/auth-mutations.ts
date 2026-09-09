@@ -102,37 +102,12 @@ export const useRegister = () => {
 
 // Forgot Password Mutation
 export const useForgotPassword = () => {
-  return useMutation<
-    { message: string },
-    ErrorResponse,
-    ForgotPasswordFormData
-  >({
-    mutationKey: authMutationKeys.forgotPassword(),
-    mutationFn: async (data) => {
-      const response = await apiClient.post<{ message: string }>(
-        "/api/auth/password-reset/",
-        data
-      );
-
-      return response.data;
-    },
-    onError: (error) => {
-      toast.error({
-        message: extractError(error, "Request failed"),
-        description: "Password reset request failed, Please try again.",
-      });
-    },
-  });
-};
-
-// Reset Password Mutation
-export const useResetPassword = () => {
-  return useMutation<{ message: string }, ErrorResponse, ResetPasswordFormData>(
+  return useMutation<{ detail: string }, ErrorResponse, ForgotPasswordFormData>(
     {
-      mutationKey: authMutationKeys.resetPassword(),
+      mutationKey: authMutationKeys.forgotPassword(),
       mutationFn: async (data) => {
-        const response = await apiClient.post<{ message: string }>(
-          "/api/auth/password-reset-complete/",
+        const response = await apiClient.post<{ detail: string }>(
+          "/api/auth/password-reset/",
           data
         );
 
@@ -140,12 +115,37 @@ export const useResetPassword = () => {
       },
       onError: (error) => {
         toast.error({
-          message: extractError(error, "Password reset failed"),
-          description: "Password reset failed, Please try again.",
+          message: extractError(error, "Request failed"),
+          description: "Password reset request failed, Please try again.",
         });
       },
     }
   );
+};
+
+// Reset Password Mutation
+export const useResetPassword = () => {
+  return useMutation<{ detail: string }, ErrorResponse, ResetPasswordFormData>({
+    mutationKey: authMutationKeys.resetPassword(),
+    mutationFn: async (data) => {
+      const response = await apiClient.post<{ detail: string }>(
+        "/api/auth/password-reset-complete/",
+        {
+          email: data.email,
+          otp_code: data.otp_code,
+          new_password: data.new_password,
+        }
+      );
+
+      return response.data;
+    },
+    onError: (error) => {
+      toast.error({
+        message: extractError(error, "Password reset failed"),
+        description: "Password reset failed, Please try again.",
+      });
+    },
+  });
 };
 
 // Logout
@@ -166,10 +166,10 @@ export const useLogout = () => {
 
 // Verify Email Mutation
 export const useVerifyEmail = () => {
-  return useMutation<{ message: string }, ErrorResponse, { token: string }>({
+  return useMutation<{ detail: string }, ErrorResponse, { token: string }>({
     mutationKey: authMutationKeys.verifyEmail(),
     mutationFn: async ({ token }) => {
-      const response = await apiClient.post<{ message: string }>(
+      const response = await apiClient.post<{ detail: string }>(
         "/api/auth/verify-email/",
         { token }
       );
@@ -187,9 +187,9 @@ export const useVerifyEmail = () => {
 
 // Resend Verification Email
 export const useResendVerificationEmail = () => {
-  return useMutation<{ message: string }, ErrorResponse, string>({
+  return useMutation<{ detail: string }, ErrorResponse, string>({
     mutationFn: async (email: string) => {
-      const response = await apiClient.post<{ message: string }>(
+      const response = await apiClient.post<{ detail: string }>(
         "/api/auth/resend-verification-email/",
         { email }
       );

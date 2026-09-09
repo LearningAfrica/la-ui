@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import Loader2 from "~icons/lucide/loader-2";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,12 +22,22 @@ import {
 } from "@/lib/schema/auth-schema";
 import { useResetPassword } from "@/features/auth/auth-mutations";
 import { FormPasswordField } from "@/components/form-fields/form-password-field";
+import { FormTextField } from "@/components/form-fields/form-text-field";
+import { extractError } from "@/lib/error";
+
+interface ResetPasswordLocationState {
+  email?: string;
+}
 
 export function ResetPasswordConfirmation() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const email =
+    (location.state as ResetPasswordLocationState | null)?.email ?? "";
   const form = useForm<ResetPasswordFormData>({
     resolver: resetPasswordResolver,
     defaultValues: {
+      email,
       otp_code: "",
       new_password: "",
       confirmPassword: "",
@@ -41,7 +51,7 @@ export function ResetPasswordConfirmation() {
         navigate("/sign-in");
       },
       onError: (error) => {
-        form.setError("root", { message: error.message });
+        form.setError("root", { message: extractError(error) });
       },
     });
   });
@@ -66,6 +76,15 @@ export function ResetPasswordConfirmation() {
               {form.formState.errors.root.message}
             </div>
           )}
+          <FormTextField
+            control={form.control}
+            name="email"
+            label="Email Address"
+            type="email"
+            placeholder="you@example.com"
+            disabled={resetMutation.isPending}
+            inputProps={{ autoComplete: "email" }}
+          />
           <FormField
             control={form.control}
             name="otp_code"

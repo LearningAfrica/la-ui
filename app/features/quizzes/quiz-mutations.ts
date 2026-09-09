@@ -4,6 +4,7 @@ import { apiClient } from "@/lib/api";
 import toast from "@/lib/toast";
 import { extractError } from "@/lib/error";
 import type { Quiz, QuizAttemptResult } from "./quiz-queries";
+import { courseQueryKeys } from "@/features/courses/course-query-keys";
 
 export interface CreateQuizChoicePayload {
   choice_text: string;
@@ -38,8 +39,11 @@ export const useCreateQuiz = () => {
 
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: quizQueryKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: courseQueryKeys.courseMyProgress(variables.coursePk),
+      });
       toast.success({
         message: `Quiz "${data.title}" created successfully.`,
       });
@@ -191,7 +195,6 @@ export interface SubmitAttemptPayload {
   coursePk: string;
   modulePk: string;
   quizPk: string;
-  attemptId: string;
   answers: Array<{
     question: string;
     selected_choice: string;
@@ -207,23 +210,30 @@ export const useSubmitQuizAttempt = () => {
       coursePk,
       modulePk,
       quizPk,
-      attemptId,
       answers,
     }: SubmitAttemptPayload) => {
       const response = await apiClient.post<QuizAttemptResult>(
-        `/api/courses/${coursePk}/modules/${modulePk}/quizzes/${quizPk}/attempt/${attemptId}/submit/`,
-        { answers }
+        `/api/courses/${coursePk}/modules/${modulePk}/quizzes/${quizPk}/attempt/current/submit/`,
+        {
+          answers: answers.map((answer) => ({
+            question_id: answer.question,
+            choice_id: answer.selected_choice,
+          })),
+        }
       );
 
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: quizQueryKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: courseQueryKeys.courseMyProgress(variables.coursePk),
+      });
       toast.success({
         message: data.passed
           ? "Quiz passed! Nice work."
           : "Quiz submitted. Keep practising.",
-        description: `Score: ${data.score}%`,
+        description: `Score: ${data.score_percentage}%`,
       });
     },
     onError: (error) => {

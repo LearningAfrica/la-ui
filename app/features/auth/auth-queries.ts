@@ -5,11 +5,15 @@ import { apiClient } from "@/lib/api";
 interface User {
   id: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  role: string;
-  canCreateOrg?: boolean;
-  organizationId?: string;
+  first_name: string;
+  last_name: string;
+  is_verified: boolean;
+  profile: {
+    title?: string | null;
+    bio?: string | null;
+    profile_image?: string | null;
+    phone_number?: string | null;
+  } | null;
 }
 
 interface ErrorResponse {
@@ -21,7 +25,7 @@ export const useCurrentUser = () => {
   return useQuery<User | null, ErrorResponse>({
     queryKey: authQueryKeys.currentUser(),
     queryFn: async () => {
-      const response = await apiClient.get<User>("/api/auth/me");
+      const response = await apiClient.get<User>("/api/auth/me/");
 
       return response.data;
     },
@@ -32,10 +36,10 @@ export const useCurrentUser = () => {
 
 // Verify Email Token
 export const useVerifyEmail = (token: string) => {
-  return useQuery<{ message: string }, ErrorResponse>({
+  return useQuery<{ detail: string }, ErrorResponse>({
     queryKey: authQueryKeys.verifyEmail(token),
     queryFn: async () => {
-      const response = await apiClient.post<{ message: string }>(
+      const response = await apiClient.post<{ detail: string }>(
         "/api/auth/verify-email/",
         { token }
       );
@@ -53,7 +57,7 @@ export const useAuthStatus = () => {
     queryKey: authQueryKeys.authStatus(),
     queryFn: async () => {
       try {
-        await apiClient.get("/api/auth/verify");
+        await apiClient.get("/api/auth/verify/");
 
         return true;
       } catch {

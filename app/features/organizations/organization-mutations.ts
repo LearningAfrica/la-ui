@@ -118,7 +118,7 @@ export const useChangeMemberRole = (organizationId: string) => {
       role: OrganizationMembershipRole;
     }) => {
       const response = await apiClient.patch(
-        `/api/organizations/${organizationId}/members/${memberId}/role/`,
+        `/api/organizations/mine/${organizationId}/members/${memberId}/role/`,
         { role }
       );
 
@@ -157,7 +157,7 @@ export const useToggleMemberStatus = (organizationId: string) => {
       isActive: boolean;
     }) => {
       const response = await apiClient.patch(
-        `/api/organizations/${organizationId}/members/${memberId}/status/`,
+        `/api/organizations/mine/${organizationId}/members/${memberId}/change-status/`,
         { is_active: isActive }
       );
 

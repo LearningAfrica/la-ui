@@ -92,6 +92,7 @@ export const useMyOrganizationMembers = (params: MembersQueryParams) => {
       const queryParams = new URLSearchParams({
         page: page.toString(),
         page_size: page_size.toString(),
+        limit: page_size.toString(),
       });
 
       if (role) queryParams.append("role", role);

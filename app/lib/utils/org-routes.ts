@@ -25,6 +25,13 @@ export const orgRoutes = {
     `/dashboard/org/${orgId}/courses/${courseId}/modules`,
   lesson: (orgId: string, courseId: string, contentId: string) =>
     `/dashboard/org/${orgId}/courses/${courseId}/lessons/${contentId}`,
+  quizTake: (
+    orgId: string,
+    courseId: string,
+    moduleId: string,
+    quizId: string
+  ) =>
+    `/dashboard/org/${orgId}/courses/${courseId}/modules/${moduleId}/quizzes/${quizId}/take`,
   contentNew: (orgId: string, courseId: string, moduleId: string) =>
     `/dashboard/org/${orgId}/courses/${courseId}/modules/${moduleId}/contents/new`,
   contentEdit: (

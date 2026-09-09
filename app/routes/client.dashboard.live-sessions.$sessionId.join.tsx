@@ -20,7 +20,11 @@ export default function LiveSessionJoinRoute() {
             Back to sessions
           </Link>
         </Button>
-        <ZoomMeetingEmbed sessionId={sessionId} />
+        <ZoomMeetingEmbed
+          key={sessionId}
+          sessionId={sessionId}
+          leavePath={orgRoutes.liveSessions(orgId)}
+        />
       </div>
     </OrgRoleGuard>
   );

@@ -14,6 +14,7 @@ import ExternalLink from "~icons/lucide/external-link";
 import Sparkles from "~icons/lucide/sparkles";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import type { ModuleContent } from "@/features/module-contents/module-content-queries";
+import { SafeHtml } from "@/components/ui/safe-html";
 
 declare module "@/stores/filters/modal-slice" {
   interface ModalRegistry {
@@ -62,9 +63,9 @@ export function ViewContentDialog() {
             {content.content_type === "text" && content.data.body && (
               <div className="space-y-1">
                 <p className="text-sm font-medium">Body</p>
-                <div
+                <SafeHtml
                   className="bg-muted max-h-60 overflow-auto rounded-md p-3 text-sm"
-                  dangerouslySetInnerHTML={{ __html: content.data.body }}
+                  html={content.data.body}
                 />
               </div>
             )}

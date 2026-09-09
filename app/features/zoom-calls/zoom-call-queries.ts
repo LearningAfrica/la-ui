@@ -52,6 +52,7 @@ export const useZoomCalls = (filters: ZoomCallFilters = {}) => {
       const params = new URLSearchParams({
         page: page.toString(),
         page_size: page_size.toString(),
+        limit: page_size.toString(),
       });
 
       if (status) params.append("status", status);

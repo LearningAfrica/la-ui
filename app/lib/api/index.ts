@@ -43,15 +43,26 @@ export const setAuthHelpers = (
 
 // Track whether a token refresh is in progress to avoid duplicate requests
 let isRefreshing = false;
-let refreshSubscribers: ((token: string) => void)[] = [];
+let refreshSubscribers: Array<{
+  resolve: (token: string) => void;
+  reject: (error: unknown) => void;
+}> = [];
 
 function onTokenRefreshed(token: string) {
-  refreshSubscribers.forEach((cb) => cb(token));
+  refreshSubscribers.forEach((subscriber) => subscriber.resolve(token));
   refreshSubscribers = [];
 }
 
-function addRefreshSubscriber(cb: (token: string) => void) {
-  refreshSubscribers.push(cb);
+function onTokenRefreshFailed(error: unknown) {
+  refreshSubscribers.forEach((subscriber) => subscriber.reject(error));
+  refreshSubscribers = [];
+}
+
+function addRefreshSubscriber(
+  resolve: (token: string) => void,
+  reject: (error: unknown) => void
+) {
+  refreshSubscribers.push({ resolve, reject });
 }
 
 // Request interceptor to add auth token
@@ -92,7 +103,7 @@ apiClient.interceptors.response.use(
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes("/api/auth/token/refresh/") &&
+      !originalRequest.url?.includes("/api/auth/refresh-token/") &&
       !originalRequest.url?.includes("/api/auth/login/")
     ) {
       originalRequest._retry = true;
@@ -106,11 +117,11 @@ apiClient.interceptors.response.use(
       }
 
       if (isRefreshing) {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
           addRefreshSubscriber((newToken: string) => {
             originalRequest.headers.Authorization = `Bearer ${newToken}`;
             resolve(apiClient(originalRequest));
-          });
+          }, reject);
         });
       }
 
@@ -118,20 +129,22 @@ apiClient.interceptors.response.use(
 
       try {
         const response = await axios.post(
-          `${API_BASE_URL}/api/auth/token/refresh/`,
-          { refresh }
+          `${API_BASE_URL}/api/auth/refresh-token/`,
+          { refresh_token: refresh }
         );
-        const { access, refresh: newRefresh } = response.data;
+        const { access_token: access, refresh_token: newRefresh } =
+          response.data;
 
         setTokens(access, newRefresh ?? refresh);
         originalRequest.headers.Authorization = `Bearer ${access}`;
         onTokenRefreshed(access);
 
         return apiClient(originalRequest);
-      } catch {
+      } catch (refreshError) {
+        onTokenRefreshFailed(refreshError);
         clearAuthState();
 
-        return Promise.reject(error);
+        return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
       }

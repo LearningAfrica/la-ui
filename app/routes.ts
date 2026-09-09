@@ -22,6 +22,10 @@ export default [
           "courses/:courseId/lessons/:contentId",
           "routes/client.dashboard.courses.$courseId.lessons.$contentId.tsx"
         ),
+        route(
+          "courses/:courseId/modules/:moduleId/quizzes/:quizId/take",
+          "routes/client.dashboard.courses.$courseId.modules.$moduleId.quizzes.$quizId.take.tsx"
+        ),
       ]),
       layout("layouts/org-shell-layout.tsx", [
         index("routes/client.dashboard.tsx"),

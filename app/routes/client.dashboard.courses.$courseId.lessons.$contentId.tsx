@@ -27,6 +27,7 @@ import { orgRoutes } from "@/lib/utils/org-routes";
 import { useAppModal } from "@/stores/filters/modal-hooks";
 import { InteractiveContentPlayer } from "@/components/dashboard/interactive-content-player";
 import { FileContentViewer } from "@/components/dashboard/file-content-viewer";
+import { SafeHtml, sanitizeRichHtml } from "@/components/ui/safe-html";
 
 interface FlatItem {
   content: ModuleContent;
@@ -58,12 +59,7 @@ function formatLessonDuration(seconds: number | undefined): string {
 }
 
 function TextBody({ content }: { content: ModuleContent }) {
-  return (
-    <div
-      className="lesson-prose"
-      dangerouslySetInnerHTML={{ __html: content.data.body ?? "" }}
-    />
-  );
+  return <SafeHtml className="lesson-prose" html={content.data.body ?? ""} />;
 }
 
 function VideoBody({ content }: { content: ModuleContent }) {
@@ -103,10 +99,7 @@ function VideoBody({ content }: { content: ModuleContent }) {
         </a>
       )}
       {content.data.body && (
-        <div
-          className="lesson-prose"
-          dangerouslySetInnerHTML={{ __html: content.data.body }}
-        />
+        <SafeHtml className="lesson-prose" html={content.data.body} />
       )}
     </div>
   );
@@ -119,32 +112,43 @@ interface TocHeading {
 }
 
 function useTocHeadings(content: ModuleContent | undefined): TocHeading[] {
-  return useMemo(() => {
-    if (!content || content.content_type !== "text") return [];
+  const [headings, setHeadings] = useState<TocHeading[]>([]);
 
-    const html = content.data.body ?? "";
+  useEffect(() => {
+    if (!content || content.content_type !== "text") {
+      // Browser-only derived state; keeps SSR output free of untrusted HTML.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setHeadings([]);
 
-    if (!html) return [];
+      return;
+    }
+
+    const html = sanitizeRichHtml(content.data.body ?? "");
+
+    if (!html || typeof DOMParser === "undefined") {
+      setHeadings([]);
+
+      return;
+    }
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");
     const nodes = Array.from(doc.querySelectorAll("h2, h3"));
 
-    return nodes.map((node, i) => {
-      const text = node.textContent?.trim() ?? "";
-      const id =
-        text
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-|-$/g, "") || `section-${i}`;
+    setHeadings(
+      nodes.map((node) => {
+        const text = node.textContent?.trim() ?? "";
 
-      return {
-        id,
-        text,
-        level: node.tagName === "H2" ? 2 : 3,
-      };
-    });
+        return {
+          id: node.id,
+          text,
+          level: node.tagName === "H2" ? 2 : 3,
+        };
+      })
+    );
   }, [content]);
+
+  return headings;
 }
 
 export default function LessonReaderPage() {
@@ -159,7 +163,8 @@ export default function LessonReaderPage() {
   const navigate = useNavigate();
 
   const { data: modules, isLoading: modulesLoading } = useCourseModules(
-    courseId!
+    courseId!,
+    { pageSize: 100 }
   );
   const { data: progress } = useCourseMyProgress(courseId!);
   const markComplete = useMarkContentComplete();
@@ -172,6 +177,20 @@ export default function LessonReaderPage() {
   const prev = current && current.index > 0 ? flat[current.index - 1] : null;
   const next =
     current && current.index < flat.length - 1 ? flat[current.index + 1] : null;
+  const currentContentIndex = current
+    ? current.module.contents.findIndex(
+        (item) => item.id === current.content.id
+      )
+    : -1;
+  const nextQuiz =
+    current && currentContentIndex === current.module.contents.length - 1
+      ? current.module.quizzes[0]
+      : null;
+  const nextRoute = nextQuiz
+    ? orgRoutes.quizTake(orgId, courseId!, current!.module.id, nextQuiz.id)
+    : next
+      ? orgRoutes.lesson(orgId, courseId!, next.content.id)
+      : null;
 
   const isCompleted = useMemo(() => {
     if (!progress?.modules || !contentId) return false;
@@ -235,8 +254,8 @@ export default function LessonReaderPage() {
             return;
           }
 
-          if (next) {
-            navigate(orgRoutes.lesson(orgId, courseId!, next.content.id));
+          if (nextRoute) {
+            navigate(nextRoute);
           }
         },
       }
@@ -325,7 +344,7 @@ export default function LessonReaderPage() {
                 disabled={markComplete.isPending}
               >
                 <CheckCircle2 className="mr-2 h-4 w-4" />
-                {next ? "Mark complete & continue" : "Mark complete"}
+                {nextRoute ? "Mark complete & continue" : "Mark complete"}
               </Button>
             )}
 
@@ -340,11 +359,9 @@ export default function LessonReaderPage() {
                   </Link>
                 </Button>
               )}
-              {next && (
+              {nextRoute && (
                 <Button asChild variant="ghost" size="sm">
-                  <Link
-                    to={orgRoutes.lesson(orgId, courseId!, next.content.id)}
-                  >
+                  <Link to={nextRoute}>
                     Next
                     <ArrowRight className="ml-1 h-4 w-4" />
                   </Link>
@@ -354,9 +371,9 @@ export default function LessonReaderPage() {
           </div>
 
           {/* Up next */}
-          {next && (
+          {nextRoute && (
             <Link
-              to={orgRoutes.lesson(orgId, courseId!, next.content.id)}
+              to={nextRoute}
               className="hover:border-primary/50 hover:bg-muted/30 group mt-6 flex items-center gap-4 rounded-xl border p-5 transition-colors"
             >
               <div className="bg-primary/10 text-primary flex h-12 w-12 shrink-0 items-center justify-center rounded-full">
@@ -366,9 +383,11 @@ export default function LessonReaderPage() {
                 <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
                   Up next
                 </p>
-                <p className="truncate font-semibold">{next.content.title}</p>
+                <p className="truncate font-semibold">
+                  {nextQuiz?.title ?? next?.content.title}
+                </p>
                 <p className="text-muted-foreground truncate text-sm">
-                  {next.module.title}
+                  {nextQuiz ? current.module.title : next?.module.title}
                 </p>
               </div>
             </Link>

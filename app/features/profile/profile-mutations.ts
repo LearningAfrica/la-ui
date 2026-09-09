@@ -50,25 +50,26 @@ export const useUpdateProfile = () => {
 
 // Change Password Mutation
 export const useChangePassword = () => {
-  return useMutation<
-    { message: string },
-    ErrorResponse,
-    ChangePasswordFormData
-  >({
-    mutationKey: profileMutationKeys.changePassword(),
-    mutationFn: async (data) => {
-      const response = await apiClient.post<{ message: string }>(
-        "/api/auth/change-password/",
-        data
-      );
+  return useMutation<{ detail: string }, ErrorResponse, ChangePasswordFormData>(
+    {
+      mutationKey: profileMutationKeys.changePassword(),
+      mutationFn: async (data) => {
+        const response = await apiClient.post<{ detail: string }>(
+          "/api/auth/change-password/",
+          {
+            old_password: data.current_password,
+            new_password: data.new_password,
+          }
+        );
 
-      return response.data;
-    },
-    onError: (error) => {
-      toast.error({
-        message: extractError(error, "Password change failed"),
-        description: "Please try again.",
-      });
-    },
-  });
+        return response.data;
+      },
+      onError: (error) => {
+        toast.error({
+          message: extractError(error, "Password change failed"),
+          description: "Please try again.",
+        });
+      },
+    }
+  );
 };

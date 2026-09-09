@@ -9,17 +9,17 @@
  *   persist:<key>   →  JSON string
  *
  * Options mirror the most common cookie attributes. The defaults are
- * deliberately long-lived and lax so auth/theme tokens survive across sessions.
+ * align persisted authentication state with the server refresh-token lifetime.
  */
 
 const DEFAULT_PATH = "/";
-const DEFAULT_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
+const DEFAULT_MAX_AGE = 60 * 60 * 24 * 7; // Match the refresh-token lifetime.
 const DEFAULT_SAME_SITE = "lax";
 
 export interface CookieStorageOptions {
   /** Cookie path (default "/") */
   path?: string;
-  /** Max-age in seconds (default 1 year) */
+  /** Max-age in seconds (default 7 days) */
   maxAge?: number;
   /** SameSite attribute (default "lax") */
   sameSite?: "strict" | "lax" | "none";

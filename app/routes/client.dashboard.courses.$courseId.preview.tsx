@@ -16,6 +16,7 @@ import Circle from "~icons/lucide/circle";
 import PlayCircle from "~icons/lucide/play-circle";
 import Award from "~icons/lucide/award";
 import Sparkles from "~icons/lucide/sparkles";
+import ListChecks from "~icons/lucide/list-checks";
 import { cn } from "@/lib/utils";
 import { createMediaUrl } from "@/lib/api";
 import {
@@ -28,6 +29,7 @@ import { useCourseModules } from "@/features/modules/module-queries";
 import { useEnrollCourse } from "@/features/courses/course-mutations";
 import type { CourseModuleDetail } from "@/features/modules/module-queries";
 import type { ModuleContent } from "@/features/module-contents/module-content-queries";
+import type { Quiz } from "@/features/quizzes/quiz-queries";
 import { orgRoutes } from "@/lib/utils/org-routes";
 
 function formatDuration(totalSeconds: number): string {
@@ -112,6 +114,39 @@ function ContentRow({
   );
 }
 
+function QuizRow({
+  quiz,
+  moduleId,
+  orgId,
+  courseId,
+  isCompleted,
+}: {
+  quiz: Quiz;
+  moduleId: string;
+  orgId: string;
+  courseId: string;
+  isCompleted: boolean;
+}) {
+  return (
+    <Link
+      to={orgRoutes.quizTake(orgId, courseId, moduleId, quiz.id)}
+      className="hover:bg-la-cream group flex items-center gap-3 rounded-md px-2 py-3 transition-colors"
+    >
+      {isCompleted ? (
+        <CheckCircle2 className="text-la-ok h-4 w-4 shrink-0" />
+      ) : (
+        <Circle className="text-la-muted h-4 w-4 shrink-0" />
+      )}
+      <ListChecks className="text-la-muted h-4 w-4 shrink-0" />
+      <span className="text-la-ink flex-1 truncate text-sm">{quiz.title}</span>
+      <span className="text-la-muted text-xs">
+        {quiz.questions.length}{" "}
+        {quiz.questions.length === 1 ? "question" : "questions"}
+      </span>
+    </Link>
+  );
+}
+
 function ModuleSection({
   module: mod,
   orgId,
@@ -119,6 +154,7 @@ function ModuleSection({
   index,
   defaultExpanded,
   completedSet,
+  completedQuizSet,
 }: {
   module: CourseModuleDetail;
   orgId: string;
@@ -126,6 +162,7 @@ function ModuleSection({
   index: number;
   defaultExpanded: boolean;
   completedSet: Set<string>;
+  completedQuizSet: Set<string>;
 }) {
   const [expanded, setExpanded] = useState(defaultExpanded);
 
@@ -134,8 +171,12 @@ function ModuleSection({
     0
   );
   const completed = mod.contents.filter((c) => completedSet.has(c.id)).length;
-  const total = mod.contents.length;
-  const pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+  const completedQuizzes = mod.quizzes.filter((quiz) =>
+    completedQuizSet.has(quiz.id)
+  ).length;
+  const total = mod.contents.length + mod.quizzes.length;
+  const totalCompleted = completed + completedQuizzes;
+  const pct = total > 0 ? Math.round((totalCompleted / total) * 100) : 0;
 
   return (
     <div className="border-la-rule-strong bg-la-paper overflow-hidden rounded-lg border">
@@ -162,11 +203,11 @@ function ModuleSection({
                   <span>{formatDuration(totalSeconds)}</span>
                 </>
               )}
-              {completed > 0 && (
+              {totalCompleted > 0 && (
                 <>
                   <span className="text-la-muted/40">·</span>
                   <span className="text-la-ok">
-                    {completed}/{total} done
+                    {totalCompleted}/{total} done
                   </span>
                 </>
               )}
@@ -192,7 +233,7 @@ function ModuleSection({
 
       {expanded && (
         <div className="border-la-rule border-t px-2 pt-2 pb-2">
-          {mod.contents.length === 0 ? (
+          {mod.contents.length === 0 && mod.quizzes.length === 0 ? (
             <p className="text-la-muted py-4 text-center text-sm">
               No content in this module yet.
             </p>
@@ -205,6 +246,16 @@ function ModuleSection({
                   orgId={orgId}
                   courseId={courseId}
                   isCompleted={completedSet.has(content.id)}
+                />
+              ))}
+              {mod.quizzes.map((quiz) => (
+                <QuizRow
+                  key={quiz.id}
+                  quiz={quiz}
+                  moduleId={mod.id}
+                  orgId={orgId}
+                  courseId={courseId}
+                  isCompleted={completedQuizSet.has(quiz.id)}
                 />
               ))}
             </div>
@@ -223,20 +274,32 @@ export default function CoursePreviewPage() {
 
   const { data: course, isLoading: courseLoading } = useCourse(courseId!);
   const { data: modules, isLoading: modulesLoading } = useCourseModules(
-    courseId!
+    courseId!,
+    { pageSize: 100 }
   );
   const { data: progress } = useCourseMyProgress(courseId!);
   const enroll = useEnrollCourse();
 
   const modulesList = useMemo(() => modules?.data ?? [], [modules]);
   const completedSet = useMemo(() => getCompletedSet(progress), [progress]);
+  const completedQuizSet = useMemo(() => {
+    const ids = new Set<string>();
+
+    for (const mod of progress?.modules ?? []) {
+      for (const quiz of mod.quizzes ?? []) {
+        if (quiz.is_completed) ids.add(quiz.id);
+      }
+    }
+
+    return ids;
+  }, [progress]);
 
   const totals = useMemo(() => {
     let lessons = 0;
     let seconds = 0;
 
     for (const mod of modulesList) {
-      lessons += mod.contents.length;
+      lessons += mod.contents.length + mod.quizzes.length;
 
       for (const c of mod.contents) {
         seconds += c.data.duration_seconds ?? 0;
@@ -246,33 +309,53 @@ export default function CoursePreviewPage() {
     return { lessons, seconds };
   }, [modulesList]);
 
-  // Find the next incomplete lesson — used for resume CTA + smart expand.
+  // Find the next incomplete activity — used for resume CTA + smart expand.
   // React Compiler memoizes this automatically; no manual useMemo needed.
-  let nextLesson: { moduleIndex: number; contentId: string } | null = null;
+  let nextActivity: { moduleIndex: number; to: string } | null = null;
 
   outer: for (let i = 0; i < modulesList.length; i++) {
     for (const content of modulesList[i].contents) {
       if (!completedSet.has(content.id)) {
-        nextLesson = { moduleIndex: i, contentId: content.id };
+        nextActivity = {
+          moduleIndex: i,
+          to: orgRoutes.lesson(orgId, courseId!, content.id),
+        };
+        break outer;
+      }
+    }
+
+    for (const quiz of modulesList[i].quizzes) {
+      if (!completedQuizSet.has(quiz.id)) {
+        nextActivity = {
+          moduleIndex: i,
+          to: orgRoutes.quizTake(orgId, courseId!, modulesList[i].id, quiz.id),
+        };
         break outer;
       }
     }
   }
 
-  const completedCount = completedSet.size;
+  const completedCount = completedSet.size + completedQuizSet.size;
   const totalLessons = modulesList.reduce(
-    (sum, m) => sum + (m.contents?.length ?? 0),
+    (sum, m) => sum + (m.contents?.length ?? 0) + (m.quizzes?.length ?? 0),
     0
   );
   const progressPercent = Math.round(progress?.course_progress ?? 0);
   const isEnrolled = isLearnerEnrolled(progress);
   const hasProgress = completedCount > 0;
   const ctaLabel = hasProgress ? "Resume course" : "Start the course";
-  const ctaTo = nextLesson
-    ? orgRoutes.lesson(orgId, courseId!, nextLesson.contentId)
+  const ctaTo = nextActivity
+    ? nextActivity.to
     : modulesList[0]?.contents[0]
       ? orgRoutes.lesson(orgId, courseId!, modulesList[0].contents[0].id)
-      : null;
+      : modulesList[0]?.quizzes[0]
+        ? orgRoutes.quizTake(
+            orgId,
+            courseId!,
+            modulesList[0].id,
+            modulesList[0].quizzes[0].id
+          )
+        : null;
 
   if (courseLoading) {
     return (
@@ -395,9 +478,10 @@ export default function CoursePreviewPage() {
                     courseId={courseId!}
                     index={i}
                     defaultExpanded={
-                      nextLesson ? nextLesson.moduleIndex === i : i === 0
+                      nextActivity ? nextActivity.moduleIndex === i : i === 0
                     }
                     completedSet={completedSet}
+                    completedQuizSet={completedQuizSet}
                   />
                 ))}
               </div>

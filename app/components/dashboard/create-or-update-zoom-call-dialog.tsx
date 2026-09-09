@@ -85,7 +85,11 @@ export function CreateOrUpdateZoomCallDialog() {
   const isEditing = !!modal.data?.id;
 
   const { data: coursesData } = useCourses({ page: 1, pageSize: 100 });
-  const { data: membersData } = useMyOrganizationMembers({
+  const {
+    data: membersData,
+    isLoading: membersLoading,
+    error: membersError,
+  } = useMyOrganizationMembers({
     organizationId: selectedOrganization?.id ?? "",
     filters: { page: 1, page_size: 100, is_active: true },
   });
@@ -293,11 +297,25 @@ export function CreateOrUpdateZoomCallDialog() {
                       </label>
                     );
                   })}
-                  {(membersData?.data ?? []).length === 0 && (
-                    <p className="text-muted-foreground px-2 py-4 text-center text-xs">
-                      No active organization members found.
+                  {membersLoading && (
+                    <p className="text-muted-foreground flex items-center justify-center px-2 py-4 text-xs">
+                      <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
+                      Loading members…
                     </p>
                   )}
+                  {membersError && (
+                    <p className="text-destructive px-2 py-4 text-center text-xs">
+                      Members could not be loaded. Close this form and try
+                      again.
+                    </p>
+                  )}
+                  {!membersLoading &&
+                    !membersError &&
+                    (membersData?.data ?? []).length === 0 && (
+                      <p className="text-muted-foreground px-2 py-4 text-center text-xs">
+                        No active organization members found.
+                      </p>
+                    )}
                 </div>
               </div>
             </div>

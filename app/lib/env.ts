@@ -44,12 +44,10 @@ function parseEnv(): Env {
 
     console.error(`[env] Invalid environment variables:\n${formatted}`);
 
-    if (import.meta.env.DEV) {
-      throw new Error(`Invalid environment variables:\n${formatted}`);
-    }
+    throw new Error(`Invalid environment variables:\n${formatted}`);
   }
 
-  return (result.success ? result.data : raw) as Env;
+  return result.data;
 }
 
 export const env = parseEnv();

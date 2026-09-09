@@ -4,12 +4,14 @@ import { apiClient } from "@/lib/api";
 import type { Paginated } from "@/lib/types/api";
 
 import type { ModuleContent } from "@/features/module-contents/module-content-queries";
+import type { Quiz } from "@/features/quizzes/quiz-queries";
 
 export interface CourseModuleDetail {
   id: string;
   title: string;
   description: string;
   contents: ModuleContent[];
+  quizzes: Quiz[];
 }
 
 export interface UseCourseModulesParams {

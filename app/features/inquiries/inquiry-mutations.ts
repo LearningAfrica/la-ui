@@ -107,7 +107,7 @@ export const useRejectInquiry = () => {
   >({
     mutationKey: inquiryMutationKeys.rejectInquiry(),
     mutationFn: async ({ inquiryId, reason }) => {
-      await apiClient.post(
+      await apiClient.patch(
         `/api/invite/admin-action-to-organization-request/${inquiryId}/`,
         {
           status: "rejected",

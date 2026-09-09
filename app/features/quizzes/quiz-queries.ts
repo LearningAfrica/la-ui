@@ -5,7 +5,8 @@ import { apiClient } from "@/lib/api";
 export interface QuizChoice {
   id: string;
   choice_text: string;
-  is_correct: boolean;
+  // Present only in instructor/admin responses.
+  is_correct?: boolean;
 }
 
 export interface QuizQuestion {
@@ -22,21 +23,19 @@ export interface Quiz {
   module: string;
   passing_score: number;
   questions: QuizQuestion[];
+  is_completed?: boolean;
   created_at?: string;
   updated_at?: string;
 }
 
 export interface QuizAttemptResult {
   id: string;
-  quiz: string;
   score: number;
   passed: boolean;
-  submitted_at: string;
-  answers: Array<{
-    question: string;
-    selected_choice: string;
-    is_correct: boolean;
-  }>;
+  total_questions: number;
+  correct_answers: number;
+  score_percentage: number;
+  completed_at: string;
 }
 
 export const useQuizzes = (coursePk: string, modulePk: string) => {

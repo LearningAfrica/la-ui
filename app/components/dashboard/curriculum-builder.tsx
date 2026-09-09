@@ -139,7 +139,9 @@ export function CurriculumBuilder({
   orgId: string;
 }) {
   const createModuleModal = useAppModal("create-or-update-module");
-  const { data: modules, isLoading } = useCourseModules(courseId);
+  const { data: modules, isLoading } = useCourseModules(courseId, {
+    pageSize: 100,
+  });
   const modulesList = modules?.data ?? [];
 
   return (
