@@ -56,7 +56,7 @@ export function LandingFooter() {
               deliver it.
             </p>
             <address className="text-la-muted mt-4 max-w-[280px] text-[13px] leading-[1.55] not-italic">
-              Avenue Park 1, Outer Ring Road
+              186 Safaripark Ave
               <br />
               Nairobi, Kenya
               <br />

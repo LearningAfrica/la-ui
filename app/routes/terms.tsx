@@ -42,8 +42,8 @@ export default function Terms() {
           content from 2017. The Chomoka Studios family of websites including
           but not limited to www.chomoka.com, www.learningafrica.com,
           www.chomoka.africa among others (each and collectively, the
-          &ldquo;Website&rdquo;) and is based in Nairobi — Kenya; Avenue Park 1,
-          Outer Ring Road.
+          &ldquo;Website&rdquo;) and is based in Nairobi — Kenya; 186 Safaripark
+          Ave.
         </p>
       </LegalSection>
 

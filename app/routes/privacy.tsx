@@ -75,7 +75,7 @@ export default function Privacy() {
           >
             eric@chomoka.com
           </a>
-          , or write to Avenue Park 1, Outer Ring Road, Nairobi, Kenya.
+          , or write to 186 Safaripark Ave, Nairobi, Kenya.
         </p>
       </LegalSection>
     </LegalShell>

@@ -18,7 +18,7 @@ export const contactInfo = [
   {
     icon: MapPin,
     title: "Address",
-    content: "Lagos, Nigeria",
+    content: "186 Safaripark Ave, Nairobi",
     link: "#",
   },
 ];
