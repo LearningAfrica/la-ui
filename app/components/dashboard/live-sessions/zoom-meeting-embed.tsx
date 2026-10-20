@@ -5,7 +5,7 @@ import { useZoomCallJoinInfo } from "@/features/zoom-calls/zoom-call-queries";
 // Client View must own a root outside the host React tree. Zoom bundles its own
 // React runtime and mutates this node directly; rendering #zmmtg-root through
 // React causes error #299 when an error or route change removes the container.
-const ZOOM_VERSION = "6.1.0";
+const ZOOM_VERSION = "6.2.0";
 const ZOOM_CDN = `https://source.zoom.us/${ZOOM_VERSION}`;
 
 function loadScript(src: string): Promise<void> {
@@ -55,8 +55,15 @@ async function loadZoomMtg(): Promise<any> {
   await loadScript(`${ZOOM_CDN}/lib/vendor/react-dom.min.js`);
   await loadScript(`${ZOOM_CDN}/lib/vendor/redux.min.js`);
   await loadScript(`${ZOOM_CDN}/lib/vendor/redux-thunk.min.js`);
+  await loadScript(`${ZOOM_CDN}/lib/vendor/react-redux.min.js`);
   await loadScript(`${ZOOM_CDN}/lib/vendor/lodash.min.js`);
-  await loadScript(`${ZOOM_CDN}/zoom-meeting-${ZOOM_VERSION}.min.js`);
+  await loadScript(
+    `https://source.zoom.us/zoom-meeting-${ZOOM_VERSION}.min.js`
+  );
+
+  if (!hostWindow.ZoomMtg) {
+    throw new Error("Zoom could not load. Refresh the page and try again.");
+  }
 
   return hostWindow.ZoomMtg;
 }
@@ -76,9 +83,31 @@ function createZoomRoot(): HTMLDivElement {
 function errorReason(value: unknown, fallback: string): string {
   if (!value || typeof value !== "object") return fallback;
 
-  const candidate = value as { reason?: unknown; errorMessage?: unknown };
+  const candidate = value as {
+    reason?: unknown;
+    errorMessage?: unknown;
+    errorCode?: unknown;
+    result?: unknown;
+    response?: { data?: { error?: string } };
+  };
 
-  return String(candidate.reason ?? candidate.errorMessage ?? fallback);
+  if (candidate.response?.data?.error) return candidate.response.data.error;
+
+  const nested = candidate.result;
+
+  if (nested && typeof nested === "object") {
+    return errorReason(nested, fallback);
+  }
+
+  const message = String(
+    candidate.reason ??
+      candidate.errorMessage ??
+      (typeof nested === "string" ? nested : fallback)
+  );
+
+  return candidate.errorCode
+    ? `${message} (Zoom code ${String(candidate.errorCode)})`
+    : message;
 }
 
 export function ZoomMeetingEmbed({
@@ -110,6 +139,10 @@ export function ZoomMeetingEmbed({
 
     (async () => {
       try {
+        if (data.role === 1 && !data.zak) {
+          throw new Error("Host authorization is missing. Please try again.");
+        }
+
         const ZoomMtg = await loadZoomMtg();
 
         if (cancelled || !ZoomMtg) return;
@@ -128,12 +161,12 @@ export function ZoomMeetingEmbed({
             if (cancelled) return;
 
             ZoomMtg.join({
-              sdkKey: data.sdkKey,
               signature: data.signature,
               meetingNumber: data.meetingNumber,
               userName: data.userName,
               userEmail: data.userEmail,
               passWord: data.passWord ?? "",
+              ...(data.zak ? { zak: data.zak } : {}),
               success: () => {
                 if (!cancelled) setIsJoining(false);
               },
@@ -192,7 +225,7 @@ export function ZoomMeetingEmbed({
   if (error) {
     return (
       <div className="text-destructive flex h-[70vh] items-center justify-center text-sm">
-        Could not load session credentials. Try refreshing the page.
+        {errorReason(error, "Could not prepare the session. Please try again.")}
       </div>
     );
   }

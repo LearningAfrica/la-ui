@@ -41,7 +41,7 @@ function quizToFormValues(quiz: Quiz): QuizFormData {
       order: q.order ?? qi,
       choices: (q.choices ?? []).map((c) => ({
         choice_text: c.choice_text,
-        is_correct: c.is_correct,
+        is_correct: c.is_correct ?? false,
       })),
     })),
   };

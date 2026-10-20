@@ -30,15 +30,15 @@ export interface ZoomCall {
   created_at?: string;
 }
 
-// The backend returns the credentials using Zoom's own camelCase field names
-// (the exact shape `ZoomMtgEmbedded.join()` expects), so we keep them verbatim
-// and hand them straight to the SDK. Note `passWord` is Zoom's spelling.
+// Client View join parameters. Signing credentials stay on the backend.
+// Only the designated session host receives role 1 and a fresh ZAK token.
 export interface ZoomCallJoinInfo {
-  sdkKey: string;
   meetingNumber: string;
   passWord: string;
   userName: string;
   signature: string;
+  role: 0 | 1;
+  zak?: string;
   userEmail?: string;
   leaveUrl?: string;
 }
@@ -97,5 +97,8 @@ export const useZoomCallJoinInfo = (id: string, enabled = false) => {
     enabled: enabled && !!id,
     staleTime: 0,
     gcTime: 0,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: false,
   });
 };

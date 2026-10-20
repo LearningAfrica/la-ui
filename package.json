@@ -8,6 +8,7 @@
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "test:interactive": "node scripts/verify-interactive-rendering.mjs",
+    "test:zoom": "node --test scripts/verify-zoom-joining.mjs",
     "lint": "eslint ./app",
     "lint:fix": "eslint ./app --fix",
     "format": "prettier --write \"app/**/*.{ts,tsx,js,jsx,json,css,md}\"",
